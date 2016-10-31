@@ -1,0 +1,7 @@
+.vs
+Builds
+obj
+*.suo
+*.csproj.user
+*.sln.cache
+*.orig
