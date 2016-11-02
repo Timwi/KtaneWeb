@@ -9,12 +9,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KtaneWeb</RootNamespace>
     <AssemblyName>KtaneWeb</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <OutputPath>..\..\..\Builds\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>..\..\..\Builds\$(Configuration)\obj-$(AssemblyName)\</IntermediateOutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Builds\$(Configuration)\obj-$(AssemblyName)\</BaseIntermediateOutputPath></PropertyGroup>
+    <OutputPath>..\Builds\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>..\Builds\$(Configuration)\obj-$(AssemblyName)\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\Builds\$(Configuration)\obj-$(AssemblyName)\</BaseIntermediateOutputPath>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -39,8 +41,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JavaScript.cs" />
+    <Compile Include="Css.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="KtaneModuleInfo.cs" />
+    <Compile Include="KtanePropellerModule.cs" />
+    <Compile Include="KtaneWebConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SelectableData.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Propeller\API\PropellerApi.csproj">
+      <Project>{5770ee79-8340-41fb-9b8e-eb4a3c487ff1}</Project>
+      <Name>PropellerApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Propeller\Src\Propeller.csproj">
+      <Project>{3b02d01e-2cb9-49f3-86b9-97bf8cd161fa}</Project>
+      <Name>Propeller</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.Servers\Src\RT.Servers.csproj">
+      <Project>{a7333c19-56a9-4a8e-a196-7648666ef26a}</Project>
+      <Name>RT.Servers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.TagSoup\Src\RT.TagSoup.csproj">
+      <Project>{8f80d916-8999-45d8-acb2-ffa7e2698fd6}</Project>
+      <Name>RT.TagSoup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.Util\Src\RT.Util.csproj">
+      <Project>{8d0fe79c-ad8d-475c-9e6f-9cae85365b5d}</Project>
+      <Name>RT.Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

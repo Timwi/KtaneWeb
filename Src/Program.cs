@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RT.PropellerApi;
+using RT.Util;
 
 namespace KtaneWeb
 {
@@ -10,6 +7,7 @@ namespace KtaneWeb
     {
         static void Main(string[] args)
         {
+            PropellerUtil.RunStandalone(PathUtil.AppPathCombine("KTANE.json"), new KtanePropellerModule());
         }
     }
 }
