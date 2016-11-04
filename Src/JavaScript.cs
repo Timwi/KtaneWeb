@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KtaneWeb
+﻿namespace KtaneWeb
 {
     sealed partial class KtanePropellerModule
     {
@@ -12,8 +6,15 @@ namespace KtaneWeb
 
 $(function()
 {
+    var filters = [ 'regular', 'needy', 'vanilla', 'mods', 'nonexist' ];
+    var filter = {};
+    try { filter = JSON.parse(localStorage.getItem('filters')) || {}; }
+    catch (exc) { }
+    var selectable = localStorage.getItem('selectable') || 'pdf';
+
     function setSelectable(sel)
     {
+        selectable = sel;
         $('a.modlink').each(function(_, e) {
             $(e).attr('href', $(e).data(sel) || null);
         });
@@ -21,36 +22,35 @@ $(function()
         $('label.set-selectable.selectable-' + sel).addClass('selected');
         $('#selectable-' + sel).prop('checked', true);
         localStorage.setItem('selectable', sel);
+        updateFilter();
     }
 
     function updateFilter()
     {
-        var regular = $('input#filter-regular').prop('checked');
-        var needy = $('input#filter-needy').prop('checked');
-        var vanilla = $('input#filter-vanilla').prop('checked');
-        var mods = $('input#filter-mods').prop('checked');
+        for (var i = 0; i < filters.length; i++)
+            filter[filters[i]] = $('input#filter-' + filters[i]).prop('checked');
 
         $('tr.mod').each(function(_, e) {
-            if ((($(e).data('type') == 'Regular' && regular) || ($(e).data('type') == 'Needy' && needy) || !(regular || needy)) &&
-                (($(e).data('origin') == 'Vanilla' && vanilla) || ($(e).data('origin') == 'Mods' && mods) || !(vanilla || mods)))
+            if ((($(e).data('type') == 'Regular' && filter.regular) || ($(e).data('type') == 'Needy' && filter.needy) || !(filter.regular || filter.needy)) &&
+                (($(e).data('origin') == 'Vanilla' && filter.vanilla) || ($(e).data('origin') == 'Mods' && filter.mods) || !(filter.vanilla || filter.mods)) &&
+                (filter.nonexist || $(e).find('a.modlink').data(selectable)))
                 $(e).show();
             else
                 $(e).hide();
         });
 
-        localStorage.setItem('filter-regular', regular ? '' : '1');
-        localStorage.setItem('filter-needy', needy ? '' : '1');
-        localStorage.setItem('filter-vanilla', vanilla ? '' : '1');
-        localStorage.setItem('filter-mods', mods ? '' : '1');
+        localStorage.setItem('filters', JSON.stringify(filter));
     }
 
-    setSelectable(localStorage.getItem('selectable') || 'pdf');
-    
-    $('input#filter-regular').prop('checked', !localStorage.getItem('filter-regular'));
-    $('input#filter-needy').prop('checked', !localStorage.getItem('filter-needy'));
-    $('input#filter-vanilla').prop('checked', !localStorage.getItem('filter-vanilla'));
-    $('input#filter-mods').prop('checked', !localStorage.getItem('filter-mods'));
-    updateFilter();
+    for (var i = 0; i < filters.length; i++)
+    {
+        if (!(filters[i] in filter))
+            filter[filters[i]] = true;
+        $('input#filter-' + filters[i]).prop('checked', filter[filters[i]]);
+    }
+
+    // This also calls UpdateFilter()
+    setSelectable(selectable);
 
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); return true; });
     $('input.filter').click(function() { updateFilter(); return true; });

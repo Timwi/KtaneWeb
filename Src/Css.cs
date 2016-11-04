@@ -5,7 +5,7 @@
         public static string Css = @"
 
 body {
-    max-width: 60em;
+    max-width: 65em;
     margin: 0 auto 10em;
     font-family: 'Special Elite', serif;
 }
@@ -58,12 +58,36 @@ td, th {
     padding: .3em .7em 0;
 }
 
-td.manual-icon {
-    text-align: center;
+td.icons {
 }
 
 img.icon {
     width: 25px;
+}
+
+.json-link {
+    font-size: 10pt;
+    text-align: right;
+    margin-top: .5em;
+}
+
+kbd {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    text-decoration: underline;
+}
+
+textarea { width: 100%; height: 50em; }
+
+div.error {
+    background: #fee;
+    text-align: center;
+    border: 1px solid black;
+    font-size: 15pt;
+    padding: 1em 3em;
+    margin: .5em 0;
 }
 
 ";

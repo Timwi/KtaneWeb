@@ -41,15 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="JavaScript.cs" />
     <Compile Include="Css.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="KtaneModuleInfo.cs" />
     <Compile Include="KtanePropellerModule.cs" />
+    <Compile Include="KtaneSettings.cs" />
     <Compile Include="KtaneWebConfig.cs" />
+    <Compile Include="JsonPage.cs" />
+    <Compile Include="MainPage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SelectableData.cs" />
+    <Compile Include="Selectable.cs" />
+    <Compile Include="KtaneWebSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Propeller\API\PropellerApi.csproj">
