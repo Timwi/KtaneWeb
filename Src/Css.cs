@@ -62,13 +62,26 @@ td.icons {
 }
 
 img.icon {
-    width: 25px;
+    width: 32px;
+}
+
+img.mod-icon {
+    width: 32px;
+    margin: -.5em .5em -.25em 0;
+    vertical-align: bottom;
 }
 
 .json-link {
-    font-size: 10pt;
-    text-align: right;
-    margin-top: .5em;
+    float: right;
+    margin-top: 1em;
+}
+
+.credits {
+    margin-top: 1em;
+}
+
+.credits .credited {
+    text-decoration: dotted underline;
 }
 
 kbd {

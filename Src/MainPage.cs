@@ -87,13 +87,13 @@ namespace KtaneWeb
 
             return HttpResponse.Html(new HTML(
                 new HEAD(
-                    new TITLE("Keep Talking and Nobody Explodes — Mods and Modules"),
+                    new TITLE("Repository of Manual Pages"),
                     new LINK { href = "//fonts.googleapis.com/css?family=Special+Elite", rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" },
                     new SCRIPTLiteral(JavaScript),
                     new META { name = "viewport", content = "width=device-width" }),
-                new BODY()._(
+                new BODY(
                     new DIV { class_ = "heading" }._(
                         new IMG { class_ = "logo", src = config.LogoUrl },
                         new DIV { class_ = "filters" }._(
@@ -121,12 +121,22 @@ namespace KtaneWeb
                             new TH("Name"),
                             new TH("Type"),
                             new TH("Author(s)")),
-                        config.KtaneModules.Where(mod => mod.Name != null).OrderBy(mod => mod.Name).Select(mod => new TR { class_ = "mod" }.Data("type", mod.Type.ToString()).Data("origin", mod.Origin.ToString())._(
+                        config.KtaneModules.Select(mod => new TR { class_ = "mod" }.Data("type", mod.Type.ToString()).Data("origin", mod.Origin.ToString())._(
                             new TD { class_ = "icons" }._(selectables.Select(sel => sel.Url(mod) == null ? null : new A { href = sel.Url(mod) }._(new IMG { class_ = "icon", title = sel.HumanReadable, alt = sel.HumanReadable, src = sel.IconUrl }))),
-                            new TD(selectables.Aggregate((Tag) new A { class_ = "modlink", href = $"{config.PdfDir}/{mod.Name}.pdf" }, (p, n) => p.Data(n.DataAttributeName, n.Url(mod) ?? n.AltUrl(mod)))._(mod.Name)),
+                            new TD(selectables.Aggregate((Tag) new A { class_ = "modlink", href = $"{config.PdfDir}/{mod.Name}.pdf" }, (p, n) => p.Data(n.DataAttributeName, n.Url(mod) ?? n.AltUrl(mod)))._(mod.Icon(config), mod.Name)),
                             new TD(mod.Type.ToString()),
                             new TD(mod.Author)))),
-                    new DIV { class_ = "json-link" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))))));
+                    new DIV { class_ = "json-link" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
+                    new DIV { class_ = "credits" }._("Icons by lumbud84. Embellished PDFs by ",
+                        new SPAN { class_ = "credited", title = "Mouse In The Maze, Orientation Cube, Perspective Pegs, Piano Keys, Silly Slots, Two Bits" }._("Rexkix"), ", ",
+                        new SPAN { class_ = "credited", title = "Cryptography, Microcontrollers, Resistors, Semaphore, Switches" }._("Nanthelas")," and ",
+                        new SPAN { class_ = "credited", title = "3D Maze, Laundry, Murder" }._("Timwi"), "."),
+                    new DIV { class_ = "extra-links" }._(
+                        new P("Additional resources:"),
+                        new UL(
+                            new LI(new A { href = "https://www.dropbox.com/s/paluom4wlogjdl0/ModsOnlyManual_Sorted_A-Z.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual (mods only)")),
+                            new LI(new A { href = "https://www.dropbox.com/s/4bkfwoa4d7p0a7z/ModsOnlyManual_Sorted_A-Z_with_Cheat_Sheets.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual with cheat sheets (mods only)")),
+                            new LI(new A { href = "https://www.dropbox.com/s/hp3a3vgpbhsrbbs/CheatSheet.pdf?dl=0" }._("Elias’s extremely condensed manual (mods ", new EM("and"), " vanilla)")))))));
         }
     }
 }

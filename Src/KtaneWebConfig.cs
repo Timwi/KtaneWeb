@@ -7,8 +7,11 @@ namespace KtaneWeb
         public string BaseDir;
         public string HtmlDir;
         public string PdfDir;
+        public string ModIconDir = "D:\\Sites\\KTANE\\Icons";
+
         public string HtmlUrl;
         public string PdfUrl;
+        public string ModIconUrl = "/Icons";
 
         // Icon URLs
         public string HtmlIconUrl;

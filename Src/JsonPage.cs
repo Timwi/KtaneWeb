@@ -27,6 +27,7 @@ namespace KtaneWeb
                     try
                     {
                         var newConfig = ClassifyJson.Deserialize<KtaneWebConfig>(JsonValue.Parse(content));
+                        newConfig.KtaneModules = newConfig.KtaneModules.OrderBy(mod => mod.SortKey).ToArray();
                         var newJson = ClassifyJson.Serialize(newConfig);
                         File.WriteAllText(Settings.ConfigFile, newJson.ToStringIndented());
                     }
