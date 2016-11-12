@@ -1,4 +1,5 @@
-﻿using RT.PropellerApi;
+﻿using System.IO;
+using RT.PropellerApi;
 using RT.Servers;
 using RT.Util;
 using RT.Util.Serialization;
@@ -17,8 +18,15 @@ namespace KtaneWeb
             return Session.EnableManual<KtaneWebSession>(request, session =>
             {
                 var resolver = new UrlResolver(
+#if DEBUG
+                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(config.JavaScriptFile, "text/javascript; charset=utf-8")),
+                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(config.CssFile, "text/css; charset=utf-8")),
+#else
+                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.JavaScript(Resources.Js)),
+                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.Css(Resources.Css)),
+#endif
+
                     new UrlMapping(path: "/", specificPath: true, handler: req => MainPage(req, config)),
-                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.Css(Css)),
                     new UrlMapping(path: "/json", handler: req => JsonPage(req, config)),
 
                     // Default fallback: file system handler

@@ -45,6 +45,7 @@ namespace KtaneWeb
                         new SCRIPT { src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" },
                         new META { name = "viewport", content = "width=device-width" }),
                     new BODY()._(
+                        new DIV { class_ = "links" }._(new A { href = req.Url.WithPathParent().WithPathOnly("/").ToHref(), accesskey = "b" }._("Back".Accel('B'))),
                         new H1("JSON"),
                         error?.Apply(_ => new DIV { class_ = "error" }._(error)),
                         new FORM { method = method.post, action = req.Url.ToHref() }._(

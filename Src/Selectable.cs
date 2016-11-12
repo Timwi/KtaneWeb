@@ -1,4 +1,5 @@
 ﻿using System;
+using RT.Util.Json;
 
 namespace KtaneWeb
 {
@@ -6,10 +7,11 @@ namespace KtaneWeb
     {
         public string HumanReadable;
         public char Accel;
-        public string IconUrl;
+        public Func<KtaneModuleInfo, object> Icon;
         public string DataAttributeName;
-        public Func<bool> FileExists;
+        public Func<KtaneModuleInfo, string> DataAttributeValue;
         public Func<KtaneModuleInfo, string> Url;
-        public Func<KtaneModuleInfo, string> AltUrl;
+        public Func<KtaneModuleInfo, bool> ShowIcon;
+        public string CssClass = null;
     }
 }

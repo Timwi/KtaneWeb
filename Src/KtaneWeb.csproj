@@ -42,8 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
-    <Compile Include="JavaScript.cs" />
-    <Compile Include="Css.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="KtaneModuleInfo.cs" />
     <Compile Include="KtanePropellerModule.cs" />
@@ -53,6 +51,11 @@
     <Compile Include="MainPage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Selectable.cs" />
     <Compile Include="KtaneWebSession.cs" />
   </ItemGroup>
@@ -77,6 +80,21 @@
       <Project>{8d0fe79c-ad8d-475c-9e6f-9cae85365b5d}</Project>
       <Name>RT.Util</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\KtaneWeb.css">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </Content>
+    <Content Include="Resources\KtaneWeb.js">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

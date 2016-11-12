@@ -1,9 +1,4 @@
-﻿namespace KtaneWeb
-{
-    sealed partial class KtanePropellerModule 
-    {
-        public static string Css = @"
-
+﻿
 body {
     max-width: 65em;
     margin: 0 auto 10em;
@@ -26,9 +21,9 @@ div.filters {
     margin-left: 2em;
 }
 
-div.filters .filter-section {
-    margin-top: .5em;
-}
+    div.filters .filter-section {
+        margin-top: .5em;
+    }
 
 div.heading div.selectables {
     float: right;
@@ -54,34 +49,67 @@ table {
 
 td, th {
     border: 1px solid black;
-    vertical-align: middle;    
-    padding: .3em .7em 0;
+    vertical-align: middle;
+    padding: .2em .7em;
 }
 
-td.icons {
-}
+    td.icons {
+    }
 
 img.icon {
     width: 32px;
+    vertical-align: middle;
 }
+
+.pdf-selector {
+    font-size: 9pt;
+    text-decoration: none;
+    color: black;
+    vertical-align: middle;
+    margin: 0 .2em 0 -.2em;
+}
+
+menu.pdf-select {
+    position: absolute;
+    border: 1px solid black;
+    margin: 0;
+    background: white;
+    list-style: none;
+    padding: .2em;
+    cursor: pointer;
+}
+
+    menu.pdf-select li {
+        padding: .2em .7em 0 1.4em;
+        position: relative;
+    }
+
+        menu.pdf-select li:hover {
+            background: navy;
+            color: white;
+        }
+
+        menu.pdf-select li.checked:before {
+            position: absolute;
+            content: '✓';
+            left: 0.3em;
+            top: 50%;
+            transform: translateY(-50%);
+        }
 
 img.mod-icon {
     width: 32px;
-    margin: -.5em .5em -.25em 0;
+    margin: -.25em .5em -.25em 0;
     vertical-align: bottom;
 }
 
-.json-link {
+.links {
     float: right;
-    margin-top: 1em;
+    margin: 1em 0;
 }
 
 .credits {
     margin-top: 1em;
-}
-
-.credits .credited {
-    text-decoration: dotted underline;
 }
 
 kbd {
@@ -92,7 +120,10 @@ kbd {
     text-decoration: underline;
 }
 
-textarea { width: 100%; height: 50em; }
+textarea {
+    width: 100%;
+    height: 50em;
+}
 
 div.error {
     background: #fee;
@@ -101,8 +132,4 @@ div.error {
     font-size: 15pt;
     padding: 1em 3em;
     margin: .5em 0;
-}
-
-";
-    }
 }

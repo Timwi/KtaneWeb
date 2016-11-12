@@ -2,7 +2,7 @@
 
 namespace KtaneWeb
 {
-    public sealed class KtaneWebConfig
+    public sealed class KtaneWebConfig : IClassifyObjectProcessor
     {
         public string BaseDir;
         public string HtmlDir;
@@ -17,6 +17,7 @@ namespace KtaneWeb
         public string HtmlIconUrl;
         public string PdfIconUrl;
         public string PdfEmbellishedIconUrl;
+        public string PdfCheatSheetIconUrl;
         public string LogoUrl;
         public string SteamIconUrl;
         public string UnityIconUrl;
@@ -24,7 +25,17 @@ namespace KtaneWeb
         // User/password file for editing
         public string UsersFile;
 
+        public string JavaScriptFile;
+        public string CssFile;
+
         [ClassifyNotNull]
         public KtaneModuleInfo[] KtaneModules = new KtaneModuleInfo[0];
+
+        void IClassifyObjectProcessor.BeforeSerialize() { }
+        void IClassifyObjectProcessor.AfterDeserialize()
+        {
+            if (PdfCheatSheetIconUrl == null)
+                PdfCheatSheetIconUrl = PdfEmbellishedIconUrl;
+        }
     }
 }
