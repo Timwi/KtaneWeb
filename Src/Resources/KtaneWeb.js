@@ -70,7 +70,7 @@
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); return true; });
     $('input.filter').click(function() { updateFilter(); return true; });
 
-    // Deal with the cheat sheet
+    // Deal with the cheat sheets
     $('a.cheat').each(function(_, e)
     {
         var data = $(e).parents('tr').data();
@@ -80,6 +80,7 @@
         {
             var lnk = $('<a>').attr('href', '#').addClass('pdf-selector').text('▼').click(function()
             {
+                $('.disappear').remove();
                 var pos = $(lnk).position();
                 var menu = $('<menu>').addClass('pdf-select disappear').css({ left: pos.left, top: pos.top + $(lnk).height() });
                 for (var i = 0; i < sheets.length; i++)
