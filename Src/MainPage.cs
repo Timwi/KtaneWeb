@@ -3,31 +3,32 @@ using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
+using RT.Util.ExtensionMethods;
 using RT.Util.Json;
 
 namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        public HttpResponse MainPage(HttpRequest req, KtaneWebConfig config)
+        private HttpResponse mainPage(HttpRequest req, KtaneWebConfig config)
         {
             // Access keys:
             // A
             // B
-            // C    PDF cheat sheet
+            // C
             // D
             // E    
             // F
             // G
-            // H    HTML manual
+            // H
             // I
             // J    JSON
             // K
             // L
-            // M    Mods
+            // M    Manual
             // N    Needy
-            // O
-            // P    PDF manual
+            // O    Mods
+            // P
             // Q
             // R    Regular
             // S    Show missing
@@ -39,39 +40,19 @@ namespace KtaneWeb
             // Y
             // Z
 
-            var cheatSheets = config.KtaneModules.ToDictionary(mod => mod.Name, mod => new DirectoryInfo(config.PdfDir).EnumerateSheets($"{mod.Name} cheat sheet (", ").pdf", config));
+            var sheets = config.KtaneModules.ToDictionary(mod => mod.Name, mod => config.EnumerateSheetUrls(mod.Name));
 
             var selectables = Ut.NewArray(
                 new Selectable
                 {
-                    HumanReadable = "PDF manual",
-                    Accel = 'P',
-                    Icon = mod => new IMG { class_ = "icon", title = "PDF manual", alt = "PDF manual", src = config.PdfIconUrl },
-                    DataAttributeName = "pdf",
-                    DataAttributeValue = mod => File.Exists(Path.Combine(config.PdfDir, mod.Name + ".pdf")) ? $"{config.PdfUrl}/{mod.Name}.pdf" : null,
-                    Url = mod => $"{config.PdfUrl}/{mod.Name}.pdf",
-                    ShowIcon = mod => File.Exists(Path.Combine(config.PdfDir, mod.Name + ".pdf"))
-                },
-                new Selectable
-                {
-                    HumanReadable = "PDF cheat sheet",
-                    Accel = 'c',
-                    Icon = mod => new IMG { class_ = "icon", title = "PDF cheat sheet", alt = "PDF cheat sheet", src = config.PdfCheatSheetIconUrl }.Data("sheets", cheatSheets[mod.Name]),
-                    DataAttributeName = "cheatsheet",
-                    DataAttributeValue = mod => cheatSheets[mod.Name].ToString(),
-                    Url = mod => $"{config.PdfUrl}/{mod.Name}.pdf",
-                    ShowIcon = mod => cheatSheets[mod.Name].Count > 0,
-                    CssClass = "cheat"
-                },
-                new Selectable
-                {
-                    HumanReadable = "HTML manual",
-                    Accel = 'H',
-                    Icon = mod => new IMG { class_ = "icon", title = "HTML manual", alt = "HTML manual", src = config.HtmlIconUrl },
-                    DataAttributeName = "html",
-                    DataAttributeValue = mod => File.Exists(Path.Combine(config.HtmlDir, mod.Name + ".html")) ? $"{config.HtmlUrl}/{mod.Name}.html" : null,
-                    Url = mod => $"{config.HtmlUrl}/{mod.Name}.html",
-                    ShowIcon = mod => File.Exists(Path.Combine(config.HtmlDir, mod.Name + ".html"))
+                    HumanReadable = "Manual",
+                    Accel = 'M',
+                    Icon = mod => new IMG { class_ = "icon manual-icon", title = "Manual", alt = "Manual", src = sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["icon"].GetString() : null },
+                    DataAttributeName = "manual",
+                    DataAttributeValue = mod => sheets.Get(mod.Name, null)?.ToString(),
+                    Url = mod => sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["url"].GetString() : null,
+                    ShowIcon = mod => sheets[mod.Name].Count > 0,
+                    CssClass = "manual"
                 },
                 new Selectable
                 {
@@ -114,7 +95,7 @@ namespace KtaneWeb
                             new DIV { class_ = "filter-section" }._(
                                 new DIV { class_ = "sub" }._("Origin:"),
                                 new DIV(new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-vanilla" }, " ", new LABEL { for_ = "filter-vanilla", accesskey = "v" }._("Vanilla".Accel('V'))),
-                                new DIV(new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-mods" }, " ", new LABEL { for_ = "filter-mods", accesskey = "m" }._("Mods".Accel('M'))))),
+                                new DIV(new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-mods" }, " ", new LABEL { for_ = "filter-mods", accesskey = "o" }._("Mods".Accel('o'))))),
                         new DIV { class_ = "selectables" }._(
                             new DIV { class_ = "head" }._("Make links go to:"),
                             selectables.Select(sel => new DIV(
@@ -132,11 +113,11 @@ namespace KtaneWeb
                             new TH("Author(s)")),
                         config.KtaneModules.Select(mod => selectables.Aggregate(new TR { class_ = "mod" }.Data("type", mod.Type.ToString()).Data("origin", mod.Origin.ToString()).Data("mod", mod.Name), (p, n) => p.Data(n.DataAttributeName, n.DataAttributeValue(mod)))._(
                             new TD { class_ = "icons" }._(selectables.Select(sel => sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
-                            new TD(new A { class_ = "modlink", href = $"{config.PdfUrl}/{mod.Name}.pdf" }._(mod.Icon(config), mod.Name)),
+                            new TD(new A { class_ = "modlink" }._(mod.Icon(config), mod.Name)),
                             new TD(mod.Type.ToString()),
                             new TD(mod.Author)))),
                     new DIV { class_ = "links" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
-                    new DIV { class_ = "credits" }._("Icons by lumbud84."),
+                    new DIV { class_ = "credits" }._("Icons by lumbud84 and samfun123."),
                     new DIV { class_ = "extra-links" }._(
                         new P("Additional resources:"),
                         new UL(

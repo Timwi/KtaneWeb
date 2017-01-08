@@ -61,7 +61,7 @@ img.icon {
     vertical-align: middle;
 }
 
-.pdf-selector {
+.manual-selector {
     font-size: 9pt;
     text-decoration: none;
     color: black;
@@ -69,27 +69,35 @@ img.icon {
     margin: 0 .2em 0 -.2em;
 }
 
-menu.pdf-select {
+div.manual-select {
     position: absolute;
     border: 1px solid black;
-    margin: 0;
     background: white;
-    list-style: none;
-    padding: .2em;
-    cursor: pointer;
 }
 
-    menu.pdf-select li {
-        padding: .25em .7em 0 1.4em;
-        position: relative;
+    div.manual-select p {
+        font-size: 9pt;
+        margin: .1em .25em;
     }
 
-        menu.pdf-select li:hover {
+    div.manual-select menu {
+        margin: 0;
+        list-style: none;
+        padding: .2em;
+    }
+
+    div.manual-select li {
+        padding: .25em .7em 0 1.4em;
+        position: relative;
+        cursor: pointer;
+    }
+
+        div.manual-select li:hover {
             background: navy;
             color: white;
         }
 
-        menu.pdf-select li.checked:before {
+        div.manual-select li.checked:before {
             position: absolute;
             content: '✓';
             left: 0.3em;

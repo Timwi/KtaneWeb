@@ -11,7 +11,7 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        public HttpResponse JsonPage(HttpRequest req, KtaneWebConfig config)
+        private HttpResponse jsonPage(HttpRequest req, KtaneWebConfig config)
         {
             return Session.EnableManual<KtaneWebSession>(req, session =>
             {

@@ -1,23 +1,23 @@
-﻿using RT.Util.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using RT.Util.ExtensionMethods;
+using RT.Util.Json;
+using RT.Util.Serialization;
 
 namespace KtaneWeb
 {
-    public sealed class KtaneWebConfig : IClassifyObjectProcessor
+    sealed class KtaneWebConfig
     {
-        public string BaseDir;
-        public string HtmlDir;
-        public string PdfDir;
-        public string ModIconDir = "D:\\Sites\\KTANE\\Icons";
+#pragma warning disable 0649 // Field is never assigned to, and will always have its default value
 
-        public string HtmlUrl;
-        public string PdfUrl;
-        public string ModIconUrl = "/Icons";
+        public string BaseDir = @"D:\Sites\KTANE\Public";
+        public string[] DocumentDirs = new[] { "HTML", "PDF" };
+        public string[] OriginalDocumentIcons = new[] { "HTML/img/html_manual.png", "HTML/img/pdf_manual.png" };
+        public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
+        public string ModIconDir = "Icons";
 
-        // Icon URLs
-        public string HtmlIconUrl;
-        public string PdfIconUrl;
-        public string PdfEmbellishedIconUrl;
-        public string PdfCheatSheetIconUrl;
         public string LogoUrl;
         public string SteamIconUrl;
         public string UnityIconUrl;
@@ -28,14 +28,28 @@ namespace KtaneWeb
         public string JavaScriptFile;
         public string CssFile;
 
+#pragma warning restore 0649 // Field is never assigned to, and will always have its default value
+
         [ClassifyNotNull]
         public KtaneModuleInfo[] KtaneModules = new KtaneModuleInfo[0];
 
-        void IClassifyObjectProcessor.BeforeSerialize() { }
-        void IClassifyObjectProcessor.AfterDeserialize()
+        public JsonList EnumerateSheetUrls(string moduleName)
         {
-            if (PdfCheatSheetIconUrl == null)
-                PdfCheatSheetIconUrl = PdfEmbellishedIconUrl;
+            if (moduleName == null)
+                throw new ArgumentNullException(nameof(moduleName));
+
+            var list = new List<JsonDict>();
+            for (int i = 0; i < DocumentDirs.Length; i++)
+            {
+                var dirInfo = new DirectoryInfo(Path.Combine(BaseDir, DocumentDirs[i]));
+                foreach (var inf in dirInfo.EnumerateFiles($"{moduleName}.*").Select(f => new { File = f, Icon = OriginalDocumentIcons[i] }).Concat(dirInfo.EnumerateFiles($"{moduleName} *").Select(f => new { File = f, Icon = ExtraDocumentIcons[i] })))
+                    list.Add(new JsonDict {
+                        { "name", $"{Path.GetFileNameWithoutExtension(inf.File.Name)} ({inf.File.Extension.Substring(1).ToUpperInvariant()})" },
+                        { "url", $"{DocumentDirs[i]}/{inf.File.Name}" },
+                        { "icon", inf.Icon }
+                    });
+            }
+            return list.OrderBy(item => item["name"].GetString()).ToJsonList();
         }
     }
 }

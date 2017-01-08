@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropellerApi", "..\..\Prope
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Propeller", "..\..\Propeller\Src\Propeller.csproj", "{3B02D01E-2CB9-49F3-86B9-97BF8CD161FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RT.SelfService", "..\..\RT.SelfService\Src\RT.SelfService.csproj", "{2D690226-CE76-4261-8778-87F7C213836A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{3B02D01E-2CB9-49F3-86B9-97BF8CD161FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B02D01E-2CB9-49F3-86B9-97BF8CD161FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B02D01E-2CB9-49F3-86B9-97BF8CD161FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D690226-CE76-4261-8778-87F7C213836A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D690226-CE76-4261-8778-87F7C213836A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D690226-CE76-4261-8778-87F7C213836A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D690226-CE76-4261-8778-87F7C213836A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

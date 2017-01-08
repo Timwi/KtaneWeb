@@ -2,6 +2,7 @@
 using RT.PropellerApi;
 using RT.Servers;
 using RT.Util;
+using RT.Util.Json;
 using RT.Util.Serialization;
 
 namespace KtaneWeb
@@ -26,8 +27,8 @@ namespace KtaneWeb
                     new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.Css(Resources.Css)),
 #endif
 
-                    new UrlMapping(path: "/", specificPath: true, handler: req => MainPage(req, config)),
-                    new UrlMapping(path: "/json", handler: req => JsonPage(req, config)),
+                    new UrlMapping(path: "/", specificPath: true, handler: req => mainPage(req, config)),
+                    new UrlMapping(path: "/json", handler: req => jsonPage(req, config)),
 
                     // Default fallback: file system handler
                     new UrlMapping(req => new FileSystemHandler(config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
@@ -38,6 +39,16 @@ namespace KtaneWeb
 
                 return resolver.Handle(request);
             });
+        }
+
+        public override void Init(LoggerBase log)
+        {
+            var original = File.ReadAllText(Settings.ConfigFile);
+            var config = ClassifyJson.Deserialize<KtaneWebConfig>(JsonValue.Parse(original));
+            var rewrite = ClassifyJson.Serialize(config).ToStringIndented();
+            if (rewrite != original)
+                File.WriteAllText(Settings.ConfigFile, rewrite);
+            base.Init(log);
         }
     }
 }
