@@ -33,7 +33,7 @@ namespace KtaneWeb
         [ClassifyNotNull]
         public KtaneModuleInfo[] KtaneModules = new KtaneModuleInfo[0];
 
-        public JsonList EnumerateSheetUrls(string moduleName)
+        public JsonList EnumerateSheetUrls(string moduleName, string[] notModuleNames)
         {
             if (moduleName == null)
                 throw new ArgumentNullException(nameof(moduleName));
@@ -43,11 +43,12 @@ namespace KtaneWeb
             {
                 var dirInfo = new DirectoryInfo(Path.Combine(BaseDir, DocumentDirs[i]));
                 foreach (var inf in dirInfo.EnumerateFiles($"{moduleName}.*").Select(f => new { File = f, Icon = OriginalDocumentIcons[i] }).Concat(dirInfo.EnumerateFiles($"{moduleName} *").Select(f => new { File = f, Icon = ExtraDocumentIcons[i] })))
-                    list.Add(new JsonDict {
-                        { "name", $"{Path.GetFileNameWithoutExtension(inf.File.Name)} ({inf.File.Extension.Substring(1).ToUpperInvariant()})" },
-                        { "url", $"{DocumentDirs[i]}/{inf.File.Name}" },
-                        { "icon", inf.Icon }
-                    });
+                    if (!notModuleNames.Any(inf.File.Name.StartsWith))
+                        list.Add(new JsonDict {
+                            { "name", $"{Path.GetFileNameWithoutExtension(inf.File.Name)} ({inf.File.Extension.Substring(1).ToUpperInvariant()})" },
+                            { "url", $"{DocumentDirs[i]}/{inf.File.Name}" },
+                            { "icon", inf.Icon }
+                        });
             }
             return list.OrderBy(item => item["name"].GetString()).ToJsonList();
         }

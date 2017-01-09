@@ -40,7 +40,7 @@ namespace KtaneWeb
             // Y
             // Z
 
-            var sheets = config.KtaneModules.ToDictionary(mod => mod.Name, mod => config.EnumerateSheetUrls(mod.Name));
+            var sheets = config.KtaneModules.ToDictionary(mod => mod.Name, mod => config.EnumerateSheetUrls(mod.Name, config.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
 
             var selectables = Ut.NewArray(
                 new Selectable
