@@ -4,7 +4,9 @@
     var filter = {};
     try { filter = JSON.parse(localStorage.getItem('filters')) || {}; }
     catch (exc) { }
-    var selectable = localStorage.getItem('selectable') || 'pdf';
+    var selectable = localStorage.getItem('selectable') || 'manual';
+    if (["manual", "steam", "source"].indexOf(selectable) === -1)
+        selectable = 'manual';
     var preferredManuals = JSON.parse(localStorage.getItem('preferredManuals') || '{}');
 
     function setSelectable(sel)
