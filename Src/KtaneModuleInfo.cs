@@ -16,6 +16,7 @@ namespace KtaneWeb
         public KtaneModuleOrigin Origin;
         public string Author;
         public string SourceUrl;
+        public string TutorialVideoUrl;
 
         public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });

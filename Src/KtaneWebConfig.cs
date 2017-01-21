@@ -21,6 +21,7 @@ namespace KtaneWeb
         public string LogoUrl;
         public string SteamIconUrl;
         public string UnityIconUrl;
+        public string TutorialVideoIconUrl;
 
         // User/password file for editing
         public string UsersFile;

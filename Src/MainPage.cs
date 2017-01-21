@@ -32,7 +32,7 @@ namespace KtaneWeb
             // Q
             // R    Regular
             // S    Show missing
-            // T
+            // T    Tutorial video
             // U    Source code
             // V    Vanilla
             // W    Steam Workshop Item
@@ -73,6 +73,16 @@ namespace KtaneWeb
                     DataAttributeValue = mod => mod.SourceUrl,
                     Url = mod => mod.SourceUrl,
                     ShowIcon = mod => mod.SourceUrl != null
+                },
+                new Selectable
+                {
+                    HumanReadable = "Tutorial video",
+                    Accel = 'T',
+                    Icon = mod => new IMG { class_ = "icon", title = "Tutorial video", alt = "Tutorial video", src = config.TutorialVideoIconUrl },
+                    DataAttributeName = "video",
+                    DataAttributeValue = mod => mod.TutorialVideoUrl,
+                    Url = mod => mod.TutorialVideoUrl,
+                    ShowIcon = mod => mod.TutorialVideoUrl != null
                 });
 
             return HttpResponse.Html(new HTML(
