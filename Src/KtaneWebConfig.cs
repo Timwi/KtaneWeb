@@ -47,7 +47,7 @@ namespace KtaneWeb
                     if (!notModuleNames.Any(inf.File.Name.StartsWith))
                         list.Add(new JsonDict {
                             { "name", $"{Path.GetFileNameWithoutExtension(inf.File.Name)} ({inf.File.Extension.Substring(1).ToUpperInvariant()})" },
-                            { "url", $"{DocumentDirs[i]}/{inf.File.Name}" },
+                            { "url", $"{DocumentDirs[i]}/{inf.File.Name.UrlEscape()}" },
                             { "icon", inf.Icon }
                         });
             }
