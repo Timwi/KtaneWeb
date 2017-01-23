@@ -47,14 +47,16 @@ table {
     width: 100%;
 }
 
+    table.highlighting-controls {
+        width: 42em;
+        margin: 0 auto;
+    }
+
 td, th {
     border: 1px solid black;
     vertical-align: middle;
     padding: .2em .7em;
 }
-
-    td.icons {
-    }
 
 img.icon {
     width: 32px;

@@ -92,6 +92,7 @@ namespace KtaneWeb
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" },
                     new SCRIPT { src = req.Url.WithParent("js").ToHref() },
+                    new SCRIPT { src = req.Url.WithParent("HTML/js/highlighter.js").ToHref() },
                     new META { name = "viewport", content = "width=device-width" }),
                 new BODY(
                     new DIV { class_ = "heading" }._(
@@ -129,12 +130,17 @@ namespace KtaneWeb
                     new DIV { class_ = "links" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
                     new DIV { class_ = "credits" }._("Icons by lumbud84 and samfun123."),
                     new DIV { class_ = "extra-links" }._(
-                        new P("Additional resources:"),
+                        new H3("Controls to highlight elements in HTML manuals:"),
+                        new TABLE { class_ = "highlighting-controls" }._(
+                            new TR(new TH("Control (Windows)"), new TH("Control (Mac)"), new TH("Function")),
+                            new TR(new TD("Ctrl+Click"), new TD("Command+Click"), new TD("Highlight a table column")),
+                            new TR(new TD("Shift+Click"), new TD("Shift+Click"), new TD("Highlight a table row")),
+                            new TR(new TD("Alt+Click or Ctrl+Shift+Click"), new TD("Command+Shift+Click"), new TD("Highlight a table cell or highlight an item in a list"))),
+                        new H3("Additional resources:"),
                         new UL(
                             new LI(new A { href = "https://www.dropbox.com/s/paluom4wlogjdl0/ModsOnlyManual_Sorted_A-Z.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual (mods only)")),
                             new LI(new A { href = "https://www.dropbox.com/s/4bkfwoa4d7p0a7z/ModsOnlyManual_Sorted_A-Z_with_Cheat_Sheets.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual with cheat sheets (mods only)")),
-                            new LI(new A { href = "https://www.dropbox.com/s/hp3a3vgpbhsrbbs/CheatSheet.pdf?dl=0" }._("Elias’s extremely condensed manual (mods ", new EM("and"), " vanilla)")),
-                            new LI(new A { href = "Highlighter/Highlighter.html" }._("Samfun123’s table highlighter")))))));
+                            new LI(new A { href = "https://www.dropbox.com/s/hp3a3vgpbhsrbbs/CheatSheet.pdf?dl=0" }._("Elias’s extremely condensed manual (mods ", new EM("and"), " vanilla)")))))));
         }
     }
 }
