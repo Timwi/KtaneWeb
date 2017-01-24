@@ -92,7 +92,6 @@ namespace KtaneWeb
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" },
                     new SCRIPT { src = req.Url.WithParent("js").ToHref() },
-                    new SCRIPT { src = req.Url.WithParent("HTML/js/highlighter.js").ToHref() },
                     new META { name = "viewport", content = "width=device-width" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
