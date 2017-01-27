@@ -117,12 +117,12 @@ namespace KtaneWeb
                                     new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-nonexist" }))),
                         new TABLE { class_ = "main-table" }._(
                             new TR(
-                                new TH("Links"),
+                                new TH { colspan = selectables.Length }._("Links"),
                                 new TH("Name"),
                                 new TH("Type"),
                                 new TH("Author(s)")),
                             config.KtaneModules.Select(mod => selectables.Aggregate(new TR { class_ = "mod" }.Data("type", mod.Type.ToString()).Data("origin", mod.Origin.ToString()).Data("mod", mod.Name), (p, n) => p.Data(n.DataAttributeName, n.DataAttributeValue(mod)))._(
-                                new TD { class_ = "icons" }._(selectables.Select(sel => sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
+                                selectables.Select(sel => new TD { class_ = "selectable" }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
                                 new TD(new A { class_ = "modlink" }._(mod.Icon(config), mod.Name)),
                                 new TD(mod.Type.ToString()),
                                 new TD(mod.Author)))),
