@@ -138,8 +138,7 @@ namespace KtaneWeb
                             new H3("Additional resources:"),
                             new UL(
                                 new LI(new A { href = "https://www.dropbox.com/s/paluom4wlogjdl0/ModsOnlyManual_Sorted_A-Z.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual (mods only)")),
-                                new LI(new A { href = "https://www.dropbox.com/s/4bkfwoa4d7p0a7z/ModsOnlyManual_Sorted_A-Z_with_Cheat_Sheets.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual with cheat sheets (mods only)")),
-                                new LI(new A { href = "https://www.dropbox.com/s/hp3a3vgpbhsrbbs/CheatSheet.pdf?dl=0" }._("Elias’s extremely condensed manual (mods ", new EM("and"), " vanilla)"))))))));
+                                new LI(new A { href = "https://www.dropbox.com/s/4bkfwoa4d7p0a7z/ModsOnlyManual_Sorted_A-Z_with_Cheat_Sheets.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual with cheat sheets (mods only)"))))))));
         }
     }
 }
