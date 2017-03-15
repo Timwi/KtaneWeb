@@ -14,6 +14,7 @@ namespace KtaneWeb
         public string SteamID;
         public KtaneModuleType Type;
         public KtaneModuleOrigin Origin;
+        public KtaneModuleDifficulty Difficulty;
         public string Author;
         public string SourceUrl;
         public string TutorialVideoUrl;

@@ -1,11 +1,13 @@
 ﻿$(function()
 {
-    var filters = ['regular', 'needy', 'vanilla', 'mods', 'nonexist'];
+    //var filters = ['regular', 'needy', 'vanilla', 'mods', 'showMissing'];
+    // TODO ‘showMissing’ filter
+
     var filter = {};
     try { filter = JSON.parse(localStorage.getItem('filters')) || {}; }
     catch (exc) { }
     var selectable = localStorage.getItem('selectable') || 'manual';
-    if (["manual", "steam", "source"].indexOf(selectable) === -1)
+    if (Ktane.Selectables.indexOf(selectable) === -1)
         selectable = 'manual';
     var preferredManuals = JSON.parse(localStorage.getItem('preferredManuals') || '{}');
 
@@ -14,7 +16,7 @@
         selectable = sel;
         $('a.modlink').each(function(_, e) { $(e).attr('href', sel === 'manual' ? null : ($(e).parents('tr').data(sel) || null)); });
         $('label.set-selectable').removeClass('selected');
-        $('label.set-selectable.selectable-' + sel).addClass('selected');
+        $('label#selectable-label-' + sel).addClass('selected');
         $('#selectable-' + sel).prop('checked', true);
         localStorage.setItem('selectable', sel);
         updateFilter();
@@ -23,15 +25,31 @@
 
     function updateFilter()
     {
-        for (var i = 0; i < filters.length; i++)
-            filter[filters[i]] = $('input#filter-' + filters[i]).prop('checked');
+        filter.showMissing = $('input#filter-show-missing').prop('checked');
+
+        var noneSelected = {};
+        for (var i = 0; i < Ktane.Filters.length; i++)
+        {
+            var none = true;
+            filter[Ktane.Filters[i].id] = {};
+            for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+            {
+                filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked');
+                if (filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]])
+                    none = false;
+            }
+            noneSelected[Ktane.Filters[i].id] = none;
+        }
 
         $('tr.mod').each(function(_, e)
         {
             var data = $(e).data();
-            if (((data.type == 'Regular' && filter.regular) || (data.type == 'Needy' && filter.needy) || !(filter.regular || filter.needy)) &&
-                ((data.origin == 'Vanilla' && filter.vanilla) || (data.origin == 'Mods' && filter.mods) || !(filter.vanilla || filter.mods)) &&
-                (filter.nonexist || $(e).data(selectable)))
+
+            var filteredIn = true;
+            for (var i = 0; i < Ktane.Filters.length; i++)
+                filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id] || Ktane.Filters[i].alwaysShow.indexOf(data[Ktane.Filters[i].id]) !== -1);
+
+            if (filteredIn && (filter.showMissing || selectable === 'manual' || $(e).data(selectable)))
                 $(e).show();
             else
                 $(e).hide();
@@ -59,14 +77,31 @@
         localStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
 
-    for (var i = 0; i < filters.length; i++)
+    function resize()
     {
-        if (!(filters[i] in filter))
-            filter[filters[i]] = true;
-        $('input#filter-' + filters[i]).prop('checked', filter[filters[i]]);
+        if ($(document).width() <= 1024)
+        {
+            // condensed layout, designed for mobile
+        }
+        else
+        {
+            // full layout, designed for desktop
+        }
     }
 
-    // This also calls UpdateFilter()
+    for (var i = 0; i < Ktane.Filters.length; i++)
+    {
+        if (!(Ktane.Filters[i].id in filter))
+            filter[Ktane.Filters[i].id] = {};
+        for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+        {
+            if (!(Ktane.Filters[i].values[j] in filter[Ktane.Filters[i].id]))
+                filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = true;
+            $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
+        }
+    }
+
+    // This also calls updateFilter()
     setSelectable(selectable);
     setPreferredManuals();
 
@@ -111,9 +146,8 @@
         }
     });
 
-    $(document).click(function()
-    {
-        $('.disappear').remove();
-    });
+    $(document).click(function() { $('.disappear').remove(); });
+    $(window).resize(function() { resize(); });
+
 });
 

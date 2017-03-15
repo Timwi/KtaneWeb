@@ -1,5 +1,6 @@
-﻿using System.IO;
+﻿using System;
 using System.Linq;
+using System.Reflection;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -14,14 +15,14 @@ namespace KtaneWeb
         {
             // Access keys:
             // A
-            // B
+            // B    difficulty: very hard for both
             // C
-            // D
-            // E    
+            // D    difficulty: very hard for defuser
+            // E    difficulty: easy
             // F
             // G
-            // H
-            // I
+            // H    difficulty: hard
+            // I    difficulty: medium
             // J    JSON
             // K
             // L
@@ -36,8 +37,8 @@ namespace KtaneWeb
             // U    Source code
             // V    Vanilla
             // W    Steam Workshop Item
-            // X
-            // Y
+            // X    difficulty: very hard for expert
+            // Y    difficulty: very easy
             // Z
 
             var sheets = config.KtaneModules.ToDictionary(mod => mod.Name, mod => config.EnumerateSheetUrls(mod.Name, config.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
@@ -85,47 +86,75 @@ namespace KtaneWeb
                     ShowIcon = mod => mod.TutorialVideoUrl != null
                 });
 
+            var filters = Ut.NewArray(
+                new KtaneFilter(typeof(KtaneModuleType), mod => mod.Type),
+                new KtaneFilter(typeof(KtaneModuleOrigin), mod => mod.Origin),
+                new KtaneFilter(typeof(KtaneModuleDifficulty), mod => mod.Difficulty)
+            );
+
             return HttpResponse.Html(new HTML(
                 new HEAD(
                     new TITLE("Repository of Manual Pages"),
                     new LINK { href = "//fonts.googleapis.com/css?family=Special+Elite", rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" },
+                    new SCRIPTLiteral($@"
+                        Ktane = {{
+                            Filters: {filters.Select(f => new JsonDict {
+                                { "id", f.DataAttributeName },
+                                { "values", Enum.GetValues(f.EnumType).Cast<Enum>().Select(e => new { Value = e, Attr = e.GetCustomAttribute<KtaneFilterOptionAttribute>() }).Where(inf => inf.Attr != null).Select(inf => inf.Value.ToString()).ToJsonList() },
+                                { "alwaysShow", Enum.GetValues(f.EnumType).Cast<Enum>().Select(e => new { Value = e, Attr = e.GetCustomAttribute<KtaneFilterOptionAttribute>() }).Where(inf => inf.Attr == null).Select(inf => inf.Value.ToString()).ToJsonList() }
+                            }).ToJsonList()},
+                            Selectables: {selectables.Select(s => s.DataAttributeName).ToJsonList()}
+                        }};
+                    "),
                     new SCRIPT { src = req.Url.WithParent("js").ToHref() },
                     new META { name = "viewport", content = "width=device-width" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
-                        new DIV { class_ = "heading" }._(
-                            new IMG { class_ = "logo", src = config.LogoUrl },
-                            new DIV { class_ = "filters" }._(
-                                new DIV { class_ = "head" }._("Filters:"),
+                        filters
+                            .Select(filter => new { Type = filter.EnumType, Attr = filter.EnumType.GetCustomAttributes<KtaneFilterAttribute>().FirstOrDefault() })
+                            .Where(filter => filter.Attr != null)
+                            .Select(filterInf =>
                                 new DIV { class_ = "filter-section" }._(
-                                    new DIV { class_ = "sub" }._("Types:"),
-                                    new DIV(new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-regular" }, " ", new LABEL { for_ = "filter-regular", accesskey = "r" }._("Regular".Accel('R'))),
-                                    new DIV(new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-needy" }, " ", new LABEL { for_ = "filter-needy", accesskey = "n" }._("Needy".Accel('N')))),
-                                new DIV { class_ = "filter-section" }._(
-                                    new DIV { class_ = "sub" }._("Origin:"),
-                                    new DIV(new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-vanilla" }, " ", new LABEL { for_ = "filter-vanilla", accesskey = "v" }._("Vanilla".Accel('V'))),
-                                    new DIV(new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-mods" }, " ", new LABEL { for_ = "filter-mods", accesskey = "o" }._("Mods".Accel('o'))))),
-                            new DIV { class_ = "selectables" }._(
-                                new DIV { class_ = "head" }._("Make links go to:"),
-                                selectables.Select(sel => new DIV(
-                                    new LABEL { id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)), " ",
-                                    new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName))),
-                                new DIV(
-                                    new LABEL { for_ = "filter-nonexist", accesskey = "s" }._("Show missing".Accel('S')), " ",
-                                    new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-nonexist" }))),
+                                    new DIV { class_ = "filter-sub" }._(filterInf.Attr.FilterName, ":"),
+                                    Enum.GetValues(filterInf.Type).Cast<Enum>()
+                                        .Select(val => new { Value = val, Attr = val.GetCustomAttribute<KtaneFilterOptionAttribute>() })
+                                        .Where(fv => fv.Attr != null)
+                                        .Select(fv => new DIV(
+                                            new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-" + fv.Value.ToString() }, " ",
+                                            new LABEL { for_ = "filter-" + fv.Value.ToString(), accesskey = fv.Attr.Accel.ToString().ToLowerInvariant() }._(fv.Attr.ReadableName.Accel(fv.Attr.Accel))))))
+                            .ToArray()
+                            .Apply(filterUis =>
+                                new TABLE { class_ = "header" }._(
+                                    new TR(new TD { rowspan = 2 }._(new IMG { class_ = "logo", src = config.LogoUrl }), new TH { class_ = "links-head" }._("Make links go to:"), new TH { colspan = 2, class_ = "filters-head" }._("Filters:")),
+                                    new TR(
+                                        new TD { class_ = "selectables" }._(
+                                            selectables.Select(sel => new DIV(
+                                                new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName), " ",
+                                                new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
+                                            new DIV(
+                                                new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-show-missing" }, " ",
+                                                new LABEL { for_ = "filter-show-missing", accesskey = "s" }._("Show missing".Accel('S')))),
+                                        new TD { class_ = "filters-1" }._(new DIV(filterUis[0]), new DIV(filterUis[1])),
+                                        new TD { class_ = "filters-2" }._(filterUis[2])))),
                         new TABLE { class_ = "main-table" }._(
                             new TR(
                                 new TH { colspan = selectables.Length }._("Links"),
                                 new TH("Name"),
-                                new TH("Type"),
-                                new TH("Author(s)")),
-                            config.KtaneModules.Select(mod => selectables.Aggregate(new TR { class_ = "mod" }.Data("type", mod.Type.ToString()).Data("origin", mod.Origin.ToString()).Data("mod", mod.Name), (p, n) => p.Data(n.DataAttributeName, n.DataAttributeValue(mod)))._(
-                                selectables.Select(sel => new TD { class_ = "selectable" }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
-                                new TD(new A { class_ = "modlink" }._(mod.Icon(config), mod.Name)),
-                                new TD(mod.Type.ToString()),
-                                new TD(mod.Author)))),
+                                new TH("Information")),
+                            config.KtaneModules.Select(mod =>
+                                new TR { class_ = "mod" }
+                                    .Data("mod", mod.Name)
+                                    .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
+                                    .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetValue(mod).ToString())
+                                    ._(
+                                        selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
+                                        new TD(new A { class_ = "modlink" }._(mod.Icon(config), mod.Name)),
+                                        new TD { class_ = "infos" }._(
+                                            new DIV { class_ = "inf-author" }._(mod.Author),
+                                            new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
+                                            new DIV { class_ = "inf-difficulty" }._(mod.Difficulty.ToReadable()))))),
                         new DIV { class_ = "links" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
                         new DIV { class_ = "credits" }._("Icons by lumbud84 and samfun123."),
                         new DIV { class_ = "extra-links" }._(
@@ -139,7 +168,7 @@ namespace KtaneWeb
                             new UL(
                                 new LI(new A { href = "https://www.dropbox.com/s/paluom4wlogjdl0/ModsOnlyManual_Sorted_A-Z.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual (mods only)")),
                                 new LI(new A { href = "https://www.dropbox.com/s/4bkfwoa4d7p0a7z/ModsOnlyManual_Sorted_A-Z_with_Cheat_Sheets.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual with cheat sheets (mods only)")),
-                                new LI(new A { href = "More/Output%20Log%20Reader.html" }._("samfun123’s output log analyzer")),
+                                new LI(new A { href = "More/Output%20Log%20Reader.html" }._("samfun123’s output log reader")),
                                 new LI(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._("On the Subject of Entering the World of Mods (by Rexkix)"))),
                             new H3("Default file locations"),
                             new DL(

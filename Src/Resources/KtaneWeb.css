@@ -3,6 +3,7 @@ body {
     max-width: 66em;
     margin: 0 auto 10em;
     font-family: 'Special Elite', serif;
+    font-size: 13pt;
 }
 
 #main-content {
@@ -29,13 +30,30 @@ div.filters {
         margin-top: .5em;
     }
 
-div.heading div.selectables {
-    float: right;
+table.header {
     font-size: 10pt;
-    text-align: right;
+    border: none;
 }
 
-    div.heading div.selectables label.selected {
+    table.header th {
+        text-align: left;
+        padding-top: 1.5em;
+    }
+
+    table.header td, table.header th {
+        vertical-align: top;
+        border: none;
+    }
+
+        table.header td.selectables label.selected {
+            font-weight: bold;
+        }
+
+    table.header .filters-1 > div + div {
+        margin-top: 1em;
+    }
+
+    table.header .filter-sub {
         font-weight: bold;
     }
 
@@ -66,7 +84,12 @@ td, th {
         border-right: none;
         padding-right: 0;
         white-space: nowrap;
+        width: 1px;
     }
+
+        td.selectable.last {
+            padding-right: .7em;
+        }
 
         td.selectable + td.selectable {
             border-left: none;
@@ -124,7 +147,7 @@ div.manual-select {
 
 img.mod-icon {
     width: 32px;
-    margin: -.25em .5em -.25em 0;
+    margin: -.15em .5em -.15em 0;
     vertical-align: bottom;
 }
 
@@ -158,3 +181,32 @@ div.error {
     padding: 1em 3em;
     margin: .5em 0;
 }
+
+.modlink {
+    font-size: 15pt;
+}
+
+td.infos {
+    font-size: 11pt;
+}
+
+    td.infos .inf-type {
+        display: inline;
+    }
+
+        td.infos .inf-type::after {
+            content: ' • ';
+        }
+
+    td.infos .inf-difficulty {
+        display: inline;
+        font-weight: bold;
+    }
+
+    td.infos .inf-author {
+        opacity: .5;
+    }
+
+        td.infos .inf-author::before {
+            content: 'by ';
+        }
