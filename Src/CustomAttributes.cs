@@ -2,18 +2,6 @@
 
 namespace KtaneWeb
 {
-    [AttributeUsage(AttributeTargets.Enum, AllowMultiple = false)]
-    internal class KtaneFilterAttribute : Attribute
-    {
-        public string DataAttributeName { get; private set; }
-        public string FilterName { get; private set; }
-        public KtaneFilterAttribute(string domId, string filterName)
-        {
-            DataAttributeName = domId;
-            FilterName = filterName;
-        }
-    }
-
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     internal class KtaneFilterOptionAttribute : Attribute
     {

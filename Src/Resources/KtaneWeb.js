@@ -1,15 +1,24 @@
 ﻿$(function()
 {
-    //var filters = ['regular', 'needy', 'vanilla', 'mods', 'showMissing'];
-    // TODO ‘showMissing’ filter
-
     var filter = {};
-    try { filter = JSON.parse(localStorage.getItem('filters')) || {}; }
+    try { filter = JSON.parse(localStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
     var selectable = localStorage.getItem('selectable') || 'manual';
     if (Ktane.Selectables.indexOf(selectable) === -1)
         selectable = 'manual';
-    var preferredManuals = JSON.parse(localStorage.getItem('preferredManuals') || '{}');
+    var preferredManuals = {};
+    try { preferredManuals = JSON.parse(localStorage.getItem('preferredManuals') || '{}') || {}; }
+    catch (exc) { }
+
+    function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
+    var sorts = {
+        'name': { fnc: function(elem) { return $(elem).data('mod'); }, indicate: function() { $('#sort-ind-name').show().text('sorted by name'); } },
+        'defdiff': { fnc: function(elem) { return Ktane.Filters[2].values.indexOf($(elem).data('defdiff')); }, indicate: function() { $('#sort-ind-difficulty').show().text('sorted by defuser difficulty'); } },
+        'expdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('expdiff')); }, indicate: function() { $('#sort-ind-difficulty').show().text('sorted by expert difficulty'); } }
+    };
+    var sort = localStorage.getItem('sort') || 'name';
+    if (!(sort in sorts))
+        sort = 'name';
 
     function setSelectable(sel)
     {
@@ -23,6 +32,24 @@
         setPreferredManuals();
     }
 
+    function setSort(srt)
+    {
+        sort = srt;
+        localStorage.setItem('sort', srt);
+        var arr = $('tr.mod').toArray();
+        arr.sort(function(a, b)
+        {
+            var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b));
+            return (c === 0) ? compare($(a).data('mod'), $(b).data('mod')) : c;
+        });
+        var table = $('#main-table');
+        for (var i = 0; i < arr.length; i++)
+            table.append(arr[i]);
+
+        $('.sort-ind').hide();
+        sorts[srt].indicate();
+    }
+
     function updateFilter()
     {
         filter.showMissing = $('input#filter-show-missing').prop('checked');
@@ -31,12 +58,26 @@
         for (var i = 0; i < Ktane.Filters.length; i++)
         {
             var none = true;
-            filter[Ktane.Filters[i].id] = {};
-            for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+            if (Ktane.Filters[i].slider)
             {
-                filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked');
-                if (filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]])
-                    none = false;
+                filter[Ktane.Filters[i].id] = {
+                    min: $('div#filter-' + Ktane.Filters[i].id).slider('values', 0),
+                    max: $('div#filter-' + Ktane.Filters[i].id).slider('values', 1)
+                };
+                var x = function(str) { return str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase() }).trim(); };
+                var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
+                $('div#filter-label-' + Ktane.Filters[i].id).text(y(Ktane.Filters[i].values[filter[Ktane.Filters[i].id].min], Ktane.Filters[i].values[filter[Ktane.Filters[i].id].max]));
+                none = false;
+            }
+            else
+            {
+                filter[Ktane.Filters[i].id] = {};
+                for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+                {
+                    filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked');
+                    if (filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]])
+                        none = false;
+                }
             }
             noneSelected[Ktane.Filters[i].id] = none;
         }
@@ -47,7 +88,10 @@
 
             var filteredIn = true;
             for (var i = 0; i < Ktane.Filters.length; i++)
-                filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id] || Ktane.Filters[i].alwaysShow.indexOf(data[Ktane.Filters[i].id]) !== -1);
+                if (Ktane.Filters[i].slider)
+                    filteredIn = filteredIn && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) >= filter[Ktane.Filters[i].id].min && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) <= filter[Ktane.Filters[i].id].max;
+                else
+                    filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id]);
 
             if (filteredIn && (filter.showMissing || selectable === 'manual' || $(e).data(selectable)))
                 $(e).show();
@@ -93,17 +137,36 @@
     {
         if (!(Ktane.Filters[i].id in filter))
             filter[Ktane.Filters[i].id] = {};
-        for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+        if (Ktane.Filters[i].slider)
         {
-            if (!(Ktane.Filters[i].values[j] in filter[Ktane.Filters[i].id]))
-                filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = true;
-            $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
+            if (!('min' in filter[Ktane.Filters[i].id]))
+                filter[Ktane.Filters[i].id].min = 0;
+            if (!('max' in filter[Ktane.Filters[i].id]))
+                filter[Ktane.Filters[i].id].max = Ktane.Filters[i].values.length - 1;
+            var e = $('div#filter-' + Ktane.Filters[i].id);
+            e.slider({
+                range: true,
+                min: 0,
+                max: Ktane.Filters[i].values.length - 1,
+                values: [filter[Ktane.Filters[i].id].min, filter[Ktane.Filters[i].id].max],
+                slide: function(event, ui) { window.setTimeout(updateFilter, 1); }
+            });
+        }
+        else
+        {
+            for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+            {
+                if (!(Ktane.Filters[i].values[j] in filter[Ktane.Filters[i].id]))
+                    filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = true;
+                $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
+            }
         }
     }
 
     // This also calls updateFilter()
     setSelectable(selectable);
     setPreferredManuals();
+    setSort(sort);
 
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); return true; });
     $('input.filter').click(function() { updateFilter(); return true; });
@@ -145,6 +208,9 @@
             $(e).after(lnk);
         }
     });
+
+    $('#sort-by-name').click(function() { setSort('name'); return false; });
+    $('#sort-by-difficulty').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : 'defdiff'); return false; });
 
     $(document).click(function() { $('.disappear').remove(); });
     $(window).resize(function() { resize(); });

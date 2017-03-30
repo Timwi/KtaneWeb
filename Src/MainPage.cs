@@ -87,23 +87,25 @@ namespace KtaneWeb
                 });
 
             var filters = Ut.NewArray(
-                new KtaneFilter(typeof(KtaneModuleType), mod => mod.Type),
-                new KtaneFilter(typeof(KtaneModuleOrigin), mod => mod.Origin),
-                new KtaneFilter(typeof(KtaneModuleDifficulty), mod => mod.Difficulty)
-            );
+                new KtaneFilter("type", "Type", typeof(KtaneModuleType), mod => mod.Type),
+                new KtaneFilter("origin", "Origin", typeof(KtaneModuleOrigin), mod => mod.Origin),
+                new KtaneFilter("defdiff", "Defuser difficulty", typeof(KtaneModuleDifficulty), mod => mod.DefuserDifficulty, slider: true),
+                new KtaneFilter("expdiff", "Expert difficulty", typeof(KtaneModuleDifficulty), mod => mod.ExpertDifficulty, slider: true));
 
             return HttpResponse.Html(new HTML(
                 new HEAD(
                     new TITLE("Repository of Manual Pages"),
-                    new LINK { href = "//fonts.googleapis.com/css?family=Special+Elite", rel = "stylesheet", type = "text/css" },
+                    new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
-                    new SCRIPT { src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" },
+                    new SCRIPT { src = "HTML/js/jquery.3.1.1.min.js" },
+                    new SCRIPT { src = "HTML/js/jquery-ui.1.12.1.min.js" },
+                    new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPTLiteral($@"
                         Ktane = {{
                             Filters: {filters.Select(f => new JsonDict {
                                 { "id", f.DataAttributeName },
-                                { "values", Enum.GetValues(f.EnumType).Cast<Enum>().Select(e => new { Value = e, Attr = e.GetCustomAttribute<KtaneFilterOptionAttribute>() }).Where(inf => inf.Attr != null).Select(inf => inf.Value.ToString()).ToJsonList() },
-                                { "alwaysShow", Enum.GetValues(f.EnumType).Cast<Enum>().Select(e => new { Value = e, Attr = e.GetCustomAttribute<KtaneFilterOptionAttribute>() }).Where(inf => inf.Attr == null).Select(inf => inf.Value.ToString()).ToJsonList() }
+                                { "values", Enum.GetValues(f.EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
+                                { "slider", f.Slider }
                             }).ToJsonList()},
                             Selectables: {selectables.Select(s => s.DataAttributeName).ToJsonList()}
                         }};
@@ -113,36 +115,34 @@ namespace KtaneWeb
                 new BODY(
                     new DIV { id = "main-content" }._(
                         filters
-                            .Select(filter => new { Type = filter.EnumType, Attr = filter.EnumType.GetCustomAttributes<KtaneFilterAttribute>().FirstOrDefault() })
-                            .Where(filter => filter.Attr != null)
-                            .Select(filterInf =>
+                            .Select(filter =>
                                 new DIV { class_ = "filter-section" }._(
-                                    new DIV { class_ = "filter-sub" }._(filterInf.Attr.FilterName, ":"),
-                                    Enum.GetValues(filterInf.Type).Cast<Enum>()
-                                        .Select(val => new { Value = val, Attr = val.GetCustomAttribute<KtaneFilterOptionAttribute>() })
-                                        .Where(fv => fv.Attr != null)
-                                        .Select(fv => new DIV(
-                                            new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-" + fv.Value.ToString() }, " ",
-                                            new LABEL { for_ = "filter-" + fv.Value.ToString(), accesskey = fv.Attr.Accel.ToString().ToLowerInvariant() }._(fv.Attr.ReadableName.Accel(fv.Attr.Accel))))))
+                                    new H4(filter.ReadableName, ":"),
+                                    filter.Slider
+                                        ? (object) new[] { new DIV { id = "filter-" + filter.DataAttributeName, class_ = "slider" }, new DIV { id = "filter-label-" + filter.DataAttributeName, class_ = "slider-label" } }
+                                        : filter.Options.Select(opt => new DIV(
+                                                new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-" + opt.Name }, " ",
+                                                new LABEL { for_ = "filter-" + opt.Name, accesskey = opt.Accel.ToString().ToLowerInvariant() }._(opt.ReadableName.Accel(opt.Accel.Value))))))
                             .ToArray()
                             .Apply(filterUis =>
                                 new TABLE { class_ = "header" }._(
-                                    new TR(new TD { rowspan = 2 }._(new IMG { class_ = "logo", src = config.LogoUrl }), new TH { class_ = "links-head" }._("Make links go to:"), new TH { colspan = 2, class_ = "filters-head" }._("Filters:")),
                                     new TR(
+                                        new TD(new IMG { class_ = "logo", src = config.LogoUrl }),
                                         new TD { class_ = "selectables" }._(
+                                            new H4("Make links go to:"),
                                             selectables.Select(sel => new DIV(
                                                 new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName), " ",
                                                 new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                             new DIV(
                                                 new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-show-missing" }, " ",
                                                 new LABEL { for_ = "filter-show-missing", accesskey = "s" }._("Show missing".Accel('S')))),
-                                        new TD { class_ = "filters-1" }._(new DIV(filterUis[0]), new DIV(filterUis[1])),
-                                        new TD { class_ = "filters-2" }._(filterUis[2])))),
-                        new TABLE { class_ = "main-table" }._(
+                                        new TD { class_ = "filters" }._(filterUis[0], filterUis[1]),
+                                        new TD { class_ = "filters" }._(filterUis[2], filterUis[3])))),
+                        new TABLE { id = "main-table" }._(
                             new TR(
                                 new TH { colspan = selectables.Length }._("Links"),
-                                new TH("Name"),
-                                new TH("Information")),
+                                new TH(new A { href = "#", class_ = "sort", id = "sort-by-name" }._("Name"), new SPAN { id = "sort-ind-name", class_ = "sort-ind" }),
+                                new TH(new A { href = "#", class_ = "sort", id = "sort-by-difficulty" }._("Information"), new SPAN { id = "sort-ind-difficulty", class_ = "sort-ind" })),
                             config.KtaneModules.Select(mod =>
                                 new TR { class_ = "mod" }
                                     .Data("mod", mod.Name)
@@ -154,7 +154,9 @@ namespace KtaneWeb
                                         new TD { class_ = "infos" }._(
                                             new DIV { class_ = "inf-author" }._(mod.Author),
                                             new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
-                                            new DIV { class_ = "inf-difficulty" }._(mod.Difficulty.ToReadable()))))),
+                                            mod.DefuserDifficulty == mod.ExpertDifficulty
+                                                ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()))
+                                                : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.ToReadable()), " (e)"))))),
                         new DIV { class_ = "links" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
                         new DIV { class_ = "credits" }._("Icons by lumbud84 and samfun123."),
                         new DIV { class_ = "extra-links" }._(
@@ -166,10 +168,8 @@ namespace KtaneWeb
                                 new TR(new TD("Alt+Click or Ctrl+Shift+Click"), new TD("Command+Shift+Click"), new TD("Highlight a table cell or highlight an item in a list"))),
                             new H3("Additional resources"),
                             new UL(
-                                new LI(new A { href = "https://www.dropbox.com/s/paluom4wlogjdl0/ModsOnlyManual_Sorted_A-Z.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual (mods only)")),
-                                new LI(new A { href = "https://www.dropbox.com/s/4bkfwoa4d7p0a7z/ModsOnlyManual_Sorted_A-Z_with_Cheat_Sheets.pdf?dl=0" }._("Rexkix’s Sorted A–Z manual with cheat sheets (mods only)")),
-                                new LI(new A { href = "More/Output%20Log%20Reader.html" }._("samfun123’s output log reader")),
-                                new LI(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._("On the Subject of Entering the World of Mods (by Rexkix)"))),
+                                new LI(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._("On the Subject of Entering the World of Mods (by Rexkix)")),
+                                new LI(new A { href = "More/Output%20Log%20Reader.html" }._("samfun123’s output log reader"))),
                             new H3("Default file locations"),
                             new DL(
                                 new DT("Output log (Windows, Steam):"), new DD(new CODE(@"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt")),
