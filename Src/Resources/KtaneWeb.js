@@ -58,26 +58,32 @@
         for (var i = 0; i < Ktane.Filters.length; i++)
         {
             var none = true;
-            if (Ktane.Filters[i].slider)
+            switch (Ktane.Filters[i].type)
             {
-                filter[Ktane.Filters[i].id] = {
-                    min: $('div#filter-' + Ktane.Filters[i].id).slider('values', 0),
-                    max: $('div#filter-' + Ktane.Filters[i].id).slider('values', 1)
-                };
-                var x = function(str) { return str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase() }).trim(); };
-                var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
-                $('div#filter-label-' + Ktane.Filters[i].id).text(y(Ktane.Filters[i].values[filter[Ktane.Filters[i].id].min], Ktane.Filters[i].values[filter[Ktane.Filters[i].id].max]));
-                none = false;
-            }
-            else
-            {
-                filter[Ktane.Filters[i].id] = {};
-                for (var j = 0; j < Ktane.Filters[i].values.length; j++)
-                {
-                    filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked');
-                    if (filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]])
-                        none = false;
-                }
+                case "slider":
+                    filter[Ktane.Filters[i].id] = {
+                        min: $('div#filter-' + Ktane.Filters[i].id).slider('values', 0),
+                        max: $('div#filter-' + Ktane.Filters[i].id).slider('values', 1)
+                    };
+                    var x = function(str) { return str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase() }).trim(); };
+                    var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
+                    $('div#filter-label-' + Ktane.Filters[i].id).text(y(Ktane.Filters[i].values[filter[Ktane.Filters[i].id].min], Ktane.Filters[i].values[filter[Ktane.Filters[i].id].max]));
+                    none = false;
+                    break;
+
+                case "checkboxes":
+                    filter[Ktane.Filters[i].id] = {};
+                    for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+                    {
+                        filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked');
+                        if (filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]])
+                            none = false;
+                    }
+                    break;
+
+                case "boolean":
+                    filter[Ktane.Filters[i].id] = $('input#filter-' + Ktane.Filters[i].id).prop('checked');
+                    break;
             }
             noneSelected[Ktane.Filters[i].id] = none;
         }
@@ -88,11 +94,20 @@
 
             var filteredIn = true;
             for (var i = 0; i < Ktane.Filters.length; i++)
-                if (Ktane.Filters[i].slider)
-                    filteredIn = filteredIn && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) >= filter[Ktane.Filters[i].id].min && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) <= filter[Ktane.Filters[i].id].max;
-                else
-                    filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id]);
-
+            {
+                switch (Ktane.Filters[i].type)
+                {
+                    case "slider":
+                        filteredIn = filteredIn && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) >= filter[Ktane.Filters[i].id].min && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) <= filter[Ktane.Filters[i].id].max;
+                        break;
+                    case "checkboxes":
+                        filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id]);
+                        break;
+                    case "boolean":
+                        filteredIn = filteredIn && (!filter[Ktane.Filters[i].id] || data[Ktane.Filters[i].id] === 'True');
+                        break;
+                }
+            }
             if (filteredIn && (filter.showMissing || selectable === 'manual' || $(e).data(selectable)))
                 $(e).show();
             else
@@ -133,33 +148,47 @@
         }
     }
 
+    // Set filters from saved settings
     for (var i = 0; i < Ktane.Filters.length; i++)
     {
-        if (!(Ktane.Filters[i].id in filter))
-            filter[Ktane.Filters[i].id] = {};
-        if (Ktane.Filters[i].slider)
+        switch (Ktane.Filters[i].type)
         {
-            if (!('min' in filter[Ktane.Filters[i].id]))
-                filter[Ktane.Filters[i].id].min = 0;
-            if (!('max' in filter[Ktane.Filters[i].id]))
-                filter[Ktane.Filters[i].id].max = Ktane.Filters[i].values.length - 1;
-            var e = $('div#filter-' + Ktane.Filters[i].id);
-            e.slider({
-                range: true,
-                min: 0,
-                max: Ktane.Filters[i].values.length - 1,
-                values: [filter[Ktane.Filters[i].id].min, filter[Ktane.Filters[i].id].max],
-                slide: function(event, ui) { window.setTimeout(updateFilter, 1); }
-            });
-        }
-        else
-        {
-            for (var j = 0; j < Ktane.Filters[i].values.length; j++)
-            {
-                if (!(Ktane.Filters[i].values[j] in filter[Ktane.Filters[i].id]))
-                    filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = true;
-                $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
-            }
+            case "slider":
+                if (!(Ktane.Filters[i].id in filter))
+                    filter[Ktane.Filters[i].id] = {};
+
+                if (!('min' in filter[Ktane.Filters[i].id]))
+                    filter[Ktane.Filters[i].id].min = 0;
+                if (!('max' in filter[Ktane.Filters[i].id]))
+                    filter[Ktane.Filters[i].id].max = Ktane.Filters[i].values.length - 1;
+                var e = $('div#filter-' + Ktane.Filters[i].id);
+                e.slider({
+                    range: true,
+                    min: 0,
+                    max: Ktane.Filters[i].values.length - 1,
+                    values: [filter[Ktane.Filters[i].id].min, filter[Ktane.Filters[i].id].max],
+                    slide: function(event, ui) { window.setTimeout(updateFilter, 1); }
+                });
+                break;
+
+            case "checkboxes":
+                if (!(Ktane.Filters[i].id in filter))
+                    filter[Ktane.Filters[i].id] = {};
+
+                for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+                {
+                    if (!(Ktane.Filters[i].values[j] in filter[Ktane.Filters[i].id]))
+                        filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = true;
+                    $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
+                }
+                break;
+
+            case "boolean":
+                if (!(Ktane.Filters[i].id in filter))
+                    filter[Ktane.Filters[i].id] = false;
+
+                $('input#filter-' + Ktane.Filters[i].id).prop('checked', filter[Ktane.Filters[i].id]);
+                break;
         }
     }
 

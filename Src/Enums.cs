@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace KtaneWeb
+﻿namespace KtaneWeb
 {
     public enum KtaneModuleType
     {

@@ -170,6 +170,16 @@ td.infos {
             content: 'by ';
         }
 
+tr.mod[data-twitchplays='True'] td.infos .inf-type {
+    padding-right: 10px;
+    background: url(../HTML/img/twitch.svg) right center no-repeat;
+    background-size: 10px 10px;
+}
+
+    tr.mod[data-twitchplays='True'] td.infos .inf-type::after {
+        content: ' • ';
+    }
+
 .slider {
     margin-top: .5em;
 }

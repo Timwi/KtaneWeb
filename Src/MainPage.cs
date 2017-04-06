@@ -29,7 +29,7 @@ namespace KtaneWeb
             // M    Manual
             // N    Needy
             // O    Mods
-            // P
+            // P    Twitch Plays support
             // Q
             // R    Regular
             // S    Show missing
@@ -87,10 +87,11 @@ namespace KtaneWeb
                 });
 
             var filters = Ut.NewArray(
-                new KtaneFilter("type", "Type", typeof(KtaneModuleType), mod => mod.Type),
-                new KtaneFilter("origin", "Origin", typeof(KtaneModuleOrigin), mod => mod.Origin),
-                new KtaneFilter("defdiff", "Defuser difficulty", typeof(KtaneModuleDifficulty), mod => mod.DefuserDifficulty, slider: true),
-                new KtaneFilter("expdiff", "Expert difficulty", typeof(KtaneModuleDifficulty), mod => mod.ExpertDifficulty, slider: true));
+                KtaneFilterOptionsCheckboxes.Create("type", "Type", mod => mod.Type),
+                KtaneFilterOptionsCheckboxes.Create("origin", "Origin", mod => mod.Origin),
+                KtaneFilterOptionsSlider.Create("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
+                KtaneFilterOptionsSlider.Create("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty),
+                KtaneFilterBoolean.Create("twitchplays", "Twitch Plays support", mod => mod.HasTwitchPlaysSupport, 'P'));
 
             return HttpResponse.Html(new HTML(
                 new HEAD(
@@ -102,11 +103,7 @@ namespace KtaneWeb
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPTLiteral($@"
                         Ktane = {{
-                            Filters: {filters.Select(f => new JsonDict {
-                                { "id", f.DataAttributeName },
-                                { "values", Enum.GetValues(f.EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
-                                { "slider", f.Slider }
-                            }).ToJsonList()},
+                            Filters: {filters.Select(f => f.ToJson()).ToJsonList()},
                             Selectables: {selectables.Select(s => s.DataAttributeName).ToJsonList()}
                         }};
                     "),
@@ -115,14 +112,7 @@ namespace KtaneWeb
                 new BODY(
                     new DIV { id = "main-content" }._(
                         filters
-                            .Select(filter =>
-                                new DIV { class_ = "filter-section" }._(
-                                    new H4(filter.ReadableName, ":"),
-                                    filter.Slider
-                                        ? (object) new[] { new DIV { id = "filter-" + filter.DataAttributeName, class_ = "slider" }, new DIV { id = "filter-label-" + filter.DataAttributeName, class_ = "slider-label" } }
-                                        : filter.Options.Select(opt => new DIV(
-                                                new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-" + opt.Name }, " ",
-                                                new LABEL { for_ = "filter-" + opt.Name, accesskey = opt.Accel.ToString().ToLowerInvariant() }._(opt.ReadableName.Accel(opt.Accel.Value))))))
+                            .Select(filter => new DIV { class_ = "filter-section" }._(filter.ToHtml()))
                             .ToArray()
                             .Apply(filterUis =>
                                 new TABLE { class_ = "header" }._(
@@ -137,7 +127,7 @@ namespace KtaneWeb
                                                 new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-show-missing" }, " ",
                                                 new LABEL { for_ = "filter-show-missing", accesskey = "s" }._("Show missing".Accel('S')))),
                                         new TD { class_ = "filters" }._(filterUis[0], filterUis[1]),
-                                        new TD { class_ = "filters" }._(filterUis[2], filterUis[3])))),
+                                        new TD { class_ = "filters" }._(filterUis[2], filterUis[3], filterUis[4])))),
                         new TABLE { id = "main-table" }._(
                             new TR(
                                 new TH { colspan = selectables.Length }._("Links"),
@@ -147,7 +137,7 @@ namespace KtaneWeb
                                 new TR { class_ = "mod" }
                                     .Data("mod", mod.Name)
                                     .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
-                                    .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetValue(mod).ToString())
+                                    .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                     ._(
                                         selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
                                         new TD(new A { class_ = "modlink" }._(mod.Icon(config), mod.Name)),
