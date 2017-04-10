@@ -136,6 +136,7 @@ namespace KtaneWeb
                             config.KtaneModules.Select(mod =>
                                 new TR { class_ = "mod" }
                                     .Data("mod", mod.Name)
+                                    .Data("sortkey", mod.SortKey)
                                     .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
                                     .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                     ._(

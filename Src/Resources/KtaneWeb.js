@@ -12,7 +12,7 @@
 
     function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var sorts = {
-        'name': { fnc: function(elem) { return $(elem).data('mod'); }, indicate: function() { $('#sort-ind-name').show().text('sorted by name'); } },
+        'name': { fnc: function(elem) { return $(elem).data('sortkey'); }, indicate: function() { $('#sort-ind-name').show().text('sorted by name'); } },
         'defdiff': { fnc: function(elem) { return Ktane.Filters[2].values.indexOf($(elem).data('defdiff')); }, indicate: function() { $('#sort-ind-difficulty').show().text('sorted by defuser difficulty'); } },
         'expdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('expdiff')); }, indicate: function() { $('#sort-ind-difficulty').show().text('sorted by expert difficulty'); } }
     };
