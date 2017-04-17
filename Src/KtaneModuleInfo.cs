@@ -7,7 +7,7 @@ namespace KtaneWeb
 {
 #pragma warning disable 0649 // Field is never assigned to, and will always have its default value
 
-    sealed class KtaneModuleInfo
+    sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>
     {
         public string Name;
         public string SortKey;
@@ -21,14 +21,27 @@ namespace KtaneWeb
         public string TutorialVideoUrl;
         public bool HasTwitchPlaysSupport;
 
-        public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
+        public object Icon(KtaneWebConfigEntry config) => Path.Combine(config.ModIconDir, Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });
 
-        internal void SetDifficulty(KtaneModuleDifficulty exp, KtaneModuleDifficulty def)
+        public bool Equals(KtaneModuleInfo other)
         {
-            ExpertDifficulty = exp;
-            DefuserDifficulty = def;
+            return other != null &&
+                other.Name == Name &&
+                other.SortKey == SortKey &&
+                other.SteamID == SteamID &&
+                other.Type == Type &&
+                other.Origin == Origin &&
+                other.DefuserDifficulty == DefuserDifficulty &&
+                other.ExpertDifficulty == ExpertDifficulty &&
+                other.Author == Author &&
+                other.SourceUrl == SourceUrl &&
+                other.TutorialVideoUrl == TutorialVideoUrl &&
+                other.HasTwitchPlaysSupport == HasTwitchPlaysSupport;
         }
+
+        public override int GetHashCode() => Ut.ArrayHash(HasTwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl);
+        public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
     }
 
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value

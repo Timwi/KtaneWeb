@@ -44,9 +44,11 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
+    <Compile Include="HistoryEntry.cs" />
     <Compile Include="KtaneModuleInfo.cs" />
     <Compile Include="KtanePropellerModule.cs" />
     <Compile Include="KtaneSettings.cs" />
+    <Compile Include="KtaneWebConfigEntry.cs" />
     <Compile Include="KtaneWebConfig.cs" />
     <Compile Include="JsonPage.cs" />
     <Compile Include="MainPage.cs" />
@@ -62,6 +64,10 @@
     <Compile Include="KtaneWebSession.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Generex\Src\Generex.csproj">
+      <Project>{ad37f193-49a3-4a3d-8bf1-122d5457c7a6}</Project>
+      <Name>Generex</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Propeller\API\PropellerApi.csproj">
       <Project>{5770ee79-8340-41fb-9b8e-eb4a3c487ff1}</Project>
       <Name>PropellerApi</Name>

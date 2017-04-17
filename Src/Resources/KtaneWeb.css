@@ -216,3 +216,43 @@ table.header {
     .sort-ind::before {
         content: '   • ';
     }
+
+pre.diff {
+    border: 1px solid #ccc;
+    background: #eee;
+    padding: 1em 2em;
+}
+
+    pre.diff span.ins {
+        background: #8f8;
+        font-weight: bold;
+        padding: 0 .3em;
+        margin: 0 .1em;
+    }
+
+    pre.diff span.del {
+        background: #f88;
+        text-decoration: line-through;
+        padding: 0 .3em;
+        margin: 0 .1em;
+    }
+
+    pre.diff span.sep {
+        background: #ccf;
+        font-weight: bold;
+        padding: 0 .5em;
+        display: block;
+    }
+
+        pre.diff span.sep::after {
+            content: '...';
+        }
+
+.json-history td.commands, .json-history td.time {
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.json-history td.changes .module {
+    white-space: nowrap;
+}

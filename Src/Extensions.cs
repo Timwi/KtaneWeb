@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using RT.TagSoup;
+using RT.Util;
 using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb

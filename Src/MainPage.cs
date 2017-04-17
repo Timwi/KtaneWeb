@@ -11,7 +11,7 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private HttpResponse mainPage(HttpRequest req, KtaneWebConfig config)
+        private HttpResponse mainPage(HttpRequest req, KtaneWebConfigEntry config)
         {
             // Access keys:
             // A

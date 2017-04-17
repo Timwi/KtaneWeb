@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using RT.PropellerApi;
 using RT.Servers;
 using RT.Util;
@@ -11,31 +12,43 @@ namespace KtaneWeb
     {
         public override string Name => "Keep Talking and Nobody Explodes — Mods and Modules";
 
+        private KtaneWebConfig _config;
+
         public override HttpResponse Handle(HttpRequest request)
         {
-            var config = ClassifyJson.DeserializeFile<KtaneWebConfig>(Settings.ConfigFile);
-            var auth = config.UsersFile?.Apply(file => new FileAuthenticator(file, _ => request.Url.WithPath("").ToHref(), "KTANE Web"));
+            var auth = _config.UsersFile?.Apply(file => new FileAuthenticator(file, _ => request.Url.WithPath("").ToHref(), "KTANE Web"));
 
-            return Session.EnableManual<KtaneWebSession>(request, session =>
+            return new KtaneWebSession(_config).EnableAutomatic(request, session =>
             {
                 var resolver = new UrlResolver(
 #if DEBUG
-                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(config.JavaScriptFile, "text/javascript; charset=utf-8")),
-                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(config.CssFile, "text/css; charset=utf-8")),
+                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(_config.Current.JavaScriptFile, "text/javascript; charset=utf-8")),
+                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(_config.Current.CssFile, "text/css; charset=utf-8")),
 #else
                     new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.JavaScript(Resources.Js)),
                     new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.Css(Resources.Css)),
 #endif
 
-                    new UrlMapping(path: "/", specificPath: true, handler: req => mainPage(req, config)),
-                    new UrlMapping(path: "/json", handler: req => jsonPage(req, config)),
+                    new UrlMapping(path: "/", specificPath: true, handler: req => mainPage(req, _config.Current)),
+                    new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
 
                     // Default fallback: file system handler
-                    new UrlMapping(req => new FileSystemHandler(config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
+                    new UrlMapping(req => new FileSystemHandler(_config.Current.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
                 );
 
                 if (auth != null)
-                    resolver.Add(new UrlMapping(path: "/auth", handler: req => auth.Handle(req, session.Username, user => { session.Username = user; })));
+                    resolver.Add(new UrlMapping(path: "/auth", handler: req => auth.Handle(req, session.Username, user =>
+                    {
+                        session.Username = user;
+                        lock (_config)
+                        {
+                            if (user == null)
+                                _config.Sessions.Remove(session.SessionID);
+                            else
+                                _config.Sessions[session.SessionID] = user;
+                            saveConfig();
+                        }
+                    })));
 
                 return resolver.Handle(request);
             });
@@ -44,11 +57,25 @@ namespace KtaneWeb
         public override void Init(LoggerBase log)
         {
             var original = File.ReadAllText(Settings.ConfigFile);
-            var config = ClassifyJson.Deserialize<KtaneWebConfig>(JsonValue.Parse(original));
-            var rewrite = ClassifyJson.Serialize(config).ToStringIndented();
+            _config = ClassifyJson.Deserialize<KtaneWebConfig>(JsonValue.Parse(original));
+            var rewrite = serializeConfig();
             if (rewrite != original)
                 File.WriteAllText(Settings.ConfigFile, rewrite);
             base.Init(log);
+        }
+
+        private void saveConfig()
+        {
+            lock (_config)
+                File.WriteAllText(Settings.ConfigFile, serializeConfig());
+        }
+
+        private string serializeConfig()
+        {
+            return ClassifyJson.Serialize(_config, new ClassifyOptions
+            {
+                SerializationEqualityComparer = new CustomEqualityComparer<object>((a, b) => a is string || a is ValueType ? false : a.Equals(b))
+            }).ToStringIndented();
         }
     }
 }
