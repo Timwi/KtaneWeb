@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using RT.PropellerApi;
 using RT.Servers;
 using RT.Util;
@@ -70,12 +71,21 @@ namespace KtaneWeb
                 File.WriteAllText(Settings.ConfigFile, serializeConfig());
         }
 
+        private static bool customComparison(object a, object b)
+        {
+            if (a is string || a is ValueType)
+                return false;
+
+            Array aa = a as Array, bb = b as Array;
+            if (aa != null && bb != null)
+                return aa.Length == bb.Length && Enumerable.Range(0, aa.Length).All(i => Equals(aa.GetValue(i), bb.GetValue(i)));
+
+            return Equals(a, b);
+        }
+
         private string serializeConfig()
         {
-            return ClassifyJson.Serialize(_config, new ClassifyOptions
-            {
-                SerializationEqualityComparer = new CustomEqualityComparer<object>((a, b) => a is string || a is ValueType ? false : a.Equals(b))
-            }).ToStringIndented();
+            return ClassifyJson.Serialize(_config, new ClassifyOptions { SerializationEqualityComparer = new CustomEqualityComparer<object>(customComparison) }).ToStringIndented();
         }
     }
 }
