@@ -57,7 +57,7 @@ namespace KtaneWeb
                 },
                 new Selectable
                 {
-                    HumanReadable = "Steam Workshop Item",
+                    HumanReadable = "Steam Workshop",
                     Accel = 'W',
                     Icon = mod => new IMG { class_ = "icon", title = "Steam Workshop Item", alt = "Steam Workshop Item", src = config.SteamIconUrl },
                     DataAttributeName = "steam",
@@ -108,7 +108,7 @@ namespace KtaneWeb
                         }};
                     "),
                     new SCRIPT { src = req.Url.WithParent("js").ToHref() },
-                    new META { name = "viewport", content = "width=device-width" }),
+                    new META { name = "viewport", content = "width=device-width; initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
                         filters
@@ -127,9 +127,10 @@ namespace KtaneWeb
                                                 new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-show-missing" }, " ",
                                                 new LABEL { for_ = "filter-show-missing", accesskey = "s" }._("Show missing".Accel('S')))),
                                         new TD { class_ = "filters" }._(filterUis[0], filterUis[1]),
-                                        new TD { class_ = "filters" }._(filterUis[2], filterUis[3], filterUis[4])))),
+                                        new TD { class_ = "filters" }._(filterUis[2], filterUis[3], filterUis[4]),
+                                        new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt", id = "page-opt" })))),
                         new TABLE { id = "main-table" }._(
-                            new TR(
+                            new TR { class_ = "header-row" }._(
                                 new TH { colspan = selectables.Length }._("Links"),
                                 new TH(new A { href = "#", class_ = "sort", id = "sort-by-name" }._("Name"), new SPAN { id = "sort-ind-name", class_ = "sort-ind" }),
                                 new TH(new A { href = "#", class_ = "sort", id = "sort-by-difficulty" }._("Information"), new SPAN { id = "sort-ind-difficulty", class_ = "sort-ind" })),
@@ -141,13 +142,14 @@ namespace KtaneWeb
                                     .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                     ._(
                                         selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
-                                        new TD(new A { class_ = "modlink" }._(mod.Icon(config), mod.Name)),
+                                        new TD(new A { class_ = "modlink" }._(mod.Icon(config), new SPAN { class_ = "mod-name" }._(mod.Name))),
                                         new TD { class_ = "infos" }._(
                                             new DIV { class_ = "inf-author" }._(mod.Author),
                                             new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
                                             mod.DefuserDifficulty == mod.ExpertDifficulty
                                                 ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()))
-                                                : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.ToReadable()), " (e)"))))),
+                                                : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.ToReadable()), " (e)")),
+                                        new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" })))),
                         new DIV { class_ = "links" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
                         new DIV { class_ = "credits" }._("Icons by lumbud84 and samfun123."),
                         new DIV { class_ = "extra-links" }._(
