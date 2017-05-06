@@ -4,7 +4,7 @@
     {
         [KtaneFilterOption("Regular", 'R')]
         Regular,
-        [KtaneFilterOption("Needy", 'N')]
+        [KtaneFilterOption("Needy", 'y')]
         Needy
     }
 

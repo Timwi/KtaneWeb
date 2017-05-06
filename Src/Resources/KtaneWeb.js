@@ -12,9 +12,9 @@
 
     function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var sorts = {
-        'name': { fnc: function(elem) { return $(elem).data('sortkey'); }, indicate: function() { $('#sort-ind-name').show().text('sorted by name'); } },
-        'defdiff': { fnc: function(elem) { return Ktane.Filters[2].values.indexOf($(elem).data('defdiff')); }, indicate: function() { $('#sort-ind-difficulty').show().text('sorted by defuser difficulty'); } },
-        'expdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('expdiff')); }, indicate: function() { $('#sort-ind-difficulty').show().text('sorted by expert difficulty'); } }
+        'name': { fnc: function(elem) { return $(elem).data('sortkey'); }, bodyCss: 'sort-name', radioButton: '#sort-name' },
+        'defdiff': { fnc: function(elem) { return Ktane.Filters[2].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
+        'expdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
     };
     var sort = localStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
@@ -46,13 +46,13 @@
         for (var i = 0; i < arr.length; i++)
             table.append(arr[i]);
 
-        $('.sort-ind').hide();
-        sorts[srt].indicate();
+        $(document.body).removeClass('sort-name sort-defdiff sort-expdiff').addClass(sorts[srt].bodyCss);
+        $(sorts[srt].radioButton).prop('checked', true);
     }
 
     function updateFilter()
     {
-        filter.showMissing = $('input#filter-show-missing').prop('checked');
+        filter.includeMissing = $('input#filter-include-missing').prop('checked');
 
         var noneSelected = {};
         for (var i = 0; i < Ktane.Filters.length; i++)
@@ -108,7 +108,7 @@
                         break;
                 }
             }
-            if (filteredIn && (filter.showMissing || selectable === 'manual' || $(e).data(selectable)))
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || $(e).data(selectable)))
                 $(e).show();
             else
                 $(e).hide();
@@ -134,18 +134,6 @@
             $(e).find('img.manual-icon').attr('src', manual.icon);
         });
         localStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
-    }
-
-    function resize()
-    {
-        if ($(document).width() <= 1024)
-        {
-            // condensed layout, designed for mobile
-        }
-        else
-        {
-            // full layout, designed for desktop
-        }
     }
 
     // Set filters from saved settings
@@ -197,29 +185,62 @@
     setPreferredManuals();
     setSort(sort);
 
-    $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); return true; });
-    $('input.filter').click(function() { updateFilter(); return true; });
-
-    // Deal with the manuals
-    $('a.manual').each(function(_, e)
+    var preventDisappear = 0;
+    function disappear()
     {
-        var data = $(e).parents('tr').data();
+        if (preventDisappear === 0)
+        {
+            $('.disappear.stay').hide();
+            $('.disappear:not(.stay)').remove();
+
+            if ($('table.header td.move-mobile').length === 0)
+                $('table.header td.logo').after($('td.move-mobile'));
+        }
+        else
+            preventDisappear--;
+    }
+    $(document).click(disappear);
+
+    $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
+    $('input.filter').click(function() { updateFilter(); });
+
+    // UI for selecting manuals/cheat sheets (both mobile and non)
+    $('tr.mod').each(function(_, e)
+    {
+        var data = $(e).data();
         var mod = data.mod;
         var sheets = data.manual;
-        if (sheets.length > 1)
+
+        function makeClickHander(lnk, isMobileOpt)
         {
-            var lnk = $('<a>').attr('href', '#').addClass('manual-selector').text('▼').click(function()
+            return function()
             {
-                $('.disappear').remove();
-                var pos = $(lnk).position();
-                var menu = $('<menu>');
-                var menuDiv = $('<div>').addClass('manual-select disappear').css({ left: pos.left, top: pos.top + $(lnk).height() }).append('<p>Select your preferred manual for this module.</p>').append(menu);
+                disappear();
+                var menuDiv = $('<div>').addClass('popup disappear');
+                menuDiv.click(function() { return false; });
+                if (isMobileOpt)
+                {
+                    menuDiv.append($('<div class="close">').click(disappear));
+                    var iconsDiv = $('<div>').addClass('icons');
+                    $(e).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
+                    {
+                        var iconDiv = $("<div class='icon'><a><img class='icon' /><span></span></a></div>");
+                        iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
+                        iconDiv.find('img').attr('src', $(ic).attr('src'));
+                        iconDiv.find('span').text($(ic).attr('title'));
+                        iconsDiv.append(iconDiv);
+                    });
+                    menuDiv.append(iconsDiv);
+                }
+                menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
+                var menu = $('<menu>').addClass('manual-select');
                 for (var i = 0; i < sheets.length; i++)
                 {
                     var li = $('<li>').text(sheets[i].name);
                     if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
                         li.addClass('checked');
-                    li.click(function(sh)
+                    var ahref = $('<a>').attr('href', '#').append(li);
+                    ahref.click(function(sh)
                     {
                         return function()
                         {
@@ -229,20 +250,60 @@
                             return false;
                         };
                     }(sheets[i].name));
-                    menu.append(li);
+                    menu.append(ahref);
                 }
-                $(e).after(menuDiv);
+                menuDiv.append(menu);
+                $(document.body).append(menuDiv);
+                if (!isMobileOpt)
+                {
+                    var pos = $(lnk).offset();
+                    menuDiv.css({ left: pos.left, top: pos.top + $(lnk).height() });
+                }
                 return false;
-            });
-            $(e).after(lnk);
+            };
         }
+
+        if (sheets.length > 1)
+        {
+            var lnk1 = $('<a>').attr('href', '#').addClass('manual-selector').text('▼');
+            $(e).find('a.manual').after(lnk1.click(makeClickHander(lnk1, false)));
+        }
+
+        var lnk2 = $(e).find('a.mobile-opt');
+        lnk2.click(makeClickHander(lnk2, true));
     });
 
+    // Page options pop-up (mobile only)
+    $('#page-opt').click(function()
+    {
+        var table = $('<table>').addClass('page-opt').appendTo('#more > div.mobile-opts');
+        $('td.move-mobile').each(function(_, e) { table.append($('<tr>').append(e)); });
+        $('#more').css({ left: '', top: '' }).show();
+        return false;
+    });
+
+    $('#more-link').click(function()
+    {
+        if (!$('#more').is(':visible'))
+        {
+            $('#more').show();
+            var pos = $('#more-tab').position();
+            $('#more').css({ left: pos.left + $('#more-tab').outerWidth() - $('#more').outerWidth(), top: pos.top + $('#more-tab').outerHeight() });
+        }
+        else
+            disappear();
+        return false;
+    });
+    $('#more>.close').click(disappear);
+
+    // Links in the table headers (not visible on mobile UI)
     $('#sort-by-name').click(function() { setSort('name'); return false; });
-    $('#sort-by-difficulty').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : 'defdiff'); return false; });
+    $('#sort-by-difficulty').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : sort === 'expdiff' ? 'name' : 'defdiff'); return false; });
 
-    $(document).click(function() { $('.disappear').remove(); });
-    $(window).resize(function() { resize(); });
+    // Radio buttons (visible only on mobile UI)
+    $('#sort-name').click(function() { setSort('name'); return true; });
+    $('#sort-defuser-difficulty').click(function() { setSort('defdiff'); return true; });
+    $('#sort-expert-difficulty').click(function() { setSort('expdiff'); return true; });
 
+    $('label,#more').click(function() { preventDisappear++; });
 });
-

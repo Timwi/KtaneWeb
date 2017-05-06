@@ -20,11 +20,6 @@ namespace KtaneWeb
         public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
         public string ModIconDir = "Icons";
 
-        public string LogoUrl;
-        public string SteamIconUrl;
-        public string UnityIconUrl;
-        public string TutorialVideoIconUrl;
-
         public string JavaScriptFile;
         public string CssFile;
 
@@ -64,10 +59,6 @@ namespace KtaneWeb
                 other.OriginalDocumentIcons.SequenceEqual(OriginalDocumentIcons) &&
                 other.ExtraDocumentIcons.SequenceEqual(ExtraDocumentIcons) &&
                 other.ModIconDir == ModIconDir &&
-                other.LogoUrl == LogoUrl &&
-                other.SteamIconUrl == SteamIconUrl &&
-                other.UnityIconUrl == UnityIconUrl &&
-                other.TutorialVideoIconUrl == TutorialVideoIconUrl &&
                 other.JavaScriptFile == JavaScriptFile &&
                 other.CssFile == CssFile &&
                 other.KtaneModules.SequenceEqual(KtaneModules) &&
@@ -75,7 +66,7 @@ namespace KtaneWeb
         }
 
         public override int GetHashCode() => Ut.ArrayHash(BaseDir, Ut.ArrayHash(DocumentDirs), Ut.ArrayHash(OriginalDocumentIcons), Ut.ArrayHash(ExtraDocumentIcons),
-            ModIconDir, LogoUrl, SteamIconUrl, UnityIconUrl, TutorialVideoIconUrl, JavaScriptFile, CssFile, Ut.ArrayHash(KtaneModules), Ut.ArrayHash(AllowedEditors));
+            ModIconDir, JavaScriptFile, CssFile, Ut.ArrayHash(KtaneModules), Ut.ArrayHash(AllowedEditors));
         public override bool Equals(object obj) => Equals(obj as KtaneWebConfigEntry);
     }
 }
