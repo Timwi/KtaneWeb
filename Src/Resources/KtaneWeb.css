@@ -655,9 +655,13 @@ pre.diff {
         display: none;
     }
 
-    #more > div.mobile-opts {
-        display: block;
+    #more {
+        width: auto;
     }
+
+        #more > div.mobile-opts {
+            display: block;
+        }
 
     div.popup {
         padding: 1.5em .5em;
