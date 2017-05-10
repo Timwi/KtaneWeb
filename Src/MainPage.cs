@@ -167,7 +167,7 @@ namespace KtaneWeb
                                 new DIV { class_ = "close" },
                                 new DIV { class_ = "icons" }._(
                                     new DIV { class_ = "icon" }._(new A { href = "https://steamcommunity.com/app/341800/workshop/" }._(new IMG { class_ = "icon", src = "HTML/img/steam-workshop.png" }, new SPAN("Steam Workshop"))),
-                                    new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video.png" }, new SPAN("Tutorial Videos Playlist"))),
+                                    new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial Videos Playlist"))),
                                     new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Entering the World of Mods"))),
                                     new DIV { class_ = "icon" }._(new A { href = "More/Output%20Log%20Reader.html" }._(new IMG { class_ = "icon", src = "HTML/img/log-reader.png" }, new SPAN("Output Log Reader"))),
                                     new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
