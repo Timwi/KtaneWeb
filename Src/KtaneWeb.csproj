@@ -45,6 +45,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
     <Compile Include="HistoryEntry.cs" />
+    <Compile Include="Pull.cs" />
     <Compile Include="KtaneModuleInfo.cs" />
     <Compile Include="KtanePropellerModule.cs" />
     <Compile Include="KtaneSettings.cs" />
