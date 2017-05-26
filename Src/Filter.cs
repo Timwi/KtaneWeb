@@ -21,7 +21,6 @@ namespace KtaneWeb
         public abstract object ToHtml();
         public abstract string GetDataAttributeValue(KtaneModuleInfo mod);
 
-        public static KtaneFilter Boolean(string dataAttributeName, string readableName, Func<KtaneModuleInfo, bool> getValue, char accel) => new KtaneFilterBoolean(dataAttributeName, readableName, getValue, accel);
         public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue) => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod));
         public static KtaneFilter Checkboxes<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue) => new KtaneFilterOptionsCheckboxes(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod));
     }
@@ -61,7 +60,7 @@ namespace KtaneWeb
             new H4(ReadableName, ":"),
             Options.Select(opt => new DIV(
               new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-" + opt.Name }, " ",
-              new LABEL { for_ = "filter-" + opt.Name, accesskey = opt.Accel.ToString().ToLowerInvariant() }._(opt.ReadableName.Accel(opt.Accel.Value)))));
+              new LABEL { for_ = "filter-" + opt.Name, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value)))));
         public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod).ToString();
     }
     sealed class KtaneFilterOptionsSlider : KtaneFilterOptions
@@ -76,22 +75,6 @@ namespace KtaneWeb
             new H4(ReadableName, ":"),
             new DIV { id = "filter-" + DataAttributeName, class_ = "slider" },
             new DIV { id = "filter-label-" + DataAttributeName, class_ = "slider-label" });
-        public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod).ToString();
-    }
-
-    sealed class KtaneFilterBoolean : KtaneFilter
-    {
-        public Func<KtaneModuleInfo, bool> GetValue { get; private set; }
-        public char Accel { get; private set; }
-        public KtaneFilterBoolean(string dataAttributeName, string readableName, Func<KtaneModuleInfo, bool> getValue, char accel) : base(dataAttributeName, readableName)
-        {
-            GetValue = getValue;
-            Accel = accel;
-        }
-        public override JsonDict ToJson() => new JsonDict { { "id", DataAttributeName }, { "type", "boolean" } };
-        public override object ToHtml() => Ut.NewArray<object>(
-            new INPUT { id = "filter-" + DataAttributeName, class_ = "filter", type = itype.checkbox },
-            new LABEL { for_ = "filter-" + DataAttributeName, accesskey = char.ToLowerInvariant(Accel).ToString() }._("\u00a0", ReadableName.Accel(Accel)));
         public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod).ToString();
     }
 

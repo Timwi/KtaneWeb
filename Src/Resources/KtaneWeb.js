@@ -142,7 +142,7 @@
         switch (Ktane.Filters[i].type)
         {
             case "slider":
-                if (!(Ktane.Filters[i].id in filter))
+                if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'object')
                     filter[Ktane.Filters[i].id] = {};
 
                 if (!('min' in filter[Ktane.Filters[i].id]))
@@ -160,7 +160,7 @@
                 break;
 
             case "checkboxes":
-                if (!(Ktane.Filters[i].id in filter))
+                if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'object')
                     filter[Ktane.Filters[i].id] = {};
 
                 for (var j = 0; j < Ktane.Filters[i].values.length; j++)
@@ -172,7 +172,7 @@
                 break;
 
             case "boolean":
-                if (!(Ktane.Filters[i].id in filter))
+                if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'boolean')
                     filter[Ktane.Filters[i].id] = false;
 
                 $('input#filter-' + Ktane.Filters[i].id).prop('checked', filter[Ktane.Filters[i].id]);
@@ -193,8 +193,8 @@
             $('.disappear.stay').hide();
             $('.disappear:not(.stay)').remove();
 
-            if ($('table.header td.move-mobile').length === 0)
-                $('table.header td.logo').after($('td.move-mobile'));
+            if ($('#more>#icons').length)
+                $('#icons').insertAfter('#logo');
         }
         else
             preventDisappear--;
@@ -276,8 +276,7 @@
     // Page options pop-up (mobile only)
     $('#page-opt').click(function()
     {
-        var table = $('<table>').addClass('page-opt').appendTo('#more > div.mobile-opts');
-        $('td.move-mobile').each(function(_, e) { table.append($('<tr>').append(e)); });
+        $('#icons').insertAfter('#more > div.close');
         $('#more').css({ left: '', top: '' }).show();
         return false;
     });

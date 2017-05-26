@@ -12,7 +12,7 @@ namespace KtaneWeb
         private HttpResponse mainPage(HttpRequest req, KtaneWebConfigEntry config)
         {
             // Access keys:
-            // A
+            // A    Logfile Analyzer
             // B
             // C
             // D    sort by defuser difficulty
@@ -30,9 +30,9 @@ namespace KtaneWeb
             // P    Twitch Plays only
             // Q
             // R    Regular
-            // S
+            // S    Source code
             // T    Tutorial video
-            // U    Source code
+            // U
             // V    Vanilla
             // W    Steam Workshop Item
             // X
@@ -67,7 +67,7 @@ namespace KtaneWeb
                 new Selectable
                 {
                     HumanReadable = "Source code",
-                    Accel = 'u',
+                    Accel = 'S',
                     Icon = mod => new IMG { class_ = "icon", title = "Source code", alt = "Source code", src = "HTML/img/unity.png" },
                     DataAttributeName = "source",
                     DataAttributeValue = mod => mod.SourceUrl,
@@ -90,7 +90,7 @@ namespace KtaneWeb
                 KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
                 KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
                 KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty),
-                KtaneFilter.Boolean("twitchplays", "Twitch Plays only", mod => mod.HasTwitchPlaysSupport, 'P'));
+                KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport));
 
             return HttpResponse.Html(new HTML(
                 new HEAD(
@@ -110,37 +110,19 @@ namespace KtaneWeb
                     new META { name = "viewport", content = "width=device-width; initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
-                        filters
-                            .Select(filter => new DIV { class_ = "filter-section" }._(filter.ToHtml()))
-                            .ToArray()
-                            .Apply(filterUis =>
-                                new TABLE { class_ = "header" }._(
-                                    new TR(
-                                        new TD { class_ = "logo" }._(new IMG { class_ = "logo", src = "HTML/img/repo-logo.png" }),
-                                        new TD { class_ = "selectables move-mobile" }._(
-                                            new H4("Make links go to:"),
-                                            selectables.Select(sel => new DIV(
-                                                new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName), " ",
-                                                new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
-                                            new DIV { id = "include-missing" }._(
-                                                new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
-                                                new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),
-                                        new TD { class_ = "filters move-mobile" }._(filterUis[0], filterUis[1]),
-                                        new TD { class_ = "filters move-mobile" }._(filterUis[2], filterUis[3], filterUis[4]),
-                                        new TD { class_ = "sort move-mobile" }._(
-                                            new H4("Sort order:"),
-                                            new DIV(
-                                                new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
-                                                new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
-                                            new DIV(
-                                                new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defuser-difficulty", class_ = "sort", type = itype.radio },
-                                                new LABEL { for_ = "sort-defuser-difficulty", accesskey = "d" }._("\u00a0Sort by defuser difficulty".Accel('d'))),
-                                            new DIV(
-                                                new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expert-difficulty", class_ = "sort", type = itype.radio },
-                                                new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e')))),
-                                        new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt", id = "page-opt" })))),
+                        new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
+                        new DIV { id = "icons", class_ = "icons" }._(
+                            new DIV { class_ = "icon" }._(new A { href = "https://steamcommunity.com/app/341800/workshop/" }._(new IMG { class_ = "icon", src = "HTML/img/steam-workshop.png" }, new SPAN("Steam Workshop"))),
+                            new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial Videos Playlist"))),
+                            new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Entering the World of Mods"))),
+                            new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer".Accel('A')))),
+                            new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
+
+                        new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
+
                         new DIV { id = "main-table-container" }._(
-                            new DIV { id = "more-tab" }._(new A { href = "#", id = "more-link", accesskey = "." }._("More")),
+                            new DIV { id = "more-tab" }._(new A { href = "#", id = "more-link", accesskey = "." }._("Filters & more")),
+
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = selectables.Length }._("Links"),
@@ -163,14 +145,31 @@ namespace KtaneWeb
                                                     ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()))
                                                     : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.ToReadable()), " (e)")),
                                             new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" })))),
+
                             new DIV { id = "more", class_ = "popup disappear stay" }._(
                                 new DIV { class_ = "close" },
-                                new DIV { class_ = "icons" }._(
-                                    new DIV { class_ = "icon" }._(new A { href = "https://steamcommunity.com/app/341800/workshop/" }._(new IMG { class_ = "icon", src = "HTML/img/steam-workshop.png" }, new SPAN("Steam Workshop"))),
-                                    new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial Videos Playlist"))),
-                                    new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Entering the World of Mods"))),
-                                    new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer"))),
-                                    new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
+                                new DIV { class_ = "filters" }._(
+                                    filters.Select(filter => new DIV { class_ = "filter " + filter.DataAttributeName }._(filter.ToHtml())),
+                                    new DIV { class_ = "sort" }._(
+                                        new H4("Sort order:"),
+                                        new DIV(
+                                            new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
+                                        new DIV(
+                                            new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defuser-difficulty", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-defuser-difficulty", accesskey = "d" }._("\u00a0Sort by defuser difficulty".Accel('d'))),
+                                        new DIV(
+                                            new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expert-difficulty", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e')))),
+                                    new DIV { class_ = "link-targets" }._(
+                                        new H4("Make links go to:"),
+                                        selectables.Select(sel => new DIV(
+                                            new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName), " ",
+                                            new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
+                                        new DIV { id = "include-missing" }._(
+                                            new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
+                                            new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I'))))),
+
                                 new DIV { class_ = "dev" }._(
                                 new DIV { class_ = "mobile-opts" },
                                     new SPAN { class_ = "dev-link" }._(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),

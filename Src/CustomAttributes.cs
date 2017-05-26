@@ -6,8 +6,13 @@ namespace KtaneWeb
     internal class KtaneFilterOptionAttribute : Attribute
     {
         public string ReadableName { get; private set; }
-        public char Accel { get; private set; }
+        public char? Accel { get; private set; }
 
+        public KtaneFilterOptionAttribute(string readableName)
+        {
+            ReadableName = readableName;
+            Accel = null;
+        }
         public KtaneFilterOptionAttribute(string readableName, char accel)
         {
             ReadableName = readableName;

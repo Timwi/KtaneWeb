@@ -17,36 +17,14 @@ div.heading {
 
 table {
     border-collapse: collapse;
-    border: 1px solid black;
     width: 100%;
 }
-
-    table.highlighting-controls {
-        width: auto;
-        margin: 0 auto;
-    }
 
 td, th {
     border: 1px solid black;
     vertical-align: middle;
     padding: .2em .7em;
 }
-
-    td.selectable {
-        border-right: none;
-        padding-right: 0;
-        white-space: nowrap;
-        width: 1px;
-    }
-
-        td.selectable.last {
-            padding-right: .7em;
-        }
-
-        td.selectable + td.selectable {
-            border-left: none;
-            padding-left: 0;
-        }
 
 img.icon {
     width: 32px;
@@ -130,53 +108,18 @@ td.infos {
             content: 'by ';
         }
 
-tr.mod[data-twitchplays='True'] td.infos .inf-type {
+tr.mod[data-twitchplays='Supported'] td.infos .inf-type {
     padding-right: 10px;
     background: url(../HTML/img/twitch.svg) right center no-repeat;
     background-size: 10px 10px;
 }
 
-    tr.mod[data-twitchplays='True'] td.infos .inf-type::after {
+    tr.mod[data-twitchplays='Supported'] td.infos .inf-type::after {
         content: ' • ';
     }
 
 .slider {
     margin-top: .5em;
-}
-
-
-table.header {
-    font-size: 77%;
-    border: none;
-}
-
-    table.header td, table.header th {
-        vertical-align: top;
-        border: none;
-    }
-
-        table.header td.selectables, table.header td.filters {
-            padding-top: 2em;
-        }
-
-            table.header td.filters .slider-label {
-                margin-top: .2em;
-                text-align: center;
-            }
-
-    table.header h4 {
-        margin: 1em 0 .3em;
-    }
-
-td.selectables #include-missing {
-    margin-top: 1em;
-}
-
-#main-table th::after {
-    font-size: 70%;
-    font-weight: normal;
-    color: black;
-    text-decoration: none;
 }
 
 body.sort-name th.modlink::after {
@@ -191,11 +134,46 @@ body.sort-expdiff th.infos::after {
     content: '   • sorted by expert difficulty';
 }
 
-td.mobile-ui, table.header td.sort {
+#logo {
+    float: left;
+}
+
+#icons {
+    float: right;
+    font-size: 85%;
+    padding-top: 2.5em;
+}
+
+/* Mobile interface only */
+#page-opt, td.mobile-ui {
     display: none;
 }
 
+#main-table td.selectable {
+    border-right: none;
+    padding-right: 0;
+    white-space: nowrap;
+    width: 1px;
+}
+
+    #main-table td.selectable.last {
+        padding-right: .7em;
+    }
+
+    #main-table td.selectable + td.selectable {
+        border-left: none;
+        padding-left: 0;
+    }
+
+#main-table th::after {
+    font-size: 70%;
+    font-weight: normal;
+    color: black;
+    text-decoration: none;
+}
+
 #main-table-container {
+    clear: both;
     position: relative;
 }
 
@@ -222,33 +200,52 @@ td.mobile-ui, table.header td.sort {
     width: 90%;
 }
 
-    #more .discord {
-        font-size: 110%;
-        text-align: right;
-        margin-top: -10px;
+    /* Lay out the filters in a four-column way */
+    #more > div.filters {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        height: 12.5em;
+        border-bottom: 1px solid #ccf;
     }
 
-        #more .discord > a {
-            text-decoration: none;
-            color: #647FBE;
+        #more > div.filters > div {
+            padding: 0 2em;
         }
 
-        #more .discord img.discord-icon {
-            width: 32px;
-            height: 32px;
-            position: relative;
-            top: 10px;
+        #more > div.filters #include-missing {
+            margin-top: .5em;
         }
 
-    #more table.file-locations code {
+    #more > div.dev {
+        text-align: center;
+        margin-top: 2em;
+    }
+
+        #more > div.dev > span.dev-link {
+            padding-right: 1.5em;
+        }
+
+            #more > div.dev > span.dev-link + span.dev-link {
+                padding-right: 0;
+                padding-left: 1.5em;
+                border-left: 1px solid #ccf;
+            }
+
+    #more > table.file-locations code {
         font-size: 75%;
     }
 
-    #more .icon-credits {
+    #more > table.highlighting-controls {
+        width: auto;
+        margin: 0 auto;
+    }
+
+    #more > .icon-credits {
         margin: 1.5em 0 .5em;
     }
 
-    #more .json {
+    #more > .json {
         float: right;
         margin: 1.5em 0 .5em;
     }
@@ -257,7 +254,7 @@ div.popup {
     position: absolute;
     border: 2px solid black;
     padding: 10px;
-    background: white;
+    background: #fafaff;
     box-shadow: 5px 5px 5px rgba(0,0,0,.3);
 }
 
@@ -291,30 +288,6 @@ div.popup {
                 transform: translateY(-50%);
             }
 
-    div.popup > div.icons {
-        text-align: center;
-        padding: .5em 0 5em;
-        border-bottom: 1px solid #ccc;
-    }
-
-        div.popup > div.icons > div.icon {
-            margin: 0 1.5em;
-            position: relative;
-            display: inline-block;
-        }
-
-            div.popup > div.icons > div.icon > a > img {
-                width: 100px;
-            }
-
-            div.popup > div.icons > div.icon > a > span {
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 120%;
-                width: 130%;
-            }
-
     div.popup h3 {
         margin: 2em 0 .5em;
     }
@@ -323,23 +296,27 @@ div.popup {
         margin: 1em 0 .25em;
     }
 
-    div.popup > div.dev {
-        text-align: center;
-        margin-top: 2em;
+.icons {
+    text-align: center;
+}
+
+    .icons > div.icon {
+        margin: 0 1em;
+        position: relative;
+        display: inline-block;
     }
 
-        div.popup > div.dev > span.dev-link:not(:last-child) {
-            padding-right: 1.5em;
-            border-right: 1px solid #ccc;
+        .icons > div.icon > a > img {
+            width: 60px;
         }
 
-        div.popup > div.dev > span.dev-link:not(:first-child) {
-            padding-left: 1.5em;
+        .icons > div.icon > a > span {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 120%;
+            width: 130%;
         }
-
-#more > div.mobile-opts {
-    display: none;
-}
 
 /* JSON page */
 div.links {
@@ -382,24 +359,22 @@ pre.diff {
 }
 
 /* Desktop version for narrow screens */
-@media screen and (max-width: 1111px) and (min-width: 650.01px) {
+@media screen and (max-width: 1090px) and (min-width: 650.01px) {
     body {
         font-size: 12pt;
         max-width: none;
     }
 
-    table.header {
-        margin: 180px auto 1em;
-        width: 500px;
+    #logo {
+        float: none;
+        text-align: center;
     }
 
-        table.header td.logo {
-            display: block;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 0;
-        }
+    #icons {
+        float: none;
+        width: 90%;
+        margin: -3.5em 0 5.5em 0;
+    }
 
     td.modlink, th.modlink {
         display: none;
@@ -445,20 +420,10 @@ pre.diff {
         content: '   • sorted by expert difficulty';
     }
 
-    div.popup {
-        font-size: 89%;
+    /* Lay out the filters in a two-column way */
+    #more > div.filters {
+        height: 23.5em;
     }
-
-        div.popup > div.icons {
-        }
-
-            div.popup > div.icons > div.icon > a > img {
-                width: 60px;
-            }
-
-            div.popup > div.icons > div.icon > a > span {
-                width: 110%;
-            }
 }
 
 /* Mobile interface */
@@ -469,17 +434,24 @@ pre.diff {
         margin-bottom: 1em;
     }
 
-    td.mobile-ui {
-        display: table-cell;
-        position: relative;
-        width: 20px;
+    #page-opt {
+        display: block;
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        top: 20px;
+        right: 0;
     }
 
-        td.mobile-ui > a.mobile-opt {
-            display: block;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 30 70"><circle cx="5" cy="5" r="5" fill="%23000" /><circle cx="5" cy="25" r="5" fill="%23000" /><circle cx="5" cy="45" r="5" fill="%23000" /></svg>') right center no-repeat;
-            background-size: contain;
-        }
+    a.mobile-opt {
+        display: block;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 30 70"><circle cx="5" cy="5" r="5" fill="%23000" /><circle cx="5" cy="25" r="5" fill="%23000" /><circle cx="5" cy="45" r="5" fill="%23000" /></svg>') right center no-repeat;
+        background-size: contain;
+    }
+
+    #main-content > #icons {
+        display: none;
+    }
 
     #main-table tr.header-row {
         display: none;
@@ -578,25 +550,9 @@ pre.diff {
                 height: 25pt;
             }
 
-    table.header img.logo {
+    #logo > img {
         width: 320px;
     }
-
-    table.header td {
-        padding: .5em 0;
-    }
-
-        table.header td.selectables, table.header td.filters {
-            display: none;
-        }
-
-        table.header td.mobile-ui > a.mobile-opt {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 50px;
-        }
 
     div.popup {
         left: 12px;
@@ -618,33 +574,6 @@ pre.diff {
             cursor: pointer;
         }
 
-        div.popup table.page-opt, div.popup table.page-opt td {
-            border: none;
-        }
-
-            div.popup table.page-opt h4 {
-                margin: 1em 0 0em 0;
-            }
-
-            div.popup table.page-opt tr, div.popup table.page-opt td {
-                display: block;
-            }
-
-                div.popup table.page-opt td.selectables {
-                    float: left;
-                    width: 49%;
-                }
-
-                div.popup table.page-opt tr:nth-child(3) td.filters > div.filter-section {
-                    float: none;
-                    clear: both;
-                    width: auto;
-                }
-
-                    div.popup table.page-opt tr:nth-child(3) td.filters > div.filter-section:nth-child(3) {
-                        margin-top: 1.5em;
-                    }
-
         div.popup > p.manual-select {
             padding: 2em 0 1em;
         }
@@ -665,38 +594,49 @@ pre.diff {
         width: auto;
     }
 
-        #more > div.mobile-opts {
-            display: block;
+        #more > div.filters {
+            font-size: 75%;
+            height: 28em;
         }
+
+        #more > div.icons > div.icon {
+            margin: 0 1.1em;
+        }
+
+            #more > div.icons > div.icon > a > img {
+                width: 32px;
+            }
+
+            #more > div.icons > div.icon > a > span {
+                font-size: 80%;
+                width: 150%;
+            }
+
+        #more div.highlighting-controls {
+            display: none;
+        }
+
+        #more > div.dev {
+            list-style: disc;
+            text-align: left;
+            padding-left: 1.5em;
+        }
+
+            #more > div.dev > span.dev-link, #more > div.dev > span.dev-link + span.dev-link {
+                display: list-item;
+                padding: 0;
+                margin: .7em 0;
+                border: none;
+            }
 
     div.popup {
         padding: 1.5em .5em;
     }
 
-        div.popup > div.icons > div.icon {
-            margin: 0 1.1em;
+        div.popup > div.icons, #more > #icons {
+            float: none;
+            padding: 0 0 5em;
+            border-bottom: 1px solid #ccc;
+            font-size: 100%;
         }
-
-            div.popup > div.icons > div.icon > a > img {
-                width: 32px;
-            }
-
-            div.popup > div.icons > div.icon > a > span {
-                font-size: 80%;
-                width: 150%;
-            }
-
-        div.popup div.highlighting-controls {
-            display: none;
-        }
-
-        div.popup > div.dev {
-            text-align: left;
-        }
-
-            div.popup > div.dev > span.dev-link, div.popup > div.dev > span.dev-link:not(:last-child), div.popup > div.dev > span.dev-link:not(:first-child) {
-                padding: .5em 0;
-                border: none;
-                display: block;
-            }
 }

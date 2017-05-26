@@ -24,4 +24,12 @@
         Hard,
         VeryHard
     }
+
+    public enum KtaneTwitchPlays
+    {
+        [KtaneFilterOption("Supported")]
+        Supported,
+        [KtaneFilterOption("Not supported")]
+        NotSupported
+    }
 }
