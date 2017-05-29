@@ -304,5 +304,5 @@
     $('#sort-defuser-difficulty').click(function() { setSort('defdiff'); return true; });
     $('#sort-expert-difficulty').click(function() { setSort('expdiff'); return true; });
 
-    $('label,#more').click(function() { preventDisappear++; });
+    $('#more').click(function() { preventDisappear++; });
 });
