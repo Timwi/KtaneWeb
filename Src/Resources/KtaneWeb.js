@@ -239,7 +239,7 @@
                     var li = $('<li>').text(sheets[i].name);
                     if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
                         li.addClass('checked');
-                    var ahref = $('<a>').attr('href', '#').append(li);
+                    var ahref = $('<a>').attr('href', sheets[i].url).append(li);
                     ahref.click(function(sh)
                     {
                         return function()
