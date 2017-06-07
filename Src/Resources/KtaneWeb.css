@@ -460,6 +460,7 @@ pre.diff {
     #main-table {
         display: block;
         border: none;
+        border-top: 1px solid #ccc;
     }
 
         #main-table tbody {
@@ -472,10 +473,6 @@ pre.diff {
             height: 26pt;
             border-bottom: 1px solid #ccc;
         }
-
-            #main-table tr.mod:nth-child(2) {
-                border-top: 1px solid #ccc;
-            }
 
         #main-table td {
             display: block;
@@ -500,7 +497,7 @@ pre.diff {
 
             #main-table div.modlink-wrap a.modlink .mod-icon {
                 float: left;
-                margin-right: .5em;
+                margin: 0;
             }
 
             #main-table div.modlink-wrap a.modlink .mod-name {
@@ -508,22 +505,13 @@ pre.diff {
                 left: 2.5em;
                 top: 40%;
                 transform: translateY(-50%);
+                margin: 2px 0 0 0;
             }
-
-        #main-table td .mod-icon {
-            left: 0;
-            margin: 0;
-        }
-
-        #main-table td .mod-name {
-            left: 5px;
-            margin: 2px 0 0 0;
-        }
 
         #main-table td.infos {
             position: absolute;
             right: 15px;
-            top: 50%;
+            top: 47%;
             transform: translateY(-50%);
             text-align: right;
         }
