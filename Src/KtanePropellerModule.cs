@@ -33,6 +33,7 @@ namespace KtaneWeb
                     new UrlMapping(path: "/", specificPath: true, handler: req => mainPage(req, _config.Current)),
                     new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
                     new UrlMapping(path: "/pull", handler: req => pull(_config.Current)),
+                    new UrlMapping(path: "/proxy", handler: proxy),
 
                     // Default fallback: file system handler
                     new UrlMapping(req => new FileSystemHandler(_config.Current.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
