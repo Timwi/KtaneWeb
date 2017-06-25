@@ -217,7 +217,7 @@
             {
                 disappear();
                 var menuDiv = $('<div>').addClass('popup disappear');
-                menuDiv.click(function() { return false; });
+                menuDiv.click(function() { preventDisappear++; });
                 if (isMobileOpt)
                 {
                     menuDiv.append($('<div class="close">').click(disappear));
