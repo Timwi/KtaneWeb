@@ -1,3 +1,12 @@
+﻿// Change the theme CSS before the page renders
+var theme = localStorage.getItem("theme");
+if (!(theme in Ktane.Themes))
+    theme = null;
+if (theme in Ktane.Themes)
+    document.getElementById("theme-css").setAttribute('href', Ktane.Themes[theme]);
+else
+    document.getElementById("theme-css").setAttribute('href', '');
+
 $(function() {
     var filter = {};
     try { filter = JSON.parse(localStorage.getItem('filters') || '{}') || {}; }
@@ -47,9 +56,14 @@ $(function() {
     }
 
     function setTheme(theme) {
-        localStorage.setItem("theme", theme);
-        $(".dark-theme").attr("disabled", theme == "dark" ? null : '');
-        $("#theme-" + theme).prop('checked', true);
+        if (theme === null || !(theme in Ktane.Themes)) {
+            localStorage.removeItem('theme');
+            theme = null;
+        }
+        else
+            localStorage.setItem('theme', theme);
+        $('#theme-css').attr('href', theme in Ktane.Themes ? Ktane.Themes[theme] : '');
+        $('#theme-' + (theme || 'default')).prop('checked', true);
     }
 
     function updateFilter() {
@@ -192,6 +206,7 @@ $(function() {
 
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
+    $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
 
     // UI for selecting manuals/cheat sheets (both mobile and non)
     $('tr.mod').each(function(_, e) {
@@ -278,20 +293,7 @@ $(function() {
     // Radio buttons (visible only on mobile UI)
     $('#sort-name').click(function() { setSort('name'); return true; });
     $('#sort-defuser-difficulty').click(function() { setSort('defdiff'); return true; });
-    $('#sort-expert-difficulty').click(function () { setSort('expdiff'); return true; });
-
-    $("#theme-light").click(function () { setTheme("light"); return true; });
-    $("#theme-dark").click(function () { setTheme("dark"); return true; });
+    $('#sort-expert-difficulty').click(function() { setSort('expdiff'); return true; });
 
     $('#more').click(function() { preventDisappear++; });
 });
-
-// Themes needs to load before page gets rendered.
-var theme = localStorage.getItem("theme") || "light";
-if (["light", "dark"].indexOf(theme) == -1) {
-    theme = "light";
-}
-
-if (theme == "light") {
-    document.getElementsByClassName("dark-theme")[0].setAttribute("disabled", "")
-}
