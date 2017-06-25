@@ -17,7 +17,6 @@ namespace KtaneWeb
         {
             var editable = session.Username != null && _config.Current.AllowedEditors.Contains(session.Username);
             int ix;
-            DateTime dt;
             Match match;
 
             if (req.Method == HttpMethod.Get && req.Url.Path == "")
@@ -34,7 +33,7 @@ namespace KtaneWeb
 
             else if (req.Method == HttpMethod.Get &&
                 (match = Regex.Match(req.Url.Path, @"^/diff/([^/]+)")).Success &&
-                ExactConvert.Try(match.Groups[1].Value.UrlUnescape(), out dt) &&
+                ExactConvert.Try(match.Groups[1].Value.UrlUnescape(), out DateTime dt) &&
                 (ix = _config.History.IndexOf(h => h.Time == dt)) != -1)
                 return jsonDiff(req, ix);
 
