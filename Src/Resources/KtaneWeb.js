@@ -50,6 +50,12 @@
         $(sorts[srt].radioButton).prop('checked', true);
     }
 
+    function setTheme(theme) {
+        localStorage.setItem("theme", theme);
+        $(".dark-theme").attr("disabled", theme == "dark" ? null : '');
+        $("#theme-" + theme).prop('checked', true);
+    }
+
     function updateFilter()
     {
         filter.includeMissing = $('input#filter-include-missing').prop('checked');
@@ -184,6 +190,7 @@
     setSelectable(selectable);
     setPreferredManuals();
     setSort(sort);
+    setTheme(theme);
 
     var preventDisappear = 0;
     function disappear()
@@ -302,7 +309,20 @@
     // Radio buttons (visible only on mobile UI)
     $('#sort-name').click(function() { setSort('name'); return true; });
     $('#sort-defuser-difficulty').click(function() { setSort('defdiff'); return true; });
-    $('#sort-expert-difficulty').click(function() { setSort('expdiff'); return true; });
+    $('#sort-expert-difficulty').click(function () { setSort('expdiff'); return true; });
+
+    $("#theme-light").click(function () { setTheme("light"); return true; });
+    $("#theme-dark").click(function () { setTheme("dark"); return true; });
 
     $('#more').click(function() { preventDisappear++; });
 });
+
+// Themes needs to load before page gets rendered.
+var theme = localStorage.getItem("theme") || "light";
+if (["light", "dark"].indexOf(theme) == -1) {
+    theme = "light";
+}
+
+if (theme == "light") {
+    document.getElementsByClassName("dark-theme")[0].setAttribute("disabled", "")
+}

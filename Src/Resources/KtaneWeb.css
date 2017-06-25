@@ -210,7 +210,7 @@ body.sort-expdiff th.infos::after {
     }
 
         #more > div.filters > div {
-            padding: 0 2em;
+            padding: 0 1.5em;
         }
 
         #more > div.filters #include-missing {

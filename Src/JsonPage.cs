@@ -200,6 +200,8 @@ namespace KtaneWeb
                     new TITLE("Repository of Manual Pages — raw JSON data"),
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
+                    new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), class_ = "dark-theme", rel = "stylesheet", type = "text/css" },
+                    new SCRIPTLiteral("var theme=localStorage.getItem('theme')||'light';-1==['light','dark'].indexOf(theme)&&(theme='light'),'light'==theme&&document.getElementsByClassName('dark-theme')[0].setAttribute('disabled','')"),
                     new META { name = "viewport", content = "width=device-width" }),
                 new BODY(
                     new DIV { class_ = "links" }._(new A { href = req.Url.WithPathParent().WithPathOnly("/").ToHref(), accesskey = "b" }._("Back".Accel('B'))),

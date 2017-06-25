@@ -22,8 +22,8 @@ namespace KtaneWeb
             // H
             // I    Include missing
             // J    JSON
-            // K
-            // L
+            // K    Dark Theme
+            // L    Light Theme
             // M    Manual
             // N    sort by name
             // O    Mods
@@ -97,6 +97,7 @@ namespace KtaneWeb
                     new TITLE("Repository of Manual Pages"),
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
+                    new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), class_ = "dark-theme", rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "HTML/js/jquery.3.1.1.min.js" },
                     new SCRIPT { src = "HTML/js/jquery-ui.1.12.1.min.js" },
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
@@ -168,10 +169,21 @@ namespace KtaneWeb
                                             new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                         new DIV { id = "include-missing" }._(
                                             new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
-                                            new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I'))))),
+                                            new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),
+                                    new DIV { class_ = "site-theme" }._(
+                                        new H4("Site theme:"),
+                                        new DIV(
+                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-light" }, " ",
+                                            new LABEL { class_ = "set-theme", id = "theme-label-light", for_ = "theme-light", accesskey = "l" }._("Light".Accel('L'))
+                                        ),
+                                        new DIV(
+                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }, " ",
+                                            new LABEL { class_ = "set-theme", id = "theme-label-dark", for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k'))
+                                        ))),
+
 
                                 new DIV { class_ = "dev" }._(
-                                new DIV { class_ = "mobile-opts" },
+                                    new DIV { class_ = "mobile-opts" },
                                     new SPAN { class_ = "dev-link" }._(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
                                     new SPAN { class_ = "dev-link" }._(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement"))),
                                 new DIV { class_ = "highlighting-controls" }._(
