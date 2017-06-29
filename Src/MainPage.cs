@@ -111,7 +111,7 @@ namespace KtaneWeb
                         }};
                     "),
                     new SCRIPT { src = req.Url.WithParent("js").ToHref() },
-                    new META { name = "viewport", content = "width=device-width; initial-scale=1.0" }),
+                    new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
                         new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
