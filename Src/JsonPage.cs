@@ -17,7 +17,6 @@ namespace KtaneWeb
         {
             var editable = session.Username != null && _config.Current.AllowedEditors.Contains(session.Username);
             int ix;
-            DateTime dt;
             Match match;
 
             if (req.Method == HttpMethod.Get && req.Url.Path == "")
@@ -34,7 +33,7 @@ namespace KtaneWeb
 
             else if (req.Method == HttpMethod.Get &&
                 (match = Regex.Match(req.Url.Path, @"^/diff/([^/]+)")).Success &&
-                ExactConvert.Try(match.Groups[1].Value.UrlUnescape(), out dt) &&
+                ExactConvert.Try(match.Groups[1].Value.UrlUnescape(), out DateTime dt) &&
                 (ix = _config.History.IndexOf(h => h.Time == dt)) != -1)
                 return jsonDiff(req, ix);
 
@@ -200,8 +199,8 @@ namespace KtaneWeb
                     new TITLE("Repository of Manual Pages — raw JSON data"),
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
-                    new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), class_ = "dark-theme", rel = "stylesheet", type = "text/css" },
-                    new SCRIPTLiteral("var theme=localStorage.getItem('theme')||'light';-1==['light','dark'].indexOf(theme)&&(theme='light'),'light'==theme&&document.getElementsByClassName('dark-theme')[0].setAttribute('disabled','')"),
+                    new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), id = "theme-css", rel = "stylesheet", type = "text/css" },
+                    new SCRIPTLiteral("if(localStorage.getItem('theme')!=='dark')document.getElementById('theme-css').setAttribute('href','')"),
                     new META { name = "viewport", content = "width=device-width" }),
                 new BODY(
                     new DIV { class_ = "links" }._(new A { href = req.Url.WithPathParent().WithPathOnly("/").ToHref(), accesskey = "b" }._("Back".Accel('B'))),

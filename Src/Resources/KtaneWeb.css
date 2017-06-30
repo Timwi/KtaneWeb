@@ -210,7 +210,7 @@ body.sort-expdiff th.infos::after {
     }
 
         #more > div.filters > div {
-            padding: 0 1.5em;
+            padding: 0 1.3em;
         }
 
         #more > div.filters #include-missing {
@@ -422,8 +422,12 @@ pre.diff {
 
     /* Lay out the filters in a two-column way */
     #more > div.filters {
-        height: 23.5em;
+        height: 27em;
     }
+
+        #more > div.filters > div {
+            padding: 0 2.3em;
+        }
 }
 
 /* Mobile interface */
@@ -584,8 +588,12 @@ pre.diff {
 
         #more > div.filters {
             font-size: 75%;
-            height: 28em;
+            height: 32em;
         }
+
+            #more > div.filters > div {
+                padding: 0 2.3em;
+            }
 
         #more > div.icons > div.icon {
             margin: 0 1.1em;

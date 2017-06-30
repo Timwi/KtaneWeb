@@ -97,18 +97,21 @@ namespace KtaneWeb
                     new TITLE("Repository of Manual Pages"),
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
-                    new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), class_ = "dark-theme", rel = "stylesheet", type = "text/css" },
+                    new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), id = "theme-css", rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "HTML/js/jquery.3.1.1.min.js" },
                     new SCRIPT { src = "HTML/js/jquery-ui.1.12.1.min.js" },
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPTLiteral($@"
                         Ktane = {{
                             Filters: {filters.Select(f => f.ToJson()).ToJsonList()},
-                            Selectables: {selectables.Select(s => s.DataAttributeName).ToJsonList()}
+                            Selectables: {selectables.Select(s => s.DataAttributeName).ToJsonList()},
+                            Themes: {{
+                                'dark': 'HTML/css/dark-theme.css'
+                            }}
                         }};
                     "),
                     new SCRIPT { src = req.Url.WithParent("js").ToHref() },
-                    new META { name = "viewport", content = "width=device-width; initial-scale=1.0" }),
+                    new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
                         new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
@@ -173,14 +176,11 @@ namespace KtaneWeb
                                     new DIV { class_ = "site-theme" }._(
                                         new H4("Site theme:"),
                                         new DIV(
-                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-light" }, " ",
-                                            new LABEL { class_ = "set-theme", id = "theme-label-light", for_ = "theme-light", accesskey = "l" }._("Light".Accel('L'))
-                                        ),
+                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
+                                            new LABEL { for_ = "theme-default", accesskey = "l" }._("Light".Accel('L'))),
                                         new DIV(
-                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }, " ",
-                                            new LABEL { class_ = "set-theme", id = "theme-label-dark", for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k'))
-                                        ))),
-
+                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
+                                            new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k'))))),
 
                                 new DIV { class_ = "dev" }._(
                                     new DIV { class_ = "mobile-opts" },
