@@ -1,25 +1,25 @@
-// Handle access to localStorage
+﻿// Handle access to localStorage
 var lStorage = localStorage;
 
 try {
-	localStorage.setItem("testStorage", "testData");
-	localStorage.removeItem("testStorage");
+    localStorage.setItem("testStorage", "testData");
+    localStorage.removeItem("testStorage");
 } catch (e) {
-	lStorage = {
-		storage: {},
-		getItem: function(key) {
-			return this.storage[key] || undefined;
-		},
-		setItem: function(key, data) {
-			this.storage[key] = data;
-		},
-		removeItem: function(key) {
-			delete this.storage[key];
-		},
-		clear: function() {
-			this.storage = {};
-		}
-	};
+    lStorage = {
+        storage: {},
+        getItem: function(key) {
+            return this.storage[key] || null;
+        },
+        setItem: function(key, data) {
+            this.storage[key] = data;
+        },
+        removeItem: function(key) {
+            delete this.storage[key];
+        },
+        clear: function() {
+            this.storage = {};
+        }
+    };
 }
 
 // Change the theme CSS before the page renders
