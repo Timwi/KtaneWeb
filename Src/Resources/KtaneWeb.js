@@ -1,5 +1,29 @@
-﻿// Change the theme CSS before the page renders
-var theme = localStorage.getItem("theme");
+// Handle access to localStorage
+var lStorage = localStorage;
+
+try {
+	localStorage.setItem("testStorage", "testData");
+	localStorage.removeItem("testStorage");
+} catch (e) {
+	lStorage = {
+		storage: {},
+		getItem: function(key) {
+			return this.storage[key] || undefined;
+		},
+		setItem: function(key, data) {
+			this.storage[key] = data;
+		},
+		removeItem: function(key) {
+			delete this.storage[key];
+		},
+		clear: function() {
+			this.storage = {};
+		}
+	};
+}
+
+// Change the theme CSS before the page renders
+var theme = lStorage.getItem("theme");
 if (!(theme in Ktane.Themes))
     theme = null;
 if (theme in Ktane.Themes)
@@ -9,13 +33,13 @@ else
 
 $(function() {
     var filter = {};
-    try { filter = JSON.parse(localStorage.getItem('filters') || '{}') || {}; }
+    try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
-    var selectable = localStorage.getItem('selectable') || 'manual';
+    var selectable = lStorage.getItem('selectable') || 'manual';
     if (Ktane.Selectables.indexOf(selectable) === -1)
         selectable = 'manual';
     var preferredManuals = {};
-    try { preferredManuals = JSON.parse(localStorage.getItem('preferredManuals') || '{}') || {}; }
+    try { preferredManuals = JSON.parse(lStorage.getItem('preferredManuals') || '{}') || {}; }
     catch (exc) { }
 
     function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
@@ -24,7 +48,7 @@ $(function() {
         'defdiff': { fnc: function(elem) { return Ktane.Filters[2].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
         'expdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
     };
-    var sort = localStorage.getItem('sort') || 'name';
+    var sort = lStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
         sort = 'name';
 
@@ -34,14 +58,14 @@ $(function() {
         $('label.set-selectable').removeClass('selected');
         $('label#selectable-label-' + sel).addClass('selected');
         $('#selectable-' + sel).prop('checked', true);
-        localStorage.setItem('selectable', sel);
+        lStorage.setItem('selectable', sel);
         updateFilter();
         setPreferredManuals();
     }
 
     function setSort(srt) {
         sort = srt;
-        localStorage.setItem('sort', srt);
+        lStorage.setItem('sort', srt);
         var arr = $('tr.mod').toArray();
         arr.sort(function(a, b) {
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b));
@@ -57,11 +81,11 @@ $(function() {
 
     function setTheme(theme) {
         if (theme === null || !(theme in Ktane.Themes)) {
-            localStorage.removeItem('theme');
+            lStorage.removeItem('theme');
             theme = null;
         }
         else
-            localStorage.setItem('theme', theme);
+            lStorage.setItem('theme', theme);
         $('#theme-css').attr('href', theme in Ktane.Themes ? Ktane.Themes[theme] : '');
         $('#theme-' + (theme || 'default')).prop('checked', true);
     }
@@ -123,7 +147,7 @@ $(function() {
                 $(e).hide();
         });
 
-        localStorage.setItem('filters', JSON.stringify(filter));
+        lStorage.setItem('filters', JSON.stringify(filter));
     }
 
     function setPreferredManuals() {
@@ -140,7 +164,7 @@ $(function() {
             $(e).find(selectable === 'manual' ? 'a.modlink,a.manual' : 'a.manual').attr('href', manual.url);
             $(e).find('img.manual-icon').attr('src', manual.icon);
         });
-        localStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
+        lStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
 
     // Set filters from saved settings
