@@ -52,6 +52,16 @@ textarea {
     height: 50em;
 }
 
+/* Search */
+.search-container {
+    clear: both;
+    margin: 0.5em 0;
+}
+
+.mod.search-hidden {
+    display: none;
+}
+
 div.error {
     background: #fee;
     text-align: center;

@@ -232,6 +232,22 @@ $(function() {
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
 
+	var searchField = $("input.search-field");
+	function updateSearch() {
+		var text = searchField.val().toLowerCase();
+		$(".mod").each(function() {
+			var element = $(this);
+			if (element.attr("data-mod").toLowerCase().match(text) === null) {
+				element.addClass("search-hidden");
+			} else {
+				element.removeClass("search-hidden");
+			}
+		});
+	}
+
+	searchField.on("input", updateSearch);
+	$("input.filter").on("change", updateSearch);
+
     // UI for selecting manuals/cheat sheets (both mobile and non)
     $('tr.mod').each(function(_, e) {
         var data = $(e).data();

@@ -12,6 +12,8 @@ namespace KtaneWeb
     sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IClassifyJsonObjectProcessor
     {
         public string Name;
+        public string Description;
+        public string ModuleID;
         public string SortKey;
         public string SteamID;
         public KtaneModuleType Type;
@@ -30,6 +32,8 @@ namespace KtaneWeb
         {
             return other != null &&
                 other.Name == Name &&
+                other.Description == Description &&
+                other.ModuleID == ModuleID &&
                 other.SortKey == SortKey &&
                 other.SteamID == SteamID &&
                 other.Type == Type &&
