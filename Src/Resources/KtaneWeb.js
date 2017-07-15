@@ -124,6 +124,8 @@ $(function() {
             noneSelected[Ktane.Filters[i].id] = none;
         }
 
+        var searchText = $("input#search-field").val().toLowerCase();
+
         $('tr.mod').each(function(_, e) {
             var data = $(e).data();
 
@@ -141,7 +143,7 @@ $(function() {
                         break;
                 }
             }
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || $(e).data(selectable)))
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && data.mod.toLowerCase().match(searchText) !== null)
                 $(e).show();
             else
                 $(e).hide();
@@ -230,23 +232,9 @@ $(function() {
 
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
+    $('input#search-field').on('input', function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
-
-	var searchField = $("input.search-field");
-	function updateSearch() {
-		var text = searchField.val().toLowerCase();
-		$(".mod").each(function() {
-			var element = $(this);
-			if (element.attr("data-mod").toLowerCase().match(text) === null) {
-				element.addClass("search-hidden");
-			} else {
-				element.removeClass("search-hidden");
-			}
-		});
-	}
-
-	searchField.on("input", updateSearch);
-	$("input.filter").on("change", updateSearch);
+    $('#search-field-clear').click(function() { $('input#search-field').val(''); updateFilter(); return false; });
 
     // UI for selecting manuals/cheat sheets (both mobile and non)
     $('tr.mod').each(function(_, e) {

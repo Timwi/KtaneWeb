@@ -55,12 +55,20 @@ textarea {
 /* Search */
 .search-container {
     clear: both;
-    margin: 0.5em 0;
+    margin: 0 0 .5em;
 }
 
-.mod.search-hidden {
-    display: none;
-}
+    .search-container #search-field {
+        width: 15em;
+    }
+
+    .search-container #search-field-clear {
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
+        width: 1.25em;
+        height: 1.25em;
+        display: inline-block;
+        vertical-align: middle;
+    }
 
 div.error {
     background: #fee;

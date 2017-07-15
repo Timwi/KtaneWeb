@@ -125,9 +125,9 @@ namespace KtaneWeb
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
 
                         new DIV { class_ = "search-container" }._(
-                            new SPAN("Find: ".Accel('F')) { style = "vertical-align: middle" },
-                            new INPUT { class_ = "search-field", accesskey = "f" }
-                        ),
+                            new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
+                            new INPUT { id = "search-field", accesskey = "f" }, " ",
+                            new A { href = "#", id = "search-field-clear" }),
 
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "more-tab" }._(new A { href = "#", id = "more-link", accesskey = "." }._("Filters & more")),
