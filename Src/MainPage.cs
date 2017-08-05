@@ -19,7 +19,7 @@ namespace KtaneWeb
             // E    sort by expert difficulty
             // F
             // G
-            // H    Twitch Plays only
+            // H
             // I    Include missing
             // J    JSON
             // K    Dark Theme
