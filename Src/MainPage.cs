@@ -19,7 +19,7 @@ namespace KtaneWeb
             // E    sort by expert difficulty
             // F
             // G
-            // H
+            // H    Twitch Plays only
             // I    Include missing
             // J    JSON
             // K    Dark Theme
@@ -27,7 +27,7 @@ namespace KtaneWeb
             // M    Manual
             // N    sort by name
             // O    Mods
-            // P    Twitch Plays only
+            // P    Profile Editor
             // Q
             // R    Regular
             // S    Source code
@@ -120,7 +120,7 @@ namespace KtaneWeb
                             new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial Videos Playlist"))),
                             new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Entering the World of Mods"))),
                             new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer".Accel('A')))),
-                            new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN("Profile Editor"))),
+                            new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", accesskey = "p" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN("Profile Editor".Accel('P')))),
                             new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
