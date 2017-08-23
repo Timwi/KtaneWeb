@@ -34,16 +34,16 @@ namespace KtaneWeb
                     new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
                     new UrlMapping(path: "/pull", handler: req => pull(_config.Current)),
                     new UrlMapping(path: "/proxy", handler: proxy),
-					new UrlMapping(path: "/manual", handler: manual),
+                    new UrlMapping(path: "/manual", handler: manual),
 
-					// Default fallback: file system handler
-					new UrlMapping(req => new FileSystemHandler(_config.Current.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
+                    // Default fallback: file system handler
+                    new UrlMapping(req => new FileSystemHandler(_config.Current.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
                 );
 
-				foreach (string directory in Directory.GetDirectories(Path.Combine(_config.Current.BaseDir, "HTML")))
-					resolver.Add(new UrlMapping(path: "/manual/" + Path.GetFileName(directory), handler: req => new FileSystemHandler(directory, new FileSystemOptions { MaxAge = null }).Handle(req)));
+                foreach (string directory in Directory.GetDirectories(Path.Combine(_config.Current.BaseDir, "HTML")))
+                    resolver.Add(new UrlMapping(path: "/manual/" + Path.GetFileName(directory), handler: req => new FileSystemHandler(directory, new FileSystemOptions { MaxAge = null }).Handle(req)));
 
-				if (auth != null)
+                if (auth != null)
                     resolver.Add(new UrlMapping(path: "/auth", handler: req => auth.Handle(req, session.Username, user =>
                     {
                         session.Username = user;
