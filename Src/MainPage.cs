@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -86,17 +88,31 @@ namespace KtaneWeb
                 });
 
             var filters = Ut.NewArray(
-                KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
-                KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
                 KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
                 KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty),
+                KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
+                KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
                 KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport));
+
+            var displays = Ut.NewArray(
+                new { Readable = "Author", Id = "author" },
+                //new { Readable = "Type", Id = "type" },
+                new { Readable = "Origin", Id = "origin" },
+                //new { Readable = "Difficulty", Id = "difficulty" },
+                new { Readable = "Twitch support", Id = "twitch" },
+                new { Readable = "Module ID", Id = "id" },
+                new { Readable = "Description", Id = "description" });
+
+            var cssLink = req.Url.WithParent("css");
+#if DEBUG
+            cssLink = cssLink.WithQuery("u", DateTime.UtcNow.Ticks.ToString());
+#endif
 
             return HttpResponse.Html(new HTML(
                 new HEAD(
                     new TITLE("Repository of Manual Pages"),
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
-                    new LINK { href = req.Url.WithParent("css").ToHref(), rel = "stylesheet", type = "text/css" },
+                    new LINK { href = cssLink.ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), id = "theme-css", rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "HTML/js/jquery.3.1.1.min.js" },
                     new SCRIPT { src = "HTML/js/jquery-ui.1.12.1.min.js" },
@@ -145,19 +161,35 @@ namespace KtaneWeb
                                         .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                         ._(
                                             selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) + sel.CssClass?.Apply(c => " " + c) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
-                                            new TD { class_ = "modlink" }._(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
-                                            new TD { class_ = "infos" }._(
-                                                new DIV { class_ = "inf-modlink" }._(new A { class_ = "modlink" }._(mod.Icon(config), new SPAN { class_ = "mod-name" }._(mod.Name))),
-                                                new DIV { class_ = "inf-author" }._(mod.Author),
+                                            new TD(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
+                                            new TD(new DIV { class_ = "infos" }._(
                                                 new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
+                                                new DIV { class_ = "inf-origin" }._(mod.Origin.ToString()),
+                                                new DIV { class_ = "inf-twitch" },
+                                                new DIV { class_ = "inf-author" }._(mod.Author),
                                                 mod.DefuserDifficulty == mod.ExpertDifficulty
                                                     ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()))
-                                                    : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.ToReadable()), " (e)")),
+                                                    : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.ToReadable()), " (e)"),
+                                                new DIV { class_ = "inf-id" }._(mod.ModuleID),
+                                                new DIV { class_ = "inf-description" }._(mod.Description))),
                                             new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" })))),
 
                             new DIV { id = "more", class_ = "popup disappear stay" }._(
                                 new DIV { class_ = "close" },
                                 new DIV { class_ = "filters" }._(
+                                    new DIV { class_ = "display" }._(
+                                        new H4("Display:"),
+                                        displays.Select(dspl => new DIV(
+                                            new INPUT { id = "display-" + dspl.Id, name = "display", value = dspl.Id, class_ = "display", type = itype.checkbox },
+                                            new LABEL { for_ = "display-" + dspl.Id }._("\u00a0", dspl.Readable)))),
+                                    new DIV { class_ = "site-theme" }._(
+                                        new H4("Site theme:"),
+                                        new DIV(
+                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
+                                            new LABEL { for_ = "theme-default", accesskey = "l" }._("Light".Accel('L'))),
+                                        new DIV(
+                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
+                                            new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
                                     filters.Select(filter => new DIV { class_ = "filter " + filter.DataAttributeName }._(filter.ToHtml())),
                                     new DIV { class_ = "sort" }._(
                                         new H4("Sort order:"),
@@ -177,15 +209,7 @@ namespace KtaneWeb
                                             new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                         new DIV { id = "include-missing" }._(
                                             new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
-                                            new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),
-                                    new DIV { class_ = "site-theme" }._(
-                                        new H4("Site theme:"),
-                                        new DIV(
-                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
-                                            new LABEL { for_ = "theme-default", accesskey = "l" }._("Light".Accel('L'))),
-                                        new DIV(
-                                            new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
-                                            new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k'))))),
+                                            new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I'))))),
 
                                 new DIV { class_ = "dev" }._(
                                     new DIV { class_ = "mobile-opts" },

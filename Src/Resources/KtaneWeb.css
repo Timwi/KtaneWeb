@@ -80,75 +80,107 @@ div.error {
 }
 
 div.modlink-wrap {
-    margin-top: .3em;
     line-height: 1;
 }
 
-    div.modlink-wrap a.modlink {
-        font-size: 115%;
+body:not(.display-description) div.modlink-wrap {
+    margin-top: .3em;
+}
+
+div.modlink-wrap a.modlink {
+    font-size: 115%;
+}
+
+    div.modlink-wrap a.modlink img.mod-icon {
+        width: 32px;
+        float: left;
+        margin: 0 .5em 0 0;
     }
 
-        div.modlink-wrap a.modlink img.mod-icon {
-            width: 32px;
-            float: left;
-            margin: -.3em .5em 0 0;
-        }
+body:not(.display-description) div.modlink-wrap a.modlink img.mod-icon {
+    margin-top: -.3em;
+}
 
-td.infos {
+div.infos {
     font-size: 85%;
 }
 
-    td.infos .inf-type {
-        display: inline;
-    }
-
-    td.infos .inf-difficulty {
-        display: inline;
-    }
-
-        td.infos .inf-difficulty .inf-difficulty-sub {
-            font-weight: bold;
-        }
-
-        td.infos .inf-difficulty::before {
-            content: ' • ';
-        }
-
-    td.infos .inf-modlink {
-        display: none;
-    }
-
-    td.infos .inf-author {
-        opacity: .5;
-    }
-
-        td.infos .inf-author::before {
-            content: 'by ';
-        }
-
-tr.mod[data-twitchplays='Supported'] td.infos .inf-type {
-    padding-right: 10px;
-    background: url(../HTML/img/twitch.svg) right center no-repeat;
-    background-size: 10px 10px;
+td:nth-last-child(3) div.infos {
+    margin-left: 2.8em;
 }
 
-    tr.mod[data-twitchplays='Supported'] td.infos .inf-type::after {
-        content: ' • ';
+div.infos .inf-origin, div.infos .inf-type, div.infos .inf-author, div.infos .inf-difficulty {
+    display: inline;
+}
+
+    div.infos .inf-origin::before, div.infos .inf-twitch::before, div.infos .inf-author::before {
+        content: ' • ';
     }
+
+div.infos .inf-twitch {
+    background: url(../HTML/img/twitch.svg) right center no-repeat;
+    background-size: 10px 10px;
+    display: inline-block;
+    width: 29px;
+}
+
+div.infos .inf-author {
+    opacity: .5;
+}
+
+    div.infos .inf-author::before {
+        content: ' • by ';
+    }
+
+div.infos .inf-difficulty::before {
+    content: '\000a';
+    white-space: pre;
+}
+
+div.infos .inf-difficulty .inf-difficulty-sub {
+    font-weight: bold;
+}
+
+div.infos .inf-id {
+    opacity: .5;
+    font-family: Consolas, 'DejaVu Sans Mono', monospace;
+}
+
+td:nth-last-child(3) div.infos > .inf-description {
+    display: block;
+    font-size: 90%;
+    color: #888;
+}
+
+body:not(.display-author) div.infos .inf-author,
+body:not(.display-origin) div.infos .inf-origin,
+body:not(.display-twitch) div.infos .inf-twitch,
+body:not(.display-id) div.infos .inf-id,
+body:not(.display-description) div.infos .inf-description {
+    display: none;
+}
+
+td:nth-last-child(2) div.infos > .inf-description, td:nth-last-child(3) div.infos > div, tr.mod[data-twitchplays='NotSupported'] div.infos .inf-twitch {
+    display: none;
+}
 
 .slider {
     margin-top: .5em;
 }
 
-body.sort-name th.modlink::after {
+#main-table th, #main-table td:nth-last-child(2) {
+    white-space: nowrap;
+}
+
+body.sort-name #main-table th:nth-child(2)::after {
     content: '   • sorted by name';
 }
 
-body.sort-defdiff th.infos::after {
+body.sort-defdiff #main-table th:nth-child(3)::after {
     content: '   • sorted by defuser difficulty';
 }
 
-body.sort-expdiff th.infos::after {
+body.sort-expdiff #main-table th:nth-child(3)::after {
     content: '   • sorted by expert difficulty';
 }
 
@@ -218,12 +250,12 @@ body.sort-expdiff th.infos::after {
     width: 90%;
 }
 
-    /* Lay out the filters in a four-column way */
+    /* Lay out the displays/themes/filters/selectables in a four-column way */
     #more > div.filters {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        height: 12.5em;
+        height: 17.5em;
         border-bottom: 1px solid #ccf;
     }
 
@@ -394,47 +426,66 @@ pre.diff {
         margin: -3.5em 0 5.5em 0;
     }
 
-    td.modlink, th.modlink {
+    table#main-table td:nth-last-child(2), th:last-child {
         display: none;
     }
 
-    td.infos {
-        font-size: 75%;
-        padding: .1em 12px;
+    td:nth-last-child(3) div.modlink-wrap {
+        margin: 0;
+    }
+
+        td:nth-last-child(3) div.modlink-wrap img.mod-icon {
+            float: left;
+            margin: .1em .5em 0 0 !important;
+        }
+
+        td:nth-last-child(3) div.modlink-wrap a.modlink .mod-name {
+            display: block;
+            margin: 0;
+        }
+
+    td:nth-last-child(3) div.infos {
+        padding: .1em 0;
         position: relative;
     }
 
-        td.infos .inf-modlink {
-            display: block;
-            font-size: 140%;
-        }
+    body.display-twitch td:nth-last-child(3) div.infos > .inf-twitch {
+        display: inline-block !important;
+    }
 
-            td.infos .inf-modlink img.mod-icon {
-                float: left;
-                margin: .1em .5em 0 0;
-            }
+    td:nth-last-child(3) div.infos > div.inf-type,
+    td:nth-last-child(3) div.infos > div.inf-difficulty,
+    body.display-author td:nth-last-child(3) div.infos > div.inf-author,
+    body.display-origin td:nth-last-child(3) div.infos > div.inf-origin,
+    body.display-id td:nth-last-child(3) div.infos > div.inf-id {
+        display: inline;
+    }
 
-            td.infos .inf-modlink span.mod-name {
-                margin: 0;
-            }
+    body.display-description td:nth-last-child(3) div.infos > div.inf-description {
+        display: block;
+    }
 
-        td.infos .inf-author {
-            display: inline;
-        }
+    td:nth-last-child(3) div.infos > div:not(.inf-description):not(.inf-type):not(.inf-author)::before {
+        content: ' • ';
+    }
 
-            td.infos .inf-author::after {
-                content: ' • ';
-            }
+    td:nth-last-child(3) div.infos > div.inf-author::before {
+        content: ' • by ';
+    }
 
-    body.sort-name th.infos::after {
+    td:nth-last-child(3) div.infos {
+        margin-left: 3em;
+    }
+
+    body.sort-name th:nth-last-child(2)::after {
         content: '   • sorted by name';
     }
 
-    body.sort-defdiff th.infos::after {
+    body.sort-defdiff th:nth-last-child(2)::after {
         content: '   • sorted by defuser difficulty';
     }
 
-    body.sort-expdiff th.infos::after {
+    body.sort-expdiff th:nth-last-child(2)::after {
         content: '   • sorted by expert difficulty';
     }
 
@@ -479,10 +530,14 @@ pre.diff {
         display: none;
     }
 
+    #main-table td:nth-last-child(3) div.infos {
+        margin-left: 3.5em;
+    }
+
     #main-table {
         display: block;
         border: none;
-        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
     }
 
         #main-table tbody {
@@ -492,59 +547,69 @@ pre.diff {
         #main-table tr.mod {
             display: block;
             position: relative;
-            height: 26pt;
-            border-bottom: 1px solid #ccc;
+            clear: both;
+            border-top: 1px solid #ccc;
         }
 
         #main-table td {
             display: block;
             border: none;
             padding: 0;
-            font-size: 7pt;
+            font-size: 8pt;
         }
 
             #main-table td.selectable {
                 display: none;
             }
 
-        #main-table div.modlink-wrap a.modlink {
-            display: block;
-            font-size: 12pt;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 20%;
-            bottom: 0;
+        #main-table div.modlink-wrap {
+            margin: 0;
         }
 
-            #main-table div.modlink-wrap a.modlink .mod-icon {
-                float: left;
-                margin: 0;
+            #main-table div.modlink-wrap a.modlink {
+                display: block;
+                font-size: 12pt;
+                text-decoration: none;
             }
 
-            #main-table div.modlink-wrap a.modlink .mod-name {
-                position: absolute;
-                left: 2.5em;
-                top: 40%;
-                transform: translateY(-50%);
-                margin: 2px 0 0 0;
-            }
+                #main-table div.modlink-wrap a.modlink .mod-icon {
+                    float: left;
+                    margin: .1em 0;
+                }
 
-        #main-table td.infos {
+                #main-table div.modlink-wrap a.modlink .mod-name {
+                    width: 14.5em;
+                    line-height: 1.2;
+                    display: block;
+                }
+
+        #main-table td:nth-last-child(2) {
             position: absolute;
             right: 15px;
-            top: 47%;
-            transform: translateY(-50%);
+            top: 2.5px;
             text-align: right;
         }
 
-            #main-table td.infos .inf-type {
-                display: block;
+            #main-table td:nth-last-child(2) .inf-twitch {
+                position: relative;
+                width: 19px;
+                height: 8px;
+                background-size: 8px 8px;
             }
 
-            #main-table td.infos .inf-difficulty::before {
-                content: none;
+                #main-table td:nth-last-child(2) .inf-twitch::before {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                }
+
+            #main-table td:nth-last-child(2) div.infos {
+                font-size: 80%;
             }
+
+                #main-table td:nth-last-child(2) div.infos .inf-author {
+                    font-size: 95%;
+                }
 
         #main-table td.mobile-ui {
             position: absolute;
@@ -559,6 +624,31 @@ pre.diff {
                 width: 100%;
                 height: 25pt;
             }
+
+    body:not(.display-description) #main-table div.modlink-wrap a.modlink .mod-name {
+        position: absolute;
+        left: 2.5em;
+        top: 1.1em;
+        transform: translateY(-50%);
+    }
+
+    body:not(.display-id) #main-table td:nth-last-child(2) .inf-author::before {
+        content: '\000a by ';
+        white-space: pre;
+    }
+
+    body.display-description #main-table div.modlink-wrap a.modlink .mod-icon {
+        margin: 1px .5em 1px 0;
+    }
+
+    body.display-description #main-table td:nth-last-child(3) div.infos .inf-description {
+        display: block;
+        width: 25em;
+        line-height: 1;
+        font-size: 70%;
+        padding-left: 1.3em;
+        margin-top: .3em;
+    }
 
     #logo > img {
         width: 320px;
