@@ -16,14 +16,14 @@ namespace KtaneWeb
         public string ModuleID;
         public string SortKey;
         public string SteamID;
-        public KtaneModuleType Type;
-        public KtaneModuleOrigin Origin;
+        public KtaneModuleType Type = KtaneModuleType.Regular;
+        public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
         public KtaneModuleDifficulty DefuserDifficulty;
         public KtaneModuleDifficulty ExpertDifficulty;
         public string Author;
         public string SourceUrl;
         public string TutorialVideoUrl;
-        public KtaneTwitchPlays TwitchPlaysSupport;
+        public KtaneTwitchPlays TwitchPlaysSupport = KtaneTwitchPlays.NotSupported;
 
         public object Icon(KtaneWebConfigEntry config) => Path.Combine(config.ModIconDir, Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });

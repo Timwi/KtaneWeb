@@ -27,9 +27,9 @@
 
     public enum KtaneTwitchPlays
     {
-        [KtaneFilterOption("Supported")]
-        Supported,
         [KtaneFilterOption("Not supported")]
-        NotSupported
+        NotSupported,
+        [KtaneFilterOption("Supported")]
+        Supported
     }
 }

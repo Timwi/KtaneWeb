@@ -1,25 +1,25 @@
-// Handle access to localStorage
+﻿// Handle access to localStorage
 var lStorage = localStorage;
 
 try {
-	localStorage.setItem("testStorage", "testData");
-	localStorage.removeItem("testStorage");
+    localStorage.setItem("testStorage", "testData");
+    localStorage.removeItem("testStorage");
 } catch (e) {
-	lStorage = {
-		storage: {},
-		getItem: function(key) {
-			return this.storage[key] || undefined;
-		},
-		setItem: function(key, data) {
-			this.storage[key] = data;
-		},
-		removeItem: function(key) {
-			delete this.storage[key];
-		},
-		clear: function() {
-			this.storage = {};
-		}
-	};
+    lStorage = {
+        storage: {},
+        getItem: function(key) {
+            return this.storage[key] || null;
+        },
+        setItem: function(key, data) {
+            this.storage[key] = data;
+        },
+        removeItem: function(key) {
+            delete this.storage[key];
+        },
+        clear: function() {
+            this.storage = {};
+        }
+    };
 }
 
 // Change the theme CSS before the page renders
@@ -45,12 +45,15 @@ $(function() {
     function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var sorts = {
         'name': { fnc: function(elem) { return $(elem).data('sortkey'); }, bodyCss: 'sort-name', radioButton: '#sort-name' },
-        'defdiff': { fnc: function(elem) { return Ktane.Filters[2].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
-        'expdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
+        'defdiff': { fnc: function(elem) { return Ktane.Filters[0].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
+        'expdiff': { fnc: function(elem) { return Ktane.Filters[1].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
     };
     var sort = lStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
         sort = 'name';
+    var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'id', 'description'];
+    var display = ['author', 'type', 'difficulty'];
+    try { display = JSON.parse(lStorage.getItem('display')); } catch (exc) { }
 
     function setSelectable(sel) {
         selectable = sel;
@@ -77,6 +80,15 @@ $(function() {
 
         $(document.body).removeClass('sort-name sort-defdiff sort-expdiff').addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
+    }
+
+    function setDisplay(set) {
+        display = (set instanceof Array) ? set.filter(function(x) { return displays.indexOf(x) !== -1; }) : ['author', 'type', 'difficulty', 'twitch'];
+        $(document.body).removeClass(document.body.className.split(' ').filter(function(x) { return x.startsWith('display-'); }).join(' '));
+        $('input.display').prop('checked', false);
+        $(document.body).addClass(display.map(function(x) { return "display-" + x; }).join(' '));
+        $(display.map(function(x) { return '#display-' + x; }).join(',')).prop('checked', true);
+        lStorage.setItem('display', JSON.stringify(display));
     }
 
     function setTheme(theme) {
@@ -124,6 +136,8 @@ $(function() {
             noneSelected[Ktane.Filters[i].id] = none;
         }
 
+        var searchText = $("input#search-field").val().toLowerCase();
+
         $('tr.mod').each(function(_, e) {
             var data = $(e).data();
 
@@ -141,7 +155,7 @@ $(function() {
                         break;
                 }
             }
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || $(e).data(selectable)))
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && data.mod.toLowerCase().match(searchText) !== null)
                 $(e).show();
             else
                 $(e).hide();
@@ -213,6 +227,7 @@ $(function() {
     setPreferredManuals();
     setSort(sort);
     setTheme(theme);
+    setDisplay(display);
 
     var preventDisappear = 0;
     function disappear() {
@@ -231,29 +246,17 @@ $(function() {
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
+    $('input.display').click(function() { setDisplay(displays.filter(function(x) { return $('#display-' + x).prop('checked'); })); });
 
-	var searchField = $("input.search-field");
-	function updateSearch() {
-		var text = searchField.val().toLowerCase();
-		$(".mod").each(function() {
-			var element = $(this);
-			if (element.attr("data-mod").toLowerCase().match(text) === null) {
-				element.addClass("search-hidden");
-			} else {
-				element.removeClass("search-hidden");
-			}
-		});
-	}
+    $('input#search-field').on('input', function() { updateFilter(); });
+    $('#search-field-clear').click(function() { $('input#search-field').val(''); updateFilter(); return false; });
 
-	searchField.on("input", updateSearch);
-	$("input.filter").on("change", updateSearch);
-
-    // UI for selecting manuals/cheat sheets (both mobile and non)
     $('tr.mod').each(function(_, e) {
         var data = $(e).data();
         var mod = data.mod;
         var sheets = data.manual;
 
+        // Click handler for selecting manuals/cheat sheets (both mobile and non)
         function makeClickHander(lnk, isMobileOpt) {
             return function() {
                 disappear();
@@ -298,6 +301,7 @@ $(function() {
             };
         }
 
+        // Add UI for selecting manuals/cheat sheets (both mobile and non)
         if (sheets.length > 1) {
             var lnk1 = $('<a>').attr('href', '#').addClass('manual-selector').text('▼');
             $(e).find('a.manual').after(lnk1.click(makeClickHander(lnk1, false)));
@@ -305,6 +309,9 @@ $(function() {
 
         var lnk2 = $(e).find('a.mobile-opt');
         lnk2.click(makeClickHander(lnk2, true));
+
+        // Add a copy of the .infos divs from the last column into the next-to-last (used by medium-width layout only)
+        $('<div class="infos">').html($(e).find('td:nth-last-child(2)>div.infos').html()).appendTo($(e).find('td:nth-last-child(3)'));
     });
 
     // Page options pop-up (mobile only)
@@ -327,8 +334,8 @@ $(function() {
     $('#more>.close').click(disappear);
 
     // Links in the table headers (not visible on mobile UI)
-    $('#sort-by-name').click(function() { setSort('name'); return false; });
-    $('#sort-by-difficulty').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : sort === 'expdiff' ? 'name' : 'defdiff'); return false; });
+    $('#sort-by-name').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : sort === 'expdiff' ? 'name' : 'defdiff'); return false; });
+    $('#sort-by-difficulty').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : 'defdiff'); return false; });
 
     // Radio buttons (visible only on mobile UI)
     $('#sort-name').click(function() { setSort('name'); return true; });

@@ -11,13 +11,13 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule : PropellerModuleBase<KtaneSettings>
     {
-        public override string Name => "Keep Talking and Nobody Explodes — Mods and Modules";
+        public override string Name => "Repository of Manual Pages for Keep Talking and Nobody Explodes";
 
         private KtaneWebConfig _config;
 
         public override HttpResponse Handle(HttpRequest request)
         {
-            var auth = _config.UsersFile?.Apply(file => new FileAuthenticator(file, _ => request.Url.WithPath("").ToHref(), "KTANE Web"));
+            var auth = _config.UsersFile?.Apply(file => new FileAuthenticator(file, _ => request.Url.WithPath("").ToHref(), "Repository of Manual Pages"));
 
             return new KtaneWebSession(_config).EnableAutomatic(request, session =>
             {
