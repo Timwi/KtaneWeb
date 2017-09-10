@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;

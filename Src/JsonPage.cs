@@ -15,6 +15,9 @@ namespace KtaneWeb
     {
         private HttpResponse jsonPage(HttpRequest req, KtaneWebSession session)
         {
+            if (req.Url.Path == "/raw")
+                return HttpResponse.Json(ClassifyJson.Serialize(_config.Current), HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
+
             var editable = session.Username != null && _config.Current.AllowedEditors.Contains(session.Username);
             int ix;
             Match match;
