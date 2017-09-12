@@ -10,11 +10,13 @@ namespace KtaneWeb
 {
     static class Extensions
     {
-        public static object Accel(this string str, char accel)
+        public static object Accel(this string str, char? accel)
         {
-            var pos = str.IndexOf(accel);
+            if (accel == null)
+                return str;
+            var pos = str.IndexOf(accel.Value);
             if (pos == -1)
-                return new object[] { str, " (", new KBD(char.ToLowerInvariant(accel)), ")" };
+                return new object[] { str, " (", new KBD(char.ToLowerInvariant(accel.Value)), ")" };
             return new object[] { str.Substring(0, pos), new KBD(accel), str.Substring(pos + 1) };
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -13,30 +14,30 @@ namespace KtaneWeb
         {
             // Access keys:
             // A    Logfile Analyzer
-            // B
-            // C
+            // B    include/exclude bomb rooms
+            // C    link to Source code
             // D    sort by defuser difficulty
             // E    sort by expert difficulty
             // F
-            // G
-            // H
-            // I    Include missing
+            // G    
+            // H    include/exclude other type of mod
+            // I    include missing
             // J    JSON
             // K    Dark Theme
             // L    Light Theme
-            // M    Manual
+            // M    include/exclude mods
             // N    sort by name
-            // O    Mods
+            // O    include/exclude mission packs
             // P    Profile Editor
             // Q
-            // R    Regular
-            // S    Source code
-            // T    Tutorial video
-            // U
-            // V    Vanilla
-            // W    Steam Workshop Item
+            // R    include/exclude regular modules
+            // S    link to Steam Workshop item
+            // T    link to Tutorial video
+            // U    link to Manual
+            // V    include/exclude vanilla
+            // W    include/exclude widgets
             // X
-            // Y    Needy
+            // Y    include/exclude needy modules
             // Z
             // .    More
 
@@ -46,7 +47,7 @@ namespace KtaneWeb
                 new Selectable
                 {
                     HumanReadable = "Manual",
-                    Accel = 'M',
+                    Accel = 'u',
                     Icon = mod => new IMG { class_ = "icon manual-icon", title = "Manual", alt = "Manual", src = sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["icon"].GetString() : null },
                     DataAttributeName = "manual",
                     DataAttributeValue = mod => sheets.Get(mod.Name, null)?.ToString(),
@@ -57,7 +58,7 @@ namespace KtaneWeb
                 new Selectable
                 {
                     HumanReadable = "Steam Workshop",
-                    Accel = 'W',
+                    Accel = 'S',
                     Icon = mod => new IMG { class_ = "icon", title = "Steam Workshop", alt = "Steam Workshop", src = "HTML/img/steam-workshop-item.png" },
                     DataAttributeName = "steam",
                     DataAttributeValue = mod => mod.SteamID?.Apply(s => $"http://steamcommunity.com/sharedfiles/filedetails/?id={s}"),
@@ -67,7 +68,7 @@ namespace KtaneWeb
                 new Selectable
                 {
                     HumanReadable = "Source code",
-                    Accel = 'S',
+                    Accel = 'c',
                     Icon = mod => new IMG { class_ = "icon", title = "Source code", alt = "Source code", src = "HTML/img/unity.png" },
                     DataAttributeName = "source",
                     DataAttributeValue = mod => mod.SourceUrl,
@@ -86,20 +87,20 @@ namespace KtaneWeb
                 });
 
             var filters = Ut.NewArray(
-                KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
-                KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty),
-                KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
                 KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
-                KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport));
+                KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
+                KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport),
+                KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
+                KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty));
 
             var displays = Ut.NewArray(
-                new { Readable = "Author", Id = "author" },
+                new { Readable = "Description", Id = "description" },
+                //new { Readable = "Author", Id = "author" },
                 //new { Readable = "Type", Id = "type" },
+                new { Readable = "Difficulty", Id = "difficulty" },
                 new { Readable = "Origin", Id = "origin" },
-                //new { Readable = "Difficulty", Id = "difficulty" },
                 new { Readable = "Twitch support", Id = "twitch" },
-                new { Readable = "Module ID", Id = "id" },
-                new { Readable = "Description", Id = "description" });
+                new { Readable = "Module ID", Id = "id" });
 
             var cssLink = req.Url.WithParent("css");
 #if DEBUG
@@ -163,12 +164,12 @@ namespace KtaneWeb
                                             new TD(new DIV { class_ = "infos" }._(
                                                 new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
                                                 new DIV { class_ = "inf-origin" }._(mod.Origin.ToString()),
-                                                new DIV { class_ = "inf-twitch" },
+                                                mod.Type != KtaneModuleType.Regular && mod.Type != KtaneModuleType.Needy ? null : mod.DefuserDifficulty == mod.ExpertDifficulty
+                                                    ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()))
+                                                    : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.Value.ToReadable()), " (e)"),
                                                 new DIV { class_ = "inf-author" }._(mod.Author),
-                                                mod.DefuserDifficulty == mod.ExpertDifficulty
-                                                    ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()))
-                                                    : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.ToReadable()), " (e)"),
-                                                new DIV { class_ = "inf-id" }._(mod.ModuleID),
+                                                new DIV { class_ = "inf-twitch" },
+                                                mod.ModuleID.NullOr(id => new DIV { class_ = "inf-id" }._(id)),
                                                 new DIV { class_ = "inf-description" }._(mod.Description))),
                                             new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" })))),
 
@@ -204,7 +205,7 @@ namespace KtaneWeb
                                         new H4("Make links go to:"),
                                         selectables.Select(sel => new DIV(
                                             new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName), " ",
-                                            new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
+                                            new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                         new DIV { id = "include-missing" }._(
                                             new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
                                             new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I'))))),

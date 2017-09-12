@@ -2,17 +2,25 @@
 {
     public enum KtaneModuleType
     {
-        [KtaneFilterOption("Regular", 'R')]
+        [KtaneFilterOption("Regular module", 'R')]
         Regular,
-        [KtaneFilterOption("Needy", 'y')]
-        Needy
+        [KtaneFilterOption("Needy module", 'y')]
+        Needy,
+        [KtaneFilterOption("Widget", 'W')]
+        Widget,
+        [KtaneFilterOption("Bomb Room", 'B')]
+        Room,
+        [KtaneFilterOption("Missions", 'o')]
+        Missions,
+        [KtaneFilterOption("Other", 'h')]
+        Other
     }
 
     public enum KtaneModuleOrigin
     {
         [KtaneFilterOption("Vanilla", 'V')]
         Vanilla,
-        [KtaneFilterOption("Mods", 'o')]
+        [KtaneFilterOption("Mods", 'M')]
         Mods
     }
 

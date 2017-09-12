@@ -52,8 +52,18 @@ $(function() {
     if (!(sort in sorts))
         sort = 'name';
     var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'id', 'description'];
-    var display = ['author', 'type', 'difficulty'];
+    var defaultDisplay = ['author', 'type', 'difficulty', 'description'];
+    var display = defaultDisplay;
     try { display = JSON.parse(lStorage.getItem('display')); } catch (exc) { }
+
+    var version = lStorage.getItem('version');
+    if (version < 2) {
+        sort = 'name';
+        selectable = 'manual';
+        display = defaultDisplay;
+        filter = {};
+    }
+    lStorage.setItem('version', '2');
 
     function setSelectable(sel) {
         selectable = sel;
@@ -83,7 +93,7 @@ $(function() {
     }
 
     function setDisplay(set) {
-        display = (set instanceof Array) ? set.filter(function(x) { return displays.indexOf(x) !== -1; }) : ['author', 'type', 'difficulty', 'twitch'];
+        display = (set instanceof Array) ? set.filter(function(x) { return displays.indexOf(x) !== -1; }) : defaultDisplay;
         $(document.body).removeClass(document.body.className.split(' ').filter(function(x) { return x.startsWith('display-'); }).join(' '));
         $('input.display').prop('checked', false);
         $(document.body).addClass(display.map(function(x) { return "display-" + x; }).join(' '));
@@ -143,16 +153,18 @@ $(function() {
 
             var filteredIn = true;
             for (var i = 0; i < Ktane.Filters.length; i++) {
-                switch (Ktane.Filters[i].type) {
-                    case "slider":
-                        filteredIn = filteredIn && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) >= filter[Ktane.Filters[i].id].min && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) <= filter[Ktane.Filters[i].id].max;
-                        break;
-                    case "checkboxes":
-                        filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id]);
-                        break;
-                    case "boolean":
-                        filteredIn = filteredIn && (!filter[Ktane.Filters[i].id] || data[Ktane.Filters[i].id] === 'True');
-                        break;
+                if (Ktane.Filters[i].id in data) {
+                    switch (Ktane.Filters[i].type) {
+                        case "slider":
+                            filteredIn = filteredIn && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) >= filter[Ktane.Filters[i].id].min && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) <= filter[Ktane.Filters[i].id].max;
+                            break;
+                        case "checkboxes":
+                            filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id]);
+                            break;
+                        case "boolean":
+                            filteredIn = filteredIn && (!filter[Ktane.Filters[i].id] || data[Ktane.Filters[i].id] === 'True');
+                            break;
+                    }
                 }
             }
             if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && data.mod.toLowerCase().match(searchText) !== null)
@@ -246,7 +258,7 @@ $(function() {
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
-    $('input.display').click(function() { setDisplay(displays.filter(function(x) { return $('#display-' + x).prop('checked'); })); });
+    $('input.display').click(function() { setDisplay(displays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
 
     $('input#search-field').on('input', function() { updateFilter(); });
     $('#search-field-clear').click(function() { $('input#search-field').val(''); updateFilter(); return false; });
@@ -324,8 +336,15 @@ $(function() {
     $('#more-link').click(function() {
         if (!$('#more').is(':visible')) {
             $('#more').show();
-            var pos = $('#more-tab').position();
-            $('#more').css({ left: pos.left + $('#more-tab').outerWidth() - $('#more').outerWidth(), top: pos.top + $('#more-tab').outerHeight() });
+            if ($(window).width() <= 650) {
+                // Mobile interface: CSS does it all
+                $('#more').css({ width: '', left: '', top: '' });
+            } else {
+                // Desktop interface: position relative to the tab
+                $('#more').css({ width: '90%' });
+                var pos = $('#more-tab').position();
+                $('#more').css({ left: pos.left + $('#more-tab').outerWidth() - $('#more').outerWidth(), top: pos.top + $('#more-tab').outerHeight() });
+            }
         }
         else
             disappear();

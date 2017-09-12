@@ -109,12 +109,12 @@ td:nth-last-child(3) div.infos {
     margin-left: 2.8em;
 }
 
-div.infos .inf-origin, div.infos .inf-type, div.infos .inf-author, div.infos .inf-difficulty {
+div.infos .inf-type, div.infos .inf-origin, div.infos .inf-author, div.infos .inf-difficulty {
     display: inline;
 }
 
-    div.infos .inf-origin::before, div.infos .inf-twitch::before, div.infos .inf-author::before {
-        content: ' • ';
+    div.infos .inf-origin::before, div.infos .inf-difficulty::before, div.infos .inf-twitch::before {
+        content: ' • ';
     }
 
 div.infos .inf-twitch {
@@ -129,13 +129,9 @@ div.infos .inf-author {
 }
 
     div.infos .inf-author::before {
-        content: ' • by ';
+        content: '\000a by ';
+        white-space: pre;
     }
-
-div.infos .inf-difficulty::before {
-    content: '\000a';
-    white-space: pre;
-}
 
 div.infos .inf-difficulty .inf-difficulty-sub {
     font-weight: bold;
@@ -152,7 +148,7 @@ td:nth-last-child(3) div.infos > .inf-description {
     color: #888;
 }
 
-body:not(.display-author) div.infos .inf-author,
+body:not(.display-difficulty) div.infos .inf-difficulty,
 body:not(.display-origin) div.infos .inf-origin,
 body:not(.display-twitch) div.infos .inf-twitch,
 body:not(.display-id) div.infos .inf-id,
@@ -247,7 +243,6 @@ body.sort-expdiff #main-table th:nth-child(3)::after {
 
 #more {
     display: none;
-    width: 90%;
 }
 
     /* Lay out the displays/themes/filters/selectables in a four-column way */
@@ -255,7 +250,7 @@ body.sort-expdiff #main-table th:nth-child(3)::after {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        height: 17.5em;
+        height: 19.5em;
         border-bottom: 1px solid #ccf;
     }
 
@@ -454,8 +449,8 @@ pre.diff {
     }
 
     td:nth-last-child(3) div.infos > div.inf-type,
-    td:nth-last-child(3) div.infos > div.inf-difficulty,
-    body.display-author td:nth-last-child(3) div.infos > div.inf-author,
+    td:nth-last-child(3) div.infos > div.inf-author,
+    body.display-difficulty td:nth-last-child(3) div.infos > div.inf-difficulty,
     body.display-origin td:nth-last-child(3) div.infos > div.inf-origin,
     body.display-id td:nth-last-child(3) div.infos > div.inf-id {
         display: inline;
@@ -491,7 +486,7 @@ pre.diff {
 
     /* Lay out the filters in a two-column way */
     #more > div.filters {
-        height: 27em;
+        height: 32em;
     }
 
         #more > div.filters > div {
@@ -549,6 +544,7 @@ pre.diff {
             position: relative;
             clear: both;
             border-top: 1px solid #ccc;
+            min-height: 2em;
         }
 
         #main-table td {
@@ -586,7 +582,8 @@ pre.diff {
         #main-table td:nth-last-child(2) {
             position: absolute;
             right: 15px;
-            top: 2.5px;
+            top: 50%;
+            transform: translateY(-50%);
             text-align: right;
         }
 
@@ -625,16 +622,20 @@ pre.diff {
                 height: 25pt;
             }
 
+        #main-table td:nth-last-child(2) .inf-difficulty::before {
+            content: '\000a';
+            white-space: pre;
+        }
+
+    body.display-id #main-table tr.mod {
+        min-height: 2.5em;
+    }
+
     body:not(.display-description) #main-table div.modlink-wrap a.modlink .mod-name {
         position: absolute;
         left: 2.5em;
         top: 1.1em;
         transform: translateY(-50%);
-    }
-
-    body:not(.display-id) #main-table td:nth-last-child(2) .inf-author::before {
-        content: '\000a by ';
-        white-space: pre;
     }
 
     body.display-description #main-table div.modlink-wrap a.modlink .mod-icon {
@@ -690,48 +691,44 @@ pre.diff {
         display: none;
     }
 
-    #more {
-        width: auto;
+    #more > div.filters {
+        font-size: 75%;
+        height: 45em;
     }
 
-        #more > div.filters {
-            font-size: 75%;
-            height: 32em;
+        #more > div.filters > div {
+            padding: 0 1.5em;
         }
 
-            #more > div.filters > div {
-                padding: 0 2.3em;
-            }
+    #more > div.icons > div.icon {
+        margin: 0 1.1em;
+    }
 
-        #more > div.icons > div.icon {
-            margin: 0 1.1em;
+        #more > div.icons > div.icon > a > img {
+            width: 32px;
         }
 
-            #more > div.icons > div.icon > a > img {
-                width: 32px;
-            }
-
-            #more > div.icons > div.icon > a > span {
-                font-size: 80%;
-                width: 150%;
-            }
-
-        #more div.highlighting-controls {
-            display: none;
+        #more > div.icons > div.icon > a > span {
+            font-size: 80%;
+            width: 150%;
         }
 
-        #more > div.dev {
-            list-style: disc;
-            text-align: left;
-            padding-left: 1.5em;
-        }
+    #more div.highlighting-controls {
+        display: none;
+    }
 
-            #more > div.dev > span.dev-link, #more > div.dev > span.dev-link + span.dev-link {
-                display: list-item;
-                padding: 0;
-                margin: .7em 0;
-                border: none;
-            }
+    #more > div.dev {
+        list-style: disc;
+        text-align: left;
+        padding-left: 1.5em;
+    }
+
+        #more > div.dev > span.dev-link, #more > div.dev > span.dev-link + span.dev-link {
+            display: list-item;
+            padding: 0;
+            margin: .7em 0;
+            border: none;
+        }
 
     div.popup {
         padding: 1.5em .5em;
