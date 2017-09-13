@@ -24,6 +24,7 @@ td, th {
     border: 1px solid black;
     vertical-align: middle;
     padding: .2em .7em;
+    position: relative;
 }
 
 img.icon {
@@ -32,11 +33,13 @@ img.icon {
 }
 
 .manual-selector {
-    font-size: 70%;
+    font-size: 200%;
     text-decoration: none;
-    color: black;
-    vertical-align: middle;
-    margin: 0 0 0 -.2em;
+    color: #ddd;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 kbd {
@@ -105,7 +108,7 @@ div.infos {
     font-size: 85%;
 }
 
-td:nth-last-child(3) div.infos {
+td.infos-1 div.infos {
     margin-left: 2.8em;
 }
 
@@ -142,7 +145,7 @@ div.infos .inf-id {
     font-family: Consolas, 'DejaVu Sans Mono', monospace;
 }
 
-td:nth-last-child(3) div.infos > .inf-description {
+td.infos-1 div.infos > .inf-description {
     display: block;
     font-size: 90%;
     color: #888;
@@ -156,7 +159,7 @@ body:not(.display-description) div.infos .inf-description {
     display: none;
 }
 
-td:nth-last-child(2) div.infos > .inf-description, td:nth-last-child(3) div.infos > div, tr.mod[data-twitchplays='NotSupported'] div.infos .inf-twitch {
+td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod[data-twitchplays='NotSupported'] div.infos .inf-twitch {
     display: none;
 }
 
@@ -164,19 +167,19 @@ td:nth-last-child(2) div.infos > .inf-description, td:nth-last-child(3) div.info
     margin-top: .5em;
 }
 
-#main-table th, #main-table td:nth-last-child(2) {
+#main-table th, #main-table td.infos-2 {
     white-space: nowrap;
 }
 
-body.sort-name #main-table th:nth-child(2)::after {
+body.sort-name #main-table th.modlink::after {
     content: '   • sorted by name';
 }
 
-body.sort-defdiff #main-table th:nth-child(3)::after {
+body.sort-defdiff #main-table th.infos::after {
     content: '   • sorted by defuser difficulty';
 }
 
-body.sort-expdiff #main-table th:nth-child(3)::after {
+body.sort-expdiff #main-table th.infos::after {
     content: '   • sorted by expert difficulty';
 }
 
@@ -308,6 +311,11 @@ div.popup {
         margin: .1em .25em;
     }
 
+        div.popup p.manual-select span.arrow {
+            position: relative;
+            top: .4em;
+        }
+
     div.popup menu.manual-select {
         margin: 0;
         list-style: none;
@@ -421,66 +429,66 @@ pre.diff {
         margin: -3.5em 0 5.5em 0;
     }
 
-    table#main-table td:nth-last-child(2), th:last-child {
+    td.infos-2, th.infos {
         display: none;
     }
 
-    td:nth-last-child(3) div.modlink-wrap {
+    td.infos-1 div.modlink-wrap {
         margin: 0;
     }
 
-        td:nth-last-child(3) div.modlink-wrap img.mod-icon {
+        td.infos-1 div.modlink-wrap img.mod-icon {
             float: left;
             margin: .1em .5em 0 0 !important;
         }
 
-        td:nth-last-child(3) div.modlink-wrap a.modlink .mod-name {
+        td.infos-1 div.modlink-wrap a.modlink .mod-name {
             display: block;
             margin: 0;
         }
 
-    td:nth-last-child(3) div.infos {
+    td.infos-1 div.infos {
         padding: .1em 0;
         position: relative;
     }
 
-    body.display-twitch td:nth-last-child(3) div.infos > .inf-twitch {
+    body.display-twitch td.infos-1 div.infos > .inf-twitch {
         display: inline-block !important;
     }
 
-    td:nth-last-child(3) div.infos > div.inf-type,
-    td:nth-last-child(3) div.infos > div.inf-author,
-    body.display-difficulty td:nth-last-child(3) div.infos > div.inf-difficulty,
-    body.display-origin td:nth-last-child(3) div.infos > div.inf-origin,
-    body.display-id td:nth-last-child(3) div.infos > div.inf-id {
+    td.infos-1 div.infos > div.inf-type,
+    td.infos-1 div.infos > div.inf-author,
+    body.display-difficulty td.infos-1 div.infos > div.inf-difficulty,
+    body.display-origin td.infos-1 div.infos > div.inf-origin,
+    body.display-id td.infos-1 div.infos > div.inf-id {
         display: inline;
     }
 
-    body.display-description td:nth-last-child(3) div.infos > div.inf-description {
+    body.display-description td.infos-1 div.infos > div.inf-description {
         display: block;
     }
 
-    td:nth-last-child(3) div.infos > div:not(.inf-description):not(.inf-type):not(.inf-author)::before {
+    td.infos-1 div.infos > div:not(.inf-description):not(.inf-type):not(.inf-author)::before {
         content: ' • ';
     }
 
-    td:nth-last-child(3) div.infos > div.inf-author::before {
+    td.infos-1 div.infos > div.inf-author::before {
         content: ' • by ';
     }
 
-    td:nth-last-child(3) div.infos {
+    td.infos-1 div.infos {
         margin-left: 3em;
     }
 
-    body.sort-name th:nth-last-child(2)::after {
+    body.sort-name th.infos::after {
         content: '   • sorted by name';
     }
 
-    body.sort-defdiff th:nth-last-child(2)::after {
+    body.sort-defdiff th.infos::after {
         content: '   • sorted by defuser difficulty';
     }
 
-    body.sort-expdiff th:nth-last-child(2)::after {
+    body.sort-expdiff th.infos::after {
         content: '   • sorted by expert difficulty';
     }
 
@@ -525,7 +533,7 @@ pre.diff {
         display: none;
     }
 
-    #main-table td:nth-last-child(3) div.infos {
+    #main-table td.infos-1 div.infos {
         margin-left: 3.5em;
     }
 
@@ -579,7 +587,7 @@ pre.diff {
                     display: block;
                 }
 
-        #main-table td:nth-last-child(2) {
+        #main-table td.infos-2 {
             position: absolute;
             right: 15px;
             top: 50%;
@@ -587,24 +595,24 @@ pre.diff {
             text-align: right;
         }
 
-            #main-table td:nth-last-child(2) .inf-twitch {
+            #main-table td.infos-2 .inf-twitch {
                 position: relative;
                 width: 19px;
                 height: 8px;
                 background-size: 8px 8px;
             }
 
-                #main-table td:nth-last-child(2) .inf-twitch::before {
+                #main-table td.infos-2 .inf-twitch::before {
                     position: absolute;
                     left: 0;
                     top: 0;
                 }
 
-            #main-table td:nth-last-child(2) div.infos {
+            #main-table td.infos-2 div.infos {
                 font-size: 80%;
             }
 
-                #main-table td:nth-last-child(2) div.infos .inf-author {
+                #main-table td.infos-2 div.infos .inf-author {
                     font-size: 95%;
                 }
 
@@ -622,7 +630,7 @@ pre.diff {
                 height: 25pt;
             }
 
-        #main-table td:nth-last-child(2) .inf-difficulty::before {
+        #main-table td.infos-2 .inf-difficulty::before {
             content: '\000a';
             white-space: pre;
         }
@@ -642,7 +650,7 @@ pre.diff {
         margin: 1px .5em 1px 0;
     }
 
-    body.display-description #main-table td:nth-last-child(3) div.infos .inf-description {
+    body.display-description #main-table td.infos-1 div.infos .inf-description {
         display: block;
         width: 25em;
         line-height: 1;

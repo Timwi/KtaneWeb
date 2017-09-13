@@ -45,8 +45,8 @@ $(function() {
     function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var sorts = {
         'name': { fnc: function(elem) { return $(elem).data('sortkey'); }, bodyCss: 'sort-name', radioButton: '#sort-name' },
-        'defdiff': { fnc: function(elem) { return Ktane.Filters[0].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
-        'expdiff': { fnc: function(elem) { return Ktane.Filters[1].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
+        'defdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
+        'expdiff': { fnc: function(elem) { return Ktane.Filters[4].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
     };
     var sort = lStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
@@ -307,23 +307,23 @@ $(function() {
                 $(document.body).append(menuDiv);
                 if (!isMobileOpt) {
                     var pos = $(lnk).offset();
-                    menuDiv.css({ left: pos.left, top: pos.top + $(lnk).height() });
+                    menuDiv.css({ left: pos.left + $(lnk).outerWidth() - $(menuDiv).outerWidth(), top: pos.top + $(lnk).height() });
                 }
                 return false;
             };
         }
 
+        // Add a copy of the .infos divs from the last column into the next-to-last (used by medium-width layout only)
+        $(e).find('td.infos-1').append($('<div class="infos">').html($(e).find('td.infos-2>div.infos').html()));
+
         // Add UI for selecting manuals/cheat sheets (both mobile and non)
         if (sheets.length > 1) {
             var lnk1 = $('<a>').attr('href', '#').addClass('manual-selector').text('▼');
-            $(e).find('a.manual').after(lnk1.click(makeClickHander(lnk1, false)));
+            $(e).find('td.infos-1').append(lnk1.click(makeClickHander(lnk1, false)));
         }
 
         var lnk2 = $(e).find('a.mobile-opt');
         lnk2.click(makeClickHander(lnk2, true));
-
-        // Add a copy of the .infos divs from the last column into the next-to-last (used by medium-width layout only)
-        $('<div class="infos">').html($(e).find('td:nth-last-child(2)>div.infos').html()).appendTo($(e).find('td:nth-last-child(3)'));
     });
 
     // Page options pop-up (mobile only)

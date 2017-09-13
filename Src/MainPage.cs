@@ -16,10 +16,10 @@ namespace KtaneWeb
             // A    Logfile Analyzer
             // B    include/exclude bomb rooms
             // C    link to Source code
-            // D    sort by defuser difficulty
+            // D    include/exclude sound packs
             // E    sort by expert difficulty
-            // F
-            // G    
+            // F    sort by defuser difficulty
+            // G    include/exclude bomb casings
             // H    include/exclude other type of mod
             // I    include missing
             // J    JSON
@@ -160,8 +160,8 @@ namespace KtaneWeb
                                         .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                         ._(
                                             selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) + sel.CssClass?.Apply(c => " " + c) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
-                                            new TD(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
-                                            new TD(new DIV { class_ = "infos" }._(
+                                            new TD { class_ = "infos-1" }._(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
+                                            new TD { class_ = "infos-2" }._(new DIV { class_ = "infos" }._(
                                                 new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
                                                 new DIV { class_ = "inf-origin" }._(mod.Origin.ToString()),
                                                 mod.Type != KtaneModuleType.Regular && mod.Type != KtaneModuleType.Needy ? null : mod.DefuserDifficulty == mod.ExpertDifficulty
@@ -197,7 +197,7 @@ namespace KtaneWeb
                                             new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
                                         new DIV(
                                             new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defuser-difficulty", class_ = "sort", type = itype.radio },
-                                            new LABEL { for_ = "sort-defuser-difficulty", accesskey = "d" }._("\u00a0Sort by defuser difficulty".Accel('d'))),
+                                            new LABEL { for_ = "sort-defuser-difficulty", accesskey = "f" }._("\u00a0Sort by defuser difficulty".Accel('f'))),
                                         new DIV(
                                             new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expert-difficulty", class_ = "sort", type = itype.radio },
                                             new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e')))),
