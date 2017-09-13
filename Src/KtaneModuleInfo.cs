@@ -9,7 +9,7 @@ namespace KtaneWeb
 {
 #pragma warning disable 0649 // Field is never assigned to, and will always have its default value
 
-    sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IClassifyJsonObjectProcessor
+    sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IClassifyObjectProcessor
     {
         public string Name;
         public string Description;
@@ -54,14 +54,11 @@ namespace KtaneWeb
         public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
-        void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
-        void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element) { }
-        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
-
-        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element)
+        void IClassifyObjectProcessor.BeforeSerialize() { }
+        void IClassifyObjectProcessor.AfterDeserialize()
         {
-            if (element.ContainsKey("HasTwitchPlaysSupport"))
-                TwitchPlaysSupport = (element["HasTwitchPlaysSupport"].GetBoolLenientSafe() ?? false) ? KtaneTwitchPlays.Supported : KtaneTwitchPlays.NotSupported;
+            if (SortKey == null)
+                SortKey = Name;
         }
     }
 

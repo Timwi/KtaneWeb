@@ -44,7 +44,7 @@ $(function() {
 
     function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var sorts = {
-        'name': { fnc: function(elem) { return $(elem).data('sortkey'); }, bodyCss: 'sort-name', radioButton: '#sort-name' },
+        'name': { fnc: function(elem) { return $(elem).data('sortkey').toLowerCase(); }, bodyCss: 'sort-name', radioButton: '#sort-name' },
         'defdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
         'expdiff': { fnc: function(elem) { return Ktane.Filters[4].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
     };
@@ -183,6 +183,12 @@ $(function() {
                 return;
 
             var manual = data.manual[0];
+            for (var i = 0; i < data.manual.length; i++)
+                if (data.manual[i].name === data.mod + " (PDF)")
+                    manual = data.manual[i];
+            for (var i = 0; i < data.manual.length; i++)
+                if (data.manual[i].name === data.mod + " (HTML)")
+                    manual = data.manual[i];
             if (data.mod in preferredManuals)
                 for (var i = 0; i < data.manual.length; i++)
                     if (preferredManuals[data.mod] === data.manual[i].name)

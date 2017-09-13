@@ -149,6 +149,7 @@ td.infos-1 div.infos > .inf-description {
     display: block;
     font-size: 90%;
     color: #888;
+    padding-right: 2em;
 }
 
 body:not(.display-difficulty) div.infos .inf-difficulty,
