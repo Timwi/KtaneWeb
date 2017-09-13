@@ -267,7 +267,7 @@ $(function() {
     $('input.display').click(function() { setDisplay(displays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
 
     $('input#search-field').on('input', function() { updateFilter(); });
-    $('#search-field-clear').click(function() { $('input#search-field').val(''); updateFilter(); return false; });
+    $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
 
     $('tr.mod').each(function(_, e) {
         var data = $(e).data();
@@ -341,6 +341,7 @@ $(function() {
 
     $('#more-link').click(function() {
         if (!$('#more').is(':visible')) {
+            disappear();
             $('#more').show();
             if ($(window).width() <= 650) {
                 // Mobile interface: CSS does it all
