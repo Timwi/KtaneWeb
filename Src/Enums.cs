@@ -8,9 +8,9 @@
         Needy,
         [KtaneFilterOption("Widget", 'W')]
         Widget,
-        [KtaneFilterOption("Bomb room", 'B')]
+        [KtaneFilterOption("Gameplay room", 'G')]
         Room,
-        [KtaneFilterOption("Bomb casing", 'g')]
+        [KtaneFilterOption("Bomb casing", 'B')]
         Casing,
         [KtaneFilterOption("Mission pack", 'o')]
         Missions,

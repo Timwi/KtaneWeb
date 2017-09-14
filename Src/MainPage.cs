@@ -14,12 +14,12 @@ namespace KtaneWeb
         {
             // Access keys:
             // A    Logfile Analyzer
-            // B    include/exclude bomb rooms
+            // B    include/exclude bomb casings
             // C    link to Source code
             // D    include/exclude sound packs
             // E    sort by expert difficulty
             // F    sort by defuser difficulty
-            // G    include/exclude bomb casings
+            // G    include/exclude gameplay rooms
             // H    include/exclude other type of mod
             // I    include missing
             // J    JSON
