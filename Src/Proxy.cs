@@ -17,7 +17,7 @@ namespace KtaneWeb
             if (!_proxyAllowedUrlPrefixes.Any(url.StartsWith))
                 throw new HttpException(HttpStatusCode._403_Forbidden);
             try { return HttpResponse.PlainText(new HClient().Get(url).DataString); }
-            catch (Exception e) { return HttpResponse.PlainText($"{e.Message} ({e.GetType().FullName})", HttpStatusCode._500_InternalServerError); }
+            catch (Exception e) { return HttpResponse.PlainText($"{e.Message} ({e.GetType().FullName})", HttpStatusCode._503_ServiceUnavailable); }
         }
     }
 }

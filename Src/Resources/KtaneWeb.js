@@ -369,4 +369,5 @@ $(function() {
     $('#sort-expert-difficulty').click(function() { setSort('expdiff'); return true; });
 
     $('#more').click(function() { preventDisappear++; });
+    $('#main-table').css({ display: 'table' });
 });

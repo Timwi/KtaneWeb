@@ -20,6 +20,10 @@ table {
     width: 100%;
 }
 
+    table#main-table {
+        display: none;
+    }
+
 td, th {
     border: 1px solid black;
     vertical-align: middle;
@@ -160,7 +164,7 @@ body:not(.display-description) div.infos .inf-description {
     display: none;
 }
 
-td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod[data-twitchplays='NotSupported'] div.infos .inf-twitch {
+td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod:not([data-twitchplays='Supported']) div.infos .inf-twitch {
     display: none;
 }
 

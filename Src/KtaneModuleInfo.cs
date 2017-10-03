@@ -59,6 +59,19 @@ namespace KtaneWeb
         {
             if (SortKey == null)
                 SortKey = Name;
+
+            if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy)
+            {
+                DefuserDifficulty = DefuserDifficulty ?? KtaneModuleDifficulty.Easy;
+                ExpertDifficulty = ExpertDifficulty ?? KtaneModuleDifficulty.Easy;
+                TwitchPlaysSupport = TwitchPlaysSupport ?? KtaneTwitchPlays.NotSupported;
+            }
+            else
+            {
+                DefuserDifficulty = null;
+                ExpertDifficulty = null;
+                TwitchPlaysSupport = null;
+            }
         }
     }
 
