@@ -339,25 +339,27 @@ $(function() {
         return false;
     });
 
-    $('#more-link').click(function() {
-        if (!$('#more').is(':visible')) {
+    function popup(lnk, wnd, width) {
+        if (!wnd.is(':visible')) {
             disappear();
-            $('#more').show();
+            wnd.show();
             if ($(window).width() <= 650) {
                 // Mobile interface: CSS does it all
-                $('#more').css({ width: '', left: '', top: '' });
+                wnd.css({ width: '', left: '', top: '' });
             } else {
                 // Desktop interface: position relative to the tab
-                $('#more').css({ width: '90%' });
-                var pos = $('#more-tab').position();
-                $('#more').css({ left: pos.left + $('#more-tab').outerWidth() - $('#more').outerWidth(), top: pos.top + $('#more-tab').outerHeight() });
+                wnd.css({ width: width }).position({ my: 'right top', at: 'right bottom', of: lnk });
             }
         }
         else
             disappear();
         return false;
-    });
-    $('#more>.close').click(disappear);
+    }
+
+    $('#more-link').click(function() { return popup($('#more-tab'), $('#more'), '90%'); });
+    $('#profiles-link').click(function() { return popup($('#profiles-rel'), $('#profiles-menu'), '25em'); });
+
+    $('.popup>.close').click(disappear);
 
     // Links in the table headers (not visible on mobile UI)
     $('#sort-by-name').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : sort === 'expdiff' ? 'name' : 'defdiff'); return false; });
@@ -368,6 +370,6 @@ $(function() {
     $('#sort-defuser-difficulty').click(function() { setSort('defdiff'); return true; });
     $('#sort-expert-difficulty').click(function() { setSort('expdiff'); return true; });
 
-    $('#more').click(function() { preventDisappear++; });
+    $('#more,#profiles-menu').click(function() { preventDisappear++; });
     $('#main-table').css({ display: 'table' });
 });

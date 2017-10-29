@@ -134,7 +134,7 @@ namespace KtaneWeb
                             new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial Videos Playlist"))),
                             new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1zObWfLI8RMiNL1b6AXfiy4cwjGD9H3oStPiZaEOS5Lc" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Entering the World of Mods"))),
                             new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer".Accel('A')))),
-                            new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", accesskey = "p" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN("Profile Editor".Accel('P')))),
+                            new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN { id = "profiles-rel" }._("Profiles"))),
                             new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
@@ -172,6 +172,20 @@ namespace KtaneWeb
                                                 mod.ModuleID.NullOr(id => new DIV { class_ = "inf-id" }._(id)),
                                                 new DIV { class_ = "inf-description" }._(mod.Description))),
                                             new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" })))),
+
+                        new DIV { id = "profiles-menu", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new P { class_ = "big" }._(new A { href = "More/Profile%20Editor.html", accesskey = "p" }._("Open Profile Editor".Accel('P'))),
+                            new P { class_ = "small" }._("Download profiles by difficulty:"),
+                            new DIV { class_ = "wrapper" }._(
+                                new DIV { class_ = "defuser" }._(
+                                    new P("By defuser difficulty:"),
+                                    new MENU(EnumStrong.GetValues<KtaneModuleDifficulty>().Select(d => new LI(new A { href = "/profile/defuser/" + d }._(d.ToReadable())))),
+                                    new P { class_ = "explain" }._("These are veto profiles, i.e. you can use these to ", new EM("disable"), " certain modules.")),
+                                new DIV { class_ = "expert" }._(
+                                    new P("By expert difficulty:"),
+                                    new MENU(EnumStrong.GetValues<KtaneModuleDifficulty>().Select(d => new LI(new A { href = "/profile/expert/" + d }._(d.ToReadable())))),
+                                    new P { class_ = "explain" }._("These are expert profiles, i.e. you can use these to ", new EM("include"), " certain modules.")))),
 
                             new DIV { id = "more", class_ = "popup disappear stay" }._(
                                 new DIV { class_ = "close" },

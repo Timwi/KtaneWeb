@@ -31,6 +31,7 @@ namespace KtaneWeb
 #endif
 
                     new UrlMapping(path: "/", specificPath: true, handler: req => mainPage(req, _config.Current)),
+                    new UrlMapping(path: "/profile", handler: req => generateProfile(req, _config.Current)),
                     new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
                     new UrlMapping(path: "/pull", handler: req => pull(_config.Current)),
                     new UrlMapping(path: "/proxy", handler: proxy),

@@ -198,6 +198,59 @@ body.sort-expdiff #main-table th.infos::after {
     padding-top: 2.5em;
 }
 
+#profiles-menu {
+    display: none;
+}
+
+    #profiles-menu > p.big {
+        font-size: 150%;
+        text-align: center;
+        margin: .5em 0 1em;
+        font-weight: bold;
+    }
+
+    #profiles-menu > p.small {
+        font-size: 12pt;
+        border-top: 1px solid #ccc;
+        padding: 2em 0 1em;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    #profiles-menu > div.wrapper {
+        display: flex;
+        flex-direction: row;
+    }
+
+        #profiles-menu > div.wrapper > div {
+            flex: 1;
+            text-align: center;
+        }
+
+            #profiles-menu > div.wrapper > div.defuser {
+                margin-right: 1em;
+                padding-right: 1em;
+                border-right: 1px solid #ccc;
+            }
+
+            #profiles-menu > div.wrapper > div > p {
+                margin: 0;
+                font-size: 11pt;
+            }
+
+            #profiles-menu > div.wrapper > div > menu {
+                list-style-type: none;
+                padding: 0;
+            }
+
+                #profiles-menu > div.wrapper > div > menu > li {
+                    padding: 0;
+                }
+
+            #profiles-menu > div.wrapper > div > p.explain {
+                font-size: 8pt;
+            }
+
 /* Mobile interface only */
 #page-opt, td.mobile-ui {
     display: none;
@@ -310,6 +363,10 @@ div.popup {
     background: #fafaff;
     box-shadow: 5px 5px 5px rgba(0,0,0,.3);
 }
+
+    div.popup > div.close {
+        display: none;
+    }
 
     div.popup p.manual-select {
         font-size: 70%;
@@ -683,6 +740,7 @@ pre.diff {
     }
 
         div.popup > div.close {
+            display: block;
             position: fixed;
             top: 2px;
             right: 2px;

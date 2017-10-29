@@ -48,6 +48,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
     <Compile Include="HistoryEntry.cs" />
+    <Compile Include="GenerateProfile.cs" />
     <Compile Include="Manual.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Pull.cs" />
