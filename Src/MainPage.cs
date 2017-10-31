@@ -251,7 +251,7 @@ namespace KtaneWeb
                                     new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings"))),
                                     new TR(new TH("Mac (Steam):"), new TD(new CODE(@"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots")))),
                                 new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
-                                new DIV { class_ = "icon-credits" }._("Module icons by lumbud84 and samfun123.")))))));
+                                new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy.")))))));
         }
     }
 }

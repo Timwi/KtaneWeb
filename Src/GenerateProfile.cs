@@ -17,8 +17,7 @@ namespace KtaneWeb
                 return HttpResponse.Create(
                     new JsonDict { { "DisabledList", config.KtaneModules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy) && filter(k, desired)).Select(k => k.ModuleID).ToJsonList() }, { "Operation", operation } }.ToString(),
                     "application/octet-stream",
-                    headers: new HttpResponseHeaders { ContentDisposition = new HttpContentDisposition { Mode = HttpContentDispositionMode.Attachment, Filename = name.Fmt(desired.ToReadable()) } }
-                );
+                    headers: new HttpResponseHeaders { ContentDisposition = new HttpContentDisposition { Mode = HttpContentDispositionMode.Attachment, Filename = name.Fmt(desired.ToReadable()) } });
             }
 
             return new UrlResolver(
