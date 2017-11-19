@@ -59,23 +59,41 @@ textarea {
     height: 50em;
 }
 
-/* Search */
-.search-container {
+/* Top controls */
+#top-controls {
+    display: flex;
     clear: both;
     margin: 0 0 .5em;
 }
 
-    .search-container #search-field {
-        width: 15em;
+    #top-controls .search-container {
+        flex: 1;
     }
 
-    .search-container #search-field-clear {
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
-        width: 1.25em;
-        height: 1.25em;
-        display: inline-block;
-        vertical-align: middle;
+        #top-controls .search-container #search-field {
+            width: 15em;
+        }
+
+        #top-controls .search-container #search-field-clear {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
+            width: 1.25em;
+            height: 1.25em;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+    #top-controls .temporary {
+        flex: 1.8;
     }
+
+        #top-controls .temporary p {
+            margin: 0;
+            font-size: 11pt;
+        }
+
+        #top-controls .temporary div {
+            margin: .25em;
+        }
 
 div.error {
     background: #fee;
@@ -166,6 +184,24 @@ body:not(.display-description) div.infos .inf-description {
 
 td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod:not([data-twitchplays='Supported']) div.infos .inf-twitch {
     display: none;
+}
+
+tr.mod[data-compatibility="Untested"] .mod-name, #top-controls .temporary div.untested {
+    padding-left: 1.5em;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><text x=".5" y="1" font-size="0.99pt" font-family="Arial" fill="%23482" text-anchor="middle">?</text></svg>') left top no-repeat;
+    background-size: 1em 1em;
+}
+
+tr.mod[data-compatibility="Unplayable"] .mod-name, #top-controls .temporary div.unplayable {
+    padding-left: 1.5em;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0 1 .5 0 1 1 z" fill="%23f24" stroke="none" /></svg>') left top no-repeat;
+    background-size: 1em 1em;
+}
+
+tr.mod[data-compatibility="Problematic"] .mod-name, #top-controls .temporary div.problematic {
+    padding-left: 1.5em;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle cx=".5" cy=".5" r=".5" fill="%23fc4" stroke="none" /></svg>') left top no-repeat;
+    background-size: 1em 1em;
 }
 
 .slider {
@@ -562,6 +598,15 @@ pre.diff {
         #more > div.filters > div {
             padding: 0 2.3em;
         }
+
+    tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
+        padding-left: 3.5em;
+        background-position: 2.25em 50%;
+    }
+
+    #top-controls {
+        display: block;
+    }
 }
 
 /* Mobile interface */
@@ -815,4 +860,8 @@ pre.diff {
             border-bottom: 1px solid #ccc;
             font-size: 100%;
         }
+
+    #top-controls .temporary {
+        display: none;
+    }
 }

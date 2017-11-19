@@ -139,10 +139,17 @@ namespace KtaneWeb
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
 
-                        new DIV { class_ = "search-container" }._(
-                            new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
-                            new INPUT { id = "search-field", accesskey = "f" }, " ",
-                            new A { href = "#", id = "search-field-clear" }),
+                        new DIV { id = "top-controls" }._(
+                            new DIV { class_ = "search-container" }._(
+                                new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
+                                new INPUT { id = "search-field", accesskey = "f" }, " ",
+                                new A { href = "#", id = "search-field-clear" }),
+
+                            new DIV { class_ = "temporary" }._(
+                                new P(new EM("Keep Talking and Nobody Explodes"), " will be updated to a new version on November 29th. The following symbols indicate mod compatibility with the new version:"),
+                                new DIV { class_ = "unplayable" }._(new STRONG("Unplayable:"), " This mod will stop working in the new version."),
+                                new DIV { class_ = "problematic" }._(new STRONG("Problematic:"), " The mod is playable, but the new version causes issues or glitches."),
+                                new DIV { class_ = "untested" }._(new STRONG("Untested:"), " We haven’t tested this mod yet."))),
 
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "more-tab" }._(new A { href = "#", id = "more-link", accesskey = "." }._("Filters & more")),
@@ -156,6 +163,7 @@ namespace KtaneWeb
                                     new TR { class_ = "mod" }
                                         .Data("mod", mod.Name)
                                         .Data("sortkey", mod.SortKey)
+                                        .Data("compatibility", mod.Compatibility.ToString())
                                         .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
                                         .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                         ._(

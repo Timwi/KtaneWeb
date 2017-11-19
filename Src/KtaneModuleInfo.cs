@@ -2,7 +2,6 @@
 using System.IO;
 using RT.TagSoup;
 using RT.Util;
-using RT.Util.Json;
 using RT.Util.Serialization;
 
 namespace KtaneWeb
@@ -21,6 +20,7 @@ namespace KtaneWeb
         public string TutorialVideoUrl;
         public KtaneModuleType Type = KtaneModuleType.Regular;
         public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
+        public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
 
         // The following are only relevant for modules (not game rooms, mission packs, etc.)
         [ClassifyIgnoreIfDefault]
@@ -48,7 +48,8 @@ namespace KtaneWeb
                 other.Author == Author &&
                 other.SourceUrl == SourceUrl &&
                 other.TutorialVideoUrl == TutorialVideoUrl &&
-                other.TwitchPlaysSupport == TwitchPlaysSupport;
+                other.TwitchPlaysSupport == TwitchPlaysSupport &&
+                other.Compatibility == Compatibility;
         }
 
         public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl);
