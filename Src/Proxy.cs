@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using RT.Servers;
 using RT.Util;
+using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb
 {
@@ -17,7 +19,19 @@ namespace KtaneWeb
             if (!_proxyAllowedUrlPrefixes.Any(url.StartsWith))
                 throw new HttpException(HttpStatusCode._403_Forbidden);
             try { return HttpResponse.PlainText(new HClient().Get(url).DataString); }
-            catch (Exception e) { return HttpResponse.PlainText($"{e.Message} ({e.GetType().FullName})", HttpStatusCode._503_ServiceUnavailable); }
+            catch (Exception e)
+            {
+                var sb = new StringBuilder();
+                var exc = e;
+                while (exc != null)
+                {
+                    sb.AppendLine($"{e.Message} ({e.GetType().FullName})");
+                    sb.AppendLine(exc.StackTrace.Indent(8));
+                    sb.AppendLine();
+                    exc = exc.InnerException;
+                }
+                return HttpResponse.PlainText(sb.ToString(), HttpStatusCode._503_ServiceUnavailable);
+            }
         }
     }
 }
