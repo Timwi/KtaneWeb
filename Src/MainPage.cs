@@ -14,20 +14,20 @@ namespace KtaneWeb
         {
             // Access keys:
             // A    Logfile Analyzer
-            // B    include/exclude bomb casings
+            // B
             // C    link to Source code
-            // D    include/exclude sound packs
+            // D
             // E    sort by expert difficulty
             // F    sort by defuser difficulty
-            // G    include/exclude gameplay rooms
-            // H    include/exclude other type of mod
+            // G
+            // H
             // I    include missing
             // J    JSON
             // K    Dark Theme
             // L    Light Theme
             // M    include/exclude mods
             // N    sort by name
-            // O    include/exclude mission packs
+            // O
             // P    Profile Editor
             // Q
             // R    include/exclude regular modules
@@ -143,14 +143,8 @@ namespace KtaneWeb
                             new DIV { class_ = "search-container" }._(
                                 new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
                                 new INPUT { id = "search-field", accesskey = "f" }, " ",
-                                new A { href = "#", id = "search-field-clear" }),
-
-                            new DIV { class_ = "temporary" }._(
-                                new P(new EM("Keep Talking and Nobody Explodes"), " will be updated to a new version on November 29th. The following symbols indicate mod compatibility with the new version:"),
-                                new DIV { class_ = "unplayable" }._(new STRONG("Unplayable:"), " This mod will stop working in the new version."),
-                                new DIV { class_ = "problematic" }._(new STRONG("Problematic:"), " The mod is playable, but the new version causes issues or glitches."),
-                                new DIV { class_ = "untested" }._(new STRONG("Untested:"), " We haven’t tested this mod yet."))),
-
+                                new A { href = "#", id = "search-field-clear" })),
+    
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "more-tab" }._(new A { href = "#", id = "more-link", accesskey = "." }._("Filters & more")),
 

@@ -347,7 +347,7 @@ body.sort-expdiff #main-table th.infos::after {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        height: 19.5em;
+        height: 17.5em;
         border-bottom: 1px solid #ccf;
     }
 

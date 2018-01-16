@@ -40,7 +40,8 @@ namespace KtaneWeb
 
             Options = Enum.GetValues(enumType).Cast<object>()
                 .Select(val => new { Value = val, Attr = ((Enum) val).GetCustomAttribute<KtaneFilterOptionAttribute>() })
-                .Select(inf => new KtaneFilterOption { Value = (int) inf.Value, Name = inf.Value.ToString(), ReadableName = inf.Attr?.ReadableName, Accel = inf.Attr?.Accel })
+                .Where(val => val.Attr != null)
+                .Select(inf => new KtaneFilterOption { Value = (int) inf.Value, Name = inf.Value.ToString(), ReadableName = inf.Attr.ReadableName, Accel = inf.Attr.Accel })
                 .ToArray();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using RT.TagSoup;
 using RT.Util;
 using RT.Util.Serialization;
@@ -8,7 +9,7 @@ namespace KtaneWeb
 {
 #pragma warning disable 0649 // Field is never assigned to, and will always have its default value
 
-    sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IClassifyObjectProcessor
+    sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IComparable<KtaneModuleInfo>, IClassifyObjectProcessor
     {
         public string Name;
         public string Description;
@@ -59,7 +60,7 @@ namespace KtaneWeb
         void IClassifyObjectProcessor.AfterDeserialize()
         {
             if (SortKey == null)
-                SortKey = Name;
+                SortKey = Regex.Replace(Name, @"^The |[^a-zA-Z0-9]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
 
             if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy)
             {
@@ -74,6 +75,8 @@ namespace KtaneWeb
                 TwitchPlaysSupport = null;
             }
         }
+
+        int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);
     }
 
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value

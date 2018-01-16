@@ -8,15 +8,15 @@
         Needy,
         [KtaneFilterOption("Widget", 'W')]
         Widget,
-        [KtaneFilterOption("Gameplay room", 'G')]
+        //[KtaneFilterOption("Gameplay room", 'G')]
         Room,
-        [KtaneFilterOption("Bomb casing", 'B')]
+        //[KtaneFilterOption("Bomb casing", 'B')]
         Casing,
-        [KtaneFilterOption("Mission pack", 'o')]
+        //[KtaneFilterOption("Mission pack", 'o')]
         Missions,
-        [KtaneFilterOption("Sound pack", 'd')]
+        //[KtaneFilterOption("Sound pack", 'd')]
         Sounds,
-        [KtaneFilterOption("Other", 'h')]
+        //[KtaneFilterOption("Other", 'h')]
         Other
     }
 
