@@ -455,17 +455,25 @@ div.popup {
     text-align: center;
 }
 
-    .icons > div.icon {
+    .icons > .icon-page {
+        display: none;
+    }
+
+        .icons > .icon-page.shown {
+            display: inline;
+        }
+
+    .icons div.icon {
         margin: 0 1em;
         position: relative;
         display: inline-block;
     }
 
-        .icons > div.icon > a > img {
+        .icons div.icon > a > img {
             width: 60px;
         }
 
-        .icons > div.icon > a > span {
+        .icons div.icon > a > span {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -527,9 +535,15 @@ pre.diff {
 
     #icons {
         float: none;
-        width: 90%;
-        margin: -3.5em 0 5.5em 0;
+        width: 35em;
+        padding-right: 10em;
+        margin: -3.5em auto 5.5em;
+        text-align: right;
     }
+
+        #icons > * {
+            text-align: center;
+        }
 
     td.infos-2, th.infos {
         display: none;
@@ -643,6 +657,10 @@ pre.diff {
     }
 
     #main-content > #icons {
+        display: none;
+    }
+
+    #icon-page-next {
         display: none;
     }
 
@@ -830,15 +848,20 @@ pre.diff {
             padding: 0 1.5em;
         }
 
-    #more > div.icons > div.icon {
+    #more > div.icons > div.icon-page {
+        display: block;
+        height: 90px;
+    }
+
+    #more > div.icons div.icon {
         margin: 0 1.1em;
     }
 
-        #more > div.icons > div.icon > a > img {
+        #more > div.icons div.icon > a > img {
             width: 32px;
         }
 
-        #more > div.icons > div.icon > a > span {
+        #more > div.icons div.icon > a > span {
             font-size: 80%;
             width: 150%;
         }
@@ -866,7 +889,7 @@ pre.diff {
 
         div.popup > div.icons, #more > #icons {
             float: none;
-            padding: 0 0 5em;
+            padding: 0;
             border-bottom: 1px solid #ccc;
             font-size: 100%;
         }

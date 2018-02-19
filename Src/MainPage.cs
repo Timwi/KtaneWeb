@@ -131,11 +131,16 @@ namespace KtaneWeb
                     new DIV { id = "main-content" }._(
                         new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
                         new DIV { id = "icons", class_ = "icons" }._(
+                            new DIV { class_ = "icon-page shown" }._(
                                 new DIV { class_ = "icon" }._(new A { href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Playing with Mods"))),
                                 new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Making Mods"))),
-                            new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer".Accel('A')))),
-                            new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN { id = "profiles-rel" }._("Profiles"))),
+                                new DIV { class_ = "icon" }._(new A { href = "More/Translating%20FAQ.html", id = "translating-faq" }._(new IMG { class_ = "icon", src = "HTML/img/translate.png" }, new SPAN("Help us translate manuals"))),
                                 new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
+                            new DIV { class_ = "icon-page" }._(
+                                new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial videos playlist"))),
+                                new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer".Accel('A')))),
+                                new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN { id = "profiles-rel" }._("Profiles")))),
+                            new DIV { class_ = "icon" }._(new A { href = "#", id = "icon-page-next" }._(new IMG { class_ = "icon", src = "HTML/img/more.png" }, new SPAN("More")))),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
 
@@ -228,7 +233,6 @@ namespace KtaneWeb
 
                                 new DIV { class_ = "dev" }._(
                                     new DIV { class_ = "mobile-opts" },
-                                    new SPAN { class_ = "dev-link" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._("Tutorial videos playlist")),
                                     new SPAN { class_ = "dev-link" }._(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
                                     new SPAN { class_ = "dev-link" }._(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement"))),
                                 new DIV { class_ = "highlighting-controls" }._(
