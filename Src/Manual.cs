@@ -13,7 +13,7 @@ namespace KtaneWeb
     {
         private HttpResponse manual(HttpRequest req)
         {
-            var htmlDir = Path.Combine(_config.Current.BaseDir, "HTML");
+            var htmlDir = Path.Combine(_config.BaseDir, "HTML");
 
             try
             {

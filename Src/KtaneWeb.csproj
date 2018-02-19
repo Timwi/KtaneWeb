@@ -49,6 +49,11 @@
     <Compile Include="CustomAttributes.cs" />
     <Compile Include="HistoryEntry.cs" />
     <Compile Include="GenerateProfile.cs" />
+    <Compile Include="Puzzles\Api.cs" />
+    <Compile Include="Puzzles\Puzzle.cs" />
+    <Compile Include="Puzzles\PuzzleGroup.cs" />
+    <Compile Include="Puzzles\PuzzleInfo.cs" />
+    <Compile Include="Puzzles\Puzzles.cs" />
     <Compile Include="Manual.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Pull.cs" />
@@ -97,6 +102,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Puzzles.css">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </Content>
+    <Content Include="Resources\Puzzles.js">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </Content>
     <Content Include="Resources\KtaneWeb.css">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>

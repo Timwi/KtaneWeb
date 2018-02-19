@@ -1,0 +1,305 @@
+﻿@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Trebuchet MS'), local('Trebuchet'), url(font/trebuc.ttf);
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: normal;
+    font-weight: bold;
+    src: local('Trebuchet MS Bold'), local('Trebuchet Bold'), local('Trebuchet MS'), local('Trebuchet'), url(font/trebucbd.ttf);
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: italic;
+    font-weight: normal;
+    src: local('Trebuchet MS Italic'), local('Trebuchet Italic'), local('Trebuchet MS'), local('Trebuchet'), url(font/trebucit.ttf);
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: italic;
+    font-weight: bold;
+    src: local('Trebuchet MS Bold Italic'), local('Trebuchet Bold Italic'), local('Trebuchet MS'), local('Trebuchet'), url(font/trebucbi.ttf);
+}
+
+@font-face {
+    font-family: 'DayPosterBlack';
+    src: local('DayPosterBlack'), url(font/DayPosterBlack.ttf);
+}
+
+body {
+    background: hsl(218, 80%, 95%);
+}
+
+body, button, input, textarea {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 13pt;
+    margin: 0;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    box-shadow: rgba(0,0,0,.3) 2px 2px 5px;
+    border-radius: 5pt;
+}
+
+    button:hover, button.perm {
+        color: white;
+    }
+
+h1 {
+    font-family: DayPosterBlack;
+    font-size: 100pt;
+    margin-top: 20pt;
+    text-align: center;
+    transform: scale(1.5, 1.3);
+    color: hsl(220, 50%, 50%);
+    text-shadow: 0 0 10px rgba(0,0,0,.3);
+}
+
+    h1 span:nth-child(2) {
+        margin-left: 0;
+    }
+
+    h1 span:nth-child(3) {
+        margin-left: -3pt;
+    }
+
+    h1 span:nth-child(4) {
+        margin-left: 2pt;
+    }
+
+    h1 span:nth-child(5) {
+        margin-left: 5pt;
+    }
+
+    h1 span:nth-child(6) {
+        margin-left: 0;
+    }
+
+    h1 span:nth-child(7) {
+        margin-left: -1pt;
+    }
+
+#everything {
+    box-sizing: border-box;
+    max-width: 700pt;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 20pt 20pt 100pt;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+    background: white;
+}
+
+.error {
+    border: 1px solid #a86;
+    background: #fdd;
+    padding: 10pt 20pt;
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+.controls {
+    padding: 5pt 0;
+    list-style: none;
+    margin: 0;
+}
+
+    .controls > li > button {
+        background: hsl(110, 90%, 75%);
+        font-size: 15pt;
+        padding: 5pt 10pt;
+    }
+
+        .controls > li > button:hover {
+            background: hsl(110, 100%, 20%);
+        }
+
+    .controls > li {
+        display: inline-block;
+    }
+
+        .controls > li:not(:first-child)::before {
+            content: '\a0 •\a0';
+        }
+
+.edit-icon {
+    width: 18pt;
+    height: 18pt;
+    margin: 0 0 0 5pt;
+    vertical-align: middle;
+    background: none;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .7,.1 .9,.3 .3,.9 .1,.9 .1,.7 z" stroke-width=".05" stroke="black" fill="none" /><path d="M .3,.9 .1,.9 .1,.7 z" stroke="none" fill="black" /></svg>');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 75%;
+    display: inline-block;
+}
+
+    .edit-icon:hover {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .7,.1 .9,.3 .3,.9 .1,.9 .1,.7 z" stroke-width=".05" stroke="white" fill="none" /><path d="M .3,.9 .1,.9 .1,.7 z" stroke="none" fill="white" /></svg>');
+    }
+
+    .edit-icon::-moz-focus-inner {
+        border: 0;
+    }
+
+.puzzle-group {
+    background: hsl(0,90%,95%);
+    position: relative;
+    padding: 3pt;
+    margin-top: 25pt;
+}
+
+    .puzzle-group.published {
+        background: hsl(220,90%,95%);
+    }
+
+    .puzzle-group .title {
+        font-size: 20pt;
+        font-weight: bold;
+        background: hsl(0,90%,85%);
+        padding: 3pt 7pt;
+    }
+
+    .puzzle-group.published .title {
+        background: hsl(220,90%,85%);
+    }
+
+    .puzzle-group .title button, .puzzle-group .author button, .puzzle-group .date-published button, .puzzle-group .puzzle button {
+        background-color: hsl(0,90%,75%);
+    }
+
+        .puzzle-group .title button:hover, .puzzle-group .author button:hover, .puzzle-group .date-published button:hover, .puzzle-group .puzzle button:hover, .puzzle-group .puzzle button.perm {
+            background-color: hsl(0,100%,20%);
+        }
+
+    .puzzle-group.published .title button, .puzzle-group.published .author button, .puzzle-group.published .date-published button, .puzzle-group .puzzle.published button {
+        background-color: hsl(220,90%,75%);
+    }
+
+        .puzzle-group.published .title button:hover, .puzzle-group.published .author button:hover, .puzzle-group.published .date-published button:hover, .puzzle-group .puzzle.published button:hover, .puzzle-group .puzzle.published button.perm {
+            background-color: hsl(220,100%,20%);
+        }
+
+    .puzzle-group .author, .puzzle-group .date-published {
+        position: absolute;
+        top: 3pt;
+        right: 6pt;
+    }
+
+    .puzzle-group .date-published {
+        top: 16pt;
+        white-space: nowrap;
+    }
+
+    .puzzle-group .controls {
+        padding: 5pt 10pt;
+    }
+
+        .puzzle-group .controls button {
+            background-color: hsl(0, 90%, 85%);
+        }
+
+            .puzzle-group .controls button:hover {
+                background-color: hsl(0, 100%, 20%);
+            }
+
+    .puzzle-group.published .controls button {
+        background-color: hsl(220, 90%, 85%);
+    }
+
+        .puzzle-group.published .controls button:hover {
+            background-color: hsl(220, 100%, 20%);
+        }
+
+    .puzzle-group .puzzles {
+        list-style: none;
+        padding: 5pt 10pt;
+        margin: 10pt 0;
+    }
+
+        .puzzle-group .puzzles .puzzle {
+            padding: 0;
+            margin: 5pt 0;
+            font-weight: bold;
+            position: relative;
+        }
+
+            .puzzle-group .puzzles .puzzle .puzzle-inner {
+                display: block;
+                padding: 5pt 10pt 5pt 25pt;
+                text-decoration: none;
+                color: hsl(0, 100%, 10%);
+                background-color: hsl(0, 90%, 85%);
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(0, 90%, 75%)" /></svg>');
+                background-position: 3pt center;
+                background-size: auto 75%;
+                background-repeat: no-repeat;
+            }
+
+            .puzzle-group .puzzles .puzzle.missing .puzzle-inner {
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(0, 90%, 75%)" /></svg>');
+            }
+
+            .puzzle-group .puzzles .puzzle .puzzle-inner:visited {
+                color: hsl(0, 100%, 35%);
+            }
+
+            .puzzle-group .puzzles .puzzle .puzzle-inner:hover {
+                background-color: hsl(0, 100%, 75%);
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(0, 100%, 65%)" /></svg>');
+            }
+
+            .puzzle-group .puzzles .puzzle.missing .puzzle-inner:hover {
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(0, 100%, 65%)" /></svg>');
+            }
+
+            .puzzle-group .puzzles .puzzle.published .puzzle-inner {
+                color: hsl(220, 100%, 10%);
+                background-color: hsl(220, 90%, 85%);
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(220, 90%, 75%)" /></svg>');
+            }
+
+            .puzzle-group .puzzles .puzzle.published.missing .puzzle-inner {
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(220, 90%, 75%)" /></svg>');
+            }
+
+            .puzzle-group .puzzles .puzzle.published .puzzle-inner:hover {
+                background-color: hsl(220, 100%, 75%);
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(220, 100%, 65%)" /></svg>');
+            }
+
+            .puzzle-group .puzzles .puzzle.published.missing .puzzle-inner:hover {
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(220, 100%, 65%)" /></svg>');
+            }
+
+            .puzzle-group .puzzles .puzzle.published .puzzle-inner:visited {
+                color: hsl(220, 100%, 35%);
+            }
+
+            .puzzle-group .puzzles .puzzle button {
+                padding: 3pt 6pt;
+                margin-left: 10pt;
+                font-size: 10pt;
+                float: right;
+                position: relative;
+                top: -1pt;
+            }
+
+                .puzzle-group .puzzles .puzzle button.move-here {
+                    position: absolute;
+                    right: 170pt;
+                    transform: translateY(-50%);
+                    top: calc(100% + 3pt);
+                    float: none;
+                }
+
+                    .puzzle-group .puzzles .puzzle button.move-here:first-child {
+                        top: -3pt;
+                    }

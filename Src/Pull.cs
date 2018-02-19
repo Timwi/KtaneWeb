@@ -6,12 +6,14 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private HttpResponse pull(KtaneWebConfigEntry config)
+        private HttpResponse pull(HttpRequest req)
         {
-            var cmd = new CommandRunner();
-            cmd.Command = "git pull";
-            cmd.WorkingDirectory = config.BaseDir;
             var output = new StringBuilder();
+            var cmd = new CommandRunner
+            {
+                Command = "git pull",
+                WorkingDirectory = _config.BaseDir
+            };
             cmd.StdoutText += str => output.Append(str);
             cmd.StderrText += str => output.Append(str);
             cmd.StartAndWait();

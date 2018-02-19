@@ -10,7 +10,7 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private HttpResponse mainPage(HttpRequest req, KtaneWebConfigEntry config)
+        private HttpResponse mainPage(HttpRequest req)
         {
             // Access keys:
             // A    Logfile Analyzer
@@ -41,7 +41,7 @@ namespace KtaneWeb
             // Z
             // .    More
 
-            var sheets = config.KtaneModules.ToDictionary(mod => mod.Name, mod => config.EnumerateSheetUrls(mod.Name, config.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
+            var sheets = _config.Current.KtaneModules.ToDictionary(mod => mod.Name, mod => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
 
             var selectables = Ut.NewArray(
                 new Selectable
@@ -131,11 +131,11 @@ namespace KtaneWeb
                     new DIV { id = "main-content" }._(
                         new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
                         new DIV { id = "icons", class_ = "icons" }._(
-                            new DIV { class_ = "icon" }._(new A { href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Playing with Mods"))),
-                            new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Making Mods"))),
+                                new DIV { class_ = "icon" }._(new A { href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Playing with Mods"))),
+                                new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Making Mods"))),
                             new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer".Accel('A')))),
                             new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN { id = "profiles-rel" }._("Profiles"))),
-                            new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
+                                new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
 
@@ -144,7 +144,7 @@ namespace KtaneWeb
                                 new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
                                 new INPUT { id = "search-field", accesskey = "f" }, " ",
                                 new A { href = "#", id = "search-field-clear" })),
-    
+
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "more-tab" }._(new A { href = "#", id = "more-link", accesskey = "." }._("Filters & more")),
 
@@ -153,7 +153,7 @@ namespace KtaneWeb
                                     new TH { colspan = selectables.Length }._("Links"),
                                     new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort", id = "sort-by-name" }._("Name")),
                                     new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort", id = "sort-by-difficulty" }._("Information"))),
-                                config.KtaneModules.Select(mod =>
+                                _config.Current.KtaneModules.Select(mod =>
                                     new TR { class_ = "mod" }
                                         .Data("mod", mod.Name)
                                         .Data("sortkey", mod.SortKey)
@@ -162,7 +162,7 @@ namespace KtaneWeb
                                         .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                         ._(
                                             selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) + sel.CssClass?.Apply(c => " " + c) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
-                                            new TD { class_ = "infos-1" }._(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
+                                            new TD { class_ = "infos-1" }._(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(_config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
                                             new TD { class_ = "infos-2" }._(new DIV { class_ = "infos" }._(
                                                 new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
                                                 new DIV { class_ = "inf-origin" }._(mod.Origin.ToString()),

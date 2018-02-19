@@ -23,25 +23,27 @@ namespace KtaneWeb
             {
                 var resolver = new UrlResolver(
 #if DEBUG
-                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(_config.Current.JavaScriptFile, "text/javascript; charset=utf-8")),
-                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(_config.Current.CssFile, "text/css; charset=utf-8")),
+                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(_config.JavaScriptFile, "text/javascript; charset=utf-8")),
+                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(_config.CssFile, "text/css; charset=utf-8")),
 #else
                     new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.JavaScript(Resources.Js)),
                     new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.Css(Resources.Css)),
 #endif
 
-                    new UrlMapping(path: "/", specificPath: true, handler: req => mainPage(req, _config.Current)),
-                    new UrlMapping(path: "/profile", handler: req => generateProfile(req, _config.Current)),
+                    new UrlMapping(path: "/", specificPath: true, handler: mainPage),
+                    new UrlMapping(path: "/profile", handler: generateProfile),
                     new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
-                    new UrlMapping(path: "/pull", handler: req => pull(_config.Current)),
+                    new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/proxy", handler: proxy),
                     new UrlMapping(path: "/manual", handler: manual),
 
+                    new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
+
                     // Default fallback: file system handler
-                    new UrlMapping(req => new FileSystemHandler(_config.Current.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
+                    new UrlMapping(req => new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
                 );
 
-                foreach (string directory in Directory.GetDirectories(Path.Combine(_config.Current.BaseDir, "HTML")))
+                foreach (string directory in Directory.GetDirectories(Path.Combine(_config.BaseDir, "HTML")))
                     resolver.Add(new UrlMapping(path: "/manual/" + Path.GetFileName(directory), handler: req => new FileSystemHandler(directory, new FileSystemOptions { MaxAge = null }).Handle(req)));
 
                 if (auth != null)
