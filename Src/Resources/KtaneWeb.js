@@ -265,6 +265,8 @@ $(function()
                 $('input#filter-' + Ktane.Filters[i].id).prop('checked', filter[Ktane.Filters[i].id]);
                 break;
         }
+
+        $('input#filter-include-missing').prop('checked', filter.includeMissing);
     }
 
     // This also calls updateFilter()
