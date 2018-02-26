@@ -74,6 +74,7 @@
     <Compile Include="Filter.cs" />
     <Compile Include="Selectable.cs" />
     <Compile Include="KtaneWebSession.cs" />
+    <Compile Include="VanillaRuleModifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Generex\Src\Generex.csproj">
@@ -99,6 +100,10 @@
     <ProjectReference Include="..\..\..\RT.Util\Src\RT.Util.csproj">
       <Project>{8d0fe79c-ad8d-475c-9e6f-9cae85365b5d}</Project>
       <Name>RT.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\VanillaRuleGenerator\VanillaRuleGenerator.csproj">
+      <Project>{85843dca-c0f9-4205-a355-382cf2de84ca}</Project>
+      <Name>VanillaRuleGenerator</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
