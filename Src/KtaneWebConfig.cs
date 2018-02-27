@@ -17,7 +17,6 @@ namespace KtaneWeb
 
         // User/password file for editing
         public string UsersFile;
-
         public string JavaScriptFile;
         public string CssFile;
 
@@ -26,7 +25,6 @@ namespace KtaneWeb
         public string[] OriginalDocumentIcons = new[] { "HTML/img/html_manual.png", "HTML/img/pdf_manual.png" };
         public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
         public string ModIconDir = "Icons";
-        public bool IsUpdated = false;
 
         public string PuzzlesJavaScriptFile;
         public string PuzzlesCssFile;
@@ -78,20 +76,6 @@ namespace KtaneWeb
         void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
         void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element)
         {
-            if (!IsUpdated && Current != null)
-            {
-#pragma warning disable 612
-                BaseDir = Current.BaseDir;
-                DocumentDirs = Current.DocumentDirs;
-                OriginalDocumentIcons = Current.OriginalDocumentIcons;
-                ExtraDocumentIcons = Current.ExtraDocumentIcons;
-                ModIconDir = Current.ModIconDir;
-                CssFile = Current.CssFile;
-                JavaScriptFile = Current.JavaScriptFile;
-#pragma warning restore 612
-                IsUpdated = true;
-            }
-
             while (HistoryDeleted.Count > 10)
                 HistoryDeleted.RemoveAt(10);
         }
