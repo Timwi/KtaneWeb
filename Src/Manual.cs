@@ -13,8 +13,8 @@ namespace KtaneWeb
     {
         private HttpResponse manual(HttpRequest req)
         {
-	        if (int.TryParse(req.Url["VanillaRuleSeed"],out int _))
-		        return vanillarulemodifier(req);
+            if (int.TryParse(req.Url["VanillaRuleSeed"], out int _))
+                return vanillaRuleModifier(req);
 
             var htmlDir = Path.Combine(_config.BaseDir, "HTML");
 
