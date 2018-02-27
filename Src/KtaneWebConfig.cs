@@ -31,6 +31,9 @@ namespace KtaneWeb
         public string PuzzlesJavaScriptFile;
         public string PuzzlesCssFile;
 
+	    public string VanillaRuleModifierCache;
+	    public string VanillaRuleModifierMods;
+
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value
 
         /// <summary>Keep the list sorted by date (most recent first).</summary>

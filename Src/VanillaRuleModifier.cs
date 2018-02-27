@@ -4,6 +4,7 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using AngleSharp.Parser.Html;
 using RT.Servers;
+using VanillaRuleGenerator;
 using HttpStatusCode = RT.Servers.HttpStatusCode;
 
 namespace KtaneWeb
@@ -15,6 +16,8 @@ namespace KtaneWeb
 			
 			try
 			{
+				ManualGenerator manualGenerator = new ManualGenerator(_config.VanillaRuleModifierMods, _config.VanillaRuleModifierCache);
+
 				if (!int.TryParse(req.Url["VanillaRuleSeed"], out int seed))
 				{
 					return manual(req);
@@ -27,14 +30,14 @@ namespace KtaneWeb
 				{
 					modifiedmanual = $"<html><head><title>Repository of Manual pages</title></head><body><h1>Seed = {seed}</h1><ul>";
 
-					modifiedmanual = VanillaRuleGenerator.ManualGenerator.Instance.GetHTMLFileNames()
+					modifiedmanual = manualGenerator.GetHTMLFileNames()
 						.Aggregate(modifiedmanual, (current, html) => current + $"<li><a href=\"{WebUtility.UrlEncode(html)}?VanillaRuleSeed={seed}\">{html}</a></li>");
 
 					modifiedmanual += "</ul></body></html>";
 				}
 				else
 				{
-					modifiedmanual = VanillaRuleGenerator.ManualGenerator.Instance.GetHTMLManual(seed, WebUtility.UrlDecode(path));
+					modifiedmanual = manualGenerator.GetHTMLManual(seed, WebUtility.UrlDecode(path), !string.IsNullOrEmpty(_config.VanillaRuleModifierCache));
 				}
 				IHtmlDocument document = new HtmlParser().Parse(modifiedmanual);
 
