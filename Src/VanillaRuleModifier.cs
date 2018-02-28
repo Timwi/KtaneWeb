@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using AngleSharp.Parser.Html;
 using RT.Servers;
+using RT.Util;
 using VanillaRuleGenerator;
 using HttpStatusCode = RT.Servers.HttpStatusCode;
 
@@ -13,7 +15,15 @@ namespace KtaneWeb
     {
         private HttpResponse vanillaRuleModifier(HttpRequest req)
         {
-            var manualGenerator = new ManualGenerator(_config.VanillaRuleModifierMods, _config.VanillaRuleModifierCache);
+	        VanillaRuleGenerator.Extensions.Debug.LogMessageHandler = message => _logger?.Log(0, LogType.Debug, message);
+	        VanillaRuleGenerator.Extensions.Debug.LogExceptionHandler = (exception, message) =>
+	        {
+		        _logger?.Log(2, LogType.Error, message);
+		        _logger?.Exception(exception);
+	        };
+
+			var manualGenerator = new ManualGenerator(_config.VanillaRuleModifierMods, _config.VanillaRuleModifierCache);
+	        
 
             if (!int.TryParse(req.Url["VanillaRuleSeed"], out int seed))
                 return manual(req);
