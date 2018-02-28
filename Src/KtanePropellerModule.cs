@@ -14,6 +14,7 @@ namespace KtaneWeb
         public override string Name => "Repository of Manual Pages for Keep Talking and Nobody Explodes";
 
         private KtaneWebConfig _config;
+	    private LoggerBase _logger;
 
         public override HttpResponse Handle(HttpRequest request)
         {
