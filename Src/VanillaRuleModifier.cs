@@ -5,9 +5,7 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using AngleSharp.Parser.Html;
 using RT.Servers;
-using RT.Util;
 using VanillaRuleGenerator;
-using HttpStatusCode = RT.Servers.HttpStatusCode;
 
 namespace KtaneWeb
 {
@@ -15,17 +13,9 @@ namespace KtaneWeb
     {
         private HttpResponse vanillaRuleModifier(HttpRequest req)
         {
-	        VanillaRuleGenerator.Extensions.Debug.LogMessageHandler = message => _logger?.Log(0, LogType.Debug, message);
-	        VanillaRuleGenerator.Extensions.Debug.LogExceptionHandler = (exception, message) =>
-	        {
-		        _logger?.Log(2, LogType.Error, message);
-		        _logger?.Exception(exception);
-	        };
+	        var manualGenerator = new ManualGenerator(_config.VanillaRuleModifierMods, _config.VanillaRuleModifierCache);
 
-			var manualGenerator = new ManualGenerator(_config.VanillaRuleModifierMods, _config.VanillaRuleModifierCache);
-	        
-
-            if (!int.TryParse(req.Url["VanillaRuleSeed"], out int seed))
+            if (!int.TryParse(req.Url["VanillaRuleSeed"], out int seed) && !int.TryParse(req.Url["RuleSeed"], out seed))
                 return manual(req);
 
             string path = req.Url.Path.Substring(1);
@@ -34,9 +24,15 @@ namespace KtaneWeb
 
             if (path == "")
             {
-                modifiedmanual = $"<html><head><title>Repository of Manual pages</title></head><body><h1>Seed = {seed}</h1><ul>";
+                modifiedmanual = $"<html><head><title>Repository of Manual pages</title></head><body><h1>Seed = {seed}</h1><h2>Vanilla Manuals</h2>";
+	            modifiedmanual += $@"<a href=""index.html?VanillaRuleSeed={seed}"">Full Vanilla Manual</a><ul>";
 
-                modifiedmanual = manualGenerator.GetHTMLFileNames()
+	            modifiedmanual = manualGenerator.GetVanillaHTMLFileNames()
+		            .Aggregate(modifiedmanual, (current, html) => current + $"<li><a href=\"{WebUtility.UrlEncode(html)}?VanillaRuleSeed={seed}\">{html}</a></li>");
+
+	            modifiedmanual += @"</ul><h2>Mod Manuals</h2><ul>";
+
+				modifiedmanual = manualGenerator.GetModHTMLFileNames()
                     .Aggregate(modifiedmanual, (current, html) => current + $"<li><a href=\"{WebUtility.UrlEncode(html)}?VanillaRuleSeed={seed}\">{html}</a></li>");
 
                 modifiedmanual += "</ul></body></html>";

@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RT.SelfService", "..\..\RT.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generex", "..\..\Generex\Src\Generex.csproj", "{AD37F193-49A3-4A3D-8BF1-122D5457C7A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VanillaRuleGenerator", "..\VanillaRuleGenerator\VanillaRuleGenerator.csproj", "{85843DCA-C0F9-4205-A355-382CF2DE84CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VanillaRuleGeneratorSlim", "..\VanillaRuleGenerator\VanillaRuleGeneratorSlim.csproj", "{85843DCA-C0F9-4205-A355-382CF2DE84CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
