@@ -63,6 +63,11 @@ $(function()
     var display = defaultDisplay;
     try { display = JSON.parse(lStorage.getItem('display')); } catch (exc) { }
 
+    var validSearchOptions = ['names', 'authors', 'descriptions'];
+    var defaultSearchOptions = ['names'];
+    var searchOptions = defaultSearchOptions;
+    try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')); } catch (exc) { }
+
     var version = lStorage.getItem('version');
     if (version < 2)
     {
@@ -111,6 +116,14 @@ $(function()
         $(document.body).addClass(display.map(function(x) { return "display-" + x; }).join(' '));
         $(display.map(function(x) { return '#display-' + x; }).join(',')).prop('checked', true);
         lStorage.setItem('display', JSON.stringify(display));
+    }
+
+    function setSearchOptions(set)
+    {
+        searchOptions = (set instanceof Array) ? set.filter(function(x) { return validSearchOptions.indexOf(x) !== -1; }) : defaultSearchOptions;
+        $('input.search-option-input').prop('checked', false);
+        $(searchOptions.map(function(x) { return '#search-' + x; }).join(',')).prop('checked', true);
+        lStorage.setItem('searchOptions', JSON.stringify(searchOptions));
     }
 
     function setTheme(theme)
@@ -166,6 +179,7 @@ $(function()
 
         var searchText = $("input#search-field").val().toLowerCase();
 
+        var modCount = 0;
         $('tr.mod').each(function(_, e)
         {
             var data = $(e).data();
@@ -189,12 +203,23 @@ $(function()
                     }
                 }
             }
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && data.mod.toLowerCase().match(searchText) !== null)
+            var searchWhat = '';
+            if (searchOptions.indexOf('names') !== -1)
+                searchWhat += ' ' + data.mod.toLowerCase();
+            if (searchOptions.indexOf('authors') !== -1)
+                searchWhat += ' ' + data.author.toLowerCase();
+            if (searchOptions.indexOf('descriptions') !== -1)
+                searchWhat += ' ' + data.description.toLowerCase();
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchWhat.match(searchText) !== null)
+            {
+                modCount++;
                 $(e).show();
+            }
             else
                 $(e).hide();
         });
 
+        $('#module-count').text(modCount);
         lStorage.setItem('filters', JSON.stringify(filter));
     }
 
@@ -275,6 +300,7 @@ $(function()
     setSort(sort);
     setTheme(theme);
     setDisplay(display);
+    setSearchOptions(searchOptions);
 
     var preventDisappear = 0;
     function disappear()
@@ -296,9 +322,9 @@ $(function()
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplay(displays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
-
     $('input#search-field').on('input', function() { updateFilter(); });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
+    $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
     $('tr.mod').each(function(_, e)
     {

@@ -82,20 +82,16 @@ textarea {
             vertical-align: middle;
         }
 
-    #top-controls .temporary {
-        flex: 1.8;
-    }
-
-        #top-controls .temporary p {
-            margin: 0;
-            font-size: 11pt;
+        #top-controls .search-container .search-options {
+            display: inline-block;
+            vertical-align: middle;
         }
 
-        #top-controls .temporary div {
-            margin: .25em;
-        }
+            #top-controls .search-container .search-options .search-option {
+                padding-left: .5em;
+            }
 
-div.error {
+div .error {
     background: #fee;
     text-align: center;
     border: 1px solid black;
@@ -337,6 +333,10 @@ body.sort-expdiff #main-table th.infos::after {
         color: #024;
         padding: 0 .5em;
     }
+
+#module-count {
+    text-align: right;
+}
 
 #more {
     display: none;
@@ -633,6 +633,13 @@ pre.diff {
     }
 }
 
+/* Desktop version for narrow screens — special case for wrapping the search options */
+@media screen and (max-width: 740px) and (min-width: 650.01px) {
+    #top-controls .search-container .search-options #search-opt-descriptions {
+        display: block;
+    }
+}
+
 /* Mobile interface */
 @media screen and (max-width: 650px) {
 
@@ -894,7 +901,7 @@ pre.diff {
             font-size: 100%;
         }
 
-    #top-controls .temporary {
-        display: none;
+    #top-controls .search-container .search-options {
+        font-size: 10pt;
     }
 }
