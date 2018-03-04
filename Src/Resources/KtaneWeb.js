@@ -61,12 +61,12 @@ $(function()
     var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'id', 'description'];
     var defaultDisplay = ['author', 'type', 'difficulty', 'description'];
     var display = defaultDisplay;
-    try { display = JSON.parse(lStorage.getItem('display')); } catch (exc) { }
+    try { display = JSON.parse(lStorage.getItem('display')) || defaultDisplay; } catch (exc) { }
 
     var validSearchOptions = ['names', 'authors', 'descriptions'];
     var defaultSearchOptions = ['names'];
     var searchOptions = defaultSearchOptions;
-    try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')); } catch (exc) { }
+    try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
 
     var version = lStorage.getItem('version');
     if (version < 2)
