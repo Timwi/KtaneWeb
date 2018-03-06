@@ -8,6 +8,7 @@ body {
 
 #main-content {
     padding: 0 .7em;
+    position: relative;
 }
 
 div.heading {
