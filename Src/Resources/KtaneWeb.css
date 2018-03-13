@@ -856,24 +856,6 @@ pre.diff {
             padding: 0 1.5em;
         }
 
-    #more > div.icons > div.icon-page {
-        display: block;
-        height: 90px;
-    }
-
-    #more > div.icons div.icon {
-        margin: 0 1.1em;
-    }
-
-        #more > div.icons div.icon > a > img {
-            width: 32px;
-        }
-
-        #more > div.icons div.icon > a > span {
-            font-size: 80%;
-            width: 150%;
-        }
-
     #more div.highlighting-controls {
         display: none;
     }
@@ -900,7 +882,27 @@ pre.diff {
             padding: 0;
             border-bottom: 1px solid #ccc;
             font-size: 100%;
+            min-height: 70px;
         }
+
+            div.popup > div.icons > div.icon-page {
+                display: block;
+                height: 90px;
+            }
+
+            div.popup > div.icons div.icon {
+                margin: 0 1.1em;
+            }
+
+                div.popup > div.icons div.icon > a > img {
+                    width: 32px;
+                }
+
+                div.popup > div.icons div.icon > a > span {
+                    font-size: 80%;
+                    width: 150%;
+                }
+
 
     #top-controls .search-container .search-options {
         font-size: 10pt;
