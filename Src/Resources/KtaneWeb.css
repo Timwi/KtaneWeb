@@ -569,7 +569,7 @@ pre.diff {
         position: relative;
     }
 
-    body.display-twitch td.infos-1 div.infos > .inf-twitch {
+    body.display-twitch tr.mod[data-twitchplays='Supported'] td.infos-1 div.infos > .inf-twitch {
         display: inline-block !important;
     }
 
