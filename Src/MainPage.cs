@@ -255,6 +255,7 @@ namespace KtaneWeb
                             new H3("Default file locations"),
                             new H4("Windows"),
                             new TABLE { class_ = "file-locations" }._(
+                                new TR(new TH("Game:"), new TD(new CODE(@"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes"))),
                                 new TR(new TH("Logfile (Steam):"), new TD(new CODE(@"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt"))),
                                 new TR(new TH("Logfile (Oculus):"), new TD(new CODE(@"C:\Program Files (x86)\Oculus\Software\steel-crate-games-keep-talking-and-nobody-explodes\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt"))),
                                 new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\ModProfiles"))),
@@ -262,10 +263,18 @@ namespace KtaneWeb
                                 new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"C:\Program Files (x86)\Steam\userdata\<some number>\760\remote\341800\screenshots")))),
                             new H4("Mac"),
                             new TABLE { class_ = "file-locations" }._(
+                                new TR(new TH("Game:"), new TD(new CODE(@"~/Library/Application Support/Steam/steamapps/common/Keep Talking and Nobody Explodes"))),
                                 new TR(new TH("Logfile:"), new TD(new CODE(@"~/Library/Logs/Unity/Player.log"))),
                                 new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/ModProfiles"))),
                                 new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings"))),
                                 new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots")))),
+                            new H4("Linux"),
+                            new TABLE { class_ = "file-locations" }._(
+                                new TR(new TH("Game:"), new TD(new CODE(@"~/.steam/steamapps/common/Keep Talking and Nobody Explodes"))),
+                                new TR(new TH("Logfile:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log"))),
+                                new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles"))),
+                                new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings"))),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<user id>/760/remote/341800/screenshots")))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
                             new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy."))))));
         }
