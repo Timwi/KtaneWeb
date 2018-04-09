@@ -49,17 +49,18 @@ $(function()
     try { preferredManuals = JSON.parse(lStorage.getItem('preferredManuals') || '{}') || {}; }
     catch (exc) { }
 
-    function compare(a, b) { return ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
+    function compare(a, b, rev) { return (rev ? -1 : 1) * ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var sorts = {
-        'name': { fnc: function(elem) { return $(elem).data('sortkey').toLowerCase(); }, bodyCss: 'sort-name', radioButton: '#sort-name' },
-        'defdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('defdiff')); }, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
-        'expdiff': { fnc: function(elem) { return Ktane.Filters[4].values.indexOf($(elem).data('expdiff')); }, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' }
+        'name': { fnc: function(elem) { return $(elem).data('sortkey').toLowerCase(); }, reverse: false, bodyCss: 'sort-name', radioButton: '#sort-name' },
+        'defdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('defdiff')); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
+        'expdiff': { fnc: function(elem) { return Ktane.Filters[4].values.indexOf($(elem).data('expdiff')); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
+        'published': { fnc: function(elem) { return $(elem).data('published'); }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
     var sort = lStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
         sort = 'name';
-    var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'id', 'description'];
-    var defaultDisplay = ['author', 'type', 'difficulty', 'description'];
+    var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'id', 'description', 'published'];
+    var defaultDisplay = ['author', 'type', 'difficulty', 'description', 'published'];
     var display = defaultDisplay;
     try { display = JSON.parse(lStorage.getItem('display')) || defaultDisplay; } catch (exc) { }
 
@@ -97,14 +98,14 @@ $(function()
         var arr = $('tr.mod').toArray();
         arr.sort(function(a, b)
         {
-            var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b));
-            return (c === 0) ? compare($(a).data('mod'), $(b).data('mod')) : c;
+            var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
+            return (c === 0) ? compare($(a).data('mod'), $(b).data('mod'), false) : c;
         });
         var table = $('#main-table');
         for (var i = 0; i < arr.length; i++)
             table.append(arr[i]);
 
-        $(document.body).removeClass('sort-name sort-defdiff sort-expdiff').addClass(sorts[srt].bodyCss);
+        $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
     }
 
@@ -447,13 +448,21 @@ $(function()
     $('.popup>.close').click(disappear);
 
     // Links in the table headers (not visible on mobile UI)
-    $('#sort-by-name').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : sort === 'expdiff' ? 'name' : 'defdiff'); return false; });
-    $('#sort-by-difficulty').click(function() { setSort(sort === 'defdiff' ? 'expdiff' : 'defdiff'); return false; });
+    $('.sort-header').click(function()
+    {
+        var arr = Object.keys(sorts);
+        var ix = -1;
+        for (var i = 0; i < arr.length; i++)
+            if (arr[i] === sort)
+                ix = i;
+        ix = (ix + 1) % arr.length;
+        console.log("Setting sort to: " + arr[ix]);
+        setSort(arr[ix]);
+        return false;
+    });
 
-    // Radio buttons (visible only on mobile UI)
-    $('#sort-name').click(function() { setSort('name'); return true; });
-    $('#sort-defuser-difficulty').click(function() { setSort('defdiff'); return true; });
-    $('#sort-expert-difficulty').click(function() { setSort('expdiff'); return true; });
+    // Radio buttons (mobile UI and “Filters & More” tab)
+    $('input.sort').click(function() { setSort(this.value); return true; });
 
     $('#more,#profiles-menu').click(function() { preventDisappear++; });
     $('#main-table').css({ display: 'table' });

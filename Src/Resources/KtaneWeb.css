@@ -131,11 +131,11 @@ td.infos-1 div.infos {
     margin-left: 2.8em;
 }
 
-div.infos .inf-type, div.infos .inf-origin, div.infos .inf-author, div.infos .inf-difficulty {
+div.infos .inf-type, div.infos .inf-origin, div.infos .inf-author, div.infos .inf-published, div.infos .inf-difficulty {
     display: inline;
 }
 
-    div.infos .inf-origin::before, div.infos .inf-difficulty::before, div.infos .inf-twitch::before {
+    div.infos .inf-origin::before, div.infos .inf-difficulty::before, div.infos .inf-twitch::before, div.infos .inf-published::before {
         content: ' • ';
     }
 
@@ -146,7 +146,7 @@ div.infos .inf-twitch {
     width: 29px;
 }
 
-div.infos .inf-author {
+div.infos .inf-author, div.infos .inf-published {
     opacity: .5;
 }
 
@@ -154,6 +154,10 @@ div.infos .inf-author {
         content: '\000a by ';
         white-space: pre;
     }
+
+div.infos .inf-published {
+    font-size: smaller;
+}
 
 div.infos .inf-difficulty .inf-difficulty-sub {
     font-weight: bold;
@@ -175,7 +179,8 @@ body:not(.display-difficulty) div.infos .inf-difficulty,
 body:not(.display-origin) div.infos .inf-origin,
 body:not(.display-twitch) div.infos .inf-twitch,
 body:not(.display-id) div.infos .inf-id,
-body:not(.display-description) div.infos .inf-description {
+body:not(.display-description) div.infos .inf-description,
+body:not(.display-published) div.infos .inf-published {
     display: none;
 }
 
@@ -219,6 +224,10 @@ body.sort-defdiff #main-table th.infos::after {
 
 body.sort-expdiff #main-table th.infos::after {
     content: '   • sorted by expert difficulty';
+}
+
+body.sort-published #main-table th.infos::after {
+    content: '   • sorted by publication date';
 }
 
 #logo {
@@ -577,7 +586,8 @@ pre.diff {
     td.infos-1 div.infos > div.inf-author,
     body.display-difficulty td.infos-1 div.infos > div.inf-difficulty,
     body.display-origin td.infos-1 div.infos > div.inf-origin,
-    body.display-id td.infos-1 div.infos > div.inf-id {
+    body.display-id td.infos-1 div.infos > div.inf-id,
+    body.display-published td.infos-1 div.infos > div.inf-published {
         display: inline;
     }
 
@@ -603,6 +613,10 @@ pre.diff {
 
     body.sort-defdiff th.infos::after {
         content: '   • sorted by defuser difficulty';
+    }
+
+    body.sort-expdiff th.infos::after {
+        content: '   • sorted by expert difficulty';
     }
 
     body.sort-expdiff th.infos::after {

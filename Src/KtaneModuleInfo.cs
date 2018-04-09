@@ -22,6 +22,7 @@ namespace KtaneWeb
         public KtaneModuleType Type = KtaneModuleType.Regular;
         public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
+        public DateTime Published = DateTime.Now.Date;
 
         // The following are only relevant for modules (not game rooms, mission packs, etc.)
         [ClassifyIgnoreIfDefault]
@@ -50,10 +51,11 @@ namespace KtaneWeb
                 other.SourceUrl == SourceUrl &&
                 other.TutorialVideoUrl == TutorialVideoUrl &&
                 other.TwitchPlaysSupport == TwitchPlaysSupport &&
-                other.Compatibility == Compatibility;
+                other.Compatibility == Compatibility &&
+                other.Published == Published;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl);
+        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl, Published);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
         void IClassifyObjectProcessor.BeforeSerialize() { }

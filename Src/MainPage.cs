@@ -16,9 +16,9 @@ namespace KtaneWeb
             // A    Logfile Analyzer
             // B
             // C    link to Source code
-            // D
+            // D    sort by date published
             // E    sort by expert difficulty
-            // F    sort by defuser difficulty
+            // F    Find
             // G
             // H
             // I    include missing
@@ -27,7 +27,7 @@ namespace KtaneWeb
             // L    Light Theme
             // M    include/exclude mods
             // N    sort by name
-            // O
+            // O    sort by defuser difficulty
             // P    Profile Editor
             // Q
             // R    include/exclude regular modules
@@ -100,6 +100,7 @@ namespace KtaneWeb
                 new { Readable = "Difficulty", Id = "difficulty" },
                 new { Readable = "Origin", Id = "origin" },
                 new { Readable = "Twitch support", Id = "twitch" },
+                new { Readable = "Date published", Id = "published" },
                 new { Readable = "Module ID", Id = "id" });
 
             var cssLink = req.Url.WithParent("css");
@@ -161,14 +162,15 @@ namespace KtaneWeb
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = selectables.Length }._("Links"),
-                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort", id = "sort-by-name" }._("Name")),
-                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort", id = "sort-by-difficulty" }._("Information"))),
+                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._("Name")),
+                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information"))),
                                 _config.Current.KtaneModules.Select(mod =>
                                     new TR { class_ = "mod" }
                                         .Data("mod", mod.Name)
                                         .Data("author", mod.Author)
                                         .Data("description", mod.Description)
                                         .Data("sortkey", mod.SortKey)
+                                        .Data("published", mod.Published.ToString("yyyy-MM-dd"))
                                         .Data("compatibility", mod.Compatibility.ToString())
                                         .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
                                         .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
@@ -182,6 +184,7 @@ namespace KtaneWeb
                                                     ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()))
                                                     : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.Value.ToReadable()), " (e)"),
                                                 new DIV { class_ = "inf-author" }._(mod.Author),
+                                                new DIV { class_ = "inf-published" }._(mod.Published.ToString("yyyy-MMM-dd")),
                                                 new DIV { class_ = "inf-twitch" },
                                                 mod.ModuleID.NullOr(id => new DIV { class_ = "inf-id" }._(id)),
                                                 new DIV { class_ = "inf-description" }._(mod.Description))),
@@ -226,11 +229,14 @@ namespace KtaneWeb
                                         new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
                                     new DIV(
-                                        new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defuser-difficulty", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-defuser-difficulty", accesskey = "f" }._("\u00a0Sort by defuser difficulty".Accel('f'))),
+                                        new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defdiff", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-defuser-difficulty", accesskey = "o" }._("\u00a0Sort by defuser difficulty".Accel('o'))),
                                     new DIV(
-                                        new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expert-difficulty", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e')))),
+                                        new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e'))),
+                                    new DIV(
+                                        new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d')))),
                                 new DIV { class_ = "link-targets" }._(
                                     new H4("Make links go to:"),
                                     selectables.Select(sel => new DIV(
@@ -274,7 +280,7 @@ namespace KtaneWeb
                                 new TR(new TH("Logfile:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log"))),
                                 new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles"))),
                                 new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings"))),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<user id>/760/remote/341800/screenshots")))),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<some number>/760/remote/341800/screenshots")))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
                             new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy."))))));
         }
