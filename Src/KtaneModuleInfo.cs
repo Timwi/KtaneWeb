@@ -61,7 +61,7 @@ namespace KtaneWeb
         void IClassifyObjectProcessor.BeforeSerialize() { }
         void IClassifyObjectProcessor.AfterDeserialize()
         {
-            if (SortKey == null)
+            if (SortKey == null || SortKey == "")
                 SortKey = Regex.Replace(Name, @"^The |[^a-zA-Z0-9]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
 
             if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy)
@@ -76,6 +76,9 @@ namespace KtaneWeb
                 ExpertDifficulty = null;
                 TwitchPlaysSupport = null;
             }
+
+            if (TutorialVideoUrl == "")
+                TutorialVideoUrl = null;
         }
 
         int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);

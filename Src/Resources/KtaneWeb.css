@@ -184,6 +184,10 @@ body:not(.display-published) div.infos .inf-published {
     display: none;
 }
 
+tr.mod.selected {
+    background: rgba(68, 130, 255, 0.4);
+}
+
 td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod:not([data-twitchplays='Supported']) div.infos .inf-twitch {
     display: none;
 }

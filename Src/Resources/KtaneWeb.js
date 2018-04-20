@@ -211,7 +211,7 @@ $(function()
                 searchWhat += ' ' + data.author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + data.description.toLowerCase();
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchWhat.match(searchText) !== null)
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchWhat.indexOf(searchText) !== -1)
             {
                 modCount++;
                 $(e).show();
@@ -323,7 +323,6 @@ $(function()
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplay(displays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
-    $('input#search-field').on('input', function() { updateFilter(); });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
     $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
@@ -466,4 +465,34 @@ $(function()
 
     $('#more,#profiles-menu').click(function() { preventDisappear++; });
     $('#main-table').css({ display: 'table' });
+
+    var selectedRow = 0;
+    $("#search-field").focus().keyup(function(e)
+    {
+        updateFilter();
+    }).focus(function(e)
+    {
+        // Highlight
+        $("tr.mod").removeClass('selected');
+        $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
+    }).keydown(function(e)
+    {
+        if (e.keyCode === 38 && selectedRow > 0)   // up arrow
+            selectedRow--;
+        else if (e.keyCode === 40 && selectedRow < $("tr.mod:visible").length - 1)      // down arrow
+            selectedRow++;
+        else if (e.keyCode === 13)  // enter
+            window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
+
+        // Reducing results, move highlight
+        if (selectedRow > $("tr.mod:visible").length)
+            selectedRow = $("tr.mod:visible").length - 1;
+
+        // Highlight
+        $("tr.mod").removeClass('selected');
+        $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
+    }).blur(function(e)
+    {
+        $("tr.mod").removeClass('selected');
+    });
 });
