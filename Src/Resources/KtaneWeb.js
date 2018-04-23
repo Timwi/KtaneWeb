@@ -79,6 +79,13 @@ $(function()
     }
     lStorage.setItem('version', '2');
 
+    var selectedRow = 0;
+    function updateSearchHighlight()
+    {
+        $("tr.mod").removeClass('selected');
+        $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
+    }
+
     function setSelectable(sel)
     {
         selectable = sel;
@@ -89,6 +96,9 @@ $(function()
         lStorage.setItem('selectable', sel);
         updateFilter();
         setPreferredManuals();
+        $('#main-table').css({ display: 'table' });
+        if ($("input#search-field").is(':focus'))
+            updateSearchHighlight();
     }
 
     function setSort(srt)
@@ -295,13 +305,14 @@ $(function()
         $('input#filter-include-missing').prop('checked', filter.includeMissing);
     }
 
-    // This also calls updateFilter()
-    setSelectable(selectable);
     setPreferredManuals();
     setSort(sort);
     setTheme(theme);
     setDisplay(display);
     setSearchOptions(searchOptions);
+
+    // This also calls updateFilter()
+    setSelectable(selectable);
 
     var preventDisappear = 0;
     function disappear()
@@ -455,44 +466,36 @@ $(function()
             if (arr[i] === sort)
                 ix = i;
         ix = (ix + 1) % arr.length;
-        console.log("Setting sort to: " + arr[ix]);
         setSort(arr[ix]);
         return false;
     });
 
     // Radio buttons (mobile UI and “Filters & More” tab)
     $('input.sort').click(function() { setSort(this.value); return true; });
-
     $('#more,#profiles-menu').click(function() { preventDisappear++; });
-    $('#main-table').css({ display: 'table' });
 
-    var selectedRow = 0;
-    $("#search-field").focus().keyup(function(e)
-    {
-        updateFilter();
-    }).focus(function(e)
-    {
-        // Highlight
-        $("tr.mod").removeClass('selected');
-        $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
-    }).keydown(function(e)
-    {
-        if (e.keyCode === 38 && selectedRow > 0)   // up arrow
-            selectedRow--;
-        else if (e.keyCode === 40 && selectedRow < $("tr.mod:visible").length - 1)      // down arrow
-            selectedRow++;
-        else if (e.keyCode === 13)  // enter
-            window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
+    $("#search-field")
+        .focus(updateSearchHighlight)
+        .blur(function(e) { $("tr.mod").removeClass('selected'); })
+        .keyup(function(e)
+        {
+            updateFilter();
 
-        // Reducing results, move highlight
-        if (selectedRow > $("tr.mod:visible").length)
-            selectedRow = $("tr.mod:visible").length - 1;
+            // Reducing results, move highlight
+            if (selectedRow >= $("tr.mod:visible").length)
+                selectedRow = $("tr.mod:visible").length - 1;
 
-        // Highlight
-        $("tr.mod").removeClass('selected');
-        $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
-    }).blur(function(e)
-    {
-        $("tr.mod").removeClass('selected');
-    });
+            updateSearchHighlight();
+        })
+        .keydown(function(e)
+        {
+            if (e.keyCode === 38 && selectedRow > 0)   // up arrow
+                selectedRow--;
+            else if (e.keyCode === 40 && selectedRow < $("tr.mod:visible").length - 1)      // down arrow
+                selectedRow++;
+            else if (e.keyCode === 13)  // enter
+                window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
+
+            updateSearchHighlight();
+        });
 });

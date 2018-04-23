@@ -150,6 +150,7 @@ namespace KtaneWeb
                             new DIV { class_ = "search-container" }._(
                                 new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
                                 new INPUT { id = "search-field", accesskey = "f" }, " ",
+                                new SCRIPTLiteral("document.getElementById('search-field').focus();"),
                                 new A { href = "#", id = "search-field-clear" },
                                 new DIV { class_ = "search-options" }._(
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._("Names")),
