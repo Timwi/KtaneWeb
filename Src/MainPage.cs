@@ -247,10 +247,10 @@ namespace KtaneWeb
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
                                         new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I'))))),
 
-                            new DIV { class_ = "dev" }._(
-                                new DIV { class_ = "mobile-opts" },
-                                new SPAN { class_ = "dev-link" }._(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
-                                new SPAN { class_ = "dev-link" }._(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement"))),
+                            new UL { class_ = "dev" }._(
+                                new LI(new A { href = "More/Experting Template.png" }._("Experting template")),
+                                new LI(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
+                                new LI(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement"))),
                             new DIV { class_ = "highlighting-controls" }._(
                                 new H3("Controls to highlight elements in HTML manuals"),
                                 new TABLE { class_ = "highlighting-controls" }._(

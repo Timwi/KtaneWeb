@@ -373,25 +373,6 @@ body.sort-published #main-table th.infos::after {
             margin-top: .5em;
         }
 
-    #more > div.dev {
-        text-align: center;
-        margin-top: 2em;
-    }
-
-        #more > div.dev > span.dev-link {
-            padding: 0 1.5em;
-            border-right: 1px solid #ccf;
-        }
-
-            #more > div.dev > span.dev-link:first-child {
-                padding-left: 0;
-            }
-
-            #more > div.dev > span.dev-link:last-child {
-                padding-right: 0;
-                border: none;
-            }
-
     #more > table.file-locations code {
         font-size: 75%;
     }
@@ -644,12 +625,6 @@ pre.diff {
     #top-controls {
         display: block;
     }
-
-    #more > div.dev > span.dev-link {
-        padding: 0;
-        border: none;
-        display: block;
-    }
 }
 
 /* Desktop version for narrow screens — special case for wrapping the search options */
@@ -877,19 +852,6 @@ pre.diff {
     #more div.highlighting-controls {
         display: none;
     }
-
-    #more > div.dev {
-        list-style: disc;
-        text-align: left;
-        padding-left: 1.5em;
-    }
-
-        #more > div.dev > span.dev-link, #more > div.dev > span.dev-link + span.dev-link {
-            display: list-item;
-            padding: 0;
-            margin: .7em 0;
-            border: none;
-        }
 
     div.popup {
         padding: 1.5em .5em;
