@@ -188,7 +188,7 @@ $(function()
             noneSelected[Ktane.Filters[i].id] = none;
         }
 
-        var searchText = $("input#search-field").val().toLowerCase();
+        var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
 
         var modCount = 0;
         $('tr.mod').each(function(_, e)
@@ -221,7 +221,7 @@ $(function()
                 searchWhat += ' ' + data.author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + data.description.toLowerCase();
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchWhat.indexOf(searchText) !== -1)
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
             {
                 modCount++;
                 $(e).show();
@@ -493,8 +493,23 @@ $(function()
                 selectedRow--;
             else if (e.keyCode === 40 && selectedRow < $("tr.mod:visible").length - 1)      // down arrow
                 selectedRow++;
-            else if (e.keyCode === 13)  // enter
-                window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
+            else if (e.keyCode === 13)
+            {
+                if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
+                    window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
+                else
+                {
+                    // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
+                    $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).focus();
+                    setTimeout(function()
+                    {
+                        var inp = document.getElementById('search-field');
+                        inp.focus();
+                        inp.selectionStart = 0;
+                        inp.selectionEnd = inp.value.length;
+                    }, 1);
+                }
+            }
 
             updateSearchHighlight();
         });
