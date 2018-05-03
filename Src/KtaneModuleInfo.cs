@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using RT.TagSoup;
@@ -32,8 +33,12 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault]
         public KtaneTwitchPlays? TwitchPlaysSupport;
 
-        public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
-            .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });
+        public object Icon(KtaneWebConfig config)
+        {
+            var f = Path.Combine(config.ModIconDir, Name + ".png");
+            var data = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}";
+            return new IMG { class_ = "mod-icon", alt = Name, title = Name, src = data };
+        }
 
         public bool Equals(KtaneModuleInfo other)
         {
