@@ -29,22 +29,5 @@ namespace KtaneWeb
         {
             return infos.Aggregate(tag, (prev, next) => prev.Data(dataName(next), dataValue(next)));
         }
-
-        public static TValue Get<TKey, TValue>(this Dictionary<TKey, CacheEntry<TValue>> cache, TKey key, Func<TValue> generator)
-        {
-            if (cache == null)
-                throw new ArgumentNullException(nameof(cache));
-            if (key == null)
-                throw new ArgumentNullException(nameof(key));
-            if (generator == null)
-                throw new ArgumentNullException(nameof(generator));
-
-            lock (cache)
-            {
-                if (!cache.TryGetValue(key, out var entry) || DateTime.UtcNow > entry.Expires)
-                    cache[key] = entry = new CacheEntry<TValue>(generator());
-                return entry.Value;
-            }
-        }
     }
 }

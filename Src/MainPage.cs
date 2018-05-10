@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
@@ -11,9 +10,6 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private Dictionary<string, CacheEntry<object>> _moduleRowCache = new Dictionary<string, CacheEntry<object>>();
-        private Dictionary<string, CacheEntry<JsonList>> _moduleSheetsCache = new Dictionary<string, CacheEntry<JsonList>>();
-
         private HttpResponse mainPage(HttpRequest req)
         {
             // Access keys:
@@ -45,8 +41,7 @@ namespace KtaneWeb
             // Z
             // .    More
 
-            var start = DateTime.UtcNow;
-            var sheets = _config.Current.KtaneModules.ToDictionary(mod => mod.Name, mod => _moduleSheetsCache.Get(mod.Name, () => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray())));
+            var sheets = _config.Current.KtaneModules.ToDictionary(mod => mod.Name, mod => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
 
             var selectables = Ut.NewArray(
                 new Selectable
@@ -113,9 +108,6 @@ namespace KtaneWeb
             cssLink = cssLink.WithQuery("u", DateTime.UtcNow.Ticks.ToString());
 #endif
 
-            var firstPart = DateTime.UtcNow - start;
-            start = DateTime.UtcNow;
-
             return HttpResponse.Html(new HTML(
                 new HEAD(
                     new TITLE("Repository of Manual Pages"),
@@ -173,7 +165,7 @@ namespace KtaneWeb
                                     new TH { colspan = selectables.Length }._("Links"),
                                     new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._("Name")),
                                     new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information"))),
-                                _config.Current.KtaneModules.Select(mod => _moduleRowCache.Get(mod.Name, () =>
+                                _config.Current.KtaneModules.Select(mod =>
                                     new TR { class_ = "mod" }
                                         .Data("mod", mod.Name)
                                         .Data("author", mod.Author)
@@ -197,7 +189,7 @@ namespace KtaneWeb
                                                 new DIV { class_ = "inf-twitch" },
                                                 mod.ModuleID.NullOr(id => new DIV { class_ = "inf-id" }._(id)),
                                                 new DIV { class_ = "inf-description" }._(mod.Description))),
-                                            new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" })))))),
+                                            new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" }))))),
 
                         new DIV { id = "module-count" },
 
@@ -291,7 +283,7 @@ namespace KtaneWeb
                                 new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings"))),
                                 new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<some number>/760/remote/341800/screenshots")))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
-                            new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy.")))), new Func<object>(() => new RawTag($"<!-- Elapsed: 1. {firstPart.TotalSeconds:0.0} sec, 2. {(DateTime.UtcNow - start).TotalSeconds:0.0} sec -->"))));
+                            new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy."))))));
         }
     }
 }

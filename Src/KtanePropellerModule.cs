@@ -14,15 +14,55 @@ namespace KtaneWeb
         public override string Name => "Repository of Manual Pages for Keep Talking and Nobody Explodes";
 
         private KtaneWebConfig _config;
-        private LoggerBase _logger;
-        private UrlResolver _resolver;
+	    private LoggerBase _logger;
 
         public override HttpResponse Handle(HttpRequest request)
         {
-            var response = _resolver.Handle(request);
-            if (response is HttpResponseContent h)
-                h.UseGzip = UseGzipOption.DontUseGzip;
-            return response;
+            var auth = _config.UsersFile?.Apply(file => new FileAuthenticator(file, _ => request.Url.WithPath("").ToHref(), "Repository of Manual Pages"));
+
+            return new KtaneWebSession(_config).EnableAutomatic(request, session =>
+            {
+                var resolver = new UrlResolver(
+#if DEBUG
+                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(_config.JavaScriptFile, "text/javascript; charset=utf-8")),
+                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(_config.CssFile, "text/css; charset=utf-8")),
+#else
+                    new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.JavaScript(Resources.Js)),
+                    new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.Css(Resources.Css)),
+#endif
+
+                    new UrlMapping(path: "/", specificPath: true, handler: mainPage),
+                    new UrlMapping(path: "/profile", handler: generateProfile),
+                    new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
+                    new UrlMapping(path: "/pull", handler: pull),
+                    new UrlMapping(path: "/proxy", handler: proxy),
+                    new UrlMapping(path: "/manual", handler: manual),
+
+                    new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
+
+                    // Default fallback: file system handler
+                    new UrlMapping(req => new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
+                );
+
+                foreach (string directory in Directory.GetDirectories(Path.Combine(_config.BaseDir, "HTML")))
+                    resolver.Add(new UrlMapping(path: "/manual/" + Path.GetFileName(directory), handler: req => new FileSystemHandler(directory, new FileSystemOptions { MaxAge = null }).Handle(req)));
+
+                if (auth != null)
+                    resolver.Add(new UrlMapping(path: "/auth", handler: req => auth.Handle(req, session.Username, user =>
+                    {
+                        session.Username = user;
+                        lock (_config)
+                        {
+                            if (user == null)
+                                _config.Sessions.Remove(session.SessionID);
+                            else
+                                _config.Sessions[session.SessionID] = user;
+                            saveConfig();
+                        }
+                    })));
+
+                return resolver.Handle(request);
+            });
         }
 
         public override void Init(LoggerBase log)
@@ -33,49 +73,9 @@ namespace KtaneWeb
             if (rewrite != original)
                 File.WriteAllText(Settings.ConfigFile, rewrite);
             base.Init(log);
-            _logger = log;
-            VanillaRuleGenerator.Extensions.Debug.Logger = log;
-
-            _resolver = new UrlResolver(
-#if DEBUG
-                new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(_config.JavaScriptFile, "text/javascript; charset=utf-8")),
-                new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(_config.CssFile, "text/css; charset=utf-8")),
-#else
-                new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.JavaScript(Resources.Js)),
-                new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.Css(Resources.Css)),
-#endif
-
-                new UrlMapping(path: "/", specificPath: true, handler: mainPage),
-                new UrlMapping(path: "/profile", handler: generateProfile),
-                new UrlMapping(path: "/json", handler: req => new KtaneWebSession(_config).EnableAutomatic(req, session => jsonPage(req, session))),
-                new UrlMapping(path: "/pull", handler: pull),
-                new UrlMapping(path: "/proxy", handler: proxy),
-                new UrlMapping(path: "/manual", handler: manual),
-
-                new UrlMapping(path: "/puzzles", handler: req => new KtaneWebSession(_config).EnableAutomatic(req, session => puzzles(req, _config.Puzzles, session))),
-
-                // Default fallback: file system handler
-                new UrlMapping(req => new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
-            );
-
-            foreach (string directory in Directory.GetDirectories(Path.Combine(_config.BaseDir, "HTML")))
-                _resolver.Add(new UrlMapping(path: "/manual/" + Path.GetFileName(directory), handler: req => new FileSystemHandler(directory, new FileSystemOptions { MaxAge = null }).Handle(req)));
-
-            var auth = _config.UsersFile?.Apply(file => new FileAuthenticator(file, url => url.WithPath("").ToHref(), "Repository of Manual Pages"));
-            if (auth != null)
-                _resolver.Add(new UrlMapping(path: "/auth", handler: req => new KtaneWebSession(_config).EnableAutomatic(req, session => auth.Handle(req, session.Username, user =>
-                {
-                    session.Username = user;
-                    lock (_config)
-                    {
-                        if (user == null)
-                            _config.Sessions.Remove(session.SessionID);
-                        else
-                            _config.Sessions[session.SessionID] = user;
-                        saveConfig();
-                    }
-                }))));
-        }
+	        _logger = log;
+	        VanillaRuleGenerator.Extensions.Debug.Logger = log;
+		}
 
         private void saveConfig()
         {

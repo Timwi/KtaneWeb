@@ -17,12 +17,6 @@ namespace KtaneWeb
             cmd.StdoutText += str => output.Append(str);
             cmd.StderrText += str => output.Append(str);
             cmd.StartAndWait();
-
-            lock (_moduleRowCache)
-                _moduleRowCache.Clear();
-            lock (_moduleSheetsCache)
-                _moduleSheetsCache.Clear();
-
             return HttpResponse.PlainText(output.ToString());
         }
     }
