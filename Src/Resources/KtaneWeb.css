@@ -888,3 +888,25 @@ pre.diff {
         font-size: 10pt;
     }
 }
+
+@media print {
+    #main-table td.selectable, #main-table tr.header-row th:nth-child(1), #main-table td.selectable, #main-table tr.header-row th:nth-child(1), #logo, #icons, #top-controls, .manual-selector {
+        display: none;
+    }
+
+    table#main-table tr {
+        page-break-inside: avoid;
+        page-break-after: auto
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    #main-table td, #main-table th {
+        border: none;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+    }
+}
