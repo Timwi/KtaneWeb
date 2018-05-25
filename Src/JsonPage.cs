@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using RT.Generexes;
@@ -66,31 +67,23 @@ namespace KtaneWeb
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
+        private static object _json_lock = new object();
         private HttpResponse jsonDiff(HttpRequest req, int ix)
         {
             const int context = 8;
-            var newTxt = ClassifyJson.Serialize(_config.History[ix].Entry).ToStringIndented();
+            var newTxt = ClassifyJson.Serialize(_config.History[ix].Entry).ToStringIndented().Replace("\r", "");
             var oldEntry = getPrevNonSuggestion(ix);
-            var oldTxt = oldEntry == null ? "" : ClassifyJson.Serialize(oldEntry).ToStringIndented();
-            var tokenize = Ut.Lambda((string str) => Regex.Matches(str.Replace("\r", ""), @"\w+|.", RegexOptions.Singleline).Cast<Match>().Select(m => m.Value));
-            var diff = Ut.Diff(tokenize(oldTxt), tokenize(newTxt)).Select(tup => Tuple.Create(tup.Item1, (DiffOp?) tup.Item2)).ToArray();
+            var oldTxt = oldEntry == null ? "" : ClassifyJson.Serialize(oldEntry).ToStringIndented().Replace("\r", "");
+            var diff = Ut.Diff(oldTxt.Split('\n'), newTxt.Split('\n')).Select(tup => Tuple.Create(tup.Item1, (DiffOp?) tup.Item2)).ToArray();
 
-            var unchNL = diff.CreateGenerex(tup => tup.Item2 == DiffOp.None && tup.Item1 == "\n");
-            var unchNonNL = diff.CreateGenerex(tup => tup.Item2 == DiffOp.None && tup.Item1 != "\n");
-            var line =
-                unchNL.Process(m => false).Or(diff.CreateStartGenerex().Process(m => true)).LookBehind()
-                    .Then(unchNonNL.RepeatGreedy(), (s, m) => new { Start = s, Match = m.Match })
-                    .ThenRaw(unchNL.Process(m => false).Or(diff.CreateEndGenerex().Process(m => true)),
-                        (prev, f) => new { prev.Start, Match = prev.Match.Concat(new Tuple<string, DiffOp?>("\n", DiffOp.None)).ToArray(), End = f });
+            var diff2 = diff.CreateGenerex(tup => tup.Item2 == DiffOp.None).RepeatGreedy(min: context + 1).Replace(diff,
+                m => m.Length > 2 * context || m.Index == 0 || m.Index + m.Length == diff.Length
+                    ? m.Match.Subarray(0, m.Index == 0 ? 0 : context).Concat(new Tuple<string, DiffOp?>(null, null)).Concat(m.Match.Subarray(m.Length - (m.Index + m.Length == diff.Length ? 0 : context)))
+                    : m.Match);
 
-            var diff2 = line.RepeatGreedy(min: context + 1).ProcessRaw(m => m.ToArray()).ReplaceRaw(diff,
-                m => m.Length > 2 * context || m[0].Start || m.Last().End
-                    ? m.Subarray(0, m[0].Start ? 0 : context).SelectMany(x => x.Match).Concat(new Tuple<string, DiffOp?>(null, null)).Concat(m.Subarray(m.Length - (m.Last().End ? 0 : context)).SelectMany(x => x.Match))
-                    : m.SelectMany(x => x.Match));
-
-            return jsonPage(req, new PRE { class_ = "diff" }._(diff2.GroupConsecutiveBy(tup => tup.Item2).Select(gr =>
-                gr.Key == null ? new SPAN { class_ = "sep" } :
-                new SPAN { class_ = gr.Key == DiffOp.None ? null : gr.Key == DiffOp.Ins ? "ins" : "del" }._(gr.Select(tup => tup.Item1 == "\n" && tup.Item2 != DiffOp.None ? "⏎\n" : tup.Item1)))));
+            return jsonPage(req, new PRE { class_ = "diff" }._(diff2.Select(line =>
+                line.Item2 == null ? new SPAN { class_ = "sep" } :
+                new DIV { class_ = line.Item2 == DiffOp.None ? null : line.Item2 == DiffOp.Ins ? "ins" : "del" }._(line.Item1))));
         }
 
         private HttpResponse jsonAccRejSuggestion(HttpRequest req, bool editable)

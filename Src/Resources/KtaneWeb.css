@@ -1,13 +1,13 @@
 ﻿
 body {
     max-width: 66em;
-    margin: 0 auto 10em;
+    margin: 0 auto;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 13pt;
 }
 
 #main-content {
-    padding: 0 .7em;
+    padding: 0 .7em 10em;
     position: relative;
 }
 
@@ -248,19 +248,26 @@ body.sort-published #main-table th.infos::after {
     display: none;
 }
 
-    #profiles-menu > p.big {
+    #profiles-menu > p.editor {
         font-size: 150%;
         text-align: center;
         margin: .5em 0 1em;
         font-weight: bold;
     }
 
-    #profiles-menu > p.small {
+    #profiles-menu > p.heading {
         font-size: 12pt;
         border-top: 1px solid #ccc;
-        padding: 2em 0 1em;
+        padding: 2em 0 0;
+        margin: .25em;
         text-align: center;
         font-weight: bold;
+    }
+
+    #profiles-menu > p.zip {
+        font-size: 12pt;
+        margin: 0 0 1.5em;
+        text-align: center;
     }
 
     #profiles-menu > div.wrapper {
@@ -487,34 +494,50 @@ pre.diff {
     padding: 1em 2em;
 }
 
-    pre.diff span.ins {
+    pre.diff .ins {
         background: #8f8;
         font-weight: bold;
         padding: 0 .3em;
         margin: 0 .1em;
     }
 
-    pre.diff span.del {
+    pre.diff .del {
         background: #f88;
         text-decoration: line-through;
         padding: 0 .3em;
         margin: 0 .1em;
     }
 
-    pre.diff span.sep {
+    pre.diff .sep {
         background: #ccf;
         font-weight: bold;
         padding: 0 .5em;
         display: block;
     }
 
-        pre.diff span.sep::after {
-            content: '...';
-        }
+    pre.diff span.sep::after {
+        content: '...';
+    }
 
 .json-history td.commands, .json-history td.time, .json-history td.changes .module {
     white-space: nowrap;
 }
+
+#legal {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: .4;
+    border-top: 1px solid #ccc;
+    font-size: 10pt;
+    padding: .5em;
+    background: white;
+}
+
+    #legal:hover {
+        opacity: 1;
+    }
 
 /* Desktop version for narrow screens */
 @media screen and (max-width: 1090px) and (min-width: 650.01px) {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
@@ -195,8 +197,9 @@ namespace KtaneWeb
 
                         new DIV { id = "profiles-menu", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
-                            new P { class_ = "big" }._(new A { href = "More/Profile%20Editor.html", accesskey = "p" }._("Open Profile Editor".Accel('P'))),
-                            new P { class_ = "small" }._("Download profiles by difficulty:"),
+                            new P { class_ = "editor" }._(new A { href = "More/Profile%20Editor.html", accesskey = "p" }._("Open Profile Editor".Accel('P'))),
+                            new P { class_ = "heading" }._("Download profiles by difficulty:"),
+                            new P { class_ = "zip" }._(new A { href = "/profile/zip" }._("Download all as ZIP")),
                             new DIV { class_ = "wrapper" }._(
                                 new DIV { class_ = "defuser" }._(
                                     new P("By defuser difficulty:"),
@@ -283,7 +286,8 @@ namespace KtaneWeb
                                 new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings"))),
                                 new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<some number>/760/remote/341800/screenshots")))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
-                            new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy."))))));
+                            new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy."))),
+                    new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")))));
         }
     }
 }
