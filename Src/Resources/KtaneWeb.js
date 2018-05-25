@@ -388,10 +388,7 @@ $(function()
                 menuDiv.append(menu);
                 $(document.body).append(menuDiv);
                 if (!isMobileOpt)
-                {
-                    var pos = $(lnk).offset();
-                    menuDiv.css({ left: pos.left + $(lnk).outerWidth() - $(menuDiv).outerWidth(), top: pos.top + $(lnk).height() });
-                }
+                    menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
                 return false;
             };
         }
@@ -431,7 +428,7 @@ $(function()
             } else
             {
                 // Desktop interface: position relative to the tab
-                wnd.css({ width: width }).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'none' });
+                wnd.css({ width: width }).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
             }
         }
         else
