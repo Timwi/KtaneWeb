@@ -286,8 +286,8 @@ namespace KtaneWeb
                                 new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings"))),
                                 new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<some number>/760/remote/341800/screenshots")))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
-                            new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy."))),
-                    new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")))));
+                            new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy.")),
+                        new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung"))))));
         }
     }
 }
