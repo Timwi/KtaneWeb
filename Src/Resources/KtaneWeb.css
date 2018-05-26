@@ -10,6 +10,7 @@ body {
     padding: 0 .7em 10em;
     position: relative;
     min-height: 100vh;
+    box-sizing: border-box;
 }
 
 div.heading {
