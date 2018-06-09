@@ -140,7 +140,7 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN { id = "profiles-rel" }._("Profiles"))),
                                 new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
                             new DIV { class_ = "icon-page" }._(
-                                new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PL23fILnY52_2-I6JNG_7jw69x5YXj11GN" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial videos playlist"))),
+                                new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PLH-dcPPehL9rJ4vDrAC6izxiKj9Qavggv" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial videos playlist"))),
                                 new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Making Mods")))
                                 //new DIV { class_ = "icon" }._(new A { href = "More/Translating%20FAQ.html", id = "translating-faq" }._(new IMG { class_ = "icon", src = "HTML/img/translate.png" }, new SPAN("Help us translate manuals")))
                                 ),
