@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using RT.Generexes;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -67,23 +65,26 @@ namespace KtaneWeb
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
-        private static object _json_lock = new object();
         private HttpResponse jsonDiff(HttpRequest req, int ix)
         {
             const int context = 8;
             var newTxt = ClassifyJson.Serialize(_config.History[ix].Entry).ToStringIndented().Replace("\r", "");
             var oldEntry = getPrevNonSuggestion(ix);
             var oldTxt = oldEntry == null ? "" : ClassifyJson.Serialize(oldEntry).ToStringIndented().Replace("\r", "");
-            var diff = Ut.Diff(oldTxt.Split('\n'), newTxt.Split('\n')).Select(tup => Tuple.Create(tup.Item1, (DiffOp?) tup.Item2)).ToArray();
+            var chunks = Ut.Diff(oldTxt.Split('\n'), newTxt.Split('\n')).GroupConsecutiveBy(tup => tup.Item2 == DiffOp.None).ToArray();
 
-            var diff2 = diff.CreateGenerex(tup => tup.Item2 == DiffOp.None).RepeatGreedy(min: context + 1).Replace(diff,
-                m => m.Length > 2 * context || m.Index == 0 || m.Index + m.Length == diff.Length
-                    ? m.Match.Subarray(0, m.Index == 0 ? 0 : context).Concat(new Tuple<string, DiffOp?>(null, null)).Concat(m.Match.Subarray(m.Length - (m.Index + m.Length == diff.Length ? 0 : context)))
-                    : m.Match);
-
-            return jsonPage(req, new PRE { class_ = "diff" }._(diff2.Select(line =>
-                line.Item2 == null ? new SPAN { class_ = "sep" } :
-                new DIV { class_ = line.Item2 == DiffOp.None ? null : line.Item2 == DiffOp.Ins ? "ins" : "del" }._(line.Item1))));
+            return jsonPageResponse(req, new PRE { class_ = "diff" }._(chunks.Select((chunk, i) =>
+            {
+                object processLine(Tuple<string, DiffOp> line) => new DIV { class_ = line.Item2 == DiffOp.None ? null : line.Item2 == DiffOp.Ins ? "ins" : "del" }._(line.Item1);
+                if (chunk.Key && i == 0 && chunk.Count > context + 1)
+                    return new object[] { new SPAN { class_ = "sep" }, chunk.TakeLast(context).Select(processLine) };
+                else if (chunk.Key && i == chunks.Length - 1 && chunk.Count > context + 1)
+                    return new object[] { chunk.Take(context).Select(processLine), new SPAN { class_ = "sep" } };
+                else if (chunk.Key && chunk.Count > 2 * context + 1)
+                    return new object[] { chunk.Take(context).Select(processLine), new SPAN { class_ = "sep" }, chunk.TakeLast(context).Select(processLine) };
+                else
+                    return chunk.Select(processLine);
+            })));
         }
 
         private HttpResponse jsonAccRejSuggestion(HttpRequest req, bool editable)
@@ -151,7 +152,7 @@ namespace KtaneWeb
         private HttpResponse jsonDefaultPage(HttpRequest req, bool editable, string content = null, string error = null)
         {
             var anySuggestions = _config.History.Any(h => h.IsSuggestion);
-            return jsonPage(req, Ut.NewArray<object>(
+            return jsonPageResponse(req, Ut.NewArray<object>(
                 error.NullOr(err => new DIV { class_ = "error" }._(err)),
                 new FORM { method = method.post, action = req.Url.WithPath("/submit").ToHref() }._(
                     new TEXTAREA { name = "json", accesskey = "," }._(content ?? ClassifyJson.Serialize(_config.Current).ToStringIndented()),
@@ -188,7 +189,7 @@ namespace KtaneWeb
             return oldIx == _config.History.Count ? null : _config.History[oldIx].Entry;
         }
 
-        private static HttpResponse jsonPage(HttpRequest req, object body)
+        private static HttpResponse jsonPageResponse(HttpRequest req, object body)
         {
             return HttpResponse.Html(new HTML(
                 new HEAD(

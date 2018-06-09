@@ -77,10 +77,6 @@
     <Compile Include="VanillaRuleModifier.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Generex\Src\Generex.csproj">
-      <Project>{ad37f193-49a3-4a3d-8bf1-122d5457c7a6}</Project>
-      <Name>Generex</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Propeller\API\PropellerApi.csproj">
       <Project>{5770ee79-8340-41fb-9b8e-eb4a3c487ff1}</Project>
       <Name>PropellerApi</Name>
