@@ -34,6 +34,7 @@ td, th {
     position: relative;
 }
 
+/* Used by the page/Steam/source/tutorial link icons; not the icons in icon bars */
 img.icon {
     width: 32px;
     vertical-align: middle;
@@ -467,23 +468,43 @@ div.popup {
             display: inline;
         }
 
-    .icons div.icon {
+    .icons .icon {
         margin: 0 1em;
         position: relative;
         display: inline-block;
     }
 
-        .icons div.icon > a > img {
-            width: 60px;
+        .icons .icon > .icon-link {
+            color: #0000EE;
         }
 
-        .icons div.icon > a > span {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 120%;
-            width: 130%;
-        }
+            .icons .icon > .icon-link:visited {
+                color: #551A8B;
+            }
+
+            .icons .icon > .icon-link button {
+                width: 60px;
+                border: none;
+                background: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .icons .icon > .icon-link button, .icons .icon > .icon-link label {
+                cursor: pointer;
+            }
+
+            .icons .icon > .icon-link img {
+                width: 60px;
+            }
+
+            .icons .icon > .icon-link > .icon-label {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                top: 120%;
+                width: 130%;
+            }
 
 /* JSON page */
 div.links {

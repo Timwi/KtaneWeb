@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -12,6 +13,13 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
+        static KtaneFilter[] _filters = Ut.NewArray(
+            KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
+            KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
+            KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport),
+            KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
+            KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty));
+
         private HttpResponse mainPage(HttpRequest req)
         {
             // Access keys:
@@ -43,57 +51,7 @@ namespace KtaneWeb
             // Z
             // .    More
 
-            var sheets = _config.Current.KtaneModules.ToDictionary(mod => mod.Name, mod => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
-
-            var selectables = Ut.NewArray(
-                new Selectable
-                {
-                    HumanReadable = "Manual",
-                    Accel = 'u',
-                    Icon = mod => new IMG { class_ = "icon manual-icon", title = "Manual", alt = "Manual", src = sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["icon"].GetString() : null },
-                    DataAttributeName = "manual",
-                    DataAttributeValue = mod => sheets.Get(mod.Name, null)?.ToString(),
-                    Url = mod => sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["url"].GetString() : null,
-                    ShowIcon = mod => sheets[mod.Name].Count > 0,
-                    CssClass = "manual"
-                },
-                new Selectable
-                {
-                    HumanReadable = "Steam Workshop",
-                    Accel = 'S',
-                    Icon = mod => new IMG { class_ = "icon", title = "Steam Workshop", alt = "Steam Workshop", src = "HTML/img/steam-workshop-item.png" },
-                    DataAttributeName = "steam",
-                    DataAttributeValue = mod => mod.SteamID?.Apply(s => $"http://steamcommunity.com/sharedfiles/filedetails/?id={s}"),
-                    Url = mod => $"http://steamcommunity.com/sharedfiles/filedetails/?id={mod.SteamID}",
-                    ShowIcon = mod => mod.SteamID != null
-                },
-                new Selectable
-                {
-                    HumanReadable = "Source code",
-                    Accel = 'c',
-                    Icon = mod => new IMG { class_ = "icon", title = "Source code", alt = "Source code", src = "HTML/img/unity.png" },
-                    DataAttributeName = "source",
-                    DataAttributeValue = mod => mod.SourceUrl,
-                    Url = mod => mod.SourceUrl,
-                    ShowIcon = mod => mod.SourceUrl != null
-                },
-                new Selectable
-                {
-                    HumanReadable = "Tutorial video",
-                    Accel = 'T',
-                    Icon = mod => new IMG { class_ = "icon", title = "Tutorial video", alt = "Tutorial video", src = "HTML/img/video.png" },
-                    DataAttributeName = "video",
-                    DataAttributeValue = mod => mod.TutorialVideoUrl,
-                    Url = mod => mod.TutorialVideoUrl,
-                    ShowIcon = mod => mod.TutorialVideoUrl != null
-                });
-
-            var filters = Ut.NewArray(
-                KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
-                KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
-                KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport),
-                KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
-                KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty));
+            var selectables = getSelectables();
 
             var displays = Ut.NewArray(
                 new { Readable = "Description", Id = "description" },
@@ -121,7 +79,7 @@ namespace KtaneWeb
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPTLiteral($@"
                         Ktane = {{
-                            Filters: {filters.Select(f => f.ToJson()).ToJsonList()},
+                            Filters: {_filters.Select(f => f.ToJson()).ToJsonList()},
                             Selectables: {selectables.Select(s => s.DataAttributeName).ToJsonList()},
                             Themes: {{
                                 'dark': 'HTML/css/dark-theme.css'
@@ -135,16 +93,21 @@ namespace KtaneWeb
                         new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
                         new DIV { id = "icons", class_ = "icons" }._(
                             new DIV { class_ = "icon-page shown" }._(
-                                new DIV { class_ = "icon" }._(new A { href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Playing with Mods"))),
-                                new DIV { class_ = "icon" }._(new A { href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon", src = "HTML/img/logfile-analyzer.png" }, new SPAN("Logfile Analyzer".Accel('A')))),
-                                new DIV { class_ = "icon" }._(new A { href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon", src = "HTML/img/profile-editor.png" }, new SPAN { id = "profiles-rel" }._("Profiles"))),
-                                new DIV { class_ = "icon" }._(new A { href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon", src = "HTML/img/discord.png" }, new SPAN("Join us on Discord")))),
-                            new DIV { class_ = "icon-page" }._(
-                                new DIV { class_ = "icon" }._(new A { href = "https://www.youtube.com/playlist?list=PLH-dcPPehL9rJ4vDrAC6izxiKj9Qavggv" }._(new IMG { class_ = "icon", src = "HTML/img/video-playlist.png" }, new SPAN("Tutorial videos playlist"))),
-                                new DIV { class_ = "icon" }._(new A { href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon", src = "HTML/img/google-docs.png" }, new SPAN("Intro to Making Mods")))
-                                //new DIV { class_ = "icon" }._(new A { href = "More/Translating%20FAQ.html", id = "translating-faq" }._(new IMG { class_ = "icon", src = "HTML/img/translate.png" }, new SPAN("Help us translate manuals")))
-                                ),
-                            new DIV { class_ = "icon" }._(new A { href = "#", id = "icon-page-next" }._(new IMG { class_ = "icon", src = "HTML/img/more.png" }, new SPAN("More")))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Playing with Mods"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Making Mods"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))))
+                            //new DIV { class_ = "icon-page" }._(
+                            //    //,
+                            //    //new FORM { class_ = "icon", action = "pdf", method = method.post }._(
+                            //    //    new DIV { class_ = "icon-link" }._(
+                            //    //        new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
+                            //    //        new BUTTON { id = "generate-pdf", type = btype.submit }._(new IMG { class_ = "icon-img", src = "HTML/img/pdf_manual.png" }),
+                            //    //        new LABEL { class_ = "icon-label", for_ = "generate-pdf" }._("Download merged PDF")))
+                            //            ),
+                            //new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "icon-page-next" }._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More")))
+                        ),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
 
@@ -176,7 +139,7 @@ namespace KtaneWeb
                                         .Data("published", mod.Published.ToString("yyyy-MM-dd"))
                                         .Data("compatibility", mod.Compatibility.ToString())
                                         .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
-                                        .AddData(filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
+                                        .AddData(_filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
                                         ._(
                                             selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) + sel.CssClass?.Apply(c => " " + c) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
                                             new TD { class_ = "infos-1" }._(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(_config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
@@ -226,7 +189,7 @@ namespace KtaneWeb
                                     new DIV(
                                         new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
                                         new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
-                                filters.Select(filter => new DIV { class_ = "filter " + filter.DataAttributeName }._(filter.ToHtml())),
+                                _filters.Select(filter => new DIV { class_ = "filter " + filter.DataAttributeName }._(filter.ToHtml())),
                                 new DIV { class_ = "sort" }._(
                                     new H4("Sort order:"),
                                     new DIV(
@@ -285,9 +248,56 @@ namespace KtaneWeb
                                 new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles"))),
                                 new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings"))),
                                 new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<some number>/760/remote/341800/screenshots")))),
-                            new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J'))),
-                            new DIV { class_ = "icon-credits" }._("Module icons by lumbud84, samfun123 and Mushy.")),
+                            new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J')))),
                         new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung"))))));
+        }
+
+        private Selectable[] getSelectables()
+        {
+            var sheets = _config.Current.KtaneModules.ToDictionary(mod => mod.Name, mod => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
+
+            return Ut.NewArray(
+                new Selectable
+                {
+                    HumanReadable = "Manual",
+                    Accel = 'u',
+                    Icon = mod => new IMG { class_ = "icon manual-icon", title = "Manual", alt = "Manual", src = sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["icon"].GetString() : null },
+                    DataAttributeName = "manual",
+                    DataAttributeValue = mod => sheets.Get(mod.Name, null)?.ToString(),
+                    Url = mod => sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["url"].GetString() : null,
+                    ShowIcon = mod => sheets[mod.Name].Count > 0,
+                    CssClass = "manual"
+                },
+                new Selectable
+                {
+                    HumanReadable = "Steam Workshop",
+                    Accel = 'S',
+                    Icon = mod => new IMG { class_ = "icon", title = "Steam Workshop", alt = "Steam Workshop", src = "HTML/img/steam-workshop-item.png" },
+                    DataAttributeName = "steam",
+                    DataAttributeValue = mod => mod.SteamID?.Apply(s => $"http://steamcommunity.com/sharedfiles/filedetails/?id={s}"),
+                    Url = mod => $"http://steamcommunity.com/sharedfiles/filedetails/?id={mod.SteamID}",
+                    ShowIcon = mod => mod.SteamID != null
+                },
+                new Selectable
+                {
+                    HumanReadable = "Source code",
+                    Accel = 'c',
+                    Icon = mod => new IMG { class_ = "icon", title = "Source code", alt = "Source code", src = "HTML/img/unity.png" },
+                    DataAttributeName = "source",
+                    DataAttributeValue = mod => mod.SourceUrl,
+                    Url = mod => mod.SourceUrl,
+                    ShowIcon = mod => mod.SourceUrl != null
+                },
+                new Selectable
+                {
+                    HumanReadable = "Tutorial video",
+                    Accel = 'T',
+                    Icon = mod => new IMG { class_ = "icon", title = "Tutorial video", alt = "Tutorial video", src = "HTML/img/video.png" },
+                    DataAttributeName = "video",
+                    DataAttributeValue = mod => mod.TutorialVideoUrl,
+                    Url = mod => mod.TutorialVideoUrl,
+                    ShowIcon = mod => mod.TutorialVideoUrl != null
+                });
         }
     }
 }

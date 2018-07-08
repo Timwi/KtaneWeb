@@ -37,6 +37,7 @@ namespace KtaneWeb
                     new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/proxy", handler: proxy),
                     new UrlMapping(path: "/manual", handler: manual),
+                    new UrlMapping(path: "/pdf", handler: pdf),
 
                     new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
 
