@@ -47,7 +47,7 @@ namespace KtaneWeb
                         foreach (var difficulty in EnumStrong.GetValues<KtaneModuleDifficulty>())
                         {
                             zipFile.Add(new InMemoryDataSource(generateDefExp(difficulty, 1, k => k.DefuserDifficulty == difficulty)), @"Veto defuser {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
-                            zipFile.Add(new InMemoryDataSource(generateDefExp(difficulty, 0, k => k.ExpertDifficulty == difficulty)), @"+ Expert {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
+                            zipFile.Add(new InMemoryDataSource(generateDefExp(difficulty, 0, k => k.ExpertDifficulty != difficulty)), @"+ Expert {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
                         }
                         zipFile.CommitUpdate();
                         zipFile.Close();
