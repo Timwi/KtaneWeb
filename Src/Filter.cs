@@ -56,9 +56,9 @@ namespace KtaneWeb
         };
         public override object ToHtml() => Ut.NewArray<object>(
             new H4(ReadableName, ":"),
-            Options.Select(opt => new DIV(
-              new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-" + opt.Name }, " ",
-              new LABEL { for_ = "filter-" + opt.Name, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value)))));
+            Options.Select(opt => $"filter-{DataAttributeName}-{opt.Name}".Apply(id => new DIV(
+                new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
+                new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value))))));
         public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod)?.ToString();
     }
 

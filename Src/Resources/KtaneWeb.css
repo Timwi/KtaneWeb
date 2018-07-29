@@ -134,11 +134,11 @@ td.infos-1 div.infos {
     margin-left: 2.8em;
 }
 
-div.infos .inf-type, div.infos .inf-origin, div.infos .inf-author, div.infos .inf-published, div.infos .inf-difficulty {
+div.infos .inf-type, div.infos .inf-origin, div.infos .inf-author, div.infos .inf-published, div.infos .inf-difficulty, div.infos .inf-souvenir {
     display: inline;
 }
 
-    div.infos .inf-origin::before, div.infos .inf-difficulty::before, div.infos .inf-twitch::before, div.infos .inf-published::before {
+    div.infos .inf-origin::before, div.infos .inf-difficulty::before, div.infos .inf-twitch::before, .inf-souvenir::before, div.infos .inf-published::before {
         content: ' • ';
     }
 
@@ -181,6 +181,7 @@ td.infos-1 div.infos > .inf-description {
 body:not(.display-difficulty) div.infos .inf-difficulty,
 body:not(.display-origin) div.infos .inf-origin,
 body:not(.display-twitch) div.infos .inf-twitch,
+body:not(.display-souvenir) div.infos .inf-souvenir,
 body:not(.display-id) div.infos .inf-id,
 body:not(.display-description) div.infos .inf-description,
 body:not(.display-published) div.infos .inf-published {

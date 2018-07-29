@@ -1,22 +1,28 @@
 ﻿// Handle access to localStorage
 var lStorage = localStorage;
 
-try {
+try
+{
     localStorage.setItem("testStorage", "testData");
     localStorage.removeItem("testStorage");
-} catch (e) {
+} catch (e)
+{
     lStorage = {
         storage: {},
-        getItem: function(key) {
+        getItem: function(key)
+        {
             return this.storage[key] || null;
         },
-        setItem: function(key, data) {
+        setItem: function(key, data)
+        {
             this.storage[key] = data;
         },
-        removeItem: function(key) {
+        removeItem: function(key)
+        {
             delete this.storage[key];
         },
-        clear: function() {
+        clear: function()
+        {
             this.storage = {};
         }
     };
@@ -31,7 +37,8 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
-$(function() {
+$(function()
+{
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
@@ -52,7 +59,7 @@ $(function() {
     var sort = lStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
         sort = 'name';
-    var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'id', 'description', 'published'];
+    var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'souvenir', 'id', 'description', 'published'];
     var defaultDisplay = ['author', 'type', 'difficulty', 'description', 'published'];
     var display = defaultDisplay;
     try { display = JSON.parse(lStorage.getItem('display')) || defaultDisplay; } catch (exc) { }
@@ -63,7 +70,8 @@ $(function() {
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
 
     var version = lStorage.getItem('version');
-    if (version < 2) {
+    if (version < 2)
+    {
         sort = 'name';
         selectable = 'manual';
         display = defaultDisplay;
@@ -72,12 +80,14 @@ $(function() {
     lStorage.setItem('version', '2');
 
     var selectedRow = 0;
-    function updateSearchHighlight() {
+    function updateSearchHighlight()
+    {
         $("tr.mod").removeClass('selected');
         $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
     }
 
-    function setSelectable(sel) {
+    function setSelectable(sel)
+    {
         selectable = sel;
         $('a.modlink').each(function(_, e) { $(e).attr('href', sel === 'manual' ? null : ($(e).parents('tr').data(sel) || null)); });
         $('label.set-selectable').removeClass('selected');
@@ -91,11 +101,13 @@ $(function() {
             updateSearchHighlight();
     }
 
-    function setSort(srt) {
+    function setSort(srt)
+    {
         sort = srt;
         lStorage.setItem('sort', srt);
         var arr = $('tr.mod').toArray();
-        arr.sort(function(a, b) {
+        arr.sort(function(a, b)
+        {
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare($(a).data('mod'), $(b).data('mod'), false) : c;
         });
@@ -107,7 +119,8 @@ $(function() {
         $(sorts[srt].radioButton).prop('checked', true);
     }
 
-    function setDisplay(set) {
+    function setDisplay(set)
+    {
         display = (set instanceof Array) ? set.filter(function(x) { return displays.indexOf(x) !== -1; }) : defaultDisplay;
         $(document.body).removeClass(document.body.className.split(' ').filter(function(x) { return x.startsWith('display-'); }).join(' '));
         $('input.display').prop('checked', false);
@@ -116,15 +129,18 @@ $(function() {
         lStorage.setItem('display', JSON.stringify(display));
     }
 
-    function setSearchOptions(set) {
+    function setSearchOptions(set)
+    {
         searchOptions = (set instanceof Array) ? set.filter(function(x) { return validSearchOptions.indexOf(x) !== -1; }) : defaultSearchOptions;
         $('input.search-option-input').prop('checked', false);
         $(searchOptions.map(function(x) { return '#search-' + x; }).join(',')).prop('checked', true);
         lStorage.setItem('searchOptions', JSON.stringify(searchOptions));
     }
 
-    function setTheme(theme) {
-        if (theme === null || !(theme in Ktane.Themes)) {
+    function setTheme(theme)
+    {
+        if (theme === null || !(theme in Ktane.Themes))
+        {
             lStorage.removeItem('theme');
             theme = null;
         }
@@ -134,13 +150,16 @@ $(function() {
         $('#theme-' + (theme || 'default')).prop('checked', true);
     }
 
-    function updateFilter() {
+    function updateFilter()
+    {
         filter.includeMissing = $('input#filter-include-missing').prop('checked');
 
         var noneSelected = {};
-        for (var i = 0; i < Ktane.Filters.length; i++) {
+        for (var i = 0; i < Ktane.Filters.length; i++)
+        {
             var none = true;
-            switch (Ktane.Filters[i].type) {
+            switch (Ktane.Filters[i].type)
+            {
                 case "slider":
                     filter[Ktane.Filters[i].id] = {
                         min: $('div#filter-' + Ktane.Filters[i].id).slider('values', 0),
@@ -154,8 +173,9 @@ $(function() {
 
                 case "checkboxes":
                     filter[Ktane.Filters[i].id] = {};
-                    for (var j = 0; j < Ktane.Filters[i].values.length; j++) {
-                        filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked');
+                    for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+                    {
+                        filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].id + '-' + Ktane.Filters[i].values[j]).prop('checked');
                         if (filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]])
                             none = false;
                     }
@@ -171,13 +191,17 @@ $(function() {
         var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
 
         var modCount = 0;
-        $('tr.mod').each(function(_, e) {
+        $('tr.mod').each(function(_, e)
+        {
             var data = $(e).data();
 
             var filteredIn = true;
-            for (var i = 0; i < Ktane.Filters.length; i++) {
-                if (Ktane.Filters[i].id in data) {
-                    switch (Ktane.Filters[i].type) {
+            for (var i = 0; i < Ktane.Filters.length; i++)
+            {
+                if (Ktane.Filters[i].id in data)
+                {
+                    switch (Ktane.Filters[i].type)
+                    {
                         case "slider":
                             filteredIn = filteredIn && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) >= filter[Ktane.Filters[i].id].min && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) <= filter[Ktane.Filters[i].id].max;
                             break;
@@ -197,7 +221,8 @@ $(function() {
                 searchWhat += ' ' + data.author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + data.description.toLowerCase();
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length) {
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
+            {
                 modCount++;
                 $(e).show();
             }
@@ -209,8 +234,10 @@ $(function() {
         lStorage.setItem('filters', JSON.stringify(filter));
     }
 
-    function setPreferredManuals() {
-        $('tr.mod').each(function(_, e) {
+    function setPreferredManuals()
+    {
+        $('tr.mod').each(function(_, e)
+        {
             var data = $(e).data(), i;
             if (data.manual.length === 0)
                 return;
@@ -233,8 +260,10 @@ $(function() {
     }
 
     // Set filters from saved settings
-    for (var i = 0; i < Ktane.Filters.length; i++) {
-        switch (Ktane.Filters[i].type) {
+    for (var i = 0; i < Ktane.Filters.length; i++)
+    {
+        switch (Ktane.Filters[i].type)
+        {
             case "slider":
                 if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'object')
                     filter[Ktane.Filters[i].id] = {};
@@ -257,10 +286,11 @@ $(function() {
                 if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'object')
                     filter[Ktane.Filters[i].id] = {};
 
-                for (var j = 0; j < Ktane.Filters[i].values.length; j++) {
+                for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+                {
                     if (!(Ktane.Filters[i].values[j] in filter[Ktane.Filters[i].id]))
                         filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = true;
-                    $('input#filter-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
+                    $('input#filter-' + Ktane.Filters[i].id + '-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
                 }
                 break;
 
@@ -285,8 +315,10 @@ $(function() {
     setSelectable(selectable);
 
     var preventDisappear = 0;
-    function disappear() {
-        if (preventDisappear === 0) {
+    function disappear()
+    {
+        if (preventDisappear === 0)
+        {
             $('.disappear.stay').hide();
             $('.disappear:not(.stay)').remove();
 
@@ -305,21 +337,26 @@ $(function() {
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
     $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
-    $('tr.mod').each(function(_, e) {
+    $('tr.mod').each(function(_, e)
+    {
         var data = $(e).data();
         var mod = data.mod;
         var sheets = data.manual;
 
         // Click handler for selecting manuals/cheat sheets (both mobile and non)
-        function makeClickHander(lnk, isMobileOpt) {
-            return function() {
+        function makeClickHander(lnk, isMobileOpt)
+        {
+            return function()
+            {
                 disappear();
                 var menuDiv = $('<div>').addClass('popup disappear');
                 menuDiv.click(function() { preventDisappear++; });
-                if (isMobileOpt) {
+                if (isMobileOpt)
+                {
                     menuDiv.append($('<div class="close">').click(disappear));
                     var iconsDiv = $('<div>').addClass('icons');
-                    $(e).find('td.selectable:not(.manual) img.icon').each(function(_, ic) {
+                    $(e).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
+                    {
                         var iconDiv = $("<div class='icon'><a><img class='icon' /><span></span></a></div>");
                         iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
                         iconDiv.find('img').attr('src', $(ic).attr('src'));
@@ -330,13 +367,16 @@ $(function() {
                 }
                 menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
                 var menu = $('<menu>').addClass('manual-select');
-                for (var i = 0; i < sheets.length; i++) {
+                for (var i = 0; i < sheets.length; i++)
+                {
                     var li = $('<li>').text(sheets[i].name);
                     if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
                         li.addClass('checked');
                     var ahref = $('<a>').attr('href', sheets[i].url).append(li);
-                    ahref.click(function(sh) {
-                        return function() {
+                    ahref.click(function(sh)
+                    {
+                        return function()
+                        {
                             menuDiv.remove();
                             preferredManuals[mod] = sh;
                             setPreferredManuals();
@@ -357,7 +397,8 @@ $(function() {
         $(e).find('td.infos-1').append($('<div class="infos">').html($(e).find('td.infos-2>div.infos').html()));
 
         // Add UI for selecting manuals/cheat sheets (both mobile and non)
-        if (sheets.length > 1) {
+        if (sheets.length > 1)
+        {
             var lnk1 = $('<a>').attr('href', '#').addClass('manual-selector').text('▼');
             $(e).find('td.infos-1').append(lnk1.click(makeClickHander(lnk1, false)));
         }
@@ -367,20 +408,25 @@ $(function() {
     });
 
     // Page options pop-up (mobile only)
-    $('#page-opt').click(function() {
+    $('#page-opt').click(function()
+    {
         $('#icons').insertAfter('#more > div.close');
         $('#more').css({ left: '', top: '', width: '' }).show();
         return false;
     });
 
-    function popup(lnk, wnd, width) {
-        if (!wnd.is(':visible')) {
+    function popup(lnk, wnd, width)
+    {
+        if (!wnd.is(':visible'))
+        {
             disappear();
             wnd.show();
-            if (window.innerWidth <= 650) {
+            if (window.innerWidth <= 650)
+            {
                 // Mobile interface: CSS does it all
                 wnd.css({ width: '', left: '', top: '' });
-            } else {
+            } else
+            {
                 // Desktop interface: position relative to the tab
                 wnd.css({ width: width }).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
             }
@@ -390,7 +436,8 @@ $(function() {
         return false;
     }
 
-    $('#icon-page-next').click(function() {
+    $('#icon-page-next').click(function()
+    {
         var th = $(this), curPage = th.data('cur-page');
         var pages = $('#icons').children('.icon-page');
         if (typeof curPage === 'undefined')
@@ -408,7 +455,8 @@ $(function() {
     $('.popup>.close').click(disappear);
 
     // Links in the table headers (not visible on mobile UI)
-    $('.sort-header').click(function() {
+    $('.sort-header').click(function()
+    {
         var arr = Object.keys(sorts);
         var ix = -1;
         for (var i = 0; i < arr.length; i++)
@@ -426,7 +474,8 @@ $(function() {
     $("#search-field")
         .focus(updateSearchHighlight)
         .blur(function(e) { $("tr.mod").removeClass('selected'); })
-        .keyup(function(e) {
+        .keyup(function(e)
+        {
             updateFilter();
 
             // Reducing results, move highlight
@@ -435,18 +484,22 @@ $(function() {
 
             updateSearchHighlight();
         })
-        .keydown(function(e) {
+        .keydown(function(e)
+        {
             if (e.keyCode === 38 && selectedRow > 0)   // up arrow
                 selectedRow--;
             else if (e.keyCode === 40 && selectedRow < $("tr.mod:visible").length - 1)      // down arrow
                 selectedRow++;
-            else if (e.keyCode === 13) {
+            else if (e.keyCode === 13)
+            {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
                     window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
-                else {
+                else
+                {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
                     $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).focus();
-                    setTimeout(function() {
+                    setTimeout(function()
+                    {
                         var inp = document.getElementById('search-field');
                         inp.focus();
                         inp.selectionStart = 0;
@@ -458,7 +511,8 @@ $(function() {
             updateSearchHighlight();
         });
 
-    $('#generate-pdf').click(function() {
+    $('#generate-pdf').click(function()
+    {
         $('#generate-pdf-json').val(JSON.stringify({
             preferredManuals: preferredManuals,
             sort: sort,

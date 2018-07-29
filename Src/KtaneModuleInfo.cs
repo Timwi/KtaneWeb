@@ -32,6 +32,9 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault]
         public KtaneTwitchPlays? TwitchPlaysSupport;
 
+        [ClassifyIgnoreIfDefault]
+        public KtaneSouvenirInfo Souvenir = null;
+
         public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });
 
@@ -52,10 +55,11 @@ namespace KtaneWeb
                 other.TutorialVideoUrl == TutorialVideoUrl &&
                 other.TwitchPlaysSupport == TwitchPlaysSupport &&
                 other.Compatibility == Compatibility &&
-                other.Published == Published;
+                other.Published == Published &&
+                Equals(other.Souvenir, Souvenir);
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl, Published);
+        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
         void IClassifyObjectProcessor.BeforeSerialize() { }
@@ -82,6 +86,29 @@ namespace KtaneWeb
         }
 
         int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);
+    }
+
+    sealed class KtaneSouvenirInfo : IEquatable<KtaneSouvenirInfo>
+    {
+        [ClassifyIgnoreIfDefault]
+        public KtaneModuleSouvenir Status = KtaneModuleSouvenir.NotACandidate;
+        [ClassifyIgnoreIfDefault]
+        public string Explanation;
+
+        public static object GetTag(KtaneSouvenirInfo inf)
+        {
+            var value = inf == null ? KtaneModuleSouvenir.NotACandidate : inf.Status;
+            var attr = value.GetCustomAttribute<KtaneSouvenirInfoAttribute>();
+            return new DIV
+            {
+                class_ = "inf-souvenir" + (inf == null || inf.Explanation == null ? null : " souvenir-explanation"),
+                title = attr.Tooltip + (inf == null || inf.Explanation == null ? null : " " + inf.Explanation)
+            }._(attr.Char);
+        }
+
+        public override bool Equals(object obj) => obj != null && obj is KtaneSouvenirInfo && Equals((KtaneSouvenirInfo) obj);
+        public bool Equals(KtaneSouvenirInfo other) => other != null && other.Status == Status && other.Explanation == Explanation;
+        public override int GetHashCode() => Ut.ArrayHash(Status, Explanation);
     }
 
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value

@@ -17,6 +17,7 @@ namespace KtaneWeb
             KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
             KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
             KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport),
+            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status),
             KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
             KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty));
 
@@ -60,6 +61,7 @@ namespace KtaneWeb
                 new { Readable = "Difficulty", Id = "difficulty" },
                 new { Readable = "Origin", Id = "origin" },
                 new { Readable = "Twitch support", Id = "twitch" },
+                new { Readable = "Souvenir support", Id = "souvenir" },
                 new { Readable = "Date published", Id = "published" },
                 new { Readable = "Module ID", Id = "id" });
 
@@ -98,15 +100,15 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))))
-                            //new DIV { class_ = "icon-page" }._(
-                            //    //,
-                            //    //new FORM { class_ = "icon", action = "pdf", method = method.post }._(
-                            //    //    new DIV { class_ = "icon-link" }._(
-                            //    //        new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
-                            //    //        new BUTTON { id = "generate-pdf", type = btype.submit }._(new IMG { class_ = "icon-img", src = "HTML/img/pdf_manual.png" }),
-                            //    //        new LABEL { class_ = "icon-label", for_ = "generate-pdf" }._("Download merged PDF")))
-                            //            ),
-                            //new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "icon-page-next" }._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More")))
+                        //new DIV { class_ = "icon-page" }._(
+                        //    //,
+                        //    //new FORM { class_ = "icon", action = "pdf", method = method.post }._(
+                        //    //    new DIV { class_ = "icon-link" }._(
+                        //    //        new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
+                        //    //        new BUTTON { id = "generate-pdf", type = btype.submit }._(new IMG { class_ = "icon-img", src = "HTML/img/pdf_manual.png" }),
+                        //    //        new LABEL { class_ = "icon-label", for_ = "generate-pdf" }._("Download merged PDF")))
+                        //            ),
+                        //new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "icon-page-next" }._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More")))
                         ),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
@@ -151,7 +153,8 @@ namespace KtaneWeb
                                                     : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.Value.ToReadable()), " (e)"),
                                                 new DIV { class_ = "inf-author" }._(mod.Author),
                                                 new DIV { class_ = "inf-published" }._(mod.Published.ToString("yyyy-MMM-dd")),
-                                                new DIV { class_ = "inf-twitch" },
+                                                new DIV { class_ = "inf-twitch", title = "This module can be played in “Twitch Plays: KTANE”." },
+                                                KtaneSouvenirInfo.GetTag(mod.Souvenir),
                                                 mod.ModuleID.NullOr(id => new DIV { class_ = "inf-id" }._(id)),
                                                 new DIV { class_ = "inf-description" }._(mod.Description))),
                                             new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" }))))),
