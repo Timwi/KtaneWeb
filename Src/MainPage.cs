@@ -17,9 +17,10 @@ namespace KtaneWeb
             KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
             KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
             KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport),
-            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status),
             KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
-            KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty));
+            KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty),
+            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status)
+        );
 
         private HttpResponse mainPage(HttpRequest req)
         {

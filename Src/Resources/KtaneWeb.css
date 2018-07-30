@@ -372,7 +372,7 @@ body.sort-published #main-table th.infos::after {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        height: 17.5em;
+        height: 18.5em;
         border-bottom: 1px solid #ccf;
     }
 
@@ -495,7 +495,7 @@ div.popup {
                 cursor: pointer;
             }
 
-            .icons .icon > .icon-link img {
+            .icons .icon > .icon-link > .icon-img {
                 width: 60px;
             }
 
@@ -652,7 +652,7 @@ pre.diff {
 
     /* Lay out the filters in a two-column way */
     #more > div.filters {
-        height: 32em;
+        height: 36em;
     }
 
         #more > div.filters > div {
@@ -884,7 +884,7 @@ pre.diff {
 
     #more > div.filters {
         font-size: 75%;
-        height: 45em;
+        height: 50em;
     }
 
         #more > div.filters > div {
@@ -904,27 +904,37 @@ pre.diff {
             padding: 0;
             border-bottom: 1px solid #ccc;
             font-size: 100%;
-            min-height: 70px;
+            line-height: 90px;
         }
 
             div.popup > div.icons > div.icon-page {
                 display: block;
-                height: 90px;
             }
 
             div.popup > div.icons div.icon {
-                margin: 0 1.1em;
+                margin: 0 .3em;
+                text-align: center;
+                vertical-align: top;
+                line-height: 1.2;
             }
 
-                div.popup > div.icons div.icon > a > img {
+                div.popup > div.icons div.icon > .icon-link > .icon-img {
                     width: 32px;
                 }
 
-                div.popup > div.icons div.icon > a > span {
+                div.popup > div.icons div.icon > .icon-link > .icon-label {
+                    position: static;
+                    display: block;
                     font-size: 80%;
-                    width: 150%;
+                    width: 5em;
+                    transform: none;
                 }
 
+        div.popup div.souvenir-info {
+            padding: 1em .5em;
+            font-size: 90%;
+            border-bottom: 1px solid #ccc;
+        }
 
     #top-controls .search-container .search-options {
         font-size: 10pt;

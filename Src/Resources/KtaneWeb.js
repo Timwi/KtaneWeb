@@ -357,13 +357,18 @@ $(function()
                     var iconsDiv = $('<div>').addClass('icons');
                     $(e).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
                     {
-                        var iconDiv = $("<div class='icon'><a><img class='icon' /><span></span></a></div>");
+                        var iconDiv = $("<div class='icon'><a class='icon-link'><img class='icon-img' /><span class='icon-label'></span></a></div>");
                         iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
                         iconDiv.find('img').attr('src', $(ic).attr('src'));
                         iconDiv.find('span').text($(ic).attr('title'));
                         iconsDiv.append(iconDiv);
                     });
                     menuDiv.append(iconsDiv);
+                    if ($('#display-souvenir').prop('checked'))
+                    {
+                        menuDiv.append('<div class="souvenir-info"></div>');
+                        menuDiv.find('.souvenir-info').text($(e).find('.inf-souvenir').attr('title'));
+                    }
                 }
                 menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
                 var menu = $('<menu>').addClass('manual-select');
