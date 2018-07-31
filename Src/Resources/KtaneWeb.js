@@ -54,6 +54,7 @@ $(function()
         'name': { fnc: function(elem) { return $(elem).data('sortkey').toLowerCase(); }, reverse: false, bodyCss: 'sort-name', radioButton: '#sort-name' },
         'defdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('defdiff')); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
         'expdiff': { fnc: function(elem) { return Ktane.Filters[4].values.indexOf($(elem).data('expdiff')); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
+        'twitchscore': { fnc: function(elem) { return $(elem).data('twitchscore') || 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
         'published': { fnc: function(elem) { return $(elem).data('published'); }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
     var sort = lStorage.getItem('sort') || 'name';
@@ -365,10 +366,9 @@ $(function()
                     });
                     menuDiv.append(iconsDiv);
                     if ($('#display-souvenir').prop('checked'))
-                    {
-                        menuDiv.append('<div class="souvenir-info"></div>');
-                        menuDiv.find('.souvenir-info').text($(e).find('.inf-souvenir').attr('title'));
-                    }
+                        menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-souvenir').attr('title')));
+                    if ($('#display-twitch').prop('checked'))
+                        menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-twitch').attr('title')));
                 }
                 menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
                 var menu = $('<menu>').addClass('manual-select');

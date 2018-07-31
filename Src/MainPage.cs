@@ -26,7 +26,7 @@ namespace KtaneWeb
         {
             // Access keys:
             // A    Logfile Analyzer
-            // B
+            // B    sort by Twitch Plays score
             // C    link to Source code
             // D    sort by date published
             // E    sort by expert difficulty
@@ -139,6 +139,7 @@ namespace KtaneWeb
                                         .Data("author", mod.Author)
                                         .Data("description", mod.Description)
                                         .Data("sortkey", mod.SortKey)
+                                        .Data("twitchscore", mod.TwitchPlaysSpecial != null ? 1000 : mod.TwitchPlaysScore ?? -1)
                                         .Data("published", mod.Published.ToString("yyyy-MM-dd"))
                                         .Data("compatibility", mod.Compatibility.ToString())
                                         .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
@@ -154,7 +155,8 @@ namespace KtaneWeb
                                                     : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.Value.ToReadable()), " (e)"),
                                                 new DIV { class_ = "inf-author" }._(mod.Author),
                                                 new DIV { class_ = "inf-published" }._(mod.Published.ToString("yyyy-MMM-dd")),
-                                                new DIV { class_ = "inf-twitch", title = "This module can be played in “Twitch Plays: KTANE”." },
+                                                new DIV { class_ = "inf-twitch", title = "This module can be played in “Twitch Plays: KTANE”" + (mod.TwitchPlaysSpecial != null ? ". " + mod.TwitchPlaysSpecial : mod.TwitchPlaysScore != null ? " for a score of {0}.".Fmt(mod.TwitchPlaysScore) : ".") }._(
+                                                    mod.TwitchPlaysSpecial != null ? "S" : mod.TwitchPlaysScore?.ToString()),
                                                 KtaneSouvenirInfo.GetTag(mod.Souvenir),
                                                 mod.ModuleID.NullOr(id => new DIV { class_ = "inf-id" }._(id)),
                                                 new DIV { class_ = "inf-description" }._(mod.Description))),
@@ -205,6 +207,9 @@ namespace KtaneWeb
                                     new DIV(
                                         new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e'))),
+                                    new DIV(
+                                        new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
                                     new DIV(
                                         new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d')))),

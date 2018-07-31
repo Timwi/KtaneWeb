@@ -143,11 +143,16 @@ div.infos .inf-type, div.infos .inf-origin, div.infos .inf-author, div.infos .in
     }
 
 div.infos .inf-twitch {
-    background: url(../HTML/img/twitch.svg) right center no-repeat;
-    background-size: 10px 10px;
     display: inline-block;
-    width: 29px;
+    font-size: 10pt;
 }
+
+    div.infos .inf-twitch::before {
+        background: url(../HTML/img/twitch.svg) right center no-repeat;
+        background-size: 10px 10px;
+        background-position: 17px 4px;
+        padding-right: 13px;
+    }
 
 div.infos .inf-author, div.infos .inf-published {
     opacity: .5;
@@ -232,6 +237,10 @@ body.sort-defdiff #main-table th.infos::after {
 
 body.sort-expdiff #main-table th.infos::after {
     content: '   • sorted by expert difficulty';
+}
+
+body.sort-twitch-score #main-table th.infos::after {
+    content: '   • sorted by TP:KTANE score';
 }
 
 body.sort-published #main-table th.infos::after {
@@ -634,20 +643,24 @@ pre.diff {
         margin-left: 3em;
     }
 
-    body.sort-name th.infos::after {
+    body.sort-name th.modlink::after {
         content: '   • sorted by name';
     }
 
-    body.sort-defdiff th.infos::after {
+    body.sort-defdiff th.modlink::after {
         content: '   • sorted by defuser difficulty';
     }
 
-    body.sort-expdiff th.infos::after {
+    body.sort-expdiff th.modlink::after {
         content: '   • sorted by expert difficulty';
     }
 
-    body.sort-expdiff th.infos::after {
-        content: '   • sorted by expert difficulty';
+    body.sort-twitch-score th.modlink::after {
+        content: '   • sorted by TP:KTANE score';
+    }
+
+    body.sort-published th.modlink::after {
+        content: '   • sorted by publication date';
     }
 
     /* Lay out the filters in a two-column way */
@@ -777,17 +790,17 @@ pre.diff {
             text-align: right;
         }
 
+
             #main-table td.infos-2 .inf-twitch {
-                position: relative;
-                width: 19px;
-                height: 8px;
-                background-size: 8px 8px;
+                display: inline-block;
+                font-size: inherit;
             }
 
                 #main-table td.infos-2 .inf-twitch::before {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
+                    background: url(../HTML/img/twitch.svg) right center no-repeat;
+                    background-size: 7px 7px;
+                    background-position: 10px 3px;
+                    padding-right: 9px;
                 }
 
             #main-table td.infos-2 div.infos {
@@ -930,8 +943,8 @@ pre.diff {
                     transform: none;
                 }
 
-        div.popup div.souvenir-info {
-            padding: 1em .5em;
+        div.popup div.module-further-info {
+            padding: .7em .5em;
             font-size: 90%;
             border-bottom: 1px solid #ccc;
         }

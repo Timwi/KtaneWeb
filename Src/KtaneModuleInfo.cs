@@ -33,6 +33,10 @@ namespace KtaneWeb
         public KtaneTwitchPlays? TwitchPlaysSupport;
 
         [ClassifyIgnoreIfDefault]
+        public int? TwitchPlaysScore = null;
+        [ClassifyIgnoreIfDefault]
+        public string TwitchPlaysSpecial = null;
+        [ClassifyIgnoreIfDefault]
         public KtaneSouvenirInfo Souvenir = null;
 
         public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
@@ -56,10 +60,12 @@ namespace KtaneWeb
                 other.TwitchPlaysSupport == TwitchPlaysSupport &&
                 other.Compatibility == Compatibility &&
                 other.Published == Published &&
-                Equals(other.Souvenir, Souvenir);
+                Equals(other.Souvenir, Souvenir) &&
+                other.TwitchPlaysScore == TwitchPlaysScore &&
+                other.TwitchPlaysSpecial == TwitchPlaysSpecial;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir);
+        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysScore, TwitchPlaysSpecial);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
         void IClassifyObjectProcessor.BeforeSerialize() { }
