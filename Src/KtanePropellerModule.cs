@@ -32,6 +32,7 @@ namespace KtaneWeb
 #endif
 
                     new UrlMapping(path: "/", specificPath: true, handler: mainPage),
+                    new UrlMapping(path: "/lfa", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Logfile Analyzer.html"))),
                     new UrlMapping(path: "/profile", handler: generateProfile),
                     new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
                     new UrlMapping(path: "/pull", handler: pull),
