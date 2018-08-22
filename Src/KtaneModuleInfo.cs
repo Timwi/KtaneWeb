@@ -108,7 +108,7 @@ namespace KtaneWeb
             return new DIV
             {
                 class_ = "inf-souvenir" + (inf == null || inf.Explanation == null ? null : " souvenir-explanation"),
-                title = attr.Tooltip + (inf == null || inf.Explanation == null ? null : " " + inf.Explanation)
+                title = attr.Tooltip + (inf == null || inf.Explanation == null ? null : "\n" + inf.Explanation)
             }._(attr.Char);
         }
 
