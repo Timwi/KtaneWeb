@@ -10,21 +10,23 @@ namespace KtaneWeb
     {
         public string DataAttributeName { get; private set; }
         public string ReadableName { get; private set; }
+        public string DataAttributeFunction { get; private set; }
 
-        public KtaneFilter(string dataAttributeName, string readableName)
+        public KtaneFilter(string dataAttributeName, string readableName, string dataAttributeFunction)
         {
             DataAttributeName = dataAttributeName;
             ReadableName = readableName;
+            DataAttributeFunction = dataAttributeFunction;
         }
 
         public abstract JsonDict ToJson();
         public abstract object ToHtml();
         public abstract string GetDataAttributeValue(KtaneModuleInfo mod);
 
-        public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod));
-        public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum?> getValue) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod));
-        public static KtaneFilter Checkboxes<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod));
-        public static KtaneFilter Checkboxes<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum?> getValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod));
+        public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
+        public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum?> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
+        public static KtaneFilter Checkboxes<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsCheckboxes(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
+        public static KtaneFilter Checkboxes<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum?> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsCheckboxes(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
     }
 
     abstract class KtaneFilterOptions : KtaneFilter
@@ -33,7 +35,7 @@ namespace KtaneWeb
         public Func<KtaneModuleInfo, object> GetValue { get; private set; }
         public KtaneFilterOption[] Options { get; private set; }
 
-        public KtaneFilterOptions(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue) : base(dataAttributeName, readableName)
+        public KtaneFilterOptions(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, dataAttributeFunction)
         {
             EnumType = enumType ?? throw new ArgumentNullException(nameof(enumType));
             GetValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
@@ -48,7 +50,7 @@ namespace KtaneWeb
 
     sealed class KtaneFilterOptionsCheckboxes : KtaneFilterOptions
     {
-        public KtaneFilterOptionsCheckboxes(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue) : base(dataAttributeName, readableName, enumType, getValue) { }
+        public KtaneFilterOptionsCheckboxes(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, enumType, getValue, dataAttributeFunction) { }
         public override JsonDict ToJson() => new JsonDict {
             { "id", DataAttributeName },
             { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
@@ -64,7 +66,7 @@ namespace KtaneWeb
 
     sealed class KtaneFilterOptionsSlider : KtaneFilterOptions
     {
-        public KtaneFilterOptionsSlider(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue) : base(dataAttributeName, readableName, enumType, getValue) { }
+        public KtaneFilterOptionsSlider(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, enumType, getValue, dataAttributeFunction) { }
         public override JsonDict ToJson() => new JsonDict {
             { "id", DataAttributeName },
             { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },

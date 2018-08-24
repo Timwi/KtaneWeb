@@ -197,7 +197,7 @@ tr.mod.selected {
     background: rgba(68, 130, 255, .4);
 }
 
-td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod:not([data-twitchplays='Supported']) div.infos .inf-twitch {
+td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod.no-tp div.infos .inf-twitch {
     display: none;
 }
 
@@ -259,6 +259,7 @@ body.sort-published #main-table th.infos::after {
 
 #profiles-menu {
     display: none;
+    width: 25em;
 }
 
     #profiles-menu > p.editor {
@@ -350,56 +351,94 @@ body.sort-published #main-table th.infos::after {
     position: relative;
 }
 
-    #main-table-container #more-tab {
+    #main-table-container #tabs {
         position: absolute;
         right: 0;
         bottom: 100%;
-        background: #eef;
-        border: 1px solid #eef;
-        border-top-color: #ccf;
-        border-top-left-radius: .5em;
-        border-top-right-radius: .5em;
-        padding: .2em 0 0;
     }
 
-    #main-table-container #more-link {
-        text-decoration: none;
-        color: #024;
-        padding: 0 .5em;
-    }
+        #main-table-container #tabs > .tab {
+            display: inline-block;
+            background: #eef;
+            border: 1px solid #eef;
+            border-top-color: #ccf;
+            border-right-color: #ccf;
+            border-right-width: 2px;
+            border-top-left-radius: .5em;
+            border-top-right-radius: .5em;
+            text-decoration: none;
+            color: #024;
+            padding: .1em .5em;
+            margin-left: .2em;
+        }
 
 #module-count {
     text-align: right;
 }
 
-#more {
-    display: none;
+/* Lay out the displays/themes/filters/selectables in a four-column way */
+#filters {
+    width: 42em;
 }
 
-    /* Lay out the displays/themes/filters/selectables in a four-column way */
-    #more > div.filters {
+    #filters > div.filters {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        height: 18.5em;
-        border-bottom: 1px solid #ccf;
+        height: 26.5em;
     }
 
-        #more > div.filters > div {
+        #filters > div.filters > div {
             padding: 0 1.3em;
         }
 
-        #more > div.filters #include-missing {
+        #filters > div.filters #include-missing {
             margin-top: .5em;
         }
 
-    #more > table.file-locations code {
-        font-size: 75%;
+#more {
+    width: 35em;
+    padding: 2em;
+}
+
+    #more h3 {
+        margin-bottom: 1em;
+        border-bottom: 1px solid #aaa;
     }
 
-    #more > table.highlighting-controls {
-        width: auto;
-        margin: 0 auto;
+    #more h4 {
+        border-bottom: 1px solid #ccc;
+    }
+
+    #more table {
+        border: none;
+        width: 100%;
+    }
+
+        #more table td, #more table th {
+            border: none;
+            text-align: left;
+            vertical-align: top;
+            padding: 0 0 .5em 0;
+            box-sizing: border-box;
+        }
+
+        #more table th {
+            padding-right: 1em;
+        }
+
+        #more table.file-locations input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #more table.file-locations th {
+            width: 1px;
+            white-space: nowrap;
+        }
+
+    #more > ul.dev {
+        margin: 0;
     }
 
     #more > .icon-credits {
@@ -412,6 +451,7 @@ body.sort-published #main-table th.infos::after {
     }
 
 div.popup {
+    display: none;
     position: absolute;
     border: 2px solid black;
     padding: 10px;
@@ -483,6 +523,10 @@ div.popup {
         position: relative;
         display: inline-block;
     }
+
+        .icons .icon.mobile-only {
+            display: none;
+        }
 
         .icons .icon > .icon-link {
             color: #0000EE;
@@ -614,7 +658,7 @@ pre.diff {
         position: relative;
     }
 
-    body.display-twitch tr.mod[data-twitchplays='Supported'] td.infos-1 div.infos > .inf-twitch {
+    body.display-twitch tr.mod.tp td.infos-1 div.infos > .inf-twitch {
         display: inline-block !important;
     }
 
@@ -663,13 +707,17 @@ pre.diff {
         content: '   • sorted by publication date';
     }
 
-    /* Lay out the filters in a two-column way */
-    #more > div.filters {
-        height: 36em;
+    #more {
+        width: 33em;
     }
 
-        #more > div.filters > div {
-            padding: 0 2.3em;
+    /* Lay out the filters in a two-column way */
+    #filters {
+        width: 30em;
+    }
+
+        #filters > div.filters {
+            height: 36em;
         }
 
     tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
@@ -682,7 +730,7 @@ pre.diff {
     }
 }
 
-/* Desktop version for narrow screens — special case for wrapping the search options */
+/* Desktop version for narrow screens — special case for line-wrapping the search options */
 @media screen and (max-width: 740px) and (min-width: 650.01px) {
     #top-controls .search-container .search-options #search-opt-descriptions {
         display: block;
@@ -710,6 +758,10 @@ pre.diff {
         display: block;
         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 30 70"><circle cx="5" cy="5" r="5" fill="%23000" /><circle cx="5" cy="25" r="5" fill="%23000" /><circle cx="5" cy="45" r="5" fill="%23000" /></svg>') right center no-repeat;
         background-size: contain;
+    }
+
+    #page-opt-popup {
+        padding: 2em 1em;
     }
 
     #main-content > #icons {
@@ -865,6 +917,7 @@ pre.diff {
         position: fixed;
         overflow: auto;
         font-size: 75%;
+        width: auto !important;
     }
 
         div.popup > div.close {
@@ -890,20 +943,7 @@ pre.diff {
         text-decoration: inherit;
     }
 
-    #more-tab {
-        display: none;
-    }
-
-    #more > div.filters {
-        font-size: 75%;
-        height: 50em;
-    }
-
-        #more > div.filters > div {
-            padding: 0 1.5em;
-        }
-
-    #more div.highlighting-controls {
+    #tabs {
         display: none;
     }
 
@@ -911,12 +951,10 @@ pre.diff {
         padding: 1.5em .5em;
     }
 
-        div.popup > div.icons, #more > #icons {
+        div.popup > div.icons, div.popup > #icons {
             float: none;
             padding: 0;
-            border-bottom: 1px solid #ccc;
-            font-size: 100%;
-            line-height: 90px;
+            line-height: 140px;
         }
 
             div.popup > div.icons > div.icon-page {
@@ -924,20 +962,21 @@ pre.diff {
             }
 
             div.popup > div.icons div.icon {
-                margin: 0 .3em;
+                display: inline-block;
+                margin: 0 .6em;
                 text-align: center;
                 vertical-align: top;
-                line-height: 1.2;
+                line-height: 1.4;
             }
 
                 div.popup > div.icons div.icon > .icon-link > .icon-img {
-                    width: 32px;
+                    width: 60px;
                 }
 
                 div.popup > div.icons div.icon > .icon-link > .icon-label {
                     position: static;
                     display: block;
-                    font-size: 80%;
+                    margin-top: .5em;
                     width: 5em;
                     transform: none;
                 }
@@ -945,8 +984,36 @@ pre.diff {
         div.popup div.module-further-info {
             padding: .7em .5em;
             font-size: 90%;
+            border-top: 1px solid #ccc;
             border-bottom: 1px solid #ccc;
         }
+
+            div.popup div.module-further-info + div.module-further-info {
+                border-top: none;
+            }
+
+    #filters > div.filters {
+        font-size: 75%;
+        height: 47em;
+    }
+
+        #filters > div.filters > div {
+            padding: 0 1.5em;
+        }
+
+    #more div.highlighting-controls {
+        display: none;
+    }
+
+    #more table.file-locations td, #more table.file-locations th {
+        vertical-align: middle;
+        padding: 1px;
+    }
+
+    #more input[type=text] {
+        font-size: 10pt;
+        padding: 0 2px;
+    }
 
     #top-controls .search-container .search-options {
         font-size: 10pt;

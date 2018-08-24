@@ -5,7 +5,8 @@ try
 {
     localStorage.setItem("testStorage", "testData");
     localStorage.removeItem("testStorage");
-} catch (e)
+}
+catch (e)
 {
     lStorage = {
         storage: {},
@@ -36,6 +37,78 @@ if (theme in Ktane.Themes)
     document.getElementById("theme-css").setAttribute('href', Ktane.Themes[theme]);
 else
     document.getElementById("theme-css").setAttribute('href', '');
+
+function createTable(json, filters, selectables, souvenir)
+{
+    for (var modIx = 0; modIx < json.KtaneModules.length; modIx++)
+    {
+        var mod = json.KtaneModules[modIx];
+        var tr = $(`<tr class="mod${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ' no-tp'}">`)
+            .data("mod", mod.Name)
+            .data("author", mod.Author)
+            .data("description", mod.Description)
+            .data("sortkey", mod.SortKey)
+            .data("twitchscore", mod.TwitchPlaysSpecial ? 1000 : mod.TwitchPlaysScore || -1)
+            .data("published", mod.Published)
+            .data("compatibility", mod.Compatibility)
+            .appendTo('#main-table');
+        for (var ix = 0; ix < filters.length; ix++)
+            tr.data(filters[ix].name, filters[ix].fnc(mod));
+        for (var ix = 0; ix < selectables.length; ix++)
+        {
+            var sel = selectables[ix];
+            tr.data(sel.DataAttributeName, sel.DataAttributeFunction(mod));
+            var td = $(`<td class='selectable${(ix == selectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}'>`).appendTo(tr);
+            if (sel.ShowIconFunction(mod))
+                $(`<a>`).attr('href', sel.UrlFunction(mod)).addClass(sel.CssClass).append(sel.IconFunction ? sel.IconFunction(mod) : `<img class='icon' title='${sel.HumanReadable}' alt='${sel.HumanReadable}' src='${sel.Icon}'>`).appendTo(td);
+        }
+        tr.append($(`<td class='infos-1'>`)
+            .append($(`<div class='modlink-wrap'>`)
+                .append($(`<a class='modlink'>`)
+                    .append($(`<img class='mod-icon' alt='${mod.Symbol}' title='${mod.Symbol}' src='Icons/${mod.Name}.png'>`).on("error", function() { this.src = 'Icons/blank.png'; }))
+                    .append($(`<span class='mod-name'>`).text(mod.Name)))));
+        var infos = $(`<div class='infos'>`)
+            .append($(`<div class='inf-type'>`).text(mod.Type))
+            .append($(`<div class='inf-origin'>`).text(mod.Origin));
+        $(`<td class='infos-2'>`).append(infos).appendTo(tr);
+        if (mod.Type === 'Regular' || mod.Type === 'Needy')
+        {
+            function readable(difficulty)
+            {
+                var result = '';
+                for (var i = 0; i < difficulty.length; i++)
+                {
+                    if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
+                        result += ' ';
+                    result += difficulty[i].toLowerCase();
+                }
+                return result;
+            }
+            if (mod.DefuserDifficulty === mod.ExpertDifficulty)
+                infos.append($(`<div class='inf-difficulty'>`).append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty))));
+            else
+                infos.append($(`<div class='inf-difficulty'>`)
+                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty)))
+                    .append(' (d), ')
+                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.ExpertDifficulty)))
+                    .append(' (e)'));
+            infos.append($(`<div class='inf-author'>`).text(mod.Author))
+                .append($(`<div class='inf-published'>`).text(mod.Published))
+                .append($(`<div class='inf-twitch' title='This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}'>`)
+                    .append(mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
+        }
+
+        var value = mod.Souvenir == null ? 'NotACandidate' : mod.Souvenir.Status;
+        var attr = souvenir[value];
+        var expl = mod.Souvenir && mod.Souvenir.Explanation;
+        infos.append($(`<div class='inf-souvenir${expl ? " souvenir-explanation" : ""}' title='${attr.Tooltip}${expl ? "\n" + expl : ""}'>`).text(attr.Char));
+        if (mod.ModuleID)
+            infos.append($(`<div class='inf-id'>`).text(mod.ModuleID));
+        infos.append($(`<div class='inf-description'>`).text(mod.Description));
+
+        $(`<td class='mobile-ui'>`).append(`<a href='#' class='mobile-opt'>`).appendTo(tr);
+    }
+}
 
 $(function()
 {
@@ -323,7 +396,7 @@ $(function()
             $('.disappear.stay').hide();
             $('.disappear:not(.stay)').remove();
 
-            if ($('#more>#icons').length)
+            if ($('#page-opt-popup>#icons').length)
                 $('#icons').insertAfter('#logo');
         }
         else
@@ -349,8 +422,11 @@ $(function()
         {
             return function()
             {
+                var already = $('.popup').filter((_, p) => $(p).data('lnk') === lnk).length;
                 disappear();
-                var menuDiv = $('<div>').addClass('popup disappear');
+                if (already)
+                    return false;
+                var menuDiv = $('<div>').addClass('popup disappear').data('lnk', lnk);
                 menuDiv.click(function() { preventDisappear++; });
                 if (isMobileOpt)
                 {
@@ -394,6 +470,7 @@ $(function()
                 $(document.body).append(menuDiv);
                 if (!isMobileOpt)
                     menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
+                menuDiv.css('display', 'block');
                 return false;
             };
         }
@@ -415,8 +492,8 @@ $(function()
     // Page options pop-up (mobile only)
     $('#page-opt').click(function()
     {
-        $('#icons').insertAfter('#more > div.close');
-        $('#more').css({ left: '', top: '', width: '' }).show();
+        $('#icons').insertAfter('#page-opt-popup>div.close');
+        $('#page-opt-popup').show();
         return false;
     });
 
@@ -433,7 +510,7 @@ $(function()
             } else
             {
                 // Desktop interface: position relative to the tab
-                wnd.css({ width: width }).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
+                wnd.css({ width: width || wnd.data('width') }).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
             }
         }
         else
@@ -454,10 +531,9 @@ $(function()
         return false;
     });
 
-    $('#more-link').click(function() { return popup($('#more-tab'), $('#more'), '90%'); });
-    $('#profiles-link').click(function() { return popup($('#profiles-rel'), $('#profiles-menu'), '25em'); });
-
-    $('.popup>.close').click(disappear);
+    $('#filters-link,#filters-link-mobile').click(function() { return popup($('#filters-link'), $('#filters')); });
+    $('#more-link,#more-link-mobile').click(function() { return popup($('#more-link'), $('#more')); });
+    $('#profiles-link').click(function() { return popup($('#profiles-rel'), $('#profiles-menu')); });
 
     // Links in the table headers (not visible on mobile UI)
     $('.sort-header').click(function()
@@ -474,7 +550,8 @@ $(function()
 
     // Radio buttons (mobile UI and “Filters & More” tab)
     $('input.sort').click(function() { setSort(this.value); return true; });
-    $('#more,#profiles-menu').click(function() { preventDisappear++; });
+    $('.popup').click(function() { preventDisappear++; });
+    $('.popup>.close').click(disappear);
 
     $("#search-field")
         .focus(updateSearchHighlight)

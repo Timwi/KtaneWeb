@@ -17,8 +17,14 @@ namespace KtaneWeb
         public string SortKey;
         public string SteamID;
         public string Author;
+
+        [ClassifyIgnoreIfDefault]
         public string SourceUrl;
+        [ClassifyIgnoreIfDefault]
         public string TutorialVideoUrl;
+        [ClassifyIgnoreIfDefault]
+        public string Symbol;
+
         public KtaneModuleType Type = KtaneModuleType.Regular;
         public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
@@ -62,10 +68,11 @@ namespace KtaneWeb
                 other.Published == Published &&
                 Equals(other.Souvenir, Souvenir) &&
                 other.TwitchPlaysScore == TwitchPlaysScore &&
-                other.TwitchPlaysSpecial == TwitchPlaysSpecial;
+                other.TwitchPlaysSpecial == TwitchPlaysSpecial &&
+                other.Symbol == Symbol;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysScore, TwitchPlaysSpecial);
+        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, Symbol, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysScore, TwitchPlaysSpecial);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
         void IClassifyObjectProcessor.BeforeSerialize() { }

@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
 using RT.Util.ExtensionMethods;
 using RT.Util.Json;
+using RT.Util.Serialization;
 
 namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
         static KtaneFilter[] _filters = Ut.NewArray(
-            KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin),
-            KtaneFilter.Checkboxes("type", "Type", mod => mod.Type),
-            KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport),
-            KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty),
-            KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty),
-            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status)
+            KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin, @"mod=>mod.Origin"),
+            KtaneFilter.Checkboxes("type", "Type", mod => mod.Type, @"mod=>mod.Type"),
+            KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
+            KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
+            KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
+            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""NotACandidate""")
         );
 
         private HttpResponse mainPage(HttpRequest req)
@@ -51,9 +53,10 @@ namespace KtaneWeb
             // X
             // Y    include/exclude needy modules
             // Z
-            // .    More
+            // .    Filters
 
-            var selectables = getSelectables();
+            var sheets = getSheets();
+            var selectables = getSelectables(sheets);
 
             var displays = Ut.NewArray(
                 new { Readable = "Description", Id = "description" },
@@ -71,7 +74,7 @@ namespace KtaneWeb
             cssLink = cssLink.WithQuery("u", DateTime.UtcNow.Ticks.ToString());
 #endif
 
-            return HttpResponse.Html(new HTML(
+            var resp = HttpResponse.Html(new HTML(
                 new HEAD(
                     new TITLE("Repository of Manual Pages"),
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
@@ -100,7 +103,9 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Making Mods"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))))
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "#", id = "filters-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "#", id = "more-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("More"))))
                         //new DIV { class_ = "icon-page" }._(
                         //    //,
                         //    //new FORM { class_ = "icon", action = "pdf", method = method.post }._(
@@ -117,7 +122,7 @@ namespace KtaneWeb
                         new DIV { id = "top-controls" }._(
                             new DIV { class_ = "search-container" }._(
                                 new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
-                                new INPUT { id = "search-field", accesskey = "f" }, " ",
+                                new INPUT { type = itype.text, id = "search-field", accesskey = "f" }, " ",
                                 new SCRIPTLiteral("document.getElementById('search-field').focus();"),
                                 new A { href = "#", id = "search-field-clear" },
                                 new DIV { class_ = "search-options" }._(
@@ -126,43 +131,22 @@ namespace KtaneWeb
                                     new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions"))))),
 
                         new DIV { id = "main-table-container" }._(
-                            new DIV { id = "more-tab" }._(new A { href = "#", id = "more-link", accesskey = "." }._("Filters & more")),
+                            new DIV { id = "tabs" }._(
+                                new A { href = "#", class_ = "tab", id = "filters-link", accesskey = "." }._("Filters"),
+                                new A { href = "#", class_ = "tab", id = "more-link" }._("More")),
 
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = selectables.Length }._("Links"),
                                     new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._("Name")),
-                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information"))),
-                                _config.Current.KtaneModules.Select(mod =>
-                                    new TR { class_ = "mod" }
-                                        .Data("mod", mod.Name)
-                                        .Data("author", mod.Author)
-                                        .Data("description", mod.Description)
-                                        .Data("sortkey", mod.SortKey)
-                                        .Data("twitchscore", mod.TwitchPlaysSpecial != null ? 1000 : mod.TwitchPlaysScore ?? -1)
-                                        .Data("published", mod.Published.ToString("yyyy-MM-dd"))
-                                        .Data("compatibility", mod.Compatibility.ToString())
-                                        .AddData(selectables, sel => sel.DataAttributeName, sel => sel.DataAttributeValue(mod))
-                                        .AddData(_filters, flt => flt.DataAttributeName, flt => flt.GetDataAttributeValue(mod))
-                                        ._(
-                                            selectables.Select((sel, ix) => new TD { class_ = "selectable" + (ix == selectables.Length - 1 ? " last" : null) + sel.CssClass?.Apply(c => " " + c) }._(sel.ShowIcon(mod) ? new A { href = sel.Url(mod), class_ = sel.CssClass }._(sel.Icon(mod)) : null)),
-                                            new TD { class_ = "infos-1" }._(new DIV { class_ = "modlink-wrap" }._(new A { class_ = "modlink" }._(mod.Icon(_config), new SPAN { class_ = "mod-name" }._(mod.Name)))),
-                                            new TD { class_ = "infos-2" }._(new DIV { class_ = "infos" }._(
-                                                new DIV { class_ = "inf-type" }._(mod.Type.ToString()),
-                                                new DIV { class_ = "inf-origin" }._(mod.Origin.ToString()),
-                                                mod.Type != KtaneModuleType.Regular && mod.Type != KtaneModuleType.Needy ? null : mod.DefuserDifficulty == mod.ExpertDifficulty
-                                                    ? new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()))
-                                                    : new DIV { class_ = "inf-difficulty" }._(new SPAN { class_ = "inf-difficulty-sub" }._(mod.DefuserDifficulty.Value.ToReadable()), " (d), ", new SPAN { class_ = "inf-difficulty-sub" }._(mod.ExpertDifficulty.Value.ToReadable()), " (e)"),
-                                                new DIV { class_ = "inf-author" }._(mod.Author),
-                                                new DIV { class_ = "inf-published" }._(mod.Published.ToString("yyyy-MMM-dd")),
-                                                new DIV { class_ = "inf-twitch", title = "This module can be played in “Twitch Plays: KTANE”" + (mod.TwitchPlaysSpecial != null ? ". " + mod.TwitchPlaysSpecial : mod.TwitchPlaysScore != null ? " for a score of {0}.".Fmt(mod.TwitchPlaysScore) : ".") }._(
-                                                    mod.TwitchPlaysSpecial != null ? "S" : mod.TwitchPlaysScore?.ToString()),
-                                                KtaneSouvenirInfo.GetTag(mod.Souvenir),
-                                                mod.ModuleID.NullOr(id => new DIV { class_ = "inf-id" }._(id)),
-                                                new DIV { class_ = "inf-description" }._(mod.Description))),
-                                            new TD { class_ = "mobile-ui" }._(new A { href = "#", class_ = "mobile-opt" }))))),
-
+                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information")))),
+                            new SCRIPTLiteral($@"sheets={sheets};createTable(
+                                {ClassifyJson.Serialize(_config.Current)},
+                                [{_filters.Select(f => $@"{{""name"":""{f.DataAttributeName}"",""fnc"":{f.DataAttributeFunction}}}").JoinString(",")}],
+                                {selectables.Select(sel => sel.GetJson()).ToJsonList()},
+                                {EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }))});")),
                         new DIV { id = "module-count" },
+                        new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")),
 
                         new DIV { id = "profiles-menu", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
@@ -179,7 +163,7 @@ namespace KtaneWeb
                                     new MENU(EnumStrong.GetValues<KtaneModuleDifficulty>().Select(d => new LI(new A { href = "/profile/expert/" + d }._(d.ToReadable())))),
                                     new P { class_ = "explain" }._("These are expert profiles, i.e. you can use these to ", new EM("include"), " certain modules.")))),
 
-                        new DIV { id = "more", class_ = "popup disappear stay" }._(
+                        new DIV { id = "filters", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "filters" }._(
                                 new DIV { class_ = "display" }._(
@@ -220,8 +204,10 @@ namespace KtaneWeb
                                         new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                     new DIV { id = "include-missing" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
-                                        new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I'))))),
+                                        new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))))),
 
+                        new DIV { id = "more", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
                             new UL { class_ = "dev" }._(
                                 new LI(new A { href = "More/Experting Template.png" }._("Experting template")),
                                 new LI(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
@@ -230,83 +216,86 @@ namespace KtaneWeb
                             new DIV { class_ = "highlighting-controls" }._(
                                 new H3("Controls to highlight elements in HTML manuals"),
                                 new TABLE { class_ = "highlighting-controls" }._(
-                                    new TR(new TH("Control"), new TH("Function")),
-                                    new TR(new TD("Ctrl+Click (Windows)", new BR(), "Command+Click (Mac)"), new TD("Highlight a table column")),
-                                    new TR(new TD("Shift+Click"), new TD("Highlight a table row")),
-                                    new TR(new TD("Alt+Click (Windows)", new BR(), "Ctrl+Shift+Click (Windows)", new BR(), "Command+Shift+Click (Mac)"), new TD("Highlight a table cell or an item in a list")),
-                                    new TR(new TD("Alt+1, Alt+2, Alt+3, Alt+4", new TD("Change highlighter color"))))),
+                                    new TR(new TH("Highlight a table column"), new TD("Ctrl+Click (Windows)", new BR(), "Command+Click (Mac)")),
+                                    new TR(new TH("Highlight a table row"), new TD("Shift+Click")),
+                                    new TR(new TH("Highlight a table cell or an item in a list"), new TD("Alt+Click (Windows)", new BR(), "Ctrl+Shift+Click (Windows)", new BR(), "Command+Shift+Click (Mac)")),
+                                    new TR(new TH("Change highlighter color"), new TD("Alt+1, Alt+2, Alt+3, Alt+4")))),
                             new H3("Default file locations"),
                             new H4("Windows"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new CODE(@"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes"))),
-                                new TR(new TH("Logfile (Steam):"), new TD(new CODE(@"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt"))),
-                                new TR(new TH("Logfile (Oculus):"), new TD(new CODE(@"C:\Program Files (x86)\Oculus\Software\steel-crate-games-keep-talking-and-nobody-explodes\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt"))),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\ModProfiles"))),
-                                new TR(new TH("Mod Settings:"), new TD(new CODE(@"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\Modsettings"))),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"C:\Program Files (x86)\Steam\userdata\<some number>\760\remote\341800\screenshots")))),
+                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes" })),
+                                new TR(new TH("Logfile (Steam):"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
+                                new TR(new TH("Logfile (Oculus):"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Oculus\Software\steel-crate-games-keep-talking-and-nobody-explodes\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
+                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\ModProfiles" })),
+                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\Modsettings" })),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Steam\userdata\<some number>\760\remote\341800\screenshots" }))),
                             new H4("Mac"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new CODE(@"~/Library/Application Support/Steam/steamapps/common/Keep Talking and Nobody Explodes"))),
-                                new TR(new TH("Logfile:"), new TD(new CODE(@"~/Library/Logs/Unity/Player.log"))),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/ModProfiles"))),
-                                new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings"))),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots")))),
+                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Logs/Unity/Player.log" })),
+                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/ModProfiles" })),
+                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings" })),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new H4("Linux"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new CODE(@"~/.steam/steamapps/common/Keep Talking and Nobody Explodes"))),
-                                new TR(new TH("Logfile:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log"))),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles"))),
-                                new TR(new TH("Mod Settings:"), new TD(new CODE(@"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings"))),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new CODE(@"~/.steam/userdata/<some number>/760/remote/341800/screenshots")))),
+                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, value = @"~/.steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log" })),
+                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
+                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J')))),
-                        new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung"))))));
+
+                        new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" })))));
+            resp.UseGzip = UseGzipOption.DontUseGzip;
+            return resp;
         }
 
-        private Selectable[] getSelectables()
-        {
-            var sheets = _config.Current.KtaneModules.ToDictionary(mod => mod.Name, mod => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
+        private JsonDict getSheets() => _config.Current.KtaneModules
+            .ToJsonDict(mod => mod.Name, mod => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
 
+        private Selectable[] getSelectables(JsonDict sheets)
+        {
             return Ut.NewArray(
                 new Selectable
                 {
                     HumanReadable = "Manual",
                     Accel = 'u',
-                    Icon = mod => new IMG { class_ = "icon manual-icon", title = "Manual", alt = "Manual", src = sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["icon"].GetString() : null },
+                    IconFunction = @"mod=>$(`<img class='icon manual-icon' title='Manual' alt='Manual' src='${sheets[mod.Name].length?sheets[mod.Name][0]['icon']:null}'>`)",
                     DataAttributeName = "manual",
-                    DataAttributeValue = mod => sheets.Get(mod.Name, null)?.ToString(),
-                    Url = mod => sheets[mod.Name].Count > 0 ? sheets[mod.Name][0]["url"].GetString() : null,
-                    ShowIcon = mod => sheets[mod.Name].Count > 0,
+                    DataAttributeFunction = @"mod=>sheets[mod.Name]",
+                    UrlFunction = @"mod=>sheets[mod.Name].length?sheets[mod.Name][0]['url']:null",
+                    ShowIconFunction = @"mod=>!!sheets[mod.Name].length",
                     CssClass = "manual"
                 },
                 new Selectable
                 {
                     HumanReadable = "Steam Workshop",
                     Accel = 'S',
-                    Icon = mod => new IMG { class_ = "icon", title = "Steam Workshop", alt = "Steam Workshop", src = "HTML/img/steam-workshop-item.png" },
+                    Icon = "HTML/img/steam-workshop-item.png",
                     DataAttributeName = "steam",
-                    DataAttributeValue = mod => mod.SteamID?.Apply(s => $"http://steamcommunity.com/sharedfiles/filedetails/?id={s}"),
-                    Url = mod => $"http://steamcommunity.com/sharedfiles/filedetails/?id={mod.SteamID}",
-                    ShowIcon = mod => mod.SteamID != null
+                    DataAttributeFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
+                    UrlFunction = @"mod=>`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`",
+                    ShowIconFunction = @"mod=>!!mod.SteamID"
                 },
                 new Selectable
                 {
                     HumanReadable = "Source code",
                     Accel = 'c',
-                    Icon = mod => new IMG { class_ = "icon", title = "Source code", alt = "Source code", src = "HTML/img/unity.png" },
+                    Icon = "HTML/img/unity.png",
                     DataAttributeName = "source",
-                    DataAttributeValue = mod => mod.SourceUrl,
-                    Url = mod => mod.SourceUrl,
-                    ShowIcon = mod => mod.SourceUrl != null
+                    DataAttributeFunction = @"mod=>mod.SourceUrl",
+                    UrlFunction = @"mod=>mod.SourceUrl",
+                    ShowIconFunction = @"mod=>!!mod.SourceUrl"
                 },
                 new Selectable
                 {
                     HumanReadable = "Tutorial video",
                     Accel = 'T',
-                    Icon = mod => new IMG { class_ = "icon", title = "Tutorial video", alt = "Tutorial video", src = "HTML/img/video.png" },
+                    Icon = "HTML/img/video.png",
                     DataAttributeName = "video",
-                    DataAttributeValue = mod => mod.TutorialVideoUrl,
-                    Url = mod => mod.TutorialVideoUrl,
-                    ShowIcon = mod => mod.TutorialVideoUrl != null
+                    DataAttributeFunction = @"mod=>mod.TutorialVideoUrl",
+                    UrlFunction = @"mod=>mod.TutorialVideoUrl",
+                    ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl"
                 });
         }
     }
