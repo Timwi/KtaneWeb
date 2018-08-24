@@ -16,7 +16,7 @@ namespace KtaneWeb
 	        var manualGenerator = new ManualGenerator(_config.VanillaRuleModifierMods, _config.VanillaRuleModifierCache);
 
             if (!int.TryParse(req.Url["VanillaRuleSeed"], out int seed) && !int.TryParse(req.Url["RuleSeed"], out seed))
-                return manual(req);
+                return seededManual(req);
 
             string path = req.Url.Path.Substring(1);
 

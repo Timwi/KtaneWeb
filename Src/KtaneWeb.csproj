@@ -61,7 +61,7 @@
     <Compile Include="Puzzles\PuzzleGroup.cs" />
     <Compile Include="Puzzles\PuzzleInfo.cs" />
     <Compile Include="Puzzles\Puzzles.cs" />
-    <Compile Include="Manual.cs" />
+    <Compile Include="SeededManual.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Pull.cs" />
     <Compile Include="KtaneModuleInfo.cs" />

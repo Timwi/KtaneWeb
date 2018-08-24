@@ -11,7 +11,7 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private HttpResponse manual(HttpRequest req)
+        private HttpResponse seededManual(HttpRequest req)
         {
             if (int.TryParse(req.Url["VanillaRuleSeed"], out int _) || int.TryParse(req.Url["RuleSeed"], out int _))
                 return vanillaRuleModifier(req);
