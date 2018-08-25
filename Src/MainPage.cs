@@ -101,7 +101,7 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "/FAQs.html", id = "faq-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Glossary"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "/More/FAQs.html", id = "faq-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Glossary"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "#", id = "filters-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "#", id = "more-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("More"))))
                         //new DIV { class_ = "icon-page" }._(
@@ -130,7 +130,7 @@ namespace KtaneWeb
 
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "tabs" }._(
-                                new A { href = "/FAQs.html", class_ = "tab", id = "faq-link", accesskey = "q" }._("Glossary"),
+                                new A { href = "/More/FAQs.html", class_ = "tab", id = "faq-link", accesskey = "q" }._("Glossary"),
                                 new A { href = "#", class_ = "tab", id = "filters-link", accesskey = "." }._("Filters"),
                                 new A { href = "#", class_ = "tab", id = "more-link" }._("More")),
 
