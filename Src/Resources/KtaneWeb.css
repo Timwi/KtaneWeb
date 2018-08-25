@@ -731,9 +731,12 @@ pre.diff {
 }
 
 /* Desktop version for narrow screens — special case for line-wrapping the search options */
-@media screen and (max-width: 740px) and (min-width: 650.01px) {
+@media screen and (max-width: 820px) and (min-width: 650.01px) {
     #top-controls .search-container .search-options #search-opt-descriptions {
         display: block;
+    }
+    #top-controls .search-container #search-field {
+        width: 13em;
     }
 }
 
