@@ -208,6 +208,7 @@ namespace KtaneWeb
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new UL { class_ = "dev" }._(
+                                new LI(new A { href = "More/Periodic Table.html" }._("Periodic Table of Modules")),
                                 new LI(new A { href = "More/Experting Template.png" }._("Experting template")),
                                 new LI(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
                                 new LI(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement")),
