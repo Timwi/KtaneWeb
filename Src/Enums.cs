@@ -37,7 +37,7 @@
         VeryHard
     }
 
-    public enum KtaneTwitchPlays
+    public enum KtaneSupport
     {
         [KtaneFilterOption("Not supported")]
         NotSupported,

@@ -53,6 +53,7 @@ namespace KtaneWeb
         public KtaneFilterOptionsCheckboxes(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, enumType, getValue, dataAttributeFunction) { }
         public override JsonDict ToJson() => new JsonDict {
             { "id", DataAttributeName },
+            { "fnc", new JsonRaw(DataAttributeFunction) },
             { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
             { "type", "checkboxes" }
         };
@@ -69,6 +70,7 @@ namespace KtaneWeb
         public KtaneFilterOptionsSlider(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, enumType, getValue, dataAttributeFunction) { }
         public override JsonDict ToJson() => new JsonDict {
             { "id", DataAttributeName },
+            { "fnc", new JsonRaw(DataAttributeFunction) },
             { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
             { "type", "slider" }
         };

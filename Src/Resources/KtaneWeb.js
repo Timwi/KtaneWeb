@@ -38,85 +38,13 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
-function createTable(json, filters, selectables, souvenir)
-{
-    for (var modIx = 0; modIx < json.KtaneModules.length; modIx++)
-    {
-        var mod = json.KtaneModules[modIx];
-        var tr = $(`<tr class="mod${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ' no-tp'}">`)
-            .data("mod", mod.Name)
-            .data("author", mod.Author)
-            .data("description", mod.Description)
-            .data("sortkey", mod.SortKey)
-            .data("twitchscore", mod.TwitchPlaysSpecial ? 1000 : mod.TwitchPlaysScore || -1)
-            .data("published", mod.Published)
-            .data("compatibility", mod.Compatibility)
-            .appendTo('#main-table');
-        for (var ix = 0; ix < filters.length; ix++)
-            tr.data(filters[ix].name, filters[ix].fnc(mod));
-        for (var ix = 0; ix < selectables.length; ix++)
-        {
-            var sel = selectables[ix];
-            tr.data(sel.DataAttributeName, sel.DataAttributeFunction(mod));
-            var td = $(`<td class='selectable${(ix == selectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}'>`).appendTo(tr);
-            if (sel.ShowIconFunction(mod))
-                $(`<a>`).attr('href', sel.UrlFunction(mod)).addClass(sel.CssClass).append(sel.IconFunction ? sel.IconFunction(mod) : `<img class='icon' title='${sel.HumanReadable}' alt='${sel.HumanReadable}' src='${sel.Icon}'>`).appendTo(td);
-        }
-        tr.append($(`<td class='infos-1'>`)
-            .append($(`<div class='modlink-wrap'>`)
-                .append($(`<a class='modlink'>`)
-                    .append($(`<img class='mod-icon' alt='${mod.Symbol}' title='${mod.Symbol}' src='Icons/${mod.Name}.png'>`).on("error", function() { this.src = 'Icons/blank.png'; }))
-                    .append($(`<span class='mod-name'>`).text(mod.Name)))));
-        var infos = $(`<div class='infos'>`)
-            .append($(`<div class='inf-type'>`).text(mod.Type))
-            .append($(`<div class='inf-origin'>`).text(mod.Origin));
-        $(`<td class='infos-2'>`).append(infos).appendTo(tr);
-        if (mod.Type === 'Regular' || mod.Type === 'Needy')
-        {
-            function readable(difficulty)
-            {
-                var result = '';
-                for (var i = 0; i < difficulty.length; i++)
-                {
-                    if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
-                        result += ' ';
-                    result += difficulty[i].toLowerCase();
-                }
-                return result;
-            }
-            if (mod.DefuserDifficulty === mod.ExpertDifficulty)
-                infos.append($(`<div class='inf-difficulty'>`).append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty))));
-            else
-                infos.append($(`<div class='inf-difficulty'>`)
-                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty)))
-                    .append(' (d), ')
-                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.ExpertDifficulty)))
-                    .append(' (e)'));
-            infos.append($(`<div class='inf-author'>`).text(mod.Author))
-                .append($(`<div class='inf-published'>`).text(mod.Published))
-                .append($(`<div class='inf-twitch' title='This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}'>`)
-                    .append(mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
-        }
-
-        var value = mod.Souvenir == null ? 'NotACandidate' : mod.Souvenir.Status;
-        var attr = souvenir[value];
-        var expl = mod.Souvenir && mod.Souvenir.Explanation;
-        infos.append($(`<div class='inf-souvenir${expl ? " souvenir-explanation" : ""}' title='${attr.Tooltip}${expl ? "\n" + expl : ""}'>`).text(attr.Char));
-        if (mod.ModuleID)
-            infos.append($(`<div class='inf-id'>`).text(mod.ModuleID));
-        infos.append($(`<div class='inf-description'>`).text(mod.Description));
-
-        $(`<td class='mobile-ui'>`).append(`<a href='#' class='mobile-opt'>`).appendTo(tr);
-    }
-}
-
-$(function()
+function initializePage(initModules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes)
 {
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
     var selectable = lStorage.getItem('selectable') || 'manual';
-    if (Ktane.Selectables.indexOf(selectable) === -1)
+    if (initSelectables.map(sel => sel.DataAttributeName).indexOf(selectable) === -1)
         selectable = 'manual';
     var preferredManuals = {};
     try { preferredManuals = JSON.parse(lStorage.getItem('preferredManuals') || '{}') || {}; }
@@ -125,15 +53,14 @@ $(function()
     function compare(a, b, rev) { return (rev ? -1 : 1) * ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var sorts = {
         'name': { fnc: function(elem) { return $(elem).data('sortkey').toLowerCase(); }, reverse: false, bodyCss: 'sort-name', radioButton: '#sort-name' },
-        'defdiff': { fnc: function(elem) { return Ktane.Filters[3].values.indexOf($(elem).data('defdiff')); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
-        'expdiff': { fnc: function(elem) { return Ktane.Filters[4].values.indexOf($(elem).data('expdiff')); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
+        'defdiff': { fnc: function(elem) { return initFilters[3].values.indexOf($(elem).data('defdiff')); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
+        'expdiff': { fnc: function(elem) { return initFilters[4].values.indexOf($(elem).data('expdiff')); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
         'twitchscore': { fnc: function(elem) { return $(elem).data('twitchscore') || 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
         'published': { fnc: function(elem) { return $(elem).data('published'); }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
     var sort = lStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
         sort = 'name';
-    var displays = ['author', 'type', 'origin', 'difficulty', 'twitch', 'souvenir', 'id', 'description', 'published'];
     var defaultDisplay = ['author', 'type', 'difficulty', 'description', 'published'];
     var display = defaultDisplay;
     try { display = JSON.parse(lStorage.getItem('display')) || defaultDisplay; } catch (exc) { }
@@ -195,7 +122,7 @@ $(function()
 
     function setDisplay(set)
     {
-        display = (set instanceof Array) ? set.filter(function(x) { return displays.indexOf(x) !== -1; }) : defaultDisplay;
+        display = (set instanceof Array) ? set.filter(function(x) { return initDisplays.indexOf(x) !== -1; }) : defaultDisplay;
         $(document.body).removeClass(document.body.className.split(' ').filter(function(x) { return x.startsWith('display-'); }).join(' '));
         $('input.display').prop('checked', false);
         $(document.body).addClass(display.map(function(x) { return "display-" + x; }).join(' '));
@@ -229,37 +156,37 @@ $(function()
         filter.includeMissing = $('input#filter-include-missing').prop('checked');
 
         var noneSelected = {};
-        for (var i = 0; i < Ktane.Filters.length; i++)
+        for (var i = 0; i < initFilters.length; i++)
         {
             var none = true;
-            switch (Ktane.Filters[i].type)
+            switch (initFilters[i].type)
             {
                 case "slider":
-                    filter[Ktane.Filters[i].id] = {
-                        min: $('div#filter-' + Ktane.Filters[i].id).slider('values', 0),
-                        max: $('div#filter-' + Ktane.Filters[i].id).slider('values', 1)
+                    filter[initFilters[i].id] = {
+                        min: $('div#filter-' + initFilters[i].id).slider('values', 0),
+                        max: $('div#filter-' + initFilters[i].id).slider('values', 1)
                     };
                     var x = function(str) { return str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim(); };
                     var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
-                    $('div#filter-label-' + Ktane.Filters[i].id).text(y(Ktane.Filters[i].values[filter[Ktane.Filters[i].id].min], Ktane.Filters[i].values[filter[Ktane.Filters[i].id].max]));
+                    $('div#filter-label-' + initFilters[i].id).text(y(initFilters[i].values[filter[initFilters[i].id].min], initFilters[i].values[filter[initFilters[i].id].max]));
                     none = false;
                     break;
 
                 case "checkboxes":
-                    filter[Ktane.Filters[i].id] = {};
-                    for (var j = 0; j < Ktane.Filters[i].values.length; j++)
+                    filter[initFilters[i].id] = {};
+                    for (var j = 0; j < initFilters[i].values.length; j++)
                     {
-                        filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = $('input#filter-' + Ktane.Filters[i].id + '-' + Ktane.Filters[i].values[j]).prop('checked');
-                        if (filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]])
+                        filter[initFilters[i].id][initFilters[i].values[j]] = $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j]).prop('checked');
+                        if (filter[initFilters[i].id][initFilters[i].values[j]])
                             none = false;
                     }
                     break;
 
                 case "boolean":
-                    filter[Ktane.Filters[i].id] = $('input#filter-' + Ktane.Filters[i].id).prop('checked');
+                    filter[initFilters[i].id] = $('input#filter-' + initFilters[i].id).prop('checked');
                     break;
             }
-            noneSelected[Ktane.Filters[i].id] = none;
+            noneSelected[initFilters[i].id] = none;
         }
 
         var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
@@ -270,20 +197,20 @@ $(function()
             var data = $(e).data();
 
             var filteredIn = true;
-            for (var i = 0; i < Ktane.Filters.length; i++)
+            for (var i = 0; i < initFilters.length; i++)
             {
-                if (Ktane.Filters[i].id in data)
+                if (initFilters[i].id in data)
                 {
-                    switch (Ktane.Filters[i].type)
+                    switch (initFilters[i].type)
                     {
                         case "slider":
-                            filteredIn = filteredIn && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) >= filter[Ktane.Filters[i].id].min && Ktane.Filters[i].values.indexOf(data[Ktane.Filters[i].id]) <= filter[Ktane.Filters[i].id].max;
+                            filteredIn = filteredIn && initFilters[i].values.indexOf(data[initFilters[i].id]) >= filter[initFilters[i].id].min && initFilters[i].values.indexOf(data[initFilters[i].id]) <= filter[initFilters[i].id].max;
                             break;
                         case "checkboxes":
-                            filteredIn = filteredIn && (filter[Ktane.Filters[i].id][data[Ktane.Filters[i].id]] || noneSelected[Ktane.Filters[i].id]);
+                            filteredIn = filteredIn && (filter[initFilters[i].id][data[initFilters[i].id]] || noneSelected[initFilters[i].id]);
                             break;
                         case "boolean":
-                            filteredIn = filteredIn && (!filter[Ktane.Filters[i].id] || data[Ktane.Filters[i].id] === 'True');
+                            filteredIn = filteredIn && (!filter[initFilters[i].id] || data[initFilters[i].id] === 'True');
                             break;
                     }
                 }
@@ -310,6 +237,8 @@ $(function()
 
     function setPreferredManuals()
     {
+        var seed = $('#rule-seed-input').val() | 0;
+        var seedHash = (seed === 1 ? '' : '#' + seed);
         $('tr.mod').each(function(_, e)
         {
             var data = $(e).data(), i;
@@ -327,66 +256,11 @@ $(function()
                 for (i = 0; i < data.manual.length; i++)
                     if (preferredManuals[data.mod] === data.manual[i].name)
                         manual = data.manual[i];
-            $(e).find(selectable === 'manual' ? 'a.modlink,a.manual' : 'a.manual').attr('href', manual.url);
+            $(e).find(selectable === 'manual' ? 'a.modlink,a.manual' : 'a.manual').attr('href', manual.url + seedHash);
             $(e).find('img.manual-icon').attr('src', manual.icon);
         });
         lStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
-
-    // Set filters from saved settings
-    for (var i = 0; i < Ktane.Filters.length; i++)
-    {
-        switch (Ktane.Filters[i].type)
-        {
-            case "slider":
-                if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'object')
-                    filter[Ktane.Filters[i].id] = {};
-
-                if (!('min' in filter[Ktane.Filters[i].id]))
-                    filter[Ktane.Filters[i].id].min = 0;
-                if (!('max' in filter[Ktane.Filters[i].id]))
-                    filter[Ktane.Filters[i].id].max = Ktane.Filters[i].values.length - 1;
-                var e = $('div#filter-' + Ktane.Filters[i].id);
-                e.slider({
-                    range: true,
-                    min: 0,
-                    max: Ktane.Filters[i].values.length - 1,
-                    values: [filter[Ktane.Filters[i].id].min, filter[Ktane.Filters[i].id].max],
-                    slide: function(event, ui) { window.setTimeout(updateFilter, 1); }
-                });
-                break;
-
-            case "checkboxes":
-                if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'object')
-                    filter[Ktane.Filters[i].id] = {};
-
-                for (var j = 0; j < Ktane.Filters[i].values.length; j++)
-                {
-                    if (!(Ktane.Filters[i].values[j] in filter[Ktane.Filters[i].id]))
-                        filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]] = true;
-                    $('input#filter-' + Ktane.Filters[i].id + '-' + Ktane.Filters[i].values[j]).prop('checked', filter[Ktane.Filters[i].id][Ktane.Filters[i].values[j]]);
-                }
-                break;
-
-            case "boolean":
-                if (!(Ktane.Filters[i].id in filter) || typeof filter[Ktane.Filters[i].id] !== 'boolean')
-                    filter[Ktane.Filters[i].id] = false;
-
-                $('input#filter-' + Ktane.Filters[i].id).prop('checked', filter[Ktane.Filters[i].id]);
-                break;
-        }
-
-        $('input#filter-include-missing').prop('checked', filter.includeMissing);
-    }
-
-    setPreferredManuals();
-    setSort(sort);
-    setTheme(theme);
-    setDisplay(display);
-    setSearchOptions(searchOptions);
-
-    // This also calls updateFilter()
-    setSelectable(selectable);
 
     var preventDisappear = 0;
     function disappear()
@@ -404,90 +278,207 @@ $(function()
     }
     $(document).click(disappear);
 
+    // Click handler for selecting manuals/cheat sheets (both mobile and non)
+    function makeClickHander(lnk, isMobileOpt, sheets, mod)
+    {
+        return function()
+        {
+            var already = $('.popup').filter((_, p) => $(p).data('lnk') === lnk).length;
+            disappear();
+            if (already)
+                return false;
+            var menuDiv = $('<div>').addClass('popup disappear').data('lnk', lnk);
+            menuDiv.click(function() { preventDisappear++; });
+            if (isMobileOpt)
+            {
+                menuDiv.append($('<div class="close">').click(disappear));
+                var iconsDiv = $('<div>').addClass('icons');
+                $(e).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
+                {
+                    var iconDiv = $("<div class='icon'><a class='icon-link'><img class='icon-img' /><span class='icon-label'></span></a></div>");
+                    iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
+                    iconDiv.find('img').attr('src', $(ic).attr('src'));
+                    iconDiv.find('span').text($(ic).attr('title'));
+                    iconsDiv.append(iconDiv);
+                });
+                menuDiv.append(iconsDiv);
+                if ($('#display-souvenir').prop('checked'))
+                    menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-souvenir').attr('title')));
+                if ($('#display-twitch').prop('checked'))
+                    menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-twitch').attr('title')));
+            }
+            menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
+            var menu = $('<menu>').addClass('manual-select');
+            var seed = $('#rule-seed-input').val() | 0;
+            var seedHash = (seed === 1 ? '' : '#' + seed);
+            for (var i = 0; i < sheets.length; i++)
+            {
+                var li = $('<li>').text(sheets[i].name);
+                if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
+                    li.addClass('checked');
+                var ahref = $('<a>').attr('href', sheets[i].url + seedHash).append(li);
+                ahref.click(function(sh)
+                {
+                    return function()
+                    {
+                        menuDiv.remove();
+                        preferredManuals[mod] = sh;
+                        setPreferredManuals();
+                        return false;
+                    };
+                }(sheets[i].name));
+                menu.append(ahref);
+            }
+            menuDiv.append(menu);
+            $(document.body).append(menuDiv);
+            if (!isMobileOpt)
+                menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
+            menuDiv.css('display', 'block');
+            return false;
+        };
+    }
+
+    // ** GENERATE THE MAIN TABLE ** //
+    for (var modIx = 0; modIx < initModules.length; modIx++)
+    {
+        var mod = initModules[modIx].m;
+        var sheets = initModules[modIx].s.map(str => str.split('|')).map(arr => { return { name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${mod.Name}${arr[0]}.${arr[1]}`, icon: initIcons[arr[2]] }; });
+        var tr = $(`<tr class="mod${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}">`)
+            .data("mod", mod.Name)
+            .data("author", mod.Author)
+            .data("description", mod.Description)
+            .data("sortkey", mod.SortKey)
+            .data("twitchscore", mod.TwitchPlaysSpecial ? 1000 : mod.TwitchPlaysScore || -1)
+            .data("published", mod.Published)
+            .data("compatibility", mod.Compatibility)
+            .appendTo('#main-table');
+        for (var ix = 0; ix < initFilters.length; ix++)
+            tr.data(initFilters[ix].id, initFilters[ix].fnc(mod));
+        for (var ix = 0; ix < initSelectables.length; ix++)
+        {
+            var sel = initSelectables[ix];
+            var dataVal = sel.DataAttributeFunction(mod, sheets);
+            tr.data(sel.DataAttributeName, dataVal);
+            var td = $(`<td class='selectable${(ix == initSelectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}'>`).appendTo(tr);
+            if (sel.ShowIconFunction(mod, sheets))
+                $(`<a>`).attr('href', sel.UrlFunction(mod, sheets)).addClass(sel.CssClass).append(sel.IconFunction ? sel.IconFunction(mod, sheets) : $("<img class='icon'>").attr('title', sel.HumanReadable).attr('alt', sel.HumanReadable).attr('src', sel.Icon)).appendTo(td);
+        }
+        var td1 = $(`<td class='infos-1'>`).appendTo(tr)
+            .append($(`<div class='modlink-wrap'>`)
+                .append($(`<a class='modlink'>`)
+                    .append($(`<img class='mod-icon' alt='${mod.Symbol}' title='${mod.Symbol}' src='Icons/${mod.Name}.png'>`).on("error", function() { this.src = 'Icons/blank.png'; }))
+                    .append($(`<span class='mod-name'>`).text(mod.Name))));
+        var td2 = $(`<td class='infos-2'>`).appendTo(tr);
+        var infos = $(`<div class='infos'>`)
+            .append($(`<div class='inf-type inf'>`).text(mod.Type))
+            .append($(`<div class='inf-origin inf inf2'>`).text(mod.Origin));
+        if (mod.Type === 'Regular' || mod.Type === 'Needy')
+        {
+            function readable(difficulty)
+            {
+                var result = '';
+                for (var i = 0; i < difficulty.length; i++)
+                {
+                    if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
+                        result += ' ';
+                    result += difficulty[i].toLowerCase();
+                }
+                return result;
+            }
+            if (mod.DefuserDifficulty === mod.ExpertDifficulty)
+                infos.append($(`<div class='inf-difficulty inf inf2'>`).append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty))));
+            else
+                infos.append($(`<div class='inf-difficulty inf inf2'>`)
+                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty)))
+                    .append(' (d), ')
+                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.ExpertDifficulty)))
+                    .append(' (e)'));
+        }
+        infos.append($(`<div class='inf-author inf'>`).text(mod.Author))
+            .append($(`<div class='inf-published inf inf2'>`).text(mod.Published));
+        if (mod.TwitchPlaysSupport === 'Supported')
+            infos.append($(`<div class='inf-twitch inf inf2' title='This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}'>`)
+                .append(mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
+        if (mod.RuleSeedSupport === 'Supported')
+            infos.append($(`<div class='inf-rule-seed inf inf2' title='This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.'>`));
+
+        var value = mod.Souvenir == null ? 'NotACandidate' : mod.Souvenir.Status;
+        var attr = souvenirAttributes[value];
+        var expl = mod.Souvenir && mod.Souvenir.Explanation;
+        infos.append($(`<div class='inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}' title='${attr.Tooltip}${expl ? "\n" + expl : ""}'>`).text(attr.Char));
+        if (mod.ModuleID)
+            infos.append($(`<div class='inf-id inf'>`).text(mod.ModuleID));
+        infos.append($(`<div class='inf-description inf'>`).text(mod.Description));
+        infos.appendTo($([td1, td2]));
+
+        var lnk1 = $('<a>').attr('href', '#').addClass('manual-selector').text('▼');
+        td1.append(lnk1.click(makeClickHander(lnk1, false, tr.data('manual'), mod.Name)));
+
+        var lnk2 = $(`<a href='#' class='mobile-opt'>`);
+        $(`<td class='mobile-ui'>`).append(lnk2.click(makeClickHander(lnk2, true, tr.data('manual'), mod.Name))).appendTo(tr);
+    }
+
+    // Set filters from saved settings
+    for (var i = 0; i < initFilters.length; i++)
+    {
+        switch (initFilters[i].type)
+        {
+            case "slider":
+                if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'object')
+                    filter[initFilters[i].id] = {};
+
+                if (!('min' in filter[initFilters[i].id]))
+                    filter[initFilters[i].id].min = 0;
+                if (!('max' in filter[initFilters[i].id]))
+                    filter[initFilters[i].id].max = initFilters[i].values.length - 1;
+                var e = $('div#filter-' + initFilters[i].id);
+                e.slider({
+                    range: true,
+                    min: 0,
+                    max: initFilters[i].values.length - 1,
+                    values: [filter[initFilters[i].id].min, filter[initFilters[i].id].max],
+                    slide: function(event, ui) { window.setTimeout(updateFilter, 1); }
+                });
+                break;
+
+            case "checkboxes":
+                if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'object')
+                    filter[initFilters[i].id] = {};
+
+                for (var j = 0; j < initFilters[i].values.length; j++)
+                {
+                    if (!(initFilters[i].values[j] in filter[initFilters[i].id]))
+                        filter[initFilters[i].id][initFilters[i].values[j]] = true;
+                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j]).prop('checked', filter[initFilters[i].id][initFilters[i].values[j]]);
+                }
+                break;
+
+            case "boolean":
+                if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'boolean')
+                    filter[initFilters[i].id] = false;
+
+                $('input#filter-' + initFilters[i].id).prop('checked', filter[initFilters[i].id]);
+                break;
+        }
+
+        $('input#filter-include-missing').prop('checked', filter.includeMissing);
+    }
+
+    setPreferredManuals();
+    setSort(sort);
+    setTheme(theme);
+    setDisplay(display);
+    setSearchOptions(searchOptions);
+
+    // This also calls updateFilter()
+    setSelectable(selectable);
+
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
-    $('input.display').click(function() { setDisplay(displays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
+    $('input.display').click(function() { setDisplay(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
     $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
-
-    $('tr.mod').each(function(_, e)
-    {
-        var data = $(e).data();
-        var mod = data.mod;
-        var sheets = data.manual;
-
-        // Click handler for selecting manuals/cheat sheets (both mobile and non)
-        function makeClickHander(lnk, isMobileOpt)
-        {
-            return function()
-            {
-                var already = $('.popup').filter((_, p) => $(p).data('lnk') === lnk).length;
-                disappear();
-                if (already)
-                    return false;
-                var menuDiv = $('<div>').addClass('popup disappear').data('lnk', lnk);
-                menuDiv.click(function() { preventDisappear++; });
-                if (isMobileOpt)
-                {
-                    menuDiv.append($('<div class="close">').click(disappear));
-                    var iconsDiv = $('<div>').addClass('icons');
-                    $(e).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
-                    {
-                        var iconDiv = $("<div class='icon'><a class='icon-link'><img class='icon-img' /><span class='icon-label'></span></a></div>");
-                        iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
-                        iconDiv.find('img').attr('src', $(ic).attr('src'));
-                        iconDiv.find('span').text($(ic).attr('title'));
-                        iconsDiv.append(iconDiv);
-                    });
-                    menuDiv.append(iconsDiv);
-                    if ($('#display-souvenir').prop('checked'))
-                        menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-souvenir').attr('title')));
-                    if ($('#display-twitch').prop('checked'))
-                        menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-twitch').attr('title')));
-                }
-                menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
-                var menu = $('<menu>').addClass('manual-select');
-                for (var i = 0; i < sheets.length; i++)
-                {
-                    var li = $('<li>').text(sheets[i].name);
-                    if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
-                        li.addClass('checked');
-                    var ahref = $('<a>').attr('href', sheets[i].url).append(li);
-                    ahref.click(function(sh)
-                    {
-                        return function()
-                        {
-                            menuDiv.remove();
-                            preferredManuals[mod] = sh;
-                            setPreferredManuals();
-                            return false;
-                        };
-                    }(sheets[i].name));
-                    menu.append(ahref);
-                }
-                menuDiv.append(menu);
-                $(document.body).append(menuDiv);
-                if (!isMobileOpt)
-                    menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
-                menuDiv.css('display', 'block');
-                return false;
-            };
-        }
-
-        // Add a copy of the .infos divs from the last column into the next-to-last (used by medium-width layout only)
-        $(e).find('td.infos-1').append($('<div class="infos">').html($(e).find('td.infos-2>div.infos').html()));
-
-        // Add UI for selecting manuals/cheat sheets (both mobile and non)
-        if (sheets.length > 1)
-        {
-            var lnk1 = $('<a>').attr('href', '#').addClass('manual-selector').text('▼');
-            $(e).find('td.infos-1').append(lnk1.click(makeClickHander(lnk1, false)));
-        }
-
-        var lnk2 = $(e).find('a.mobile-opt');
-        lnk2.click(makeClickHander(lnk2, true));
-    });
 
     // Page options pop-up (mobile only)
     $('#page-opt').click(function()
@@ -531,9 +522,31 @@ $(function()
         return false;
     });
 
-    $('#filters-link,#filters-link-mobile').click(function() { return popup($('#filters-link'), $('#filters')); });
-    $('#more-link,#more-link-mobile').click(function() { return popup($('#more-link'), $('#more')); });
-    $('#profiles-link').click(function() { return popup($('#profiles-rel'), $('#profiles-menu')); });
+    $('.popup-link').click(function()
+    {
+        var pp = $(this).data('popup');
+        var rel = $(`#${pp}-rel`);
+        var $pp = $(`#${pp}`);
+        popup(rel.length ? rel : $(`#${pp}-link`), $pp);
+        Array.from($pp.find('.focus-on-show').focus()).forEach(x => x.select());
+        return false;
+    });
+
+    $('#rule-seed-input').on('change', function()
+    {
+        setPreferredManuals();
+        var seed = $('#rule-seed-input').val() | 0;
+        if (seed === 1)
+        {
+            document.body.classList.remove('rule-seed-active');
+            document.getElementById('rule-seed-number').innerText = '';
+        }
+        else
+        {
+            document.body.classList.add('rule-seed-active');
+            document.getElementById('rule-seed-number').innerText = ' = ' + seed;
+        }
+    });
 
     // Links in the table headers (not visible on mobile UI)
     $('.sort-header').click(function()
@@ -548,7 +561,7 @@ $(function()
         return false;
     });
 
-    // Radio buttons (mobile UI and “Filters & More” tab)
+    // Radio buttons (in “Filters”)
     $('input.sort').click(function() { setSort(this.value); return true; });
     $('.popup').click(function() { preventDisappear++; });
     $('.popup>.close').click(disappear);
@@ -605,4 +618,4 @@ $(function()
         }));
         return true;
     });
-});
+}

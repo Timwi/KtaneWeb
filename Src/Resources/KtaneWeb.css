@@ -37,6 +37,7 @@ td, th {
 /* Used by the page/Steam/source/tutorial link icons; not the icons in icon bars */
 img.icon {
     width: 32px;
+    height: 32px;
     vertical-align: middle;
 }
 
@@ -118,6 +119,7 @@ div.modlink-wrap a.modlink {
 
     div.modlink-wrap a.modlink img.mod-icon {
         width: 32px;
+        height: 32px;
         float: left;
         margin: 0 .5em 0 0;
     }
@@ -134,25 +136,35 @@ td.infos-1 div.infos {
     margin-left: 2.8em;
 }
 
-div.infos .inf-type, div.infos .inf-origin, div.infos .inf-author, div.infos .inf-published, div.infos .inf-difficulty, div.infos .inf-souvenir {
+div.infos .inf {
     display: inline;
 }
 
-    div.infos .inf-origin::before, div.infos .inf-difficulty::before, div.infos .inf-twitch::before, .inf-souvenir::before, div.infos .inf-published::before {
-        content: ' • ';
-    }
+div.infos .inf2::before {
+    content: ' • ';
+}
 
 div.infos .inf-twitch {
-    display: inline-block;
     font-size: 10pt;
 }
 
-    div.infos .inf-twitch::before {
-        background: url(../HTML/img/twitch.svg) right center no-repeat;
+    div.infos .inf-twitch::before, div.infos .inf-rule-seed::before {
         background-size: 10px 10px;
-        background-position: 17px 4px;
-        padding-right: 13px;
+        background-repeat: no-repeat;
     }
+
+    div.infos .inf-twitch::before {
+        background-image: url(../HTML/img/twitch.svg);
+        background-position: right 4px;
+        background-position: calc(100% - 2px) 4px;
+        padding-right: 12px;
+    }
+
+div.infos .inf-rule-seed::before {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path style="fill:%23026" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+    background-position: right 4px;
+    padding-right: 10px;
+}
 
 div.infos .inf-author, div.infos .inf-published {
     opacity: .5;
@@ -174,6 +186,7 @@ div.infos .inf-difficulty .inf-difficulty-sub {
 div.infos .inf-id {
     opacity: .5;
     font-family: Consolas, 'DejaVu Sans Mono', monospace;
+    display: block;
 }
 
 td.infos-1 div.infos > .inf-description {
@@ -186,6 +199,7 @@ td.infos-1 div.infos > .inf-description {
 body:not(.display-difficulty) div.infos .inf-difficulty,
 body:not(.display-origin) div.infos .inf-origin,
 body:not(.display-twitch) div.infos .inf-twitch,
+body:not(.display-rule-seed) div.infos .inf-rule-seed,
 body:not(.display-souvenir) div.infos .inf-souvenir,
 body:not(.display-id) div.infos .inf-id,
 body:not(.display-description) div.infos .inf-description,
@@ -197,7 +211,7 @@ tr.mod.selected {
     background: rgba(68, 130, 255, .4);
 }
 
-td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div, tr.mod.no-tp div.infos .inf-twitch {
+td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div {
     display: none;
 }
 
@@ -251,25 +265,30 @@ body.sort-published #main-table th.infos::after {
     float: left;
 }
 
+    #logo > img {
+        width: 600px;
+        height: 208px;
+    }
+
 #icons {
     float: right;
     font-size: 85%;
     padding-top: 2.5em;
 }
 
-#profiles-menu {
+#profiles {
     display: none;
     width: 25em;
 }
 
-    #profiles-menu > p.editor {
+    #profiles > p.editor {
         font-size: 150%;
         text-align: center;
         margin: .5em 0 1em;
         font-weight: bold;
     }
 
-    #profiles-menu > p.heading {
+    #profiles > p.heading {
         font-size: 12pt;
         border-top: 1px solid #ccc;
         padding: 2em 0 0;
@@ -278,43 +297,43 @@ body.sort-published #main-table th.infos::after {
         font-weight: bold;
     }
 
-    #profiles-menu > p.zip {
+    #profiles > p.zip {
         font-size: 12pt;
         margin: 0 0 1.5em;
         text-align: center;
     }
 
-    #profiles-menu > div.wrapper {
+    #profiles > div.wrapper {
         display: flex;
         flex-direction: row;
     }
 
-        #profiles-menu > div.wrapper > div {
+        #profiles > div.wrapper > div {
             flex: 1;
             text-align: center;
         }
 
-            #profiles-menu > div.wrapper > div.defuser {
+            #profiles > div.wrapper > div.defuser {
                 margin-right: 1em;
                 padding-right: 1em;
                 border-right: 1px solid #ccc;
             }
 
-            #profiles-menu > div.wrapper > div > p {
+            #profiles > div.wrapper > div > p {
                 margin: 0;
                 font-size: 11pt;
             }
 
-            #profiles-menu > div.wrapper > div > menu {
+            #profiles > div.wrapper > div > menu {
                 list-style-type: none;
                 padding: 0;
             }
 
-                #profiles-menu > div.wrapper > div > menu > li {
+                #profiles > div.wrapper > div > menu > li {
                     padding: 0;
                 }
 
-            #profiles-menu > div.wrapper > div > p.explain {
+            #profiles > div.wrapper > div > p.explain {
                 font-size: 8pt;
             }
 
@@ -361,6 +380,7 @@ body.sort-published #main-table th.infos::after {
             display: inline-block;
             background: #eef;
             border: 1px solid #eef;
+            border-bottom: none;
             border-top-color: #ccf;
             border-right-color: #ccf;
             border-right-width: 2px;
@@ -370,11 +390,29 @@ body.sort-published #main-table th.infos::after {
             color: #024;
             padding: .1em .5em;
             margin-left: .2em;
+            vertical-align: bottom;
         }
 
 #module-count {
     text-align: right;
 }
+
+#rule-seed {
+    width: 19em;
+    text-align: center;
+}
+
+    #rule-seed #rule-seed-input {
+        width: 100px;
+    }
+
+    #rule-seed .ui {
+        font-size: 14pt;
+    }
+
+    #rule-seed .explain {
+        font-size: 10pt;
+    }
 
 /* Lay out the displays/themes/filters/selectables in a four-column way */
 #filters {
@@ -385,7 +423,7 @@ body.sort-published #main-table th.infos::after {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        height: 26.5em;
+        height: 29em;
     }
 
         #filters > div.filters > div {
@@ -409,6 +447,15 @@ body.sort-published #main-table th.infos::after {
     #more h4 {
         border-bottom: 1px solid #ccc;
     }
+
+    #more li {
+        margin: 1em 0;
+    }
+
+        #more li div.link-extra {
+            margin-left: 1em;
+            font-size: 10pt;
+        }
 
     #more table {
         border: none;
@@ -560,6 +607,23 @@ div.popup {
                 width: 130%;
             }
 
+/* When RULE SEED is active */
+body.rule-seed-active tr.mod.rs td.infos-1 {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path style="fill:%23026" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+    background-size: 2em 2em;
+    background-position: calc(100% - 2.5em) center;
+    background-repeat: no-repeat;
+}
+
+body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
+    font-size: 18pt;
+    background: hsl(0,80%,80%);
+    border-top-color: hsl(0,80%,70%);
+    border-right-color: hsl(0,80%,70%);
+    border-left-color: hsl(0,80%,95%);
+}
+
+
 /* JSON page */
 div.links {
     float: right;
@@ -658,24 +722,21 @@ pre.diff {
         position: relative;
     }
 
-    body.display-twitch tr.mod.tp td.infos-1 div.infos > .inf-twitch {
-        display: inline-block !important;
-    }
+        td.infos-1 div.infos > div.inf-type,
+        td.infos-1 div.infos > div.inf-author,
+        body.display-difficulty td.infos-1 div.infos > div.inf-difficulty,
+        body.display-origin td.infos-1 div.infos > div.inf-origin,
+        body.display-published td.infos-1 div.infos > div.inf-published,
+        body.display-twitch td.infos-1 div.infos > div.inf-twitch,
+        body.display-rule-seed td.infos-1 div.infos > div.inf-rule-seed {
+            display: inline;
+        }
 
-    td.infos-1 div.infos > div.inf-type,
-    td.infos-1 div.infos > div.inf-author,
-    body.display-difficulty td.infos-1 div.infos > div.inf-difficulty,
-    body.display-origin td.infos-1 div.infos > div.inf-origin,
-    body.display-id td.infos-1 div.infos > div.inf-id,
-    body.display-published td.infos-1 div.infos > div.inf-published {
-        display: inline;
-    }
-
-    body.display-description td.infos-1 div.infos > div.inf-description {
+    body.display-description td.infos-1 div.infos > div.inf-description, body.display-id td.infos-1 div.infos > div.inf-id {
         display: block;
     }
 
-    td.infos-1 div.infos > div:not(.inf-description):not(.inf-type):not(.inf-author)::before {
+    td.infos-1 div.infos > div.inf2::before {
         content: ' • ';
     }
 
@@ -717,7 +778,7 @@ pre.diff {
     }
 
         #filters > div.filters {
-            height: 36em;
+            height: 40em;
         }
 
     tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
@@ -727,16 +788,7 @@ pre.diff {
 
     #top-controls {
         display: block;
-    }
-}
-
-/* Desktop version for narrow screens — special case for line-wrapping the search options */
-@media screen and (max-width: 820px) and (min-width: 650.01px) {
-    #top-controls .search-container .search-options #search-opt-descriptions {
-        display: block;
-    }
-    #top-controls .search-container #search-field {
-        width: 13em;
+        margin-bottom: 2.5em;
     }
 }
 
@@ -851,11 +903,17 @@ pre.diff {
             }
 
                 #main-table td.infos-2 .inf-twitch::before {
-                    background: url(../HTML/img/twitch.svg) right center no-repeat;
                     background-size: 7px 7px;
                     background-position: 10px 3px;
+                    background-position: calc(100% - 2px) 3px;
                     padding-right: 9px;
                 }
+
+            #main-table td.infos-2 .inf-rule-seed::before {
+                background-size: 7px 7px;
+                background-position: right 3px;
+                padding-right: 7px;
+            }
 
             #main-table td.infos-2 div.infos {
                 font-size: 80%;
@@ -910,6 +968,7 @@ pre.diff {
 
     #logo > img {
         width: 320px;
+        height: 111px;
     }
 
     div.popup {
@@ -997,7 +1056,7 @@ pre.diff {
 
     #filters > div.filters {
         font-size: 75%;
-        height: 47em;
+        height: 55em;
     }
 
         #filters > div.filters > div {

@@ -36,7 +36,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault]
         public KtaneModuleDifficulty? ExpertDifficulty;
         [ClassifyIgnoreIfDefault]
-        public KtaneTwitchPlays? TwitchPlaysSupport;
+        public KtaneSupport? TwitchPlaysSupport;
 
         [ClassifyIgnoreIfDefault]
         public int? TwitchPlaysScore = null;
@@ -44,6 +44,8 @@ namespace KtaneWeb
         public string TwitchPlaysSpecial = null;
         [ClassifyIgnoreIfDefault]
         public KtaneSouvenirInfo Souvenir = null;
+        [ClassifyIgnoreIfDefault]
+        public KtaneSupport RuleSeedSupport = KtaneSupport.NotSupported;
 
         public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });
@@ -69,10 +71,11 @@ namespace KtaneWeb
                 Equals(other.Souvenir, Souvenir) &&
                 other.TwitchPlaysScore == TwitchPlaysScore &&
                 other.TwitchPlaysSpecial == TwitchPlaysSpecial &&
-                other.Symbol == Symbol;
+                other.Symbol == Symbol &&
+                other.RuleSeedSupport == RuleSeedSupport;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(TwitchPlaysSupport, Type, Origin, DefuserDifficulty, ExpertDifficulty, Name, SortKey, Symbol, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysScore, TwitchPlaysSpecial);
+        public override int GetHashCode() => Ut.ArrayHash(Name, SortKey, Symbol, Type, Origin, DefuserDifficulty, ExpertDifficulty, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysSupport, TwitchPlaysScore, TwitchPlaysSpecial, RuleSeedSupport);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
         void IClassifyObjectProcessor.BeforeSerialize() { }
@@ -85,7 +88,7 @@ namespace KtaneWeb
             {
                 DefuserDifficulty = DefuserDifficulty ?? KtaneModuleDifficulty.Easy;
                 ExpertDifficulty = ExpertDifficulty ?? KtaneModuleDifficulty.Easy;
-                TwitchPlaysSupport = TwitchPlaysSupport ?? KtaneTwitchPlays.NotSupported;
+                TwitchPlaysSupport = TwitchPlaysSupport ?? KtaneSupport.NotSupported;
             }
             else
             {

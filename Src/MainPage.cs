@@ -15,11 +15,54 @@ namespace KtaneWeb
         static KtaneFilter[] _filters = Ut.NewArray(
             KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin, @"mod=>mod.Origin"),
             KtaneFilter.Checkboxes("type", "Type", mod => mod.Type, @"mod=>mod.Type"),
-            KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
             KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
             KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
-            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""NotACandidate""")
-        );
+            KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
+            KtaneFilter.Checkboxes("ruleseed", "Rule seed", mod => mod.RuleSeedSupport, @"mod=>mod.RuleSeedSupport"),
+            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""NotACandidate"""));
+
+        static Selectable[] _selectables = Ut.NewArray(
+            new Selectable
+            {
+                HumanReadable = "Manual",
+                Accel = 'u',
+                IconFunction = @"(_,s)=>$(""<img class='icon manual-icon' title='Manual' alt='Manual'>"").attr('src',s[0]['icon'])",
+                DataAttributeName = "manual",
+                DataAttributeFunction = @"(_,s)=>s",
+                UrlFunction = @"(_,s)=>s.length?s[0]['url']:null",
+                ShowIconFunction = @"(_,s)=>!!s.length",
+                CssClass = "manual"
+            },
+            new Selectable
+            {
+                HumanReadable = "Steam Workshop",
+                Accel = 'h',
+                Icon = "HTML/img/steam-workshop-item.png",
+                DataAttributeName = "steam",
+                DataAttributeFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
+                UrlFunction = @"mod=>`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`",
+                ShowIconFunction = @"mod=>!!mod.SteamID"
+            },
+            new Selectable
+            {
+                HumanReadable = "Source code",
+                Accel = 'c',
+                Icon = "HTML/img/unity.png",
+                DataAttributeName = "source",
+                DataAttributeFunction = @"mod=>mod.SourceUrl",
+                UrlFunction = @"mod=>mod.SourceUrl",
+                ShowIconFunction = @"mod=>!!mod.SourceUrl"
+            },
+            new Selectable
+            {
+                HumanReadable = "Tutorial video",
+                Accel = 'T',
+                Icon = "HTML/img/video.png",
+                DataAttributeName = "video",
+                DataAttributeFunction = @"mod=>mod.TutorialVideoUrl",
+                UrlFunction = @"mod=>mod.TutorialVideoUrl",
+                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl"
+            });
 
         private HttpResponse mainPage(HttpRequest req)
         {
@@ -31,7 +74,7 @@ namespace KtaneWeb
             // E    sort by expert difficulty
             // F    Find
             // G    Glossary
-            // H
+            // H    link to Steam Workshop item
             // I    include missing
             // J    JSON
             // K    Dark Theme
@@ -42,7 +85,7 @@ namespace KtaneWeb
             // P    Profile Editor
             // Q
             // R    include/exclude regular modules
-            // S    link to Steam Workshop item
+            // S    Rule seed
             // T    link to Tutorial video
             // U    link to Manual
             // V    include/exclude vanilla
@@ -52,9 +95,6 @@ namespace KtaneWeb
             // Z
             // .    Filters
 
-            var sheets = getSheets();
-            var selectables = getSelectables(sheets);
-
             var displays = Ut.NewArray(
                 new { Readable = "Description", Id = "description" },
                 //new { Readable = "Author", Id = "author" },
@@ -63,6 +103,7 @@ namespace KtaneWeb
                 new { Readable = "Origin", Id = "origin" },
                 new { Readable = "Twitch support", Id = "twitch" },
                 new { Readable = "Souvenir support", Id = "souvenir" },
+                new { Readable = "Rule seed support", Id = "rule-seed" },
                 new { Readable = "Date published", Id = "published" },
                 new { Readable = "Module ID", Id = "id" });
 
@@ -80,15 +121,7 @@ namespace KtaneWeb
                     new SCRIPT { src = "HTML/js/jquery.3.1.1.min.js" },
                     new SCRIPT { src = "HTML/js/jquery-ui.1.12.1.min.js" },
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
-                    new SCRIPTLiteral($@"
-                        Ktane = {{
-                            Filters: {_filters.Select(f => f.ToJson()).ToJsonList()},
-                            Selectables: {selectables.Select(s => s.DataAttributeName).ToJsonList()},
-                            Themes: {{
-                                'dark': 'HTML/css/dark-theme.css'
-                            }}
-                        }};
-                    "),
+                    new SCRIPTLiteral(@"Ktane = { Themes: { 'dark': 'HTML/css/dark-theme.css' } };"),
                     new SCRIPT { src = req.Url.WithParent("js").ToHref() },
                     new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
                 new BODY(
@@ -99,11 +132,12 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Playing with Mods"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Making Mods"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", id = "profiles-link" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link popup-link", href = "More/Profile%20Editor.html", id = "profiles-link" }.Data("popup", "profiles")._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "/More/FAQs.html", id = "faq-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Glossary"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "#", id = "filters-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "#", id = "more-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("More"))))
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Rule seed"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "more-link-mobile" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("More"))))
                         //new DIV { class_ = "icon-page" }._(
                         //    //,
                         //    //new FORM { class_ = "icon", action = "pdf", method = method.post }._(
@@ -130,24 +164,19 @@ namespace KtaneWeb
 
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "tabs" }._(
-                                new A { href = "/More/FAQs.html", class_ = "tab", id = "faq-link", accesskey = "q" }._("Glossary"),
-                                new A { href = "#", class_ = "tab", id = "filters-link", accesskey = "." }._("Filters"),
-                                new A { href = "#", class_ = "tab", id = "more-link" }._("More")),
-
+                                new A { href = "#", class_ = "tab popup-link", id = "rule-seed-link", accesskey = "s" }.Data("popup", "rule-seed")._("Rule seed".Accel('s'), new SPAN { id = "rule-seed-number" }),
+                                new A { href = "/More/FAQs.html", class_ = "tab", id = "faq-link", accesskey = "g" }._("Glossary".Accel('G')),
+                                new A { href = "#", class_ = "tab popup-link", id = "filters-link", accesskey = "." }.Data("popup", "filters")._("Filters"),
+                                new A { href = "#", class_ = "tab popup-link", id = "more-link" }.Data("popup", "more")._("More")),
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
-                                    new TH { colspan = selectables.Length }._("Links"),
+                                    new TH { colspan = _selectables.Length }._("Links"),
                                     new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._("Name")),
-                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information")))),
-                            new SCRIPTLiteral($@"sheets={sheets};createTable(
-                                {ClassifyJson.Serialize(_config.Current)},
-                                [{_filters.Select(f => $@"{{""name"":""{f.DataAttributeName}"",""fnc"":{f.DataAttributeFunction}}}").JoinString(",")}],
-                                {selectables.Select(sel => sel.GetJson()).ToJsonList()},
-                                {EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }))});")),
+                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information"))))),
                         new DIV { id = "module-count" },
                         new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")),
 
-                        new DIV { id = "profiles-menu", class_ = "popup disappear stay" }._(
+                        new DIV { id = "profiles", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new P { class_ = "editor" }._(new A { href = "More/Profile%20Editor.html", accesskey = "p" }._("Open Profile Editor".Accel('P'))),
                             new P { class_ = "heading" }._("Download profiles by difficulty:"),
@@ -161,6 +190,16 @@ namespace KtaneWeb
                                     new P("By expert difficulty:"),
                                     new MENU(EnumStrong.GetValues<KtaneModuleDifficulty>().Select(d => new LI(new A { href = "/profile/expert/" + d }._(d.ToReadable())))),
                                     new P { class_ = "explain" }._("These are expert profiles, i.e. you can use these to ", new EM("include"), " certain modules.")))),
+
+                        new DIV { id = "rule-seed", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new P { class_ = "ui" }._(
+                                "Rule seed: ",
+                                new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }
+                            ),
+                            new P { class_ = "explain" }._("Varies the rules/manuals for supported modules."),
+                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=1224413364" }._("Rule Seed Modifier"), " mod.")
+                        ),
 
                         new DIV { id = "filters", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
@@ -198,7 +237,7 @@ namespace KtaneWeb
                                         new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d')))),
                                 new DIV { class_ = "link-targets" }._(
                                     new H4("Make links go to:"),
-                                    selectables.Select(sel => new DIV(
+                                    _selectables.Select(sel => new DIV(
                                         new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName), " ",
                                         new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                     new DIV { id = "include-missing" }._(
@@ -209,10 +248,12 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new UL { class_ = "dev" }._(
                                 new LI(new A { href = "More/Periodic Table.html" }._("Periodic Table of Modules")),
-                                new LI(new A { href = "More/Experting Template.png" }._("Experting template")),
+                                new LI(new A { href = "More/Experting Template.png" }._("Experting template"), new DIV { class_ = "link-extra" }._("(printable page with boxes to fill in while experting)")),
                                 new LI(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
                                 new LI(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement")),
-                                new LI(new A { href = "More/Mode Settings Editor.html" }._("Mode Settings Editor"))),
+                                new LI(new A { href = "More/Mode Settings Editor.html" }._("Mode Settings Editor")),
+                                new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._("KtaneContent github repository"), new DIV { class_ = "link-extra" }._("(contains the manuals, Profile Editor, Logfile Analyzer and other static files)")),
+                                new LI(new A { href = "https://github.com/Timwi/KtaneWeb" }._("KtaneWeb github repository"), new DIV { class_ = "link-extra" }._("(contains this website’s server code)"))),
                             new DIV { class_ = "highlighting-controls" }._(
                                 new H3("Controls to highlight elements in HTML manuals"),
                                 new TABLE { class_ = "highlighting-controls" }._(
@@ -245,58 +286,24 @@ namespace KtaneWeb
                                 new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J')))),
 
-                        new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" })))));
+                        new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
+
+                        new Func<object>(() =>
+                        {
+                            var modules = _config.Current.KtaneModules.Select(mod => new JsonDict
+                            {
+                                ["m"] = ClassifyJson.Serialize(mod),
+                                ["s"] = _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray())
+                            }).ToJsonList();
+                            var icons = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
+                            var disps = displays.Select(d => d.Id).ToJsonList();
+                            var filters = _filters.Select(f => f.ToJson()).ToJsonList();
+                            var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
+                            var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
+                            return new SCRIPTLiteral($@"initializePage({modules},{icons},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir});");
+                        })))));
             resp.UseGzip = UseGzipOption.DontUseGzip;
             return resp;
-        }
-
-        private JsonDict getSheets() => _config.Current.KtaneModules
-            .ToJsonDict(mod => mod.Name, mod => _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m != mod.Name && m.StartsWith(mod.Name)).ToArray()));
-
-        private Selectable[] getSelectables(JsonDict sheets)
-        {
-            return Ut.NewArray(
-                new Selectable
-                {
-                    HumanReadable = "Manual",
-                    Accel = 'u',
-                    IconFunction = @"mod=>$(`<img class='icon manual-icon' title='Manual' alt='Manual' src='${sheets[mod.Name].length?sheets[mod.Name][0]['icon']:null}'>`)",
-                    DataAttributeName = "manual",
-                    DataAttributeFunction = @"mod=>sheets[mod.Name]",
-                    UrlFunction = @"mod=>sheets[mod.Name].length?sheets[mod.Name][0]['url']:null",
-                    ShowIconFunction = @"mod=>!!sheets[mod.Name].length",
-                    CssClass = "manual"
-                },
-                new Selectable
-                {
-                    HumanReadable = "Steam Workshop",
-                    Accel = 'S',
-                    Icon = "HTML/img/steam-workshop-item.png",
-                    DataAttributeName = "steam",
-                    DataAttributeFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
-                    UrlFunction = @"mod=>`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`",
-                    ShowIconFunction = @"mod=>!!mod.SteamID"
-                },
-                new Selectable
-                {
-                    HumanReadable = "Source code",
-                    Accel = 'c',
-                    Icon = "HTML/img/unity.png",
-                    DataAttributeName = "source",
-                    DataAttributeFunction = @"mod=>mod.SourceUrl",
-                    UrlFunction = @"mod=>mod.SourceUrl",
-                    ShowIconFunction = @"mod=>!!mod.SourceUrl"
-                },
-                new Selectable
-                {
-                    HumanReadable = "Tutorial video",
-                    Accel = 'T',
-                    Icon = "HTML/img/video.png",
-                    DataAttributeName = "video",
-                    DataAttributeFunction = @"mod=>mod.TutorialVideoUrl",
-                    UrlFunction = @"mod=>mod.TutorialVideoUrl",
-                    ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl"
-                });
         }
     }
 }

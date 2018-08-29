@@ -14,7 +14,7 @@ namespace KtaneWeb
         public string ShowIconFunction;
         public string CssClass = null;
 
-        public JsonDict GetJson()
+        public JsonDict ToJson()
         {
             var dict = new JsonDict();
 
