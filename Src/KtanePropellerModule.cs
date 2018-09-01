@@ -76,7 +76,6 @@ namespace KtaneWeb
                 File.WriteAllText(Settings.ConfigFile, rewrite);
             base.Init(log);
             _logger = log;
-            VanillaRuleGenerator.Extensions.Debug.Logger = log;
         }
 
         private void saveConfig()
