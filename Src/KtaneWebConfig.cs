@@ -64,8 +64,7 @@ namespace KtaneWeb
                     if (!notModuleNames.Any(inf.File.Name.StartsWith))
                         list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
             }
-            list.Sort();
-            return list.ToJsonList();
+            return list.OrderBy(x => x.Substring(0, x.IndexOf('|'))).ToJsonList();
         }
 
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
