@@ -80,11 +80,12 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     }
     lStorage.setItem('version', '2');
 
+    const mainTable = document.getElementById("main-table").getElementsByTagName("tbody")[0];
+
     var selectedRow = 0;
     function updateSearchHighlight()
     {
-        $("tr.mod").removeClass('selected');
-        $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
+        mods.removeClass('selected').filter((_, x) => x.style.display != "none").eq(selectedRow).addClass('selected');
     }
 
     function setSelectable(sel)
@@ -106,15 +107,14 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     {
         sort = srt;
         lStorage.setItem('sort', srt);
-        var arr = $('tr.mod').toArray();
+        var arr = mods.toArray();
         arr.sort(function(a, b)
         {
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare($(a).data('mod'), $(b).data('mod'), false) : c;
         });
-        var table = $('#main-table');
-        for (var i = 0; i < arr.length; i++)
-            table.append(arr[i]);
+        
+        mainTable.append(...arr);
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
@@ -192,7 +192,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
 
         var modCount = 0;
-        $('tr.mod').each(function(_, e)
+        mods.each(function(_, e)
         {
             var data = $(e).data();
 
@@ -225,10 +225,10 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
             {
                 modCount++;
-                $(e).show();
+                e.style.display = '';
             }
             else
-                $(e).hide();
+                e.style.display = 'none';
         });
 
         $('#module-count').text(modCount);
@@ -239,7 +239,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     {
         var seed = $('#rule-seed-input').val() | 0;
         var seedHash = (seed === 1 ? '' : '#' + seed);
-        $('tr.mod').each(function(_, e)
+        mods.each(function(_, e)
         {
             var data = $(e).data(), i;
             if (data.manual.length === 0)
@@ -418,6 +418,9 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         $(`<td class='mobile-ui'>`).append(lnk2.click(makeClickHander(lnk2, true, tr.data('manual'), mod.Name))).appendTo(tr);
     }
 
+    const mods = $("tr.mod");
+    const visibleMods = () => mods.filter((_, x) => x.style.display != "none");
+
     // Set filters from saved settings
     for (var i = 0; i < initFilters.length; i++)
     {
@@ -437,7 +440,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                     min: 0,
                     max: initFilters[i].values.length - 1,
                     values: [filter[initFilters[i].id].min, filter[initFilters[i].id].max],
-                    slide: function(event, ui) { window.setTimeout(updateFilter, 1); }
+                    slide: function() { window.setTimeout(updateFilter, 1); }
                 });
                 break;
 
@@ -568,14 +571,15 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
     $("#search-field")
         .focus(updateSearchHighlight)
-        .blur(function(e) { $("tr.mod").removeClass('selected'); })
-        .keyup(function(e)
+        .blur(function() { mods.removeClass('selected'); })
+        .keyup(function()
         {
             updateFilter();
 
             // Reducing results, move highlight
-            if (selectedRow >= $("tr.mod:visible").length)
-                selectedRow = $("tr.mod:visible").length - 1;
+            const visModLength = visibleMods().length;
+            if (selectedRow >= visModLength)
+                selectedRow = visModLength - 1;
 
             updateSearchHighlight();
         })
@@ -583,16 +587,16 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         {
             if (e.keyCode === 38 && selectedRow > 0)   // up arrow
                 selectedRow--;
-            else if (e.keyCode === 40 && selectedRow < $("tr.mod:visible").length - 1)      // down arrow
+            else if (e.keyCode === 40 && selectedRow < visibleMods().length - 1)      // down arrow
                 selectedRow++;
             else if (e.keyCode === 13)
             {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
-                    window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
+                    window.location.href = visibleMods().eq(selectedRow).find('a.modlink').attr("href");
                 else
                 {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
-                    $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).focus();
+                    visibleMods().eq(selectedRow).find('a.modlink').focus();
                     setTimeout(function()
                     {
                         var inp = document.getElementById('search-field');
