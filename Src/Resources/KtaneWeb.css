@@ -66,35 +66,30 @@ textarea {
 
 /* Top controls */
 #top-controls {
-    display: flex;
     clear: both;
     margin: 0 0 .5em;
 }
 
-    #top-controls .search-container {
-        flex: 1;
+    #top-controls .search-container #search-field {
+        width: 15em;
     }
 
-        #top-controls .search-container #search-field {
-            width: 15em;
-        }
+    #top-controls .search-container #search-field-clear {
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
+        width: 1.25em;
+        height: 1.25em;
+        display: inline-block;
+        vertical-align: middle;
+    }
 
-        #top-controls .search-container #search-field-clear {
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
-            width: 1.25em;
-            height: 1.25em;
-            display: inline-block;
-            vertical-align: middle;
-        }
+    #top-controls .search-container .search-options {
+        display: inline-block;
+        vertical-align: middle;
+    }
 
-        #top-controls .search-container .search-options {
-            display: inline-block;
-            vertical-align: middle;
+        #top-controls .search-container .search-options .search-option {
+            padding-left: .5em;
         }
-
-            #top-controls .search-container .search-options .search-option {
-                padding-left: .5em;
-            }
 
 div .error {
     background: #fee;
@@ -413,6 +408,10 @@ body.sort-published #main-table th.infos::after {
     #rule-seed .explain {
         font-size: 10pt;
     }
+
+#rule-seed-mobile {
+    display: none;
+}
 
 /* Lay out the displays/themes/filters/selectables in a four-column way */
 #filters {
@@ -787,7 +786,6 @@ pre.diff {
     }
 
     #top-controls {
-        display: block;
         margin-bottom: 2.5em;
     }
 }
@@ -827,19 +825,19 @@ pre.diff {
         display: none;
     }
 
-    #main-table tr.header-row {
-        display: none;
-    }
-
-    #main-table td.infos-1 div.infos {
-        margin-left: 3.5em;
-    }
-
     #main-table {
         display: block;
         border: none;
         border-bottom: 1px solid #ccc;
     }
+
+        #main-table tr.header-row {
+            display: none;
+        }
+
+        #main-table td.infos-1 div.infos {
+            margin-left: 3.5em;
+        }
 
         #main-table tbody {
             display: block;
@@ -858,6 +856,7 @@ pre.diff {
             border: none;
             padding: 0;
             font-size: 8pt;
+            overflow: auto;
         }
 
             #main-table td.selectable {
@@ -1080,6 +1079,39 @@ pre.diff {
     #top-controls .search-container .search-options {
         font-size: 10pt;
     }
+
+    body.rule-seed-active #rule-seed-mobile {
+        background: hsl(0,80%,90%);
+        border: 1px solid hsl(0,80%,50%);
+        border-radius: .2em;
+        box-shadow: rgba(0, 0, 0, .2) 0 0 10px;
+        display: block;
+        margin-top: .5em;
+        padding: .1em 0;
+        text-align: center;
+    }
+
+        body.rule-seed-active #rule-seed-mobile::before {
+            content: 'Rule seed = ';
+        }
+
+    body.rule-seed-active tr.mod.rs td.infos-1 {
+        background-image: none;
+        position: relative;
+    }
+
+        body.rule-seed-active tr.mod.rs td.infos-1::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            left: 64%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path style="fill:hsla(240, 100%, 50%, 0.2)" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
 }
 
 @media print {

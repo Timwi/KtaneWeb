@@ -545,6 +545,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         {
             document.body.classList.add('rule-seed-active');
             document.getElementById('rule-seed-number').innerText = ' = ' + seed;
+            document.getElementById('rule-seed-mobile').innerText = seed;
         }
     });
 
@@ -606,16 +607,19 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             updateSearchHighlight();
         });
 
-    $('#generate-pdf').click(function()
-    {
-        $('#generate-pdf-json').val(JSON.stringify({
-            preferredManuals: preferredManuals,
-            sort: sort,
-            filter: filter,
-            selectable: selectable,
-            searchOptions: searchOptions,
-            search: $("input#search-field").val()
-        }));
-        return true;
-    });
+    $('.select-on-focus').focus(function() { this.setSelectionRange(0, this.value.length); });
+
+    //// Not currently used
+    //$('#generate-pdf').click(function()
+    //{
+    //    $('#generate-pdf-json').val(JSON.stringify({
+    //        preferredManuals: preferredManuals,
+    //        sort: sort,
+    //        filter: filter,
+    //        selectable: selectable,
+    //        searchOptions: searchOptions,
+    //        search: $("input#search-field").val()
+    //    }));
+    //    return true;
+    //});
 }

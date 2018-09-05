@@ -134,10 +134,10 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link popup-link", href = "More/Profile%20Editor.html", id = "profiles-link" }.Data("popup", "profiles")._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "/More/FAQs.html", id = "faq-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Glossary"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Rule seed"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "more-link-mobile" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/arrow.png" }, new SPAN { class_ = "icon-label" }._("More"))))
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "/More/FAQs.html", id = "faq-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._("Glossary"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/spanner.png" }, new SPAN { class_ = "icon-label" }._("Rule seed"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/filter-icon.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "more-link-mobile" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More"))))
                         //new DIV { class_ = "icon-page" }._(
                         //    //,
                         //    //new FORM { class_ = "icon", action = "pdf", method = method.post }._(
@@ -160,7 +160,8 @@ namespace KtaneWeb
                                 new DIV { class_ = "search-options" }._(
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._("Names")),
                                     new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._("Authors")),
-                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions"))))),
+                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
+                            new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
 
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "tabs" }._(
@@ -195,11 +196,10 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new P { class_ = "ui" }._(
                                 "Rule seed: ",
-                                new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }
-                            ),
+                                new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }),
                             new P { class_ = "explain" }._("Varies the rules/manuals for supported modules."),
-                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=1224413364" }._("Rule Seed Modifier"), " mod.")
-                        ),
+                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=1224413364" }._("Rule Seed Modifier"), " mod."),
+                            new P { class_ = "explain" }._("Set to 1 to revert to default rules.")),
 
                         new DIV { id = "filters", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
@@ -264,26 +264,26 @@ namespace KtaneWeb
                             new H3("Default file locations"),
                             new H4("Windows"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes" })),
-                                new TR(new TH("Logfile (Steam):"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
-                                new TR(new TH("Logfile (Oculus):"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Oculus\Software\steel-crate-games-keep-talking-and-nobody-explodes\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\ModProfiles" })),
-                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\Modsettings" })),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, value = @"C:\Program Files (x86)\Steam\userdata\<some number>\760\remote\341800\screenshots" }))),
+                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes" })),
+                                new TR(new TH("Logfile (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
+                                new TR(new TH("Logfile (Oculus):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Oculus\Software\steel-crate-games-keep-talking-and-nobody-explodes\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
+                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\ModProfiles" })),
+                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\Modsettings" })),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Steam\userdata\<some number>\760\remote\341800\screenshots" }))),
                             new H4("Mac"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
-                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Logs/Unity/Player.log" })),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/ModProfiles" })),
-                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings" })),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, value = @"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots" }))),
+                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Logs/Unity/Player.log" })),
+                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/ModProfiles" })),
+                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings" })),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new H4("Linux"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, value = @"~/.steam/steamapps/common/Keep Talking and Nobody Explodes" })),
-                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log" })),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
-                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
+                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log" })),
+                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
+                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
+                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J')))),
 
                         new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
