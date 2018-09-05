@@ -38,6 +38,26 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
+function el(tagName, className, ...args) {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    for (const arg of args) {
+        if (arg instanceof window.Element) {
+            element.appendChild(arg);
+        } else if (typeof arg == "string") {
+            element.appendChild(document.createTextNode(arg));
+        } else if (typeof arg == "object") {
+            for (const attr in arg) {
+                if (arg[attr] != undefined) {
+                    element.setAttribute(attr, arg[attr]);
+                }
+            }
+        }
+    }
+
+    return element;
+}
+
 function initializePage(initModules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes)
 {
     var filter = {};
@@ -80,11 +100,12 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     }
     lStorage.setItem('version', '2');
 
+    const mainTable = document.getElementById("main-table").getElementsByTagName("tbody")[0];
+
     var selectedRow = 0;
     function updateSearchHighlight()
     {
-        $("tr.mod").removeClass('selected');
-        $(`tr.mod:visible:eq(${selectedRow})`).addClass('selected');
+        mods.removeClass('selected').filter((_, x) => x.style.display != "none").eq(selectedRow).addClass('selected');
     }
 
     function setSelectable(sel)
@@ -106,15 +127,14 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     {
         sort = srt;
         lStorage.setItem('sort', srt);
-        var arr = $('tr.mod').toArray();
+        var arr = mods.toArray();
         arr.sort(function(a, b)
         {
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare($(a).data('mod'), $(b).data('mod'), false) : c;
         });
-        var table = $('#main-table');
-        for (var i = 0; i < arr.length; i++)
-            table.append(arr[i]);
+        
+        mainTable.append(...arr);
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
@@ -192,7 +212,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
 
         var modCount = 0;
-        $('tr.mod').each(function(_, e)
+        mods.each(function(_, e)
         {
             var data = $(e).data();
 
@@ -225,10 +245,10 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
             {
                 modCount++;
-                $(e).show();
+                e.style.display = '';
             }
             else
-                $(e).hide();
+                e.style.display = 'none';
         });
 
         $('#module-count').text(modCount);
@@ -239,7 +259,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     {
         var seed = $('#rule-seed-input').val() | 0;
         var seedHash = (seed === 1 ? '' : '#' + seed);
-        $('tr.mod').each(function(_, e)
+        mods.each(function(_, e)
         {
             var data = $(e).data(), i;
             if (data.manual.length === 0)
@@ -343,35 +363,59 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     {
         var mod = initModules[modIx].m;
         var sheets = initModules[modIx].s.map(str => str.split('|')).map(arr => { return { name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${mod.Name}${arr[0]}.${arr[1]}`, icon: initIcons[arr[2]] }; });
-        var tr = $(`<tr class="mod${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}">`)
-            .data("mod", mod.Name)
-            .data("author", mod.Author)
-            .data("description", mod.Description)
-            .data("sortkey", mod.SortKey)
-            .data("twitchscore", mod.TwitchPlaysSpecial ? 1000 : mod.TwitchPlaysScore || -1)
-            .data("published", mod.Published)
-            .data("compatibility", mod.Compatibility)
-            .appendTo('#main-table');
-        for (var ix = 0; ix < initFilters.length; ix++)
-            tr.data(initFilters[ix].id, initFilters[ix].fnc(mod));
+        var tr = el("tr", `mod${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`, {
+            "data-mod": mod.Name,
+            "data-author": mod.Author,
+            "data-description": mod.Description,
+            "data-sortkey": mod.SortKey,
+            "data-twitchscore": mod.TwitchPlaysSpecial ? 1000 : mod.TwitchPlaysScore || -1,
+            "data-published": mod.Published,
+            "data-compatibility": mod.Compatibility
+        });
+        mainTable.appendChild(tr);
+        for (var ix = 0; ix < initFilters.length; ix++) {
+            var value = initFilters[ix].fnc(mod);
+            if (value == undefined) continue;
+            tr.dataset[initFilters[ix].id] = value;
+        }
         for (var ix = 0; ix < initSelectables.length; ix++)
         {
             var sel = initSelectables[ix];
             var dataVal = sel.DataAttributeFunction(mod, sheets);
-            tr.data(sel.DataAttributeName, dataVal);
-            var td = $(`<td class='selectable${(ix == initSelectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}'>`).appendTo(tr);
+            if (dataVal != undefined) {
+                if (sel.DataAttributeName != "manual")
+                    tr.dataset[sel.DataAttributeName] = dataVal;
+                else
+                    $(tr).data(sel.DataAttributeName, dataVal);
+            }
+            var td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}`);
+            tr.appendChild(td);
             if (sel.ShowIconFunction(mod, sheets))
-                $(`<a>`).attr('href', sel.UrlFunction(mod, sheets)).addClass(sel.CssClass).append(sel.IconFunction ? sel.IconFunction(mod, sheets) : $("<img class='icon'>").attr('title', sel.HumanReadable).attr('alt', sel.HumanReadable).attr('src', sel.Icon)).appendTo(td);
+                td.appendChild(el("a", sel.CssClass, { href: sel.UrlFunction(mod, sheets) }, sel.IconFunction ? sel.IconFunction(mod, sheets) : el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon })));
         }
-        var td1 = $(`<td class='infos-1'>`).appendTo(tr)
-            .append($(`<div class='modlink-wrap'>`)
-                .append($(`<a class='modlink'>`)
-                    .append($(`<img class='mod-icon' alt='${mod.Symbol}' title='${mod.Symbol}' src='Icons/${mod.Name}.png'>`).on("error", function() { this.src = 'Icons/blank.png'; }))
-                    .append($(`<span class='mod-name'>`).text(mod.Name))));
-        var td2 = $(`<td class='infos-2'>`).appendTo(tr);
-        var infos = $(`<div class='infos'>`)
-            .append($(`<div class='inf-type inf'>`).text(mod.Type))
-            .append($(`<div class='inf-origin inf inf2'>`).text(mod.Origin));
+
+        const icon = el("img", "mod-icon", {
+            alt: mod.Symbol,
+            title: mod.Symbol,
+            src: `Icons/${mod.Name}.png`
+        });
+        icon.onerror = () => this.src = 'Icons/blank.png';
+
+        var td1 = el("td", "infos-1",
+            el("div", "modlink-wrap",
+                el("a", "modlink",
+                    icon,
+                    el("span", "mod-name", mod.Name)
+                )
+            )
+        );
+        tr.appendChild(td1);
+
+        var td2 = el("td", "infos-2");
+        tr.appendChild(td2);
+        var infos = el("div", "infos", 
+            el("div", "inf-type inf", mod.Type),
+            el("div", "inf-origin inf inf2", mod.Origin));
         if (mod.Type === 'Regular' || mod.Type === 'Needy')
         {
             function readable(difficulty)
@@ -386,37 +430,42 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 return result;
             }
             if (mod.DefuserDifficulty === mod.ExpertDifficulty)
-                infos.append($(`<div class='inf-difficulty inf inf2'>`).append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty))));
+                infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
             else
-                infos.append($(`<div class='inf-difficulty inf inf2'>`)
-                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.DefuserDifficulty)))
-                    .append(' (d), ')
-                    .append($(`<span class='inf-difficulty-sub'>`).text(readable(mod.ExpertDifficulty)))
-                    .append(' (e)'));
+                infos.append(el("div", "inf-difficulty inf inf2"),
+                    el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)),
+                    ' (d), ',
+                    el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)),
+                    ' (e)');
         }
-        infos.append($(`<div class='inf-author inf'>`).text(mod.Author))
-            .append($(`<div class='inf-published inf inf2'>`).text(mod.Published));
-        if (mod.TwitchPlaysSupport === 'Supported')
-            infos.append($(`<div class='inf-twitch inf inf2' title='This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}'>`)
-                .append(mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
+        infos.append(el("div", "inf-author inf", mod.Author),
+            el("div", "inf-published inf inf2", mod.Published),
+            el("div", "inf-twitch inf inf2", { title: `This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}` },
+            mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
         if (mod.RuleSeedSupport === 'Supported')
-            infos.append($(`<div class='inf-rule-seed inf inf2' title='This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.'>`));
+            infos.append(el("div", "inf-rule-seed inf inf2", { title: 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.' }));
 
         var value = mod.Souvenir == null ? 'NotACandidate' : mod.Souvenir.Status;
         var attr = souvenirAttributes[value];
         var expl = mod.Souvenir && mod.Souvenir.Explanation;
-        infos.append($(`<div class='inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}' title='${attr.Tooltip}${expl ? "\n" + expl : ""}'>`).text(attr.Char));
+        infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: `${attr.Tooltip}${expl ? "\n" + expl : ""}` }, attr.Char));
         if (mod.ModuleID)
-            infos.append($(`<div class='inf-id inf'>`).text(mod.ModuleID));
-        infos.append($(`<div class='inf-description inf'>`).text(mod.Description));
-        infos.appendTo($([td1, td2]));
-
-        var lnk1 = $('<a>').attr('href', '#').addClass('manual-selector').text('▼');
-        td1.append(lnk1.click(makeClickHander(lnk1, false, tr.data('manual'), mod.Name)));
-
-        var lnk2 = $(`<a href='#' class='mobile-opt'>`);
-        $(`<td class='mobile-ui'>`).append(lnk2.click(makeClickHander(lnk2, true, tr.data('manual'), mod.Name))).appendTo(tr);
+            infos.append(el("div", "inf-id inf", mod.ModuleID));
+        infos.append(el("div", "inf-description inf", mod.Description));
+        td1.appendChild(infos);
+        td2.appendChild(infos.cloneNode(true));
+        
+        var lnk1 = el("a", "manual-selector", { href: "#" }, "▼");
+        $(lnk1).click(makeClickHander(lnk1, false, $(tr).data("manual"), mod.Name));
+        td1.appendChild(lnk1);
+        
+        var lnk2 = el("a", "mobile-opt", { href: "#" });
+        $(lnk2).click(makeClickHander(lnk2, true, $(tr).data("manual"), mod.Name));
+        tr.appendChild(el("td", "mobile-ui", lnk2));
     }
+
+    const mods = $("tr.mod");
+    const visibleMods = () => mods.filter((_, x) => x.style.display != "none");
 
     // Set filters from saved settings
     for (var i = 0; i < initFilters.length; i++)
@@ -437,7 +486,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                     min: 0,
                     max: initFilters[i].values.length - 1,
                     values: [filter[initFilters[i].id].min, filter[initFilters[i].id].max],
-                    slide: function(event, ui) { window.setTimeout(updateFilter, 1); }
+                    slide: function() { window.setTimeout(updateFilter, 1); }
                 });
                 break;
 
@@ -569,14 +618,15 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
     $("#search-field")
         .focus(updateSearchHighlight)
-        .blur(function(e) { $("tr.mod").removeClass('selected'); })
-        .keyup(function(e)
+        .blur(function() { mods.removeClass('selected'); })
+        .keyup(function()
         {
             updateFilter();
 
             // Reducing results, move highlight
-            if (selectedRow >= $("tr.mod:visible").length)
-                selectedRow = $("tr.mod:visible").length - 1;
+            const visModLength = visibleMods().length;
+            if (selectedRow >= visModLength)
+                selectedRow = visModLength - 1;
 
             updateSearchHighlight();
         })
@@ -584,16 +634,16 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         {
             if (e.keyCode === 38 && selectedRow > 0)   // up arrow
                 selectedRow--;
-            else if (e.keyCode === 40 && selectedRow < $("tr.mod:visible").length - 1)      // down arrow
+            else if (e.keyCode === 40 && selectedRow < visibleMods().length - 1)      // down arrow
                 selectedRow++;
             else if (e.keyCode === 13)
             {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
-                    window.location.href = $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).attr("href");
+                    window.location.href = visibleMods().eq(selectedRow).find('a.modlink').attr("href");
                 else
                 {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
-                    $(`tr.mod:visible:eq(${selectedRow}) a.modlink`).focus();
+                    visibleMods().eq(selectedRow).find('a.modlink').focus();
                     setTimeout(function()
                     {
                         var inp = document.getElementById('search-field');

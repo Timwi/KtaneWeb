@@ -26,7 +26,7 @@ namespace KtaneWeb
             {
                 HumanReadable = "Manual",
                 Accel = 'u',
-                IconFunction = @"(_,s)=>$(""<img class='icon manual-icon' title='Manual' alt='Manual'>"").attr('src',s[0]['icon'])",
+                IconFunction = @"(_,s)=>el('img', 'icon manual-icon', { title: 'Manual', alt: 'Manual', src: s[0]['icon'] })",
                 DataAttributeName = "manual",
                 DataAttributeFunction = @"(_,s)=>s",
                 UrlFunction = @"(_,s)=>s.length?s[0]['url']:null",
