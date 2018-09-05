@@ -46,9 +46,9 @@ function el(tagName, className, ...args)
     {
         if (arg instanceof window.Element)
             element.appendChild(arg);
-        else if (typeof arg == "string")
+        else if (typeof arg !== "object")
             element.appendChild(document.createTextNode(arg));
-        else if (typeof arg == "object")
+        else
             for (const attr in arg)
                 if (arg[attr] != undefined)
                     element.setAttribute(attr, arg[attr]);
