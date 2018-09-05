@@ -38,23 +38,21 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
-function el(tagName, className, ...args) {
+function el(tagName, className, ...args)
+{
     const element = document.createElement(tagName);
     if (className) element.className = className;
-    for (const arg of args) {
-        if (arg instanceof window.Element) {
+    for (const arg of args)
+    {
+        if (arg instanceof window.Element)
             element.appendChild(arg);
-        } else if (typeof arg == "string") {
+        else if (typeof arg == "string")
             element.appendChild(document.createTextNode(arg));
-        } else if (typeof arg == "object") {
-            for (const attr in arg) {
-                if (arg[attr] != undefined) {
+        else if (typeof arg == "object")
+            for (const attr in arg)
+                if (arg[attr] != undefined)
                     element.setAttribute(attr, arg[attr]);
-                }
-            }
-        }
     }
-
     return element;
 }
 
@@ -133,7 +131,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare($(a).data('mod'), $(b).data('mod'), false) : c;
         });
-        
+
         mainTable.append(...arr);
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
@@ -373,7 +371,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             "data-compatibility": mod.Compatibility
         });
         mainTable.appendChild(tr);
-        for (var ix = 0; ix < initFilters.length; ix++) {
+        for (var ix = 0; ix < initFilters.length; ix++)
+        {
             var value = initFilters[ix].fnc(mod);
             if (value == undefined) continue;
             tr.dataset[initFilters[ix].id] = value;
@@ -382,7 +381,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         {
             var sel = initSelectables[ix];
             var dataVal = sel.DataAttributeFunction(mod, sheets);
-            if (dataVal != undefined) {
+            if (dataVal != undefined)
+            {
                 if (sel.DataAttributeName != "manual")
                     tr.dataset[sel.DataAttributeName] = dataVal;
                 else
@@ -413,7 +413,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
         var td2 = el("td", "infos-2");
         tr.appendChild(td2);
-        var infos = el("div", "infos", 
+        var infos = el("div", "infos",
             el("div", "inf-type inf", mod.Type),
             el("div", "inf-origin inf inf2", mod.Origin));
         if (mod.Type === 'Regular' || mod.Type === 'Needy')
@@ -432,16 +432,18 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             if (mod.DefuserDifficulty === mod.ExpertDifficulty)
                 infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
             else
-                infos.append(el("div", "inf-difficulty inf inf2"),
+                infos.append(el("div", "inf-difficulty inf inf2",
                     el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)),
                     ' (d), ',
                     el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)),
-                    ' (e)');
+                    ' (e)'));
         }
         infos.append(el("div", "inf-author inf", mod.Author),
-            el("div", "inf-published inf inf2", mod.Published),
-            el("div", "inf-twitch inf inf2", { title: `This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}` },
-            mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
+            el("div", "inf-published inf inf2", mod.Published));
+        if (mod.TwitchPlaysSupport === 'Supported')
+            infos.append(
+                el("div", "inf-twitch inf inf2", { title: `This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}` },
+                    mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
         if (mod.RuleSeedSupport === 'Supported')
             infos.append(el("div", "inf-rule-seed inf inf2", { title: 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.' }));
 
@@ -454,11 +456,11 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         infos.append(el("div", "inf-description inf", mod.Description));
         td1.appendChild(infos);
         td2.appendChild(infos.cloneNode(true));
-        
+
         var lnk1 = el("a", "manual-selector", { href: "#" }, "▼");
         $(lnk1).click(makeClickHander(lnk1, false, $(tr).data("manual"), mod.Name));
         td1.appendChild(lnk1);
-        
+
         var lnk2 = el("a", "mobile-opt", { href: "#" });
         $(lnk2).click(makeClickHander(lnk2, true, $(tr).data("manual"), mod.Name));
         tr.appendChild(el("td", "mobile-ui", lnk2));

@@ -727,6 +727,7 @@ pre.diff {
         body.display-origin td.infos-1 div.infos > div.inf-origin,
         body.display-published td.infos-1 div.infos > div.inf-published,
         body.display-twitch td.infos-1 div.infos > div.inf-twitch,
+        body.display-souvenir td.infos-1 div.infos > div.inf-souvenir,
         body.display-rule-seed td.infos-1 div.infos > div.inf-rule-seed {
             display: inline;
         }
