@@ -29,6 +29,7 @@ namespace KtaneWeb
                 IconFunction = @"(_,s)=>el('img', 'icon manual-icon', { title: 'Manual', alt: 'Manual', src: s[0]['icon'] })",
                 DataAttributeName = "manual",
                 DataAttributeFunction = @"(_,s)=>s",
+                HasValue = m => true,
                 UrlFunction = @"(_,s)=>s.length?s[0]['url']:null",
                 ShowIconFunction = @"(_,s)=>!!s.length",
                 CssClass = "manual"
@@ -41,7 +42,8 @@ namespace KtaneWeb
                 DataAttributeName = "steam",
                 DataAttributeFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
                 UrlFunction = @"mod=>`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`",
-                ShowIconFunction = @"mod=>!!mod.SteamID"
+                ShowIconFunction = @"mod=>!!mod.SteamID",
+                HasValue = m => m.SteamID != null
             },
             new Selectable
             {
@@ -51,7 +53,8 @@ namespace KtaneWeb
                 DataAttributeName = "source",
                 DataAttributeFunction = @"mod=>mod.SourceUrl",
                 UrlFunction = @"mod=>mod.SourceUrl",
-                ShowIconFunction = @"mod=>!!mod.SourceUrl"
+                ShowIconFunction = @"mod=>!!mod.SourceUrl",
+                HasValue = m => m.SourceUrl != null
             },
             new Selectable
             {
@@ -61,7 +64,8 @@ namespace KtaneWeb
                 DataAttributeName = "video",
                 DataAttributeFunction = @"mod=>mod.TutorialVideoUrl",
                 UrlFunction = @"mod=>mod.TutorialVideoUrl",
-                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl"
+                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl",
+                HasValue = m => m.TutorialVideoUrl != null
             });
 
         private HttpResponse mainPage(HttpRequest req)
@@ -138,14 +142,6 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/spanner.png" }, new SPAN { class_ = "icon-label" }._("Rule seed"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/filter-icon.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "more-link-mobile" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More"))))
-                        //new DIV { class_ = "icon-page" }._(
-                        //    //,
-                        //    //new FORM { class_ = "icon", action = "pdf", method = method.post }._(
-                        //    //    new DIV { class_ = "icon-link" }._(
-                        //    //        new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
-                        //    //        new BUTTON { id = "generate-pdf", type = btype.submit }._(new IMG { class_ = "icon-img", src = "HTML/img/pdf_manual.png" }),
-                        //    //        new LABEL { class_ = "icon-label", for_ = "generate-pdf" }._("Download merged PDF")))
-                        //            ),
                         //new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "icon-page-next" }._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More")))
                         ),
 
@@ -161,7 +157,10 @@ namespace KtaneWeb
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._("Names")),
                                     new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._("Authors")),
                                     new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
-                            new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
+                            new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed"),
+                            !_pdfEnabled ? null : new FORM { class_ = "icon", action = "merge-pdf", method = method.post }._(
+                                new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
+                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF"))),
 
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "tabs" }._(

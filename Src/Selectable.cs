@@ -1,4 +1,5 @@
-﻿using RT.Util.Json;
+﻿using System;
+using RT.Util.Json;
 
 namespace KtaneWeb
 {
@@ -10,6 +11,7 @@ namespace KtaneWeb
         public string IconFunction;
         public string DataAttributeName;
         public string DataAttributeFunction;
+        public Func<KtaneModuleInfo, bool> HasValue;
         public string UrlFunction;
         public string ShowIconFunction;
         public string CssClass = null;

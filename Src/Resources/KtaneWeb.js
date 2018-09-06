@@ -660,17 +660,17 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
     $('.select-on-focus').focus(function() { this.setSelectionRange(0, this.value.length); });
 
-    //// Not currently used
-    //$('#generate-pdf').click(function()
-    //{
-    //    $('#generate-pdf-json').val(JSON.stringify({
-    //        preferredManuals: preferredManuals,
-    //        sort: sort,
-    //        filter: filter,
-    //        selectable: selectable,
-    //        searchOptions: searchOptions,
-    //        search: $("input#search-field").val()
-    //    }));
-    //    return true;
-    //});
+    // Not currently used
+    $('#generate-pdf').click(function()
+    {
+        $('#generate-pdf-json').val(JSON.stringify({
+            preferredManuals: preferredManuals,
+            sort: sort,
+            filter: filter,
+            selectable: selectable,
+            searchOptions: searchOptions,
+            search: $("input#search-field").val()
+        }));
+        return true;
+    });
 }
