@@ -297,7 +297,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     $(document).click(disappear);
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
-    function makeClickHander(lnk, isMobileOpt, sheets, mod)
+    function makeClickHander(lnk, isMobileOpt, tr, mod)
     {
         return function()
         {
@@ -305,13 +305,13 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             disappear();
             if (already)
                 return false;
-            var menuDiv = $('<div>').addClass('popup disappear').data('lnk', lnk);
+            var menuDiv = $('<div>').addClass('popup disappear').data('lnk', lnk).css('display', 'block').appendTo(document.body);
             menuDiv.click(function() { preventDisappear++; });
             if (isMobileOpt)
             {
                 menuDiv.append($('<div class="close">').click(disappear));
                 var iconsDiv = $('<div>').addClass('icons');
-                $(e).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
+                tr.find('td.selectable:not(.manual) img.icon').each(function(_, ic)
                 {
                     var iconDiv = $("<div class='icon'><a class='icon-link'><img class='icon-img' /><span class='icon-label'></span></a></div>");
                     iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
@@ -321,20 +321,21 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 });
                 menuDiv.append(iconsDiv);
                 if ($('#display-souvenir').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-souvenir').attr('title')));
+                    menuDiv.append($('<div class="module-further-info"></div>').text(tr.find('.inf-souvenir').attr('title')));
                 if ($('#display-twitch').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text($(e).find('.inf-twitch').attr('title')));
+                    menuDiv.append($('<div class="module-further-info"></div>').text(tr.data('twitchplays') === "Supported" ? tr.find('.inf-twitch').attr('title') : 'This module cannot be played in “Twitch Plays: KTANE”.'));
             }
             menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
-            var menu = $('<menu>').addClass('manual-select');
+            var menu = $('<menu>').addClass('manual-select').appendTo(menuDiv);
             var seed = $('#rule-seed-input').val() | 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
+            var sheets = tr.data("manual");
             for (var i = 0; i < sheets.length; i++)
             {
                 var li = $('<li>').text(sheets[i].name);
                 if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
                     li.addClass('checked');
-                var ahref = $('<a>').attr('href', sheets[i].url + seedHash).append(li);
+                var ahref = $('<a>').attr('href', sheets[i].url + seedHash).append(li).appendTo(menu);
                 ahref.click(function(sh)
                 {
                     return function()
@@ -345,13 +346,9 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                         return false;
                     };
                 }(sheets[i].name));
-                menu.append(ahref);
             }
-            menuDiv.append(menu);
-            $(document.body).append(menuDiv);
             if (!isMobileOpt)
                 menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
-            menuDiv.css('display', 'block');
             return false;
         };
     }
@@ -431,18 +428,14 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             if (mod.DefuserDifficulty === mod.ExpertDifficulty)
                 infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
             else
-                infos.append(el("div", "inf-difficulty inf inf2",
-                    el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)),
-                    ' (d), ',
-                    el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)),
-                    ' (e)'));
+                infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
         }
         infos.append(el("div", "inf-author inf", mod.Author),
             el("div", "inf-published inf inf2", mod.Published));
         if (mod.TwitchPlaysSupport === 'Supported')
             infos.append(
                 el("div", "inf-twitch inf inf2", { title: `This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}` },
-                    mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore));
+                    mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore === undefined ? '' : mod.TwitchPlaysScore));
         if (mod.RuleSeedSupport === 'Supported')
             infos.append(el("div", "inf-rule-seed inf inf2", { title: 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.' }));
 
@@ -457,11 +450,11 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         td2.appendChild(infos.cloneNode(true));
 
         var lnk1 = el("a", "manual-selector", { href: "#" }, "▼");
-        $(lnk1).click(makeClickHander(lnk1, false, $(tr).data("manual"), mod.Name));
+        $(lnk1).click(makeClickHander(lnk1, false, $(tr), mod.Name));
         td1.appendChild(lnk1);
 
         var lnk2 = el("a", "mobile-opt", { href: "#" });
-        $(lnk2).click(makeClickHander(lnk2, true, $(tr).data("manual"), mod.Name));
+        $(lnk2).click(makeClickHander(lnk2, true, $(tr), mod.Name));
         tr.appendChild(el("td", "mobile-ui", lnk2));
     }
 
