@@ -103,7 +103,10 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     var selectedRow = 0;
     function updateSearchHighlight()
     {
-        mods.removeClass('selected').filter((_, x) => x.style.display != "none").eq(selectedRow).addClass('selected');
+        var visibleMods = $('tr.mod:visible');
+        if (selectedRow >= visibleMods.length)
+            selectedRow = visibleMods.length - 1;
+        visibleMods.removeClass('selected')[selectedRow].classList.add('selected');
     }
 
     function setSelectable(sel)
@@ -459,7 +462,6 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     }
 
     const mods = $("tr.mod");
-    const visibleMods = () => mods.filter((_, x) => x.style.display != "none");
 
     // Set filters from saved settings
     for (var i = 0; i < initFilters.length; i++)
@@ -616,34 +618,28 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         .keyup(function()
         {
             updateFilter();
-
-            // Reducing results, move highlight
-            const visModLength = visibleMods().length;
-            if (selectedRow >= visModLength)
-                selectedRow = visModLength - 1;
-
             updateSearchHighlight();
         })
         .keydown(function(e)
         {
+            var visibleMods = $('tr.mod:visible');
             if (e.keyCode === 38 && selectedRow > 0)   // up arrow
                 selectedRow--;
-            else if (e.keyCode === 40 && selectedRow < visibleMods().length - 1)      // down arrow
+            else if (e.keyCode === 40 && selectedRow < visibleMods.length - 1)      // down arrow
                 selectedRow++;
             else if (e.keyCode === 13)
             {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
-                    window.location.href = visibleMods().eq(selectedRow).find('a.modlink').attr("href");
+                    window.location.href = $(visibleMods[selectedRow]).find('a.modlink').attr("href");
                 else
                 {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
-                    visibleMods().eq(selectedRow).find('a.modlink').focus();
+                    $(visibleMods[selectedRow]).find('a.modlink').focus();
                     setTimeout(function()
                     {
                         var inp = document.getElementById('search-field');
                         inp.focus();
-                        inp.selectionStart = 0;
-                        inp.selectionEnd = inp.value.length;
+                        inp.setSelectionRange(0, inp.value.length);
                     }, 1);
                 }
             }
