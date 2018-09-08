@@ -185,14 +185,14 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 const profile = JSON.parse(reader.result);
                 if (profile.DisabledList) {
                     profileList = profile.DisabledList;
-                    $(".profile-file-name > u").text(file.name);
+                    $(".profile-file-name").text(file.name);
 
                     updateFilter();
                 }
             };
             reader.readAsText(file);
         } catch (error) {
-            console.error(error);
+            console.error("Unable to set profile: ", error);
         }
     }
 
