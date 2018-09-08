@@ -105,10 +105,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     var selectedRow = 0;
     function updateSearchHighlight()
     {
-        var visibleMods = $('tr.mod:visible');
-        if (selectedRow >= visibleMods.length)
-            selectedRow = visibleMods.length - 1;
-        visibleMods.removeClass('selected')[selectedRow].classList.add('selected');
+        mods.removeClass('selected').filter((_, x) => x.style.display != "none").eq(selectedRow).addClass('selected');
     }
 
     function setSelectable(sel)
@@ -130,14 +127,13 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     {
         sort = srt;
         lStorage.setItem('sort', srt);
-        var arr = mods.toArray();
-        arr.sort(function(a, b)
+        mods.sort(function(a, b)
         {
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare($(a).data('mod'), $(b).data('mod'), false) : c;
         });
 
-        mainTable.append(...arr);
+        mainTable.append(...mods);
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
@@ -464,6 +460,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     }
 
     const mods = $("tr.mod");
+    const visibleMods = () => mods.filter((_, x) => x.style.display != "none");
 
     // Set filters from saved settings
     for (var i = 0; i < initFilters.length; i++)
@@ -617,26 +614,32 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     $("#search-field")
         .focus(updateSearchHighlight)
         .blur(function() { mods.removeClass('selected'); })
-        .keyup(function()
+        .keyup(function(e)
         {
+            if (e.keyCode === 38 || e.keyCode === 40) return;
             updateFilter();
+
+            // Reducing results, move highlight
+            const visModLength = visibleMods().length;
+            if (selectedRow >= visModLength)
+                selectedRow = visModLength - 1;
+
             updateSearchHighlight();
         })
         .keydown(function(e)
         {
-            var visibleMods = $('tr.mod:visible');
             if (e.keyCode === 38 && selectedRow > 0)   // up arrow
                 selectedRow--;
-            else if (e.keyCode === 40 && selectedRow < visibleMods.length - 1)      // down arrow
+            else if (e.keyCode === 40 && selectedRow < visibleMods().length - 1)      // down arrow
                 selectedRow++;
             else if (e.keyCode === 13)
             {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
-                    window.location.href = $(visibleMods[selectedRow]).find('a.modlink').attr("href");
+                    window.location.href = visibleMods().eq(selectedRow).find('a.modlink').attr("href");
                 else
                 {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
-                    $(visibleMods[selectedRow]).find('a.modlink').focus();
+                    visibleMods().eq(selectedRow).find('a.modlink').focus();
                     setTimeout(function()
                     {
                         var inp = document.getElementById('search-field');
