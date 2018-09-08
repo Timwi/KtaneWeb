@@ -241,7 +241,13 @@ namespace KtaneWeb
                                         new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                     new DIV { id = "include-missing" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
-                                        new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))))),
+                                        new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),
+								new DIV { class_ = "profile" }._(
+									new H4("Profile:"),
+									new DIV(
+										new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
+										new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled", checked_ = true },
+										new LABEL { for_ = "profile-file", class_ = "profile-file-name", style = "cursor: pointer" }._("No profile chosen"))))),
 
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },

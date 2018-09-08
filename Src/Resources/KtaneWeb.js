@@ -90,6 +90,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     var searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
 
+    let profileList = [];
+
     var version = lStorage.getItem('version');
     if (version < 2)
     {
@@ -175,6 +177,43 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         $('#theme-' + (theme || 'default')).prop('checked', true);
     }
 
+    function setProfile(file)
+    {
+        try {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const profile = JSON.parse(reader.result);
+                if (profile.DisabledList) {
+                    profileList = profile.DisabledList;
+                    $(".profile-file-name > u").text(file.name);
+
+                    updateFilter();
+                }
+            };
+            reader.readAsText(file);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function handleDataTransfer(dataTransfer) {
+        if (dataTransfer.files.length == 1) {
+            setProfile(dataTransfer.files[0]);
+            return false;
+		} else {
+            const url = dataTransfer.getData("text/plain");
+            const handleData = data => {
+                const fileName = url.match(/\/(\w+\.json)$/);
+                setProfile(new File([data], fileName ? fileName[1] : "Default.json"));
+            };
+
+            $.get("/proxy/" + url, handleData)
+            .fail(function() {
+				$.get(url, handleData);
+			});
+		}
+    }
+
     function updateFilter()
     {
         filter.includeMissing = $('input#filter-include-missing').prop('checked');
@@ -214,6 +253,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         }
 
         var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
+        const filterByProfile = $('input#filter-profile-enabled').prop('checked');
 
         var modCount = 0;
         mods.each(function(_, e)
@@ -246,7 +286,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 searchWhat += ' ' + data.author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + data.description.toLowerCase();
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length && (!filterByProfile || !profileList.includes(data.moduleid)))
             {
                 modCount++;
                 e.style.display = '';
@@ -302,7 +342,18 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         else
             preventDisappear--;
     }
-    $(document).click(disappear);
+    $(document).click(disappear)
+    .on("dragover", () => false)
+    .on("drop", function(event) {
+		event.preventDefault();
+		event.stopPropagation();
+
+        handleDataTransfer(event.originalEvent.dataTransfer);
+	}).on("paste", function(event) {
+        event.preventDefault();
+        
+        handleDataTransfer(event.originalEvent.clipboardData);
+    });
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
     function makeClickHander(lnk, isMobileOpt, tr, mod)
@@ -373,7 +424,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             "data-sortkey": mod.SortKey,
             "data-twitchscore": mod.TwitchPlaysSpecial ? 1000 : mod.TwitchPlaysScore || -1,
             "data-published": mod.Published,
-            "data-compatibility": mod.Compatibility
+            "data-compatibility": mod.Compatibility,
+            "data-moduleid": mod.ModuleID
         });
         mainTable.appendChild(tr);
         for (var ix = 0; ix < initFilters.length; ix++)
@@ -528,6 +580,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplay(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
+    $('input#profile-file').change(function() { const files = $('input#profile-file')[0].files; if (files.length == 1) { setProfile(); } });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
     $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
