@@ -105,7 +105,10 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     var selectedRow = 0;
     function updateSearchHighlight()
     {
-        mods.removeClass('selected').filter((_, x) => x.style.display != "none").eq(selectedRow).addClass('selected');
+        var visible = mods.removeClass('selected').filter((_, x) => x.style.display != "none");
+        if (selectedRow >= visible.length)
+            selectedRow = visible.length - 1;
+        visible.eq(selectedRow).addClass('selected');
     }
 
     function setSelectable(sel)
@@ -137,6 +140,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
+        if ($("input#search-field").is(':focus'))
+            updateSearchHighlight();
     }
 
     function setDisplay(set)
@@ -252,6 +257,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
         $('#module-count').text(modCount);
         lStorage.setItem('filters', JSON.stringify(filter));
+        if ($("input#search-field").is(':focus'))
+            updateSearchHighlight();
     }
 
     function setPreferredManuals()
@@ -616,14 +623,9 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         .blur(function() { mods.removeClass('selected'); })
         .keyup(function(e)
         {
-            if (e.keyCode === 38 || e.keyCode === 40) return;
+            if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode == 13)   // up/down arrows, enter
+                return;
             updateFilter();
-
-            // Reducing results, move highlight
-            const visModLength = visibleMods().length;
-            if (selectedRow >= visModLength)
-                selectedRow = visModLength - 1;
-
             updateSearchHighlight();
         })
         .keydown(function(e)
