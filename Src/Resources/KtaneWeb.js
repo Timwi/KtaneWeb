@@ -69,10 +69,12 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     catch (exc) { }
 
     function compare(a, b, rev) { return (rev ? -1 : 1) * ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
+    var defdiffFilterValues = initFilters.filter(f => f.id === 'defdiff')[0].values;
+    var expdiffFilterValues = initFilters.filter(f => f.id === 'expdiff')[0].values;
     var sorts = {
         'name': { fnc: function(elem) { return $(elem).data('sortkey').toLowerCase(); }, reverse: false, bodyCss: 'sort-name', radioButton: '#sort-name' },
-        'defdiff': { fnc: function(elem) { return initFilters[3].values.indexOf($(elem).data('defdiff')); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
-        'expdiff': { fnc: function(elem) { return initFilters[4].values.indexOf($(elem).data('expdiff')); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
+        'defdiff': { fnc: function(elem) { return defdiffFilterValues.indexOf($(elem).data('defdiff')); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
+        'expdiff': { fnc: function(elem) { return expdiffFilterValues.indexOf($(elem).data('expdiff')); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
         'twitchscore': { fnc: function(elem) { return $(elem).data('twitchscore') || 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
         'published': { fnc: function(elem) { return $(elem).data('published'); }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
