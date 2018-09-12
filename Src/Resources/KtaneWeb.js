@@ -179,39 +179,50 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
     function setProfile(file)
     {
-        try {
+        try
+        {
             const reader = new FileReader();
-            reader.onload = () => {
+            reader.onload = () =>
+            {
                 const profile = JSON.parse(reader.result);
-                if (profile.DisabledList) {
+                if (profile.DisabledList)
+                {
                     profileList = profile.DisabledList;
                     $(".profile-file-name").text(file.name);
-
+                    $(".filter-profile").removeClass("none-selected");
+                    $('#filter-profile-enabled').prop('checked', true);
                     updateFilter();
                 }
             };
             reader.readAsText(file);
-        } catch (error) {
+        }
+        catch (error)
+        {
             console.error("Unable to set profile: ", error);
         }
     }
 
-    function handleDataTransfer(dataTransfer) {
-        if (dataTransfer.files.length == 1) {
+    function handleDataTransfer(dataTransfer)
+    {
+        if (dataTransfer.files.length == 1)
+        {
             setProfile(dataTransfer.files[0]);
             return false;
-		} else {
+        } else
+        {
             const url = dataTransfer.getData("text/plain");
-            const handleData = data => {
+            const handleData = data =>
+            {
                 const fileName = url.match(/\/(\w+\.json)$/);
                 setProfile(new File([data], fileName ? fileName[1] : "Default.json"));
             };
 
             $.get("/proxy/" + url, handleData)
-            .fail(function() {
-				$.get(url, handleData);
-			});
-		}
+                .fail(function()
+                {
+                    $.get(url, handleData);
+                });
+        }
     }
 
     function updateFilter()
@@ -343,17 +354,19 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             preventDisappear--;
     }
     $(document).click(disappear)
-    .on("dragover", () => false)
-    .on("drop", function(event) {
-		event.preventDefault();
-		event.stopPropagation();
+        .on("dragover", () => false)
+        .on("drop", function(event)
+        {
+            event.preventDefault();
+            event.stopPropagation();
 
-        handleDataTransfer(event.originalEvent.dataTransfer);
-	}).on("paste", function(event) {
-        event.preventDefault();
-        
-        handleDataTransfer(event.originalEvent.clipboardData);
-    });
+            handleDataTransfer(event.originalEvent.dataTransfer);
+        }).on("paste", function(event)
+        {
+            event.preventDefault();
+
+            handleDataTransfer(event.originalEvent.clipboardData);
+        });
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
     function makeClickHander(lnk, isMobileOpt, tr, mod)
@@ -580,7 +593,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplay(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
-    $('input#profile-file').change(function() { const files = $('input#profile-file')[0].files; if (files.length == 1) { setProfile(); } });
+    $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
     $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 

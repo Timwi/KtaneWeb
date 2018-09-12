@@ -433,6 +433,16 @@ body.sort-published #main-table th.infos::after {
             margin-top: .5em;
         }
 
+    #filters .filter-profile.none-selected #filter-profile-enabled {
+        display: none;
+    }
+
+    #filters .filter-profile.upload > label {
+        text-decoration: underline;
+        color: blue;
+        cursor: pointer;
+    }
+
 #more {
     width: 35em;
     padding: 2em;
@@ -702,47 +712,47 @@ pre.diff {
         display: none;
     }
 
-    td.infos-1 div.modlink-wrap {
-        margin: 0;
-    }
-
-        td.infos-1 div.modlink-wrap img.mod-icon {
-            float: left;
-            margin: .1em .5em 0 0 !important;
-        }
-
-        td.infos-1 div.modlink-wrap a.modlink .mod-name {
-            display: block;
+        td.infos-1 div.modlink-wrap {
             margin: 0;
         }
 
-    td.infos-1 div.infos {
-        padding: .1em 0;
-        position: relative;
-    }
+            td.infos-1 div.modlink-wrap img.mod-icon {
+                float: left;
+                margin: .1em .5em 0 0 !important;
+            }
 
-        td.infos-1 div.infos > div.inf-type,
-        td.infos-1 div.infos > div.inf-author,
-        body.display-difficulty td.infos-1 div.infos > div.inf-difficulty,
-        body.display-origin td.infos-1 div.infos > div.inf-origin,
-        body.display-published td.infos-1 div.infos > div.inf-published,
-        body.display-twitch td.infos-1 div.infos > div.inf-twitch,
-        body.display-souvenir td.infos-1 div.infos > div.inf-souvenir,
-        body.display-rule-seed td.infos-1 div.infos > div.inf-rule-seed {
-            display: inline;
+            td.infos-1 div.modlink-wrap a.modlink .mod-name {
+                display: block;
+                margin: 0;
+            }
+
+        td.infos-1 div.infos {
+            padding: .1em 0;
+            position: relative;
         }
+
+            td.infos-1 div.infos > div.inf-type,
+            td.infos-1 div.infos > div.inf-author,
+            body.display-difficulty td.infos-1 div.infos > div.inf-difficulty,
+            body.display-origin td.infos-1 div.infos > div.inf-origin,
+            body.display-published td.infos-1 div.infos > div.inf-published,
+            body.display-twitch td.infos-1 div.infos > div.inf-twitch,
+            body.display-souvenir td.infos-1 div.infos > div.inf-souvenir,
+            body.display-rule-seed td.infos-1 div.infos > div.inf-rule-seed {
+                display: inline;
+            }
 
     body.display-description td.infos-1 div.infos > div.inf-description, body.display-id td.infos-1 div.infos > div.inf-id {
         display: block;
     }
 
-    td.infos-1 div.infos > div.inf2::before {
+            td.infos-1 div.infos > div.inf2::before {
         content: ' • ';
-    }
+            }
 
-    td.infos-1 div.infos > div.inf-author::before {
-        content: ' • by ';
-    }
+            td.infos-1 div.infos > div.inf-author::before {
+                content: ' • by ';
+            }
 
     td.infos-1 div.infos {
         margin-left: 3em;
@@ -778,7 +788,7 @@ pre.diff {
     }
 
         #filters > div.filters {
-            height: 40em;
+            height: 42em;
         }
 
     tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {

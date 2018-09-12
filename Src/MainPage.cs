@@ -242,12 +242,14 @@ namespace KtaneWeb
                                     new DIV { id = "include-missing" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
                                         new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),
-								new DIV { class_ = "profile" }._(
-									new H4("Profile:"),
-									new DIV(
-										new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
-										new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled", checked_ = true },
-										new LABEL { for_ = "profile-file", class_ = "profile-file-name", style = "cursor: pointer" }._("No profile chosen"))))),
+                                new DIV { class_ = "profile" }._(
+                                    new H4("Profile:"),
+                                    new DIV { class_ = "filter-profile none-selected" }._(
+                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
+                                        new LABEL { for_ = "filter-profile-enabled", class_ = "profile-file-name" }),
+                                    new DIV { class_ = "filter-profile upload" }._(
+                                        new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
+                                        new LABEL { for_ = "profile-file" }._("Filter by a profile"))))),
 
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
