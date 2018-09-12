@@ -708,8 +708,8 @@ pre.diff {
             text-align: center;
         }
 
-    td.infos-2, th.infos {
-        display: none;
+    td.infos-1 {
+        padding: .2em 2.2em .2em .7em;
     }
 
         td.infos-1 div.modlink-wrap {
@@ -729,6 +729,7 @@ pre.diff {
         td.infos-1 div.infos {
             padding: .1em 0;
             position: relative;
+            margin-left: 3em;
         }
 
             td.infos-1 div.infos > div.inf-type,
@@ -742,20 +743,20 @@ pre.diff {
                 display: inline;
             }
 
-    body.display-description td.infos-1 div.infos > div.inf-description, body.display-id td.infos-1 div.infos > div.inf-id {
-        display: block;
-    }
-
             td.infos-1 div.infos > div.inf2::before {
-        content: ' • ';
+                content: '\a0 • ';
             }
 
             td.infos-1 div.infos > div.inf-author::before {
                 content: ' • by ';
             }
 
-    td.infos-1 div.infos {
-        margin-left: 3em;
+    body.display-description td.infos-1 div.infos > div.inf-description, body.display-id td.infos-1 div.infos > div.inf-id {
+        display: block;
+    }
+
+    td.infos-2, th.infos {
+        display: none;
     }
 
     body.sort-name th.modlink::after {
