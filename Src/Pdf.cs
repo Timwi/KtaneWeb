@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using PdfSharp;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using RT.Servers;
@@ -76,27 +77,34 @@ namespace KtaneWeb
             if (pdfFiles.Count == 0)
                 return HttpResponse.PlainText("Error: no matching PDF files found.", HttpStatusCode._500_InternalServerError);
 
-            var list = pdfFiles.JoinString("\n");
-            using (var mem = new MemoryStream(list.ToUtf8()))
+            try
             {
-                var sha1 = SHA1.Create().ComputeHash(mem).ToHex();
-                var pdfPath = Path.Combine(_config.BaseDir, _config.MergedPdfsDir, $"{sha1}.pdf");
-                if (!File.Exists(pdfPath))
-                    lock (this)
-                        if (!File.Exists(pdfPath))
-                        {
-                            var mergedPdf = new PdfDocument();
-                            foreach (var pdfFile in pdfFiles)
+                var list = pdfFiles.JoinString("\n");
+                using (var mem = new MemoryStream(list.ToUtf8()))
+                {
+                    var sha1 = SHA1.Create().ComputeHash(mem).ToHex();
+                    var pdfPath = Path.Combine(_config.BaseDir, _config.MergedPdfsDir, $"{sha1}.pdf");
+                    if (!File.Exists(pdfPath))
+                        lock (this)
+                            if (!File.Exists(pdfPath))
                             {
-                                PdfDocument pdf = PdfReader.Open(Path.Combine(_config.BaseDir, _config.PdfDir, pdfFile), PdfDocumentOpenMode.Import);
-                                int count = pdf.PageCount;
-                                for (int idx = 0; idx < count; idx++)
-                                    mergedPdf.AddPage(pdf.Pages[idx]);
+                                var mergedPdf = new PdfDocument();
+                                foreach (var pdfFile in pdfFiles)
+                                {
+                                    PdfDocument pdf = PdfReader.Open(Path.Combine(_config.BaseDir, _config.PdfDir, pdfFile), PdfDocumentOpenMode.Import);
+                                    int count = pdf.PageCount;
+                                    for (int idx = 0; idx < count; idx++)
+                                        mergedPdf.AddPage(pdf.Pages[idx]);
+                                }
+                                using (var f = File.OpenWrite(pdfPath))
+                                    mergedPdf.Save(f);
                             }
-                            using (var f = File.OpenWrite(pdfPath))
-                                mergedPdf.Save(f);
-                        }
-                return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly($"/MergedPdfs/{sha1}.pdf"));
+                    return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly($"/MergedPdfs/{sha1}.pdf"));
+                }
+            }
+            catch (PdfSharpException pse)
+            {
+                throw new Exception("PDF exception: " + pse.Message);
             }
         }
     }

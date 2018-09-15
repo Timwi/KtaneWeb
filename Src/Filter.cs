@@ -90,6 +90,10 @@ namespace KtaneWeb
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
+            if (module == null)
+                throw new Exception($"Filter.Matches: “module” is null ({DataAttributeName}, {json})");
+            if (GetValue(module) == null)
+                throw new Exception($"Filter.Matches: “GetValue(module)” is null ({DataAttributeName}, {json})");
             var val = (int) GetValue(module);
             return val >= json["min"].GetInt() && val <= json["max"].GetInt();
         }
