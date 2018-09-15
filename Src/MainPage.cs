@@ -12,6 +12,35 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
+        // Access keys:
+        // A    Logfile Analyzer
+        // B    sort by Twitch Plays score
+        // C    link to Source code
+        // D    sort by date published
+        // E    sort by expert difficulty
+        // F    Find
+        // G    Glossary
+        // H    link to Steam Workshop item
+        // I    include missing
+        // J    JSON
+        // K    Dark Theme
+        // L    Light Theme
+        // M    include/exclude mods
+        // N    sort by name
+        // O    sort by defuser difficulty
+        // P    Profile Editor
+        // Q
+        // R    include/exclude regular modules
+        // S    Rule seed
+        // T    link to Tutorial video
+        // U    link to Manual
+        // V    include/exclude vanilla
+        // W    include/exclude widgets
+        // X
+        // Y    include/exclude needy modules
+        // Z
+        // .    Filters
+
         static KtaneFilter[] _filters = Ut.NewArray(
             KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin, @"mod=>mod.Origin"),
             KtaneFilter.Checkboxes("type", "Type", mod => mod.Type, @"mod=>mod.Type"),
@@ -70,35 +99,6 @@ namespace KtaneWeb
 
         private HttpResponse mainPage(HttpRequest req)
         {
-            // Access keys:
-            // A    Logfile Analyzer
-            // B    sort by Twitch Plays score
-            // C    link to Source code
-            // D    sort by date published
-            // E    sort by expert difficulty
-            // F    Find
-            // G    Glossary
-            // H    link to Steam Workshop item
-            // I    include missing
-            // J    JSON
-            // K    Dark Theme
-            // L    Light Theme
-            // M    include/exclude mods
-            // N    sort by name
-            // O    sort by defuser difficulty
-            // P    Profile Editor
-            // Q
-            // R    include/exclude regular modules
-            // S    Rule seed
-            // T    link to Tutorial video
-            // U    link to Manual
-            // V    include/exclude vanilla
-            // W    include/exclude widgets
-            // X
-            // Y    include/exclude needy modules
-            // Z
-            // .    Filters
-
             var displays = Ut.NewArray(
                 new { Readable = "Description", Id = "description" },
                 //new { Readable = "Author", Id = "author" },
@@ -157,10 +157,7 @@ namespace KtaneWeb
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._("Names")),
                                     new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._("Authors")),
                                     new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
-                            new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed"),
-                            !_pdfEnabled ? null : new FORM { class_ = "icon", action = "merge-pdf", method = method.post }._(
-                                new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
-                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF"))),
+                            new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
 
                         new DIV { id = "main-table-container" }._(
                             new DIV { id = "tabs" }._(
@@ -242,17 +239,24 @@ namespace KtaneWeb
                                     new DIV { id = "include-missing" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
                                         new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),
-                                new DIV { class_ = "profile" }._(
+                                new DIV { class_ = "profile none-selected" }._(
                                     new H4("Profile:"),
-                                    new DIV { class_ = "filter-profile none-selected" }._(
+                                    new DIV { class_ = "filter-profile" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
-                                        new LABEL { for_ = "filter-profile-enabled", class_ = "profile-file-name" }),
+                                        new LABEL { for_ = "filter-profile-enabled", class_ = "filter-profile-enabled-text" }),
+                                    new DIV { class_ = "filter-profile" }._(
+                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-disabled" },
+                                        new LABEL { for_ = "filter-profile-disabled", class_ = "filter-profile-disabled-text" }),
                                     new DIV { class_ = "filter-profile upload" }._(
                                         new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
                                         new LABEL { for_ = "profile-file" }._("Filter by a profile"))))),
 
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
+                            !_pdfEnabled ? null : new DIV { class_ = "pdf-merge" }._(
+                                new FORM { action = "merge-pdf", method = method.post }._(
+                                new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
+                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter"))),
                             new UL { class_ = "dev" }._(
                                 new LI(new A { href = "More/Periodic Table.html" }._("Periodic Table of Modules")),
                                 new LI(new A { href = "More/Experting Template.png" }._("Experting template"), new DIV { class_ = "link-extra" }._("(printable page with boxes to fill in while experting)")),

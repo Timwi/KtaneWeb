@@ -37,10 +37,13 @@ namespace KtaneWeb
                     new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
                     new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/proxy", handler: proxy),
-                    new UrlMapping(path: "/Unfinished", handler: unfinished, skippable: true),
                     new UrlMapping(path: "/merge-pdf", handler: pdf),
-
+                    new UrlMapping(path: "/upload-log", handler: uploadLogfile),
                     new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
+
+                    new UrlMapping(path: "/Unfinished", handler: unfinished, skippable: true),
+                    new UrlMapping(path: "/Logfiles", handler: req => new FileSystemHandler(_config.LogfilesDir).Handle(req)),
+                    new UrlMapping(path: "/MergedPdfs", handler: req => new FileSystemHandler(_config.MergedPdfsDir).Handle(req)),
 
                     // Default fallback: file system handler
                     new UrlMapping(req => new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))

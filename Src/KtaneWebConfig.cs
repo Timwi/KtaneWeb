@@ -20,12 +20,15 @@ namespace KtaneWeb
         public string JavaScriptFile;
         public string CssFile;
 
-        public string BaseDir = @"D:\Sites\KTANE\Public";
+        public string BaseDir = @"C:\Sites\KTANE\Public";
         public string[] DocumentDirs = new[] { "HTML", "PDF" };
         public string PdfDir = "PDF";
         public string[] OriginalDocumentIcons = new[] { "HTML/img/html_manual.png", "HTML/img/pdf_manual.png" };
         public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
         public string ModIconDir = "Icons";
+
+        public string LogfilesDir = @"C:\Sites\KTANE\Logfiles";
+        public string MergedPdfsDir = @"C:\Sites\KTANE\MergedPdfs";
 
         public string PuzzlesJavaScriptFile;
         public string PuzzlesCssFile;

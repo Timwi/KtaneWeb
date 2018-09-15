@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
@@ -14,7 +15,7 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private static readonly bool _pdfEnabled = false;
+        private static readonly bool _pdfEnabled = true;
         private HttpResponse pdf(HttpRequest req)
         {
             if (!_pdfEnabled)
@@ -28,26 +29,13 @@ namespace KtaneWeb
             var selectable = json["filter"]["includeMissing"].GetBool() ? null : _selectables.Single(s => s.DataAttributeName == json["selectable"].GetString());
             var keywords = json["search"].GetString().Length == 0 ? null : json["search"].GetString().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             var searchOptions = json["searchOptions"].GetList().Select(s => s.GetString()).ToArray();
-            var includeMissing = json["filter"]["includeMissing"].GetBool();
-            var origins = json["filter"]["origin"].GetDict().All(k => !k.Value.GetBool()) ? null : json["filter"]["origin"].GetDict().ToDictionary(k => EnumStrong.Parse<KtaneModuleOrigin>(k.Key), k => k.Value.GetBool());
-            var twitchplays = json["filter"]["twitchplays"].GetDict().All(k => !k.Value.GetBool()) ? null : json["filter"]["twitchplays"].GetDict().ToDictionary(k => EnumStrong.Parse<KtaneSupport>(k.Key), k => k.Value.GetBool());
-            var types = json["filter"]["type"].GetDict().All(k => !k.Value.GetBool()) ? null : json["filter"]["type"].GetDict().ToDictionary(k => EnumStrong.Parse<KtaneModuleType>(k.Key), k => k.Value.GetBool());
 
             // Filter
             var matchingModules = _config.Current.KtaneModules.Where(m =>
             {
-                if (m.DefuserDifficulty != null && ((int) m.DefuserDifficulty.Value < json["filter"]["defdiff"]["min"].GetInt() || (int) m.DefuserDifficulty.Value > json["filter"]["defdiff"]["max"].GetInt()))
-                    return false;
-                if (m.ExpertDifficulty != null && ((int) m.ExpertDifficulty.Value < json["filter"]["expdiff"]["min"].GetInt() || (int) m.ExpertDifficulty.Value > json["filter"]["expdiff"]["max"].GetInt()))
-                    return false;
-                if (!includeMissing && !selectable.HasValue(m))
-                    return false;
-                if (origins != null && !origins[m.Origin])
-                    return false;
-                if (twitchplays != null && m.TwitchPlaysSupport != null && !twitchplays[m.TwitchPlaysSupport.Value])
-                    return false;
-                if (types != null && !types[m.Type])
-                    return false;
+                foreach (var filter in _filters)
+                    if (!filter.Matches(m, json["filter"].Safe[filter.DataAttributeName].GetDictSafe()))
+                        return false;
 
                 return keywords == null ||
                     (searchOptions.Contains("names") && keywords.Any(k => m.Name.ContainsNoCase(k))) ||
@@ -61,45 +49,54 @@ namespace KtaneWeb
                 case "name": matchingModules = matchingModules.OrderBy(m => m.SortKey); break;
                 case "defdiff": matchingModules = matchingModules.OrderBy(m => m.DefuserDifficulty); break;
                 case "expdiff": matchingModules = matchingModules.OrderBy(m => m.ExpertDifficulty); break;
-                case "published": matchingModules = matchingModules.OrderBy(m => m.Published); break;
+                case "published": matchingModules = matchingModules.OrderByDescending(m => m.Published); break;
             }
 
             var pdfFiles = new List<string>();
 
             foreach (var module in matchingModules)
             {
-                var filename = Path.Combine(_config.BaseDir, _config.PdfDir, module.Name + ".pdf");
+                var filename = $"{module.Name}.pdf";
+                var fullPath = Path.Combine(_config.BaseDir, _config.PdfDir, filename);
                 if (json["preferredManuals"].ContainsKey(module.Name))
                 {
                     var pref = json["preferredManuals"][module.Name].GetString();
-                    var fullFilename = Path.Combine(_config.BaseDir, _config.PdfDir, Regex.Replace(pref, @" \((?:PDF|HTML)\)$", ".pdf"));
-                    if (File.Exists(fullFilename))
-                        filename = fullFilename;
+                    var preferredFilename = Regex.Replace(pref, @" \((?:PDF|HTML)\)$", ".pdf");
+                    var preferredFullPath = Path.Combine(_config.BaseDir, _config.PdfDir, preferredFilename);
+                    if (File.Exists(preferredFullPath))
+                    {
+                        fullPath = preferredFullPath;
+                        filename = preferredFilename;
+                    }
                 }
-                if (File.Exists(filename))
+                if (File.Exists(fullPath))
                     pdfFiles.Add(filename);
             }
 
             if (pdfFiles.Count == 0)
                 return HttpResponse.PlainText("Error: no matching PDF files found.", HttpStatusCode._500_InternalServerError);
 
-            var mergedPdf = new PdfDocument();
-            foreach (var pdfFile in pdfFiles)
+            var list = pdfFiles.JoinString("\n");
+            using (var mem = new MemoryStream(list.ToUtf8()))
             {
-                PdfDocument pdf = PdfReader.Open(pdfFile, PdfDocumentOpenMode.Import);
-                int count = pdf.PageCount;
-                for (int idx = 0; idx < count; idx++)
-                    mergedPdf.AddPage(pdf.Pages[idx]);
-            }
-            //var path = @"D:\temp\manuals.pdf";
-            //using (var f = File.OpenWrite(path))
-            //    mergedPdf.Save(f);
-            //return HttpResponse.PlainText($"{path} generated.");
-            using (var m = new MemoryStream())
-            {
-                mergedPdf.Save(m);
-                return HttpResponse.Create(m.ToArray(), @"application/pdf", HttpStatusCode._200_OK,
-                    new HttpResponseHeaders { ContentDisposition = new HttpContentDisposition { Filename = @"""Merged-manual.pdf""", Mode = HttpContentDispositionMode.Attachment } });
+                var sha1 = SHA1.Create().ComputeHash(mem).ToHex();
+                var pdfPath = Path.Combine(_config.BaseDir, _config.MergedPdfsDir, $"{sha1}.pdf");
+                if (!File.Exists(pdfPath))
+                    lock (this)
+                        if (!File.Exists(pdfPath))
+                        {
+                            var mergedPdf = new PdfDocument();
+                            foreach (var pdfFile in pdfFiles)
+                            {
+                                PdfDocument pdf = PdfReader.Open(Path.Combine(_config.BaseDir, _config.PdfDir, pdfFile), PdfDocumentOpenMode.Import);
+                                int count = pdf.PageCount;
+                                for (int idx = 0; idx < count; idx++)
+                                    mergedPdf.AddPage(pdf.Pages[idx]);
+                            }
+                            using (var f = File.OpenWrite(pdfPath))
+                                mergedPdf.Save(f);
+                        }
+                return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly($"/MergedPdfs/{sha1}.pdf"));
             }
         }
     }

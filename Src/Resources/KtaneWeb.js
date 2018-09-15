@@ -90,7 +90,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
     var searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
 
-    let profileList = [];
+    let profileVetoList = null;
 
     var version = lStorage.getItem('version');
     if (version < 2)
@@ -187,10 +187,12 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 const profile = JSON.parse(reader.result);
                 if (profile.DisabledList)
                 {
-                    profileList = profile.DisabledList;
-                    $(".profile-file-name").text(file.name);
-                    $(".filter-profile").removeClass("none-selected");
+                    profileVetoList = profile.DisabledList;
+                    $(".filter-profile-enabled-text").text('\u00a0Enabled by ' + file.name);
+                    $(".filter-profile-disabled-text").text('\u00a0Vetoed by ' + file.name);
+                    $(".profile").removeClass("none-selected");
                     $('#filter-profile-enabled').prop('checked', true);
+                    $('#filter-profile-disabled').prop('checked', false);
                     updateFilter();
                 }
             };
@@ -264,7 +266,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         }
 
         var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
-        const filterByProfile = $('input#filter-profile-enabled').prop('checked');
+        const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
+        const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
         var modCount = 0;
         mods.each(function(_, e)
@@ -290,6 +293,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                     }
                 }
             }
+            if (profileVetoList !== null)
+                filteredIn = filteredIn && (profileVetoList.includes(data.moduleid) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
             var searchWhat = '';
             if (searchOptions.indexOf('names') !== -1)
                 searchWhat += ' ' + data.mod.toLowerCase();
@@ -297,7 +302,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 searchWhat += ' ' + data.author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + data.description.toLowerCase();
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length && (!filterByProfile || !profileList.includes(data.moduleid)))
+            if (filteredIn && (filter.includeMissing || selectable === 'manual' || data[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
             {
                 modCount++;
                 e.style.display = '';

@@ -22,6 +22,7 @@ namespace KtaneWeb
         public abstract JsonDict ToJson();
         public abstract object ToHtml();
         public abstract string GetDataAttributeValue(KtaneModuleInfo mod);
+        public abstract bool Matches(KtaneModuleInfo module, JsonDict json);
 
         public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
         public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum?> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
@@ -63,6 +64,13 @@ namespace KtaneWeb
                 new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
                 new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value))))));
         public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod)?.ToString();
+
+        public override bool Matches(KtaneModuleInfo module, JsonDict json)
+        {
+            var dic = json.GetDict();
+            var val = GetValue(module).ToString();
+            return dic.ContainsKey(val) && dic[val].GetBool();
+        }
     }
 
     sealed class KtaneFilterOptionsSlider : KtaneFilterOptions
@@ -79,6 +87,12 @@ namespace KtaneWeb
             new DIV { id = "filter-" + DataAttributeName, class_ = "slider" },
             new DIV { id = "filter-label-" + DataAttributeName, class_ = "slider-label" });
         public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod)?.ToString();
+
+        public override bool Matches(KtaneModuleInfo module, JsonDict json)
+        {
+            var val = (int) GetValue(module);
+            return val >= json["min"].GetInt() && val <= json["max"].GetInt();
+        }
     }
 
     sealed class KtaneFilterOption

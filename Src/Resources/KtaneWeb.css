@@ -422,7 +422,7 @@ body.sort-published #main-table th.infos::after {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
-        height: 29em;
+        height: 30em;
     }
 
         #filters > div.filters > div {
@@ -433,11 +433,11 @@ body.sort-published #main-table th.infos::after {
             margin-top: .5em;
         }
 
-    #filters .filter-profile.none-selected #filter-profile-enabled {
+    #filters .profile.none-selected .filter-profile:not(.upload) {
         display: none;
     }
 
-    #filters .filter-profile.upload > label {
+    #filters .profile > .upload > label {
         text-decoration: underline;
         color: blue;
         cursor: pointer;
@@ -789,7 +789,7 @@ pre.diff {
     }
 
         #filters > div.filters {
-            height: 42em;
+            height: 45em;
         }
 
     tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
