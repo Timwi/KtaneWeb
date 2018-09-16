@@ -9,6 +9,9 @@ namespace KtaneWeb
     {
         private HttpResponse uploadLogfile(HttpRequest req)
         {
+            if (req.Method != HttpMethod.Post)
+                return HttpResponse.PlainText("Only POST requests allowed.", HttpStatusCode._405_MethodNotAllowed);
+
             if (!req.FileUploads.TryGetValue("log", out var upload))
                 return HttpResponse.PlainText("That’s not a valid KTANE logfile.", HttpStatusCode._406_NotAcceptable);
 
@@ -27,7 +30,11 @@ namespace KtaneWeb
                 lock (this)
                     if (!File.Exists(path))
                         upload.SaveToFile(path);
-            return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly($"/More/Logfile%20Analyzer.html#file={sha1}").ToHref());
+
+            if (req.Post["noredirect"].Value == "1")
+                return HttpResponse.PlainText(req.Url.WithPathParent().WithPathOnly($"/lfa#file={sha1}").ToFull());
+            else
+                return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly($"/More/Logfile%20Analyzer.html#file={sha1}"));
         }
     }
 }
