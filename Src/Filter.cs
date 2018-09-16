@@ -67,9 +67,12 @@ namespace KtaneWeb
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
+            var val = GetValue(module);
+            if (val == null)
+                return true;
+            var str = val.ToString();
             var dic = json.GetDict();
-            var val = GetValue(module).ToString();
-            return dic.ContainsKey(val) && dic[val].GetBool();
+            return dic.ContainsKey(str) && dic[str].GetBool();
         }
     }
 
@@ -90,12 +93,17 @@ namespace KtaneWeb
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
-            if (module == null)
-                throw new Exception($"Filter.Matches: “module” is null ({DataAttributeName}, {json})");
-            if (GetValue(module) == null)
-                throw new Exception($"Filter.Matches: “GetValue(module)” is null ({DataAttributeName}, {json})");
-            var val = (int) GetValue(module);
-            return val >= json["min"].GetInt() && val <= json["max"].GetInt();
+            var val = GetValue(module);
+            if (val == null)
+                return true;
+            try
+            {
+                return (int) val >= json["min"].GetInt() && (int) val <= json["max"].GetInt();
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
         }
     }
 
