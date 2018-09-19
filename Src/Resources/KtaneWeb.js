@@ -402,7 +402,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 if ($('#display-twitch').prop('checked'))
                     menuDiv.append($('<div class="module-further-info"></div>').text(tr.data('twitchplays') === "Supported" ? tr.find('.inf-twitch').attr('title') : 'This module cannot be played in “Twitch Plays: KTANE”.'));
             }
-            menuDiv.append('<p class="manual-select">Select your preferred manual for this module.</p>');
+            menuDiv.append('<p class="small-print">Select your preferred manual for this module.</p>');
             var menu = $('<menu>').addClass('manual-select').appendTo(menuDiv);
             var seed = $('#rule-seed-input').val() | 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
@@ -424,6 +424,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                     };
                 }(sheets[i].name));
             }
+            menuDiv.append(`<p class="small-print"><a href="find-log?find=${escape(tr.data('moduleid'))}">Find example logfile</a></p>`);
+
             if (!isMobileOpt)
                 menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
             return false;

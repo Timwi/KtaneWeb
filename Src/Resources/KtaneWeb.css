@@ -519,15 +519,10 @@ div.popup {
         display: none;
     }
 
-    div.popup p.manual-select {
+    div.popup p.small-print {
         font-size: 70%;
         margin: .1em .25em;
     }
-
-        div.popup p.manual-select span.arrow {
-            position: relative;
-            top: .4em;
-        }
 
     div.popup menu.manual-select {
         margin: 0;
