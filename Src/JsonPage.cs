@@ -129,13 +129,15 @@ namespace KtaneWeb
         private HttpResponse jsonSubmitEdit(HttpRequest req, bool editable)
         {
             var content = req.Post["json"].Value;
-            if (_config.History.Count(h => h.IsSuggestion) >= 3)
+            if (_config.History.Count(h => h.IsSuggestion) >= 5)
                 return jsonDefaultPage(req, editable, content, error: $"Too many pending suggestions. Give me a break.");
             try
             {
                 var newEntry = ClassifyJson.Deserialize<KtaneWebConfigEntry>(JsonValue.Parse(content));
                 if (_config.History.Count > 0 && newEntry.Equals(_config.History[0].Entry))
                     return jsonDefaultPage(req, editable, content, error: $"Ignoring edit because no changes were made compared to the newest revision.");
+                if (newEntry.KtaneModules.ConsecutivePairs(false).Any(pair => pair.Item1.Name == pair.Item2.Name))
+                    return jsonDefaultPage(req, editable, content, error: $"You can’t have two modules with the same name.");
                 lock (_config)
                 {
                     _config.History.Add(new HistoryEntry<KtaneWebConfigEntry>(DateTime.UtcNow, newEntry, !editable));
@@ -170,7 +172,7 @@ namespace KtaneWeb
                                         new BUTTON { type = btype.submit, name = "accept", value = "0" }._("Reject"))
                                     : "(suggestion)"
                                 : editable
-                                    ? (object) new FORM { method = method.post, action = req.Url.WithPath("/delete").ToHref() }._(
+                                    ? new FORM { method = method.post, action = req.Url.WithPath("/delete").ToHref() }._(
                                         new INPUT { type = itype.hidden, name = "time", value = ExactConvert.ToString(entry.Time) },
                                         new BUTTON { type = btype.submit }._("Delete"))
                                     : null),
