@@ -5,11 +5,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using PdfSharp;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using RT.Servers;
-using RT.Util;
 using RT.Util.ExtensionMethods;
 using RT.Util.Json;
 
@@ -33,11 +31,17 @@ namespace KtaneWeb
                 var pdfs = new List<string>();
                 var selectable = json["filter"]["includeMissing"].GetBool() ? null : _selectables.Single(s => s.DataAttributeName == json["selectable"].GetString());
                 var keywords = json["search"].GetString().Length == 0 ? null : json["search"].GetString().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                var searchOptions = json["searchOptions"].GetList().Select(s => s.GetString()).ToArray();
+                var searchOptions = json["searchOptions"].GetList().Select(j => j.GetString()).ToArray();
+                var filterEnabledByProfile = json["filterEnabledByProfile"].GetBool();
+                var filterVetoedByProfile = json["filterVetoedByProfile"].GetBool();
+                var profileVetoList = (filterEnabledByProfile == filterVetoedByProfile) ? null : json["profileVetoList"]?.GetList().Select(j => j.GetString()).ToArray();
 
                 // Filter
                 var matchingModules = _config.Current.KtaneModules.Where(m =>
                 {
+                    if (profileVetoList != null && !(profileVetoList.Contains(m.ModuleID) ? filterVetoedByProfile : filterEnabledByProfile))
+                        return false;
+
                     foreach (var filter in _filters)
                         if (!filter.Matches(m, json["filter"].Safe[filter.DataAttributeName].GetDictSafe()))
                             return false;
@@ -94,7 +98,7 @@ namespace KtaneWeb
                                 foreach (var pdfFile in pdfFiles)
                                 {
                                     lastExaminedPdfFile = pdfFile;
-                                    PdfDocument pdf = PdfReader.Open(Path.Combine(_config.BaseDir, _config.PdfDir, pdfFile), PdfDocumentOpenMode.Import);
+                                    var pdf = PdfReader.Open(Path.Combine(_config.BaseDir, _config.PdfDir, pdfFile), PdfDocumentOpenMode.Import);
                                     int count = pdf.PageCount;
                                     for (int idx = 0; idx < count; idx++)
                                         mergedPdf.AddPage(pdf.Pages[idx]);

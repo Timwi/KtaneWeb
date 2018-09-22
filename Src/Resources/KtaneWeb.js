@@ -738,7 +738,10 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             filter: filter,
             selectable: selectable,
             searchOptions: searchOptions,
-            search: $("input#search-field").val()
+            search: $("input#search-field").val(),
+            profileVetoList: profileVetoList,
+            filterEnabledByProfile: $('input#filter-profile-enabled').prop('checked'),
+            filterVetoedByProfile: $('input#filter-profile-disabled').prop('checked')
         }));
         return true;
     });
