@@ -401,6 +401,8 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                     menuDiv.append($('<div class="module-further-info"></div>').text(tr.find('.inf-souvenir').attr('title')));
                 if ($('#display-twitch').prop('checked'))
                     menuDiv.append($('<div class="module-further-info"></div>').text(tr.data('twitchplays') === "Supported" ? tr.find('.inf-twitch').attr('title') : 'This module cannot be played in “Twitch Plays: KTANE”.'));
+                if ($('#display-rule-seed').prop('checked'))
+                    menuDiv.append($('<div class="module-further-info"></div>').text(tr.data('ruleseed') === "Supported" ? tr.find('.inf-rule-seed').attr('title') : 'This module does not support rule modification through Rule Seed Modifier.'));
             }
             menuDiv.append('<p class="small-print">Select your preferred manual for this module.</p>');
             var menu = $('<menu>').addClass('manual-select').appendTo(menuDiv);

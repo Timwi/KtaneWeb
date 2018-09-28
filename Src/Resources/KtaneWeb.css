@@ -1007,6 +1007,10 @@ pre.diff {
             padding: .5em 2em;
         }
 
+        div.popup p.small-print {
+            margin-top: 3em;
+        }
+
     kbd {
         text-decoration: inherit;
     }
