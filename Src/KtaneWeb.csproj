@@ -42,6 +42,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,6 +55,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
     <Compile Include="Logfiles.cs" />
+    <Compile Include="IconSprite.cs" />
     <Compile Include="Pdf.cs" />
     <Compile Include="HistoryEntry.cs" />
     <Compile Include="GenerateProfile.cs" />

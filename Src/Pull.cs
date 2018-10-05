@@ -17,6 +17,7 @@ namespace KtaneWeb
             cmd.StdoutText += str => output.Append(str);
             cmd.StderrText += str => output.Append(str);
             cmd.StartAndWait();
+            _iconSpriteInfo = null;
             return HttpResponse.PlainText(output.ToString());
         }
     }

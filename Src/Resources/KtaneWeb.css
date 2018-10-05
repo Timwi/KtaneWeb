@@ -112,14 +112,14 @@ div.modlink-wrap a.modlink {
     font-size: 115%;
 }
 
-    div.modlink-wrap a.modlink img.mod-icon {
+    div.modlink-wrap a.modlink .mod-icon {
         width: 32px;
         height: 32px;
         float: left;
         margin: 0 .5em 0 0;
     }
 
-body:not(.display-description) div.modlink-wrap a.modlink img.mod-icon {
+body:not(.display-description) div.modlink-wrap a.modlink .mod-icon {
     margin-top: -.3em;
 }
 
@@ -711,7 +711,7 @@ pre.diff {
             margin: 0;
         }
 
-            td.infos-1 div.modlink-wrap img.mod-icon {
+            td.infos-1 div.modlink-wrap .mod-icon {
                 float: left;
                 margin: .1em .5em 0 0 !important;
             }

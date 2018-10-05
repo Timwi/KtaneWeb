@@ -25,7 +25,7 @@ namespace KtaneWeb
         public string PdfDir = "PDF";
         public string[] OriginalDocumentIcons = new[] { "HTML/img/html_manual.png", "HTML/img/pdf_manual.png" };
         public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
-        public string ModIconDir = "Icons";
+        public string ModIconDir = @"C:\Sites\KTANE\Public\Icons";
 
         public string LogfilesDir = @"C:\Sites\KTANE\Logfiles";
         public string MergedPdfsDir = @"C:\Sites\KTANE\MergedPdfs";

@@ -307,12 +307,19 @@ namespace KtaneWeb
                                 ["m"] = ClassifyJson.Serialize(mod),
                                 ["s"] = _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray())
                             }).ToJsonList();
-                            var icons = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
+                            var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
                             var disps = displays.Select(d => d.Id).ToJsonList();
                             var filters = _filters.Select(f => f.ToJson()).ToJsonList();
                             var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
                             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
-                            return new SCRIPTLiteral($@"initializePage({modules},{icons},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir});");
+                            ensureIconSpriteInfo();
+                            foreach (var module in modules)
+                            {
+                                var name = module["m"]["Name"].GetString();
+                                if (_iconSpriteInfo.CoordsJson.ContainsKey(name))
+                                    module["m"]["Icon"] = _iconSpriteInfo.CoordsJson[name];
+                            }
+                            return new SCRIPTLiteral($@"initializePage({modules},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},{JsonValue.ToString(_iconSpriteInfo.CoordsJson.Get("blank", null))});");
                         })))));
             resp.UseGzip = UseGzipOption.DontUseGzip;
             return resp;

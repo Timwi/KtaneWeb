@@ -58,6 +58,8 @@ function el(tagName, className, ...args)
 
 function initializePage(initModules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes)
 {
+    const iconWidth = 32, iconHeight = 32;
+
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
@@ -473,10 +475,9 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 td.appendChild(el("a", sel.CssClass, { href: sel.UrlFunction(mod, sheets) }, sel.IconFunction ? sel.IconFunction(mod, sheets) : el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon })));
         }
 
-        var icon = el("img", "mod-icon", {
-            alt: mod.Symbol,
+        var icon = el("div", "mod-icon", {
             title: mod.Symbol,
-            src: `Icons/${mod.Name}.png`
+            style: `background:url(iconsprite);background-position:${'Icon' in mod ? `-${iconWidth * mod.Icon[0]}px -${iconHeight * mod.Icon[1]}px` : '0 0'}`
         });
         icon.onerror = function() { this.src = 'Icons/blank.png'; };
         var td1 = el("td", "infos-1",
