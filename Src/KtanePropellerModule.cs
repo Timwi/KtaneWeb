@@ -32,7 +32,6 @@ namespace KtaneWeb
 #endif
 
                     new UrlMapping(path: "/", specificPath: true, handler: mainPage),
-                    new UrlMapping(path: "/lfa", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Logfile Analyzer.html"))),
                     new UrlMapping(path: "/profile", handler: generateProfile),
                     new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
                     new UrlMapping(path: "/pull", handler: pull),
@@ -46,6 +45,10 @@ namespace KtaneWeb
                     new UrlMapping(path: "/Unfinished", handler: unfinished, skippable: true),
                     new UrlMapping(path: "/Logfiles", handler: req => new FileSystemHandler(_config.LogfilesDir).Handle(req)),
                     new UrlMapping(path: "/MergedPdfs", handler: req => new FileSystemHandler(_config.MergedPdfsDir).Handle(req)),
+
+                    // Shortcut URLs
+                    new UrlMapping(path: "/lfa", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Logfile Analyzer.html"))),
+                    new UrlMapping(path: "/faq", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/FAQs.html"))),
 
                     // Default fallback: file system handler
                     new UrlMapping(req => new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
