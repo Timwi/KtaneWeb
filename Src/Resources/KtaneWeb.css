@@ -668,6 +668,11 @@ pre.diff {
     white-space: nowrap;
 }
 
+.json-history tr.deleted td {
+    background: #fee;
+    position: static !important;
+}
+
 #legal {
     position: absolute;
     left: 0;

@@ -18,31 +18,38 @@ namespace KtaneWeb
                 return HttpResponse.Json(ClassifyJson.Serialize(_config.Current), HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
 
             var editable = session.Username != null && _config.Current.AllowedEditors.Contains(session.Username);
-            int ix;
             Match match;
 
             if (req.Method == HttpMethod.Get && req.Url.Path == "")
                 return jsonDefaultPage(req, editable);
 
             else if (req.Method == HttpMethod.Post && req.Url.Path == "/submit" && req.Post["json"].Value != null)
-                return jsonSubmitEdit(req, editable);
+                return jsonSubmitEdit(req, editable, session.Username);
 
             else if (req.Method == HttpMethod.Post && editable && req.Url.Path == "/suggestion" && req.Post["time"].Value != null)
-                return jsonAccRejSuggestion(req, editable);
+                return jsonAccRejSuggestion(req, editable, session.Username);
 
             else if (req.Method == HttpMethod.Post && editable && req.Url.Path == "/delete" && req.Post["time"].Value != null)
-                return jsonDelete(req);
+                return jsonDelete(req, session.Username);
 
             else if (req.Method == HttpMethod.Get &&
                 (match = Regex.Match(req.Url.Path, @"^/diff/([^/]+)")).Success &&
-                ExactConvert.Try(match.Groups[1].Value.UrlUnescape(), out DateTime dt) &&
-                (ix = _config.History.IndexOf(h => h.Time == dt)) != -1)
-                return jsonDiff(req, ix);
+                ExactConvert.Try(match.Groups[1].Value.UrlUnescape(), out DateTime dt))
+            {
+                var ix = _config.History.IndexOf(h => h.Time == dt);
+                if (ix != -1)
+                    return jsonDiff(req, _config.History[ix]);
+                ix = _config.HistoryDeleted.IndexOf(h => h.Time == dt);
+                if (ix != -1)
+                    return jsonDiff(req, _config.HistoryDeleted[ix]);
+                goto nope;
+            }
 
+            nope:
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
-        private HttpResponse jsonDelete(HttpRequest req)
+        private HttpResponse jsonDelete(HttpRequest req, string username)
         {
             try
             {
@@ -52,6 +59,7 @@ namespace KtaneWeb
                 {
                     lock (_config)
                     {
+                        _config.History[ix].DeletedBy = username;
                         _config.HistoryDeleted.Add(_config.History[ix]);
                         _config.History.RemoveAt(ix);
                         saveConfig();
@@ -65,11 +73,11 @@ namespace KtaneWeb
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
-        private HttpResponse jsonDiff(HttpRequest req, int ix)
+        private HttpResponse jsonDiff(HttpRequest req, HistoryEntry<KtaneWebConfigEntry> entry)
         {
             const int context = 8;
-            var newTxt = ClassifyJson.Serialize(_config.History[ix].Entry).ToStringIndented().Replace("\r", "");
-            var oldEntry = getPrevNonSuggestion(ix);
+            var newTxt = ClassifyJson.Serialize(entry.Entry).ToStringIndented().Replace("\r", "");
+            var oldEntry = getPrevNonSuggestion(entry);
             var oldTxt = oldEntry == null ? "" : ClassifyJson.Serialize(oldEntry).ToStringIndented().Replace("\r", "");
             var chunks = Ut.Diff(oldTxt.Split('\n'), newTxt.Split('\n')).GroupConsecutiveBy(tup => tup.Item2 == DiffOp.None).ToArray();
 
@@ -87,7 +95,7 @@ namespace KtaneWeb
             })));
         }
 
-        private HttpResponse jsonAccRejSuggestion(HttpRequest req, bool editable)
+        private HttpResponse jsonAccRejSuggestion(HttpRequest req, bool editable, string username)
         {
             try
             {
@@ -102,6 +110,7 @@ namespace KtaneWeb
                         {
                             var baseEntry = _config.Current;
                             entry.IsSuggestion = false;
+                            entry.ApprovedBy = username;
 
                             // Try to merge the accepted suggestion into every other pending suggestion
                             for (int i = 0; i < _config.History.Count; i++)
@@ -114,7 +123,11 @@ namespace KtaneWeb
                             }
                         }
                         else
+                        {
+                            entry.DeletedBy = username;
                             _config.History.Remove(entry);
+                            _config.HistoryDeleted.Add(entry);
+                        }
                         saveConfig();
                     }
                 }
@@ -126,7 +139,7 @@ namespace KtaneWeb
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
-        private HttpResponse jsonSubmitEdit(HttpRequest req, bool editable)
+        private HttpResponse jsonSubmitEdit(HttpRequest req, bool editable, string username)
         {
             var content = req.Post["json"].Value;
             if (_config.History.Count(h => h.IsSuggestion) >= 5)
@@ -140,7 +153,7 @@ namespace KtaneWeb
                     return jsonDefaultPage(req, editable, content, error: $"You can’t have two modules with the same name.");
                 lock (_config)
                 {
-                    _config.History.Add(new HistoryEntry<KtaneWebConfigEntry>(DateTime.UtcNow, newEntry, !editable));
+                    _config.History.Add(new HistoryEntry<KtaneWebConfigEntry>(DateTime.UtcNow, newEntry, !editable, editable ? username : null));
                     saveConfig();
                 }
             }
@@ -161,34 +174,32 @@ namespace KtaneWeb
                     new DIV(new BUTTON { type = btype.submit, accesskey = "s" }._(editable ? "Save".Accel('S') : "Suggest".Accel('S')))),
                 new H2("History"),
                 new TABLE { class_ = "json-history" }._(
-                    new TR(anySuggestions || editable ? new TH() : null, new TH("Date/time"), new TH("Modules changed")),
-                    _config.History.Select((entry, i) => req.Url.WithPath("/diff/" + ExactConvert.ToString(entry.Time)).ToHref().Apply(url => new TR(
+                    new TR(anySuggestions || editable ? new TH() : null, new TH("User"), new TH("Date/time"), new TH("Modules changed")),
+                    _config.History.Concat(_config.HistoryDeleted).OrderByDescending(h => h.Time).Select(entry => req.Url.WithPath("/diff/" + ExactConvert.ToString(entry.Time)).ToHref().Apply(url => new TR { class_ = entry.DeletedBy == null ? null : "deleted" }._(
                         !anySuggestions && !editable ? null : new TD { class_ = "commands" }._(
                             entry.IsSuggestion
-                                ? editable
+                                ? editable && entry.DeletedBy == null
                                     ? (object) new FORM { method = method.post, action = req.Url.WithPath("/suggestion").ToHref() }._(
                                         new INPUT { type = itype.hidden, name = "time", value = ExactConvert.ToString(entry.Time) },
                                         new BUTTON { type = btype.submit, name = "accept", value = "1" }._("Accept"), " ",
                                         new BUTTON { type = btype.submit, name = "accept", value = "0" }._("Reject"))
                                     : "(suggestion)"
-                                : editable
+                                : editable && entry.DeletedBy == null
                                     ? new FORM { method = method.post, action = req.Url.WithPath("/delete").ToHref() }._(
                                         new INPUT { type = itype.hidden, name = "time", value = ExactConvert.ToString(entry.Time) },
                                         new BUTTON { type = btype.submit }._("Delete"))
                                     : null),
+                        new TD { class_ = "user" }._(entry.ApprovedBy ?? "(unknown)", entry.DeletedBy == null ? null : $" (deleted by {entry.DeletedBy})"),
                         new TD { class_ = "time" }._(new A { href = url }._(entry.Time.ToIsoString(IsoDatePrecision.Minutes, includeTimezone: false))),
-                        new TD { class_ = "changes" }._(new A { href = url }._(getPrevNonSuggestion(i).Apply(prevEntry => prevEntry == null
+                        new TD { class_ = "changes" }._(new A { href = url }._(getPrevNonSuggestion(entry).Apply(prevEntry => prevEntry == null
                             ? (object) "(first entry)"
                             : prevEntry.KtaneModules.Except(entry.Entry.KtaneModules).Union(entry.Entry.KtaneModules.Except(prevEntry.KtaneModules))
                                 .Select(t => t.Name).Distinct().Order().Select(n => new SPAN { class_ = "module" }._(n)).DefaultIfEmpty<object>("(none)").InsertBetween(", "))))))))));
         }
 
-        private KtaneWebConfigEntry getPrevNonSuggestion(int index)
+        private KtaneWebConfigEntry getPrevNonSuggestion(HistoryEntry<KtaneWebConfigEntry> entry)
         {
-            var oldIx = index + 1;
-            while (oldIx < _config.History.Count && _config.History[oldIx].IsSuggestion)
-                oldIx++;
-            return oldIx == _config.History.Count ? null : _config.History[oldIx].Entry;
+            return _config.History.FirstOrDefault(e => e.Time < entry.Time)?.Entry;
         }
 
         private static HttpResponse jsonPageResponse(HttpRequest req, object body)

@@ -17,12 +17,17 @@ namespace KtaneWeb
         public bool IsSuggestion { get; set; }
         [ClassifyIgnoreIfDefault]
         public bool IsMergeConflict { get; set; }
+        [ClassifyIgnoreIfDefault]
+        public string ApprovedBy { get; set; }
+        [ClassifyIgnoreIfDefault]
+        public string DeletedBy { get; set; }
 
-        public HistoryEntry(DateTime time, T entry, bool isSuggestion)
+        public HistoryEntry(DateTime time, T entry, bool isSuggestion, string approvedBy)
         {
             Time = time;
             Entry = entry;
             IsSuggestion = isSuggestion;
+            ApprovedBy = approvedBy;
             IsMergeConflict = false;
         }
         private HistoryEntry() { }  // for Classify

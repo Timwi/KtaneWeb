@@ -78,6 +78,9 @@ namespace KtaneWeb
         {
             while (HistoryDeleted.Count > 10)
                 HistoryDeleted.RemoveAt(10);
+            foreach (var del in HistoryDeleted)
+                if (del.DeletedBy == null)
+                    del.DeletedBy = "(unknown)";
         }
     }
 }
