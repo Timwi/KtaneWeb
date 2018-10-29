@@ -42,14 +42,30 @@ img.icon {
 }
 
 .manual-selector {
-    font-size: 200%;
-    text-decoration: none;
-    color: #ddd;
     position: absolute;
     right: 5px;
     top: 50%;
     transform: translateY(-50%);
+    width: 24px;
+    height: 30px;
+    font-size: 6pt;
+    text-decoration: none;
+    text-align: center;
+    color: hsl(240, 50%, 50%);
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 30"><path fill="hsl(240, 60%, 70%)" d="M0 10,24 10,12 30z" /></svg>');
 }
+
+    .manual-selector::before {
+        content: 'MORE';
+    }
+
+    .manual-selector.selected {
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 30"><path fill="%23ddd" d="M0 3,24 3,12 30z" /></svg>');
+    }
+
+        .manual-selector.selected::before {
+            content: '';
+        }
 
 kbd {
     font-family: inherit;
