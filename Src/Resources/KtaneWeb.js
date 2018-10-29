@@ -137,7 +137,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         mods.sort(function(a, b)
         {
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
-            return (c === 0) ? compare($(a).data('mod'), $(b).data('mod'), false) : c;
+            return (c === 0) ? compare($(a).data('sortkey'), $(b).data('sortkey'), false) : c;
         });
 
         mainTable.append(...mods);
