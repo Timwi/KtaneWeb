@@ -3,13 +3,14 @@ using System.IO;
 using System.Text.RegularExpressions;
 using RT.TagSoup;
 using RT.Util;
+using RT.Util.Json;
 using RT.Util.Serialization;
 
 namespace KtaneWeb
 {
 #pragma warning disable 0649 // Field is never assigned to, and will always have its default value
 
-    sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IComparable<KtaneModuleInfo>, IClassifyObjectProcessor
+    sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IComparable<KtaneModuleInfo>, IClassifyObjectProcessor, IClassifyJsonObjectProcessor
     {
         public string Name;
         public string Description;
@@ -79,7 +80,8 @@ namespace KtaneWeb
         public override int GetHashCode() => Ut.ArrayHash(Name, SortKey, Symbol, Type, Origin, DefuserDifficulty, ExpertDifficulty, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysSupport, TwitchPlaysScore, TwitchPlaysSpecial, RuleSeedSupport);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
-        void IClassifyObjectProcessor.BeforeSerialize() { }
+        int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);
+
         void IClassifyObjectProcessor.AfterDeserialize()
         {
             if (SortKey == null || SortKey == "")
@@ -102,7 +104,16 @@ namespace KtaneWeb
                 TutorialVideoUrl = null;
         }
 
-        int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);
+        void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)
+        {
+            if (element is JsonDict && element.ContainsKey("Published") && element["Published"].GetStringSafe()?.EndsWith("Z") == true)
+                element["Published"] = element["Published"].GetString().Apply(s => s.Remove(s.Length - 1));
+        }
+
+        void IClassifyObjectProcessor.BeforeSerialize() { }
+        void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
+        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
+        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
     }
 
     sealed class KtaneSouvenirInfo : IEquatable<KtaneSouvenirInfo>
