@@ -339,10 +339,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             if (data.mod in preferredManuals)
                 for (i = 0; i < data.manual.length; i++)
                     if (preferredManuals[data.mod] === data.manual[i].name)
-                    {
                         manual = data.manual[i];
-                        $(e).find('.manual-selector').addClass('selected');
-                    }
             $(e).find(selectable === 'manual' ? 'a.modlink,a.manual' : 'a.manual').attr('href', manual.url + seedHash);
             $(e).find('img.manual-icon').attr('src', manual.icon);
         });

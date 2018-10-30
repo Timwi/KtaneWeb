@@ -59,14 +59,6 @@ img.icon {
         content: 'MORE';
     }
 
-    .manual-selector.selected {
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 30"><path fill="%23ddd" d="M0 3,24 3,12 30z" /></svg>');
-    }
-
-        .manual-selector.selected::before {
-            content: '';
-        }
-
 kbd {
     font-family: inherit;
     font-size: inherit;
