@@ -59,6 +59,8 @@
 
     public enum KtaneModuleSouvenir
     {
+        [KtaneFilterOption("Unexamined"), KtaneSouvenirInfo('U', "We have not yet decided whether this module is a candidate for inclusion in Souvenir.")]
+        Unexamined,
         [KtaneFilterOption("Not a candidate"), KtaneSouvenirInfo('N', "This module is not a candidate for inclusion in Souvenir.")]
         NotACandidate,
         [KtaneFilterOption("Considered"), KtaneSouvenirInfo('C', "This module may be a candidate for inclusion in Souvenir.")]

@@ -118,8 +118,7 @@ namespace KtaneWeb
 
     sealed class KtaneSouvenirInfo : IEquatable<KtaneSouvenirInfo>
     {
-        [ClassifyIgnoreIfDefault]
-        public KtaneModuleSouvenir Status = KtaneModuleSouvenir.NotACandidate;
+        public KtaneModuleSouvenir Status;
         [ClassifyIgnoreIfDefault]
         public string Explanation;
 
