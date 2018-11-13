@@ -42,10 +42,8 @@ namespace KtaneWeb
                 ix = _config.HistoryDeleted.IndexOf(h => h.Time == dt);
                 if (ix != -1)
                     return jsonDiff(req, _config.HistoryDeleted[ix]);
-                goto nope;
             }
 
-            nope:
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
@@ -175,7 +173,7 @@ namespace KtaneWeb
                 new H2("History"),
                 new TABLE { class_ = "json-history" }._(
                     new TR(anySuggestions || editable ? new TH() : null, new TH("User"), new TH("Date/time"), new TH("Modules changed")),
-                    _config.History.Concat(_config.HistoryDeleted).OrderByDescending(h => h.Time).Select(entry => req.Url.WithPath("/diff/" + ExactConvert.ToString(entry.Time)).ToHref().Apply(url => new TR { class_ = entry.DeletedBy == null ? null : "deleted" }._(
+                    _config.History.Concat(_config.HistoryDeleted).OrderByDescending(h => h.Time).Select(entry => new TR { class_ = entry.DeletedBy == null ? null : "deleted" }._(
                         !anySuggestions && !editable ? null : new TD { class_ = "commands" }._(
                             entry.IsSuggestion
                                 ? editable && entry.DeletedBy == null
@@ -190,11 +188,25 @@ namespace KtaneWeb
                                         new BUTTON { type = btype.submit }._("Delete"))
                                     : null),
                         new TD { class_ = "user" }._(entry.ApprovedBy ?? "(unknown)", entry.DeletedBy == null ? null : $" (deleted by {entry.DeletedBy})"),
-                        new TD { class_ = "time" }._(new A { href = url }._(entry.Time.ToIsoString(IsoDatePrecision.Minutes, includeTimezone: false))),
-                        new TD { class_ = "changes" }._(new A { href = url }._(getPrevNonSuggestion(entry).Apply(prevEntry => prevEntry == null
-                            ? (object) "(first entry)"
-                            : prevEntry.KtaneModules.Except(entry.Entry.KtaneModules).Union(entry.Entry.KtaneModules.Except(prevEntry.KtaneModules))
-                                .Select(t => t.Name).Distinct().Order().Select(n => new SPAN { class_ = "module" }._(n)).DefaultIfEmpty<object>("(none)").InsertBetween(", "))))))))));
+                        new TD { class_ = "time" }._(new A { href = req.Url.WithPath("/diff/" + ExactConvert.ToString(entry.Time)).ToHref() }._(entry.Time.ToIsoString(IsoDatePrecision.Minutes, includeTimezone: false))),
+                        new TD { class_ = "changes" }._(new Func<object>(() =>
+                        {
+                            var prev = getPrevNonSuggestion(entry);
+                            if (prev == null)
+                                return "(first entry)";
+
+                            var prevModules = prev.KtaneModules.Except(entry.Entry.KtaneModules).ToArray();
+                            var newModules = entry.Entry.KtaneModules.Except(prev.KtaneModules).ToArray();
+
+                            return prevModules.Union(newModules)
+                                .Select(t => t.Name).Distinct().Order()
+                                .Select(n =>
+                                {
+                                    var prevModule = prevModules.FirstOrDefault(pm => pm.Name == n);
+                                    var newModule = newModules.FirstOrDefault(nm => nm.Name == n);
+                                    return new SPAN { class_ = "module", title = prevModule == null ? "added" : newModule == null ? "deleted" : prevModule.Differences(newModule).JoinString(", ") }._(n);
+                                }).DefaultIfEmpty<object>("(none)").InsertBetween(", ");
+                        })))))));
         }
 
         private KtaneWebConfigEntry getPrevNonSuggestion(HistoryEntry<KtaneWebConfigEntry> entry)
