@@ -522,7 +522,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
         if (mod.RuleSeedSupport === 'Supported')
             infos.append(el("div", "inf-rule-seed inf inf2", { title: 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.' }));
 
-        var value = mod.Souvenir == null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
+        var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
         var attr = souvenirAttributes[value];
         var expl = mod.Souvenir && mod.Souvenir.Explanation;
         infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: `${attr.Tooltip}${expl ? "\n" + expl : ""}` }, attr.Char));

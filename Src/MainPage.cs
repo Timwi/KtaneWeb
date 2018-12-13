@@ -48,7 +48,7 @@ namespace KtaneWeb
             KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
             KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
             KtaneFilter.Checkboxes("ruleseed", "Rule seed", mod => mod.RuleSeedSupport, @"mod=>mod.RuleSeedSupport||'NotSupported'"),
-            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""NotACandidate"""));
+            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
 
         static Selectable[] _selectables = Ut.NewArray(
             new Selectable
