@@ -477,7 +477,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
         var icon = el("div", "mod-icon", {
             title: mod.Symbol,
-            style: `background:url(iconsprite);background-position:${'Icon' in mod ? `-${iconWidth * mod.Icon[0]}px -${iconHeight * mod.Icon[1]}px` : '0 0'}`
+            style: `background:url('Icons/${mod.Name}.png'), url('Icons/blank.png');`
         });
         icon.onerror = function() { this.src = 'Icons/blank.png'; };
         var td1 = el("td", "infos-1",
@@ -732,7 +732,6 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
 
     $('.select-on-focus').focus(function() { this.setSelectionRange(0, this.value.length); });
 
-    // Not currently used
     $('#generate-pdf').click(function()
     {
         $('#generate-pdf-json').val(JSON.stringify({

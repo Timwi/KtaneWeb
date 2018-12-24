@@ -313,14 +313,7 @@ namespace KtaneWeb
                             var filters = _filters.Select(f => f.ToJson()).ToJsonList();
                             var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
                             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
-                            ensureIconSpriteInfo();
-                            foreach (var module in modules)
-                            {
-                                var name = module["m"]["Name"].GetString();
-                                if (_iconSpriteInfo.CoordsJson.ContainsKey(name))
-                                    module["m"]["Icon"] = _iconSpriteInfo.CoordsJson[name];
-                            }
-                            return new SCRIPTLiteral($@"initializePage({modules},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},{JsonValue.ToString(_iconSpriteInfo.CoordsJson.Get("blank", null))});");
+                            return new SCRIPTLiteral($@"initializePage({modules},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir});");
                         })))));
             resp.UseGzip = UseGzipOption.DontUseGzip;
             return resp;
