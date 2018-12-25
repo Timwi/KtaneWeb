@@ -475,10 +475,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                 td.appendChild(el("a", sel.CssClass, { href: sel.UrlFunction(mod, sheets) }, sel.IconFunction ? sel.IconFunction(mod, sheets) : el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon })));
         }
 
-        var icon = el("div", "mod-icon", {
-            title: mod.Symbol,
-            style: `background:url('Icons/${mod.Name}.png'), url('Icons/blank.png');`
-        });
+        var icon = el("img", "mod-icon", { title: mod.Symbol, src: `Icons/${mod.Name}.png` });
         icon.onerror = function() { this.src = 'Icons/blank.png'; };
         var td1 = el("td", "infos-1",
             el("div", "modlink-wrap",
