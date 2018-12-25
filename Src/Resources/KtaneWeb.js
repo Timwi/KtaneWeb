@@ -267,7 +267,7 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
             noneSelected[initFilters[i].id] = none;
         }
 
-        var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0);
+        var searchKeywords = $("input#search-field").val().toLowerCase().split(' ').filter(x => x.length > 0).map(x => x.replace(/'/g, '’'));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
