@@ -58,8 +58,6 @@ function el(tagName, className, ...args)
 
 function initializePage(initModules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes)
 {
-    const iconWidth = 32, iconHeight = 32;
-
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
@@ -407,17 +405,15 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                     menuDiv.append($('<div class="module-further-info"></div>').text(tr.data('ruleseed') === "Supported" ? tr.find('.inf-rule-seed').attr('title') : 'This module does not support rule modification through Rule Seed Modifier.'));
             }
             menuDiv.append('<p class="small-print">Select your preferred manual for this module.</p>');
-            var menu = $('<menu>').addClass('manual-select').appendTo(menuDiv);
+            var menu = $('<table>').addClass('manual-select').appendTo(menuDiv);
             var seed = $('#rule-seed-input').val() | 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
             var sheets = tr.data("manual");
+            var already = {};
             for (var i = 0; i < sheets.length; i++)
             {
-                var li = $('<li>').text(sheets[i].name);
-                if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
-                    li.addClass('checked');
-                var ahref = $('<a>').attr('href', sheets[i].url + seedHash).append(li).appendTo(menu);
-                ahref.click(function(sh)
+                var r1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(sheets[i].name.substr(mod.length));
+                var clickHandler = function(sh)
                 {
                     return function()
                     {
@@ -426,7 +422,32 @@ function initializePage(initModules, initIcons, initDocDirs, initDisplays, initF
                         setPreferredManuals();
                         return false;
                     };
-                }(sheets[i].name));
+                }(sheets[i].name);
+                var link = $(`<a href='${sheets[i].url + seedHash}'>${r1[2]}</a>`).click(clickHandler);
+                if (!(r1[1] in already))
+                {
+                    var trow;
+                    var r2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(r1[1]);
+                    var r3 = /^translated(?: full)? \((.*) — (.*)\)$/.exec(r1[1]);
+                    var r4 = /^translated(?: full)? \((.*)\)$/.exec(r1[1]);
+                    var r5 = /^(.*) \((.*)\)$/.exec(r1[1]);
+                    if (r2)
+                        trow = `<tr><td class='language'>${r2[1]}</td><td class='title'>${r2[2]}</td><td class='extra'><div class='descriptor'>${r2[3]}</div><div class='author'>by ${r2[4]}</div></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
+                    else if (r3)
+                        trow = `<tr><td class='language'>${r3[1]}</td><td class='title'>${r3[2]}</td><td class='extra'></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
+                    else if (r4)
+                        trow = `<tr><td class='language'>${r4[1]}</td><td class='title'>${mod}</td><td class='extra'></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
+                    else if (r5)
+                        trow = `<tr><td class='language'></td><td class='title'>${mod}</td><td class='extra'><div class='descriptor'>${r5[1]}</div><div class='author'>by ${r5[2]}</div></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
+                    else
+                        trow = `<tr><td class='language'></td><td class='title'>${mod}</td><td class='extra'>${r1[1]}</td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
+                    already[r1[1]] = $(trow).appendTo(menu);
+                    if (r1[2] === 'HTML')
+                        already[r1[1]].click(clickHandler);
+                }
+                var link = already[r1[1]].find(`.link-${r1[2]}`).html(link).addClass('link').click(clickHandler);
+                if (mod in preferredManuals && preferredManuals[mod] === sheets[i].name)
+                    link.addClass('checked');
             }
             menuDiv.append(`<p class="small-print"><a href="find-log?find=${escape(tr.data('moduleid'))}">Find example logfile</a></p>`);
 
