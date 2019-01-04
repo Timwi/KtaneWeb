@@ -303,10 +303,11 @@ namespace KtaneWeb
 
                         new Func<object>(() =>
                         {
-                            var modules = _config.Current.KtaneModules.Select(mod => new JsonDict
+                            var modules = _config.Current.KtaneModules.Select(mod =>
                             {
-                                ["m"] = ClassifyJson.Serialize(mod),
-                                ["s"] = _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray())
+                                var mods = ClassifyJson.Serialize(mod);
+                                mods["Sheets"] = _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
+                                return mods;
                             }).ToJsonList();
                             var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
                             var disps = displays.Select(d => d.Id).ToJsonList();
