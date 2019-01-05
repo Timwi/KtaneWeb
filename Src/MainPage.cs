@@ -165,7 +165,7 @@ namespace KtaneWeb
                                 new A { href = "#", class_ = "tab popup-link", id = "rule-seed-link", accesskey = "s" }.Data("popup", "rule-seed")._("Rule seed".Accel('s'), new SPAN { id = "rule-seed-number" }),
                                 new A { href = "/More/FAQs.html", class_ = "tab", id = "faq-link", accesskey = "g" }._("Glossary".Accel('G')),
                                 new A { href = "#", class_ = "tab popup-link", id = "filters-link", accesskey = "." }.Data("popup", "filters")._("Filters"),
-                                new A { href = "#", class_ = "tab popup-link", id = "more-link" }.Data("popup", "more")._("More")),
+                                new A { href = "#", class_ = "tab popup-link", id = "more-link", accesskey = "/" }.Data("popup", "more")._("More")),
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = _selectables.Length }._("Links"),
