@@ -206,25 +206,23 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     function handleDataTransfer(dataTransfer)
     {
-        if (dataTransfer.files.length == 1)
+        var url;
+        if (dataTransfer.files && dataTransfer.files.length == 1)
         {
             setProfile(dataTransfer.files[0]);
-            return false;
-        } else
+            return true;
+        }
+        else if (dataTransfer.getData && (url = dataTransfer.getData("text/plain")).endsWith(".json"))
         {
-            const url = dataTransfer.getData("text/plain");
             const handleData = data =>
             {
                 const fileName = url.match(/\/(\w+\.json)$/);
                 setProfile(new File([data], fileName ? fileName[1] : "Default.json"));
             };
-
-            $.get("/proxy/" + url, handleData)
-                .fail(function()
-                {
-                    $.get(url, handleData);
-                });
+            $.get("/proxy/" + url, handleData).fail(function() { $.get(url, handleData); });
+            return true;
         }
+        return false;
     }
 
     function updateFilter()
@@ -372,9 +370,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             handleDataTransfer(event.originalEvent.dataTransfer);
         }).on("paste", function(event)
         {
-            event.preventDefault();
-
-            handleDataTransfer(event.originalEvent.clipboardData);
+            if (handleDataTransfer(event.originalEvent.clipboardData))
+                event.preventDefault();
         });
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
