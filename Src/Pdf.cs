@@ -47,9 +47,9 @@ namespace KtaneWeb
                             return false;
 
                     return keywords == null ||
-                        (searchOptions.Contains("names") && keywords.Any(k => m.Name.ContainsNoCase(k))) ||
-                        (searchOptions.Contains("authors") && keywords.Any(k => m.Author.ContainsNoCase(k))) ||
-                        (searchOptions.Contains("descriptions") && keywords.Any(k => m.Description.ContainsNoCase(k)));
+                        (searchOptions.Contains("names") && keywords.All(k => m.Name.ContainsNoCase(k))) ||
+                        (searchOptions.Contains("authors") && keywords.All(k => m.Author.ContainsNoCase(k))) ||
+                        (searchOptions.Contains("descriptions") && keywords.All(k => m.Description.ContainsNoCase(k)));
                 });
 
                 // Sort
