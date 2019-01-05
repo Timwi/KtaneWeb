@@ -42,13 +42,13 @@ namespace KtaneWeb
         // .    Filters
 
         static KtaneFilter[] _filters = Ut.NewArray(
-            KtaneFilter.Checkboxes("origin", "Origin", mod => mod.Origin, @"mod=>mod.Origin"),
-            KtaneFilter.Checkboxes("type", "Type", mod => mod.Type, @"mod=>mod.Type"),
-            KtaneFilter.Slider("defdiff", "Defuser difficulty", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
-            KtaneFilter.Slider("expdiff", "Expert difficulty", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
-            KtaneFilter.Checkboxes("twitchplays", "Twitch Plays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
-            KtaneFilter.Checkboxes("ruleseed", "Rule seed", mod => mod.RuleSeedSupport, @"mod=>mod.RuleSeedSupport||'NotSupported'"),
-            KtaneFilter.Checkboxes("souvenir", "Souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
+            KtaneFilter.Checkboxes("Origin", "origin", mod => mod.Origin, @"mod=>mod.Origin"),
+            KtaneFilter.Checkboxes("Type", "type", mod => mod.Type, @"mod=>mod.Type"),
+            KtaneFilter.Slider("Defuser difficulty", "defdiff", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
+            KtaneFilter.Slider("Expert difficulty", "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
+            KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
+            KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, @"mod=>mod.RuleSeedSupport||'NotSupported'"),
+            KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
 
         static Selectable[] _selectables = Ut.NewArray(
             new Selectable
@@ -56,8 +56,8 @@ namespace KtaneWeb
                 HumanReadable = "Manual",
                 Accel = 'u',
                 IconFunction = @"(_,s)=>el('img', 'icon manual-icon', { title: 'Manual', alt: 'Manual', src: s[0]['icon'] })",
-                DataAttributeName = "manual",
-                DataAttributeFunction = @"(_,s)=>s",
+                PropName = "manual",
+                FncPropValue = @"(_,s)=>s",
                 HasValue = m => true,
                 UrlFunction = @"(_,s)=>s.length?s[0]['url']:null",
                 ShowIconFunction = @"(_,s)=>!!s.length",
@@ -68,8 +68,8 @@ namespace KtaneWeb
                 HumanReadable = "Steam Workshop",
                 Accel = 'h',
                 Icon = "HTML/img/steam-workshop-item.png",
-                DataAttributeName = "steam",
-                DataAttributeFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
+                PropName = "steam",
+                FncPropValue = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
                 UrlFunction = @"mod=>`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`",
                 ShowIconFunction = @"mod=>!!mod.SteamID",
                 HasValue = m => m.SteamID != null
@@ -79,8 +79,8 @@ namespace KtaneWeb
                 HumanReadable = "Source code",
                 Accel = 'c',
                 Icon = "HTML/img/unity.png",
-                DataAttributeName = "source",
-                DataAttributeFunction = @"mod=>mod.SourceUrl",
+                PropName = "source",
+                FncPropValue = @"mod=>mod.SourceUrl",
                 UrlFunction = @"mod=>mod.SourceUrl",
                 ShowIconFunction = @"mod=>!!mod.SourceUrl",
                 HasValue = m => m.SourceUrl != null
@@ -90,8 +90,8 @@ namespace KtaneWeb
                 HumanReadable = "Tutorial video",
                 Accel = 'T',
                 Icon = "HTML/img/video.png",
-                DataAttributeName = "video",
-                DataAttributeFunction = @"mod=>mod.TutorialVideoUrl",
+                PropName = "video",
+                FncPropValue = @"mod=>mod.TutorialVideoUrl",
                 UrlFunction = @"mod=>mod.TutorialVideoUrl",
                 ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl",
                 HasValue = m => m.TutorialVideoUrl != null
@@ -214,7 +214,7 @@ namespace KtaneWeb
                                     new DIV(
                                         new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
                                         new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
-                                _filters.Select(filter => new DIV { class_ = "filter " + filter.DataAttributeName }._(filter.ToHtml())),
+                                _filters.Select(filter => new DIV { class_ = "filter " + filter.PropName }._(filter.ToHtml())),
                                 new DIV { class_ = "sort" }._(
                                     new H4("Sort order:"),
                                     new DIV(
@@ -235,8 +235,8 @@ namespace KtaneWeb
                                 new DIV { class_ = "link-targets" }._(
                                     new H4("Make links go to:"),
                                     _selectables.Select(sel => new DIV(
-                                        new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.DataAttributeName}" }.Data("selectable", sel.DataAttributeName), " ",
-                                        new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.DataAttributeName}", for_ = $"selectable-{sel.DataAttributeName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
+                                        new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
+                                        new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
                                     new DIV { id = "include-missing" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
                                         new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),

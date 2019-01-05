@@ -8,15 +8,15 @@ namespace KtaneWeb
 {
     abstract class KtaneFilter
     {
-        public string DataAttributeName { get; private set; }
         public string ReadableName { get; private set; }
-        public string DataAttributeFunction { get; private set; }
+        public string PropName { get; private set; }
+        public string FncPropValue { get; private set; }
 
-        public KtaneFilter(string dataAttributeName, string readableName, string dataAttributeFunction)
+        public KtaneFilter(string readableName, string propName, string fncPropValue)
         {
-            DataAttributeName = dataAttributeName;
+            PropName = propName;
             ReadableName = readableName;
-            DataAttributeFunction = dataAttributeFunction;
+            FncPropValue = fncPropValue;
         }
 
         public abstract JsonDict ToJson();
@@ -24,10 +24,10 @@ namespace KtaneWeb
         public abstract string GetDataAttributeValue(KtaneModuleInfo mod);
         public abstract bool Matches(KtaneModuleInfo module, JsonDict json);
 
-        public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
-        public static KtaneFilter Slider<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum?> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsSlider(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
-        public static KtaneFilter Checkboxes<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsCheckboxes(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
-        public static KtaneFilter Checkboxes<TEnum>(string dataAttributeName, string readableName, Func<KtaneModuleInfo, TEnum?> getValue, string dataAttributeFunction) where TEnum : struct => new KtaneFilterOptionsCheckboxes(dataAttributeName, readableName, typeof(TEnum), mod => getValue(mod), dataAttributeFunction);
+        public static KtaneFilter Slider<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsSlider(propName, readableName, typeof(TEnum), mod => getValue(mod), fncPropValue);
+        public static KtaneFilter Slider<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum?> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsSlider(propName, readableName, typeof(TEnum), mod => getValue(mod), fncPropValue);
+        public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
+        public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum?> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
     }
 
     abstract class KtaneFilterOptions : KtaneFilter
@@ -36,7 +36,7 @@ namespace KtaneWeb
         public Func<KtaneModuleInfo, object> GetValue { get; private set; }
         public KtaneFilterOption[] Options { get; private set; }
 
-        public KtaneFilterOptions(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, dataAttributeFunction)
+        public KtaneFilterOptions(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : base(readableName, propName, fncPropValue)
         {
             EnumType = enumType ?? throw new ArgumentNullException(nameof(enumType));
             GetValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
@@ -51,16 +51,16 @@ namespace KtaneWeb
 
     sealed class KtaneFilterOptionsCheckboxes : KtaneFilterOptions
     {
-        public KtaneFilterOptionsCheckboxes(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, enumType, getValue, dataAttributeFunction) { }
+        public KtaneFilterOptionsCheckboxes(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : base(readableName, propName, fncPropValue, enumType, getValue) { }
         public override JsonDict ToJson() => new JsonDict {
-            { "id", DataAttributeName },
-            { "fnc", new JsonRaw(DataAttributeFunction) },
+            { "id", PropName },
+            { "fnc", new JsonRaw(FncPropValue) },
             { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
             { "type", "checkboxes" }
         };
         public override object ToHtml() => Ut.NewArray<object>(
             new H4(ReadableName, ":"),
-            Options.Select(opt => $"filter-{DataAttributeName}-{opt.Name}".Apply(id => new DIV(
+            Options.Select(opt => $"filter-{PropName}-{opt.Name}".Apply(id => new DIV(
                 new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
                 new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value))))));
         public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod)?.ToString();
@@ -78,17 +78,17 @@ namespace KtaneWeb
 
     sealed class KtaneFilterOptionsSlider : KtaneFilterOptions
     {
-        public KtaneFilterOptionsSlider(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(dataAttributeName, readableName, enumType, getValue, dataAttributeFunction) { }
+        public KtaneFilterOptionsSlider(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(readableName, dataAttributeName, dataAttributeFunction, enumType, getValue) { }
         public override JsonDict ToJson() => new JsonDict {
-            { "id", DataAttributeName },
-            { "fnc", new JsonRaw(DataAttributeFunction) },
+            { "id", PropName },
+            { "fnc", new JsonRaw(FncPropValue) },
             { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
             { "type", "slider" }
         };
         public override object ToHtml() => Ut.NewArray<object>(
             new H4(ReadableName, ":"),
-            new DIV { id = "filter-" + DataAttributeName, class_ = "slider" },
-            new DIV { id = "filter-label-" + DataAttributeName, class_ = "slider-label" });
+            new DIV { id = "filter-" + PropName, class_ = "slider" },
+            new DIV { id = "filter-label-" + PropName, class_ = "slider-label" });
         public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod)?.ToString();
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)

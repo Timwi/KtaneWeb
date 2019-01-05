@@ -470,14 +470,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         for (var ix = 0; ix < initFilters.length; ix++)
         {
             var value = initFilters[ix].fnc(mod);
-            if (value == undefined) continue;
-            mod[initFilters[ix].id] = value;
+            if (typeof value !== 'undefined')
+                mod[initFilters[ix].id] = value;
         }
         for (var ix = 0; ix < initSelectables.length; ix++)
         {
             var sel = initSelectables[ix];
-            var dataVal = sel.DataAttributeFunction(mod, mod.Manuals);
-            if (dataVal != undefined)
+            var dataVal = sel.FncPropValue(mod, mod.Manuals);
+            if (typeof dataVal !== 'undefined')
                 mod[sel.DataAttributeName] = dataVal;
             var td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}`);
             mod.tr.appendChild(td);

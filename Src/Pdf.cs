@@ -29,7 +29,7 @@ namespace KtaneWeb
 
                 var json = JsonValue.Parse(req.Post["json"].Value);
                 var pdfs = new List<string>();
-                var selectable = json["filter"]["includeMissing"].GetBool() ? null : _selectables.Single(s => s.DataAttributeName == json["selectable"].GetString());
+                var selectable = json["filter"]["includeMissing"].GetBool() ? null : _selectables.Single(s => s.PropName == json["selectable"].GetString());
                 var keywords = json["search"].GetString().Length == 0 ? null : json["search"].GetString().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 var searchOptions = json["searchOptions"].GetList().Select(j => j.GetString()).ToArray();
                 var filterEnabledByProfile = json["filterEnabledByProfile"].GetBool();
@@ -43,7 +43,7 @@ namespace KtaneWeb
                         return false;
 
                     foreach (var filter in _filters)
-                        if (!filter.Matches(m, json["filter"].Safe[filter.DataAttributeName].GetDictSafe()))
+                        if (!filter.Matches(m, json["filter"].Safe[filter.PropName].GetDictSafe()))
                             return false;
 
                     return keywords == null ||

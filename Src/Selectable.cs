@@ -9,8 +9,8 @@ namespace KtaneWeb
         public char? Accel;
         public string Icon;
         public string IconFunction;
-        public string DataAttributeName;
-        public string DataAttributeFunction;
+        public string PropName;
+        public string FncPropValue;
         public Func<KtaneModuleInfo, bool> HasValue;
         public string UrlFunction;
         public string ShowIconFunction;
@@ -23,12 +23,12 @@ namespace KtaneWeb
             // Strings
             if (HumanReadable != null) dict["HumanReadable"] = HumanReadable;
             if (Icon != null) dict["Icon"] = Icon;
-            if (DataAttributeName != null) dict["DataAttributeName"] = DataAttributeName;
+            if (PropName != null) dict["PropName"] = PropName;
             if (CssClass != null) dict["CssClass"] = CssClass;
 
             // Functions
             if (IconFunction != null) dict["IconFunction"] = new JsonRaw(IconFunction);
-            if (DataAttributeFunction != null) dict["DataAttributeFunction"] = new JsonRaw(DataAttributeFunction);
+            if (FncPropValue != null) dict["FncPropValue"] = new JsonRaw(FncPropValue);
             if (UrlFunction != null) dict["UrlFunction"] = new JsonRaw(UrlFunction);
             if (ShowIconFunction != null) dict["ShowIconFunction"] = new JsonRaw(ShowIconFunction);
 
