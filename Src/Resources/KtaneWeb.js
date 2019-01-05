@@ -426,7 +426,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         return false;
                     };
                 }(mod.Manuals[i].name);
-                var link = $(`<a href='${mod.Manuals[i].url + seedHash}'>${r1[2]}</a>`).click(clickHandler);
+                var link = $(`<a href='${escape(mod.Manuals[i].url + seedHash)}'>${r1[2]}</a>`).click(clickHandler);
                 if (!(r1[1] in already))
                 {
                     var trow;
