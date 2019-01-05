@@ -720,7 +720,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             else if (e.keyCode === 13)
             {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
-                    window.location.href = $(visibleMods()[selectedRow]).find('a.modlink').attr("href");
+                    window.location.href = $(visibleMods()[selectedRow].tr).find('a.modlink').attr("href");
                 else
                 {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
