@@ -532,55 +532,67 @@ div.popup {
         margin: .1em .25em;
     }
 
-    div.popup table.manual-select {
-        border: none;
+    div.popup div.manual-select {
+        display: table;
+        width: 100%;
     }
 
-        div.popup table.manual-select tr:hover {
-            background: #ccf;
+        div.popup div.manual-select > div {
+            display: table-row;
         }
 
-        div.popup table.manual-select td {
-            border: none;
+            div.popup div.manual-select > div:hover {
+                background: #ccf;
+            }
+
+            div.popup div.manual-select > div > div, div.popup div.manual-select div.mobile-cell > div {
+                display: table-cell;
+                vertical-align: middle;
+                padding: .2em .7em;
+            }
+
+        div.popup div.manual-select div.mobile-cell {
+            display: contents;
         }
 
-            div.popup table.manual-select td.title {
-                font-size: 15pt;
+        div.popup div.manual-select div.title {
+            font-size: 15pt;
+            font-weight: bold;
+        }
+
+        div.popup div.manual-select div.language {
+            font-size: 12pt;
+        }
+
+        div.popup div.manual-select div.extra {
+            font-size: 9pt;
+        }
+
+            div.popup div.manual-select div.extra .descriptor {
                 font-weight: bold;
             }
 
-            div.popup table.manual-select td.language {
-                font-size: 12pt;
+        div.popup div.manual-select div.link {
+            padding-left: 1.5em;
+            position: relative;
+        }
+
+            div.popup div.manual-select div.link:hover {
+                background: navy;
+                color: white;
             }
 
-            div.popup table.manual-select td.extra {
-                font-size: 9pt;
+                div.popup div.manual-select div.link:hover a {
+                    color: #aaf;
+                }
+
+            div.popup div.manual-select div.link.checked:before {
+                position: absolute;
+                content: '✓';
+                left: 0.3em;
+                top: 50%;
+                transform: translateY(-50%);
             }
-
-                div.popup table.manual-select td.extra .descriptor {
-                    font-weight: bold;
-                }
-
-            div.popup table.manual-select td.link {
-                padding-left: 1.5em;
-            }
-
-                div.popup table.manual-select td.link:hover {
-                    background: navy;
-                    color: white;
-                }
-
-                    div.popup table.manual-select td.link:hover a {
-                        color: #aaf;
-                    }
-
-                div.popup table.manual-select td.link.checked:before {
-                    position: absolute;
-                    content: '✓';
-                    left: 0.3em;
-                    top: 50%;
-                    transform: translateY(-50%);
-                }
 
     div.popup h3 {
         margin: 2em 0 .5em;
@@ -1041,8 +1053,23 @@ pre.diff {
             padding: 2em 0 1em;
         }
 
-        div.popup menu.manual-select li {
-            padding: .5em 2em;
+        div.popup div.manual-select div.mobile-cell {
+            display: table-cell;
+            padding: .5em 0;
+        }
+
+            div.popup div.manual-select div.mobile-cell > div {
+                display: block;
+                padding: 0;
+            }
+
+        div.popup div.manual-select div.descriptor {
+            display: inline;
+        }
+
+        div.popup div.manual-select div.author {
+            display: inline;
+            padding-left: .75em;
         }
 
         div.popup p.small-print {

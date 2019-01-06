@@ -389,7 +389,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             {
                 menuDiv.append($('<div class="close">').click(disappear));
                 var iconsDiv = $('<div>').addClass('icons');
-                mod.tr.find('td.selectable:not(.manual) img.icon').each(function(_, ic)
+                $(mod.tr).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
                 {
                     var iconDiv = $("<div class='icon'><a class='icon-link'><img class='icon-img' /><span class='icon-label'></span></a></div>");
                     iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
@@ -399,20 +399,20 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 });
                 menuDiv.append(iconsDiv);
                 if ($('#display-souvenir').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text(mod.tr.find('.inf-souvenir').attr('title')));
+                    menuDiv.append($('<div class="module-further-info"></div>').text($(mod.tr).find('.inf-souvenir').attr('title')));
                 if ($('#display-twitch').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text(mod.TwitchPlaysSupport === "Supported" ? mod.tr.find('.inf-twitch').attr('title') : 'This module cannot be played in “Twitch Plays: KTANE”.'));
+                    menuDiv.append($('<div class="module-further-info"></div>').text(mod.TwitchPlaysSupport === "Supported" ? $(mod.tr).find('.inf-twitch').attr('title') : 'This module cannot be played in “Twitch Plays: KTANE”.'));
                 if ($('#display-rule-seed').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text(mod.RuleSeedSupport === "Supported" ? mod.tr.find('.inf-rule-seed').attr('title') : 'This module does not support rule modification through Rule Seed Modifier.'));
+                    menuDiv.append($('<div class="module-further-info"></div>').text(mod.RuleSeedSupport === "Supported" ? $(mod.tr).find('.inf-rule-seed').attr('title') : 'This module does not support rule modification through Rule Seed Modifier.'));
             }
             menuDiv.append('<p class="small-print">Select your preferred manual for this module.</p>');
-            var menu = $('<table>').addClass('manual-select').appendTo(menuDiv);
+            var menu = $('<div>').addClass('manual-select').appendTo(menuDiv);
             var seed = $('#rule-seed-input').val() | 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
             var already = {};
             for (var i = 0; i < mod.Manuals.length; i++)
             {
-                var r1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].name.substr(mod.Name.length));
+                var rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].name.substr(mod.Name.length));
                 var clickHandler = function(sh)
                 {
                     return function()
@@ -423,29 +423,26 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         return false;
                     };
                 }(mod.Manuals[i].name);
-                var link = $(`<a href='${escape(mod.Manuals[i].url + seedHash)}'>${r1[2]}</a>`).click(clickHandler);
-                if (!(r1[1] in already))
+                var link = $(`<a href='${escape(mod.Manuals[i].url + seedHash)}'>${rx1[2]}</a>`).click(clickHandler);
+                if (!(rx1[1] in already))
                 {
-                    var trow;
-                    var r2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(r1[1]);
-                    var r3 = /^translated(?: full)? \((.*) — (.*)\)$/.exec(r1[1]);
-                    var r4 = /^translated(?: full)? \((.*)\)$/.exec(r1[1]);
-                    var r5 = /^(.*) \((.*)\)$/.exec(r1[1]);
-                    if (r2)
-                        trow = `<tr><td class='language'>${r2[1]}</td><td class='title'>${r2[2]}</td><td class='extra'><div class='descriptor'>${r2[3]}</div><div class='author'>by ${r2[4]}</div></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
-                    else if (r3)
-                        trow = `<tr><td class='language'>${r3[1]}</td><td class='title'>${r3[2]}</td><td class='extra'></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
-                    else if (r4)
-                        trow = `<tr><td class='language'>${r4[1]}</td><td class='title'>${mod.Name}</td><td class='extra'></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
-                    else if (r5)
-                        trow = `<tr><td class='language'></td><td class='title'>${mod.Name}</td><td class='extra'><div class='descriptor'>${r5[1]}</div><div class='author'>by ${r5[2]}</div></td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
+                    var trow, rx2;
+                    if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(rx1[1]))
+                        trow = [rx2[1], rx2[2], `<div class='descriptor'>${rx2[3]}</div><div class='author'>by ${rx2[4]}</div>`];
+                    else if (rx2 = /^translated(?: full)? \((.*) — (.*)\)$/.exec(rx1[1]))
+                        trow = [rx2[1], rx2[2], ""];
+                    else if (rx2 = /^translated(?: full)? \((.*)\)$/.exec(rx1[1]))
+                        trow = [rx2[1], mod.Name, ""];
+                    else if (rx2 = /^(.*) \((.*)\)$/.exec(rx1[1]))
+                        trow = ["", mod.Name, `<div class='descriptor'>${rx2[1]}</div><div class='author'>by ${rx2[2]}</div>`];
                     else
-                        trow = `<tr><td class='language'></td><td class='title'>${mod.Name}</td><td class='extra'>${r1[1]}</td><td class='link-HTML'></td><td class='link-PDF'></td></tr>`;
-                    already[r1[1]] = $(trow).appendTo(menu);
-                    if (r1[2] === 'HTML')
-                        already[r1[1]].click(clickHandler);
+                        trow = ["", mod.Name, `<div class='descriptor'>${rx1[1]}</div>`];
+                    trowHtml = `<div><div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link-HTML'></div><div class='link-PDF'></div></div>`;
+                    already[rx1[1]] = $(trowHtml).appendTo(menu);
+                    if (rx1[2] === 'HTML')
+                        already[rx1[1]].click(clickHandler);
                 }
-                var link = already[r1[1]].find(`.link-${r1[2]}`).html(link).addClass('link').click(clickHandler);
+                var link = already[rx1[1]].find(`.link-${rx1[2]}`).html(link).addClass('link').click(clickHandler);
                 if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].name)
                     link.addClass('checked');
             }
@@ -717,7 +714,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             else if (e.keyCode === 13)
             {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
-                    window.location.href = $(visibleMods()[selectedRow].tr).find('a.modlink').attr("href");
+                    window.location.href = $(visibleMods()[selectedRow]).find('a.modlink').attr("href");
                 else
                 {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
