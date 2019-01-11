@@ -429,6 +429,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     var trow, rx2;
                     if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(rx1[1]))
                         trow = [rx2[1], rx2[2], `<div class='descriptor'>${rx2[3]}</div><div class='author'>by ${rx2[4]}</div>`];
+                    else if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*)$/.exec(rx1[1]))
+                        trow = [rx2[1], rx2[2], `<div class='descriptor'>${rx2[3]}</div>`];
                     else if (rx2 = /^translated(?: full)? \((.*) — (.*)\)$/.exec(rx1[1]))
                         trow = [rx2[1], rx2[2], ""];
                     else if (rx2 = /^translated(?: full)? \((.*)\)$/.exec(rx1[1]))
