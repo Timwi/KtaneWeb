@@ -423,7 +423,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         return false;
                     };
                 }(mod.Manuals[i].name);
-                var link = $(`<a href='${escape(mod.Manuals[i].url + seedHash)}'>${rx1[2]}</a>`).click(clickHandler);
+                var link = $(`<a href='${mod.Manuals[i].url + seedHash}'>${rx1[2]}</a>`).click(clickHandler);
                 if (!(rx1[1] in already))
                 {
                     var trow, rx2;
@@ -446,7 +446,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].name)
                     link.addClass('checked');
             }
-            menuDiv.append(`<p class="small-print"><a href="find-log?find=${escape(mod.ModuleID)}">Find example logfile</a></p>`);
+            menuDiv.append(`<p class="small-print"><a href="find-log?find=${encodeURIComponent(mod.ModuleID)}">Find example logfile</a></p>`);
 
             if (!isMobileOpt)
                 menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
@@ -458,7 +458,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     for (var modIx = 0; modIx < modules.length; modIx++)
     {
         var mod = modules[modIx];
-        mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => { return { name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${mod.Name}${arr[0]}.${arr[1]}`, icon: initIcons[arr[2]] }; });
+        mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => { return { name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`, icon: initIcons[arr[2]] }; });
         mod.tr = el("tr", `mod${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
         mainTable.appendChild(mod.tr);
         for (var ix = 0; ix < initFilters.length; ix++)
