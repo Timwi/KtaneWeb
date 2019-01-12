@@ -218,19 +218,19 @@ td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div {
     display: none;
 }
 
-tr.mod[data-compatibility="Untested"] .mod-name, #top-controls .temporary div.untested {
+tr.mod.compatibility-Untested .mod-name {
     padding-left: 1.5em;
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><text x=".5" y="1" font-size="0.99pt" font-family="Arial" fill="%23482" text-anchor="middle">?</text></svg>') left top no-repeat;
     background-size: 1em 1em;
 }
 
-tr.mod[data-compatibility="Unplayable"] .mod-name, #top-controls .temporary div.unplayable {
+tr.mod.compatibility-Unplayable .mod-name {
     padding-left: 1.5em;
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0 1 .5 0 1 1 z" fill="%23f24" stroke="none" /></svg>') left top no-repeat;
     background-size: 1em 1em;
 }
 
-tr.mod[data-compatibility="Problematic"] .mod-name, #top-controls .temporary div.problematic {
+tr.mod.compatibility-Problematic .mod-name {
     padding-left: 1.5em;
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle cx=".5" cy=".5" r=".5" fill="%23fc4" stroke="none" /></svg>') left top no-repeat;
     background-size: 1em 1em;

@@ -461,7 +461,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         var mod = modules[modIx];
         mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => { return { name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`, icon: initIcons[arr[2]] }; });
-        mod.tr = el("tr", `mod${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
+        mod.tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
         mainTable.appendChild(mod.tr);
         for (var ix = 0; ix < initFilters.length; ix++)
         {
