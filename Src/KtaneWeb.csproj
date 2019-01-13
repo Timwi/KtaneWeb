@@ -55,7 +55,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
     <Compile Include="Logfiles.cs" />
-    <Compile Include="IconSprite.cs" />
+    <Compile Include="ModuleInfoCache.cs" />
     <Compile Include="Pdf.cs" />
     <Compile Include="HistoryEntry.cs" />
     <Compile Include="GenerateProfile.cs" />

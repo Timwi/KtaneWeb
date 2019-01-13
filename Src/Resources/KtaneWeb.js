@@ -56,7 +56,7 @@ function el(tagName, className, ...args)
     return element;
 }
 
-function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes)
+function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
 {
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
@@ -481,8 +481,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 td.appendChild(el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, sel.IconFunction ? sel.IconFunction(mod, mod.Manuals) : el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon })));
         }
 
-        var icon = el("img", "mod-icon", { title: mod.Symbol, src: `Icons/${mod.Name}.png` });
-        icon.onerror = function() { this.src = 'Icons/blank.png'; };
+        var icon = el("div", "mod-icon", { title: mod.Symbol, /*src: `Icons/${mod.Name}.png`,*/ style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
         var td1 = el("td", "infos-1",
             el("div", "modlink-wrap",
                 el("a", "modlink",

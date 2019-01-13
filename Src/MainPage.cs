@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
 using RT.Util.ExtensionMethods;
-using RT.Util.Json;
-using RT.Util.Serialization;
 
 namespace KtaneWeb
 {
@@ -41,7 +38,7 @@ namespace KtaneWeb
         // Z
         // .    Filters
 
-        static KtaneFilter[] _filters = Ut.NewArray(
+        static readonly KtaneFilter[] _filters = Ut.NewArray(
             KtaneFilter.Checkboxes("Origin", "origin", mod => mod.Origin, @"mod=>mod.Origin"),
             KtaneFilter.Checkboxes("Type", "type", mod => mod.Type, @"mod=>mod.Type"),
             KtaneFilter.Slider("Defuser difficulty", "defdiff", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
@@ -50,7 +47,7 @@ namespace KtaneWeb
             KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, @"mod=>mod.RuleSeedSupport||'NotSupported'"),
             KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
 
-        static Selectable[] _selectables = Ut.NewArray(
+        static readonly Selectable[] _selectables = Ut.NewArray(
             new Selectable
             {
                 HumanReadable = "Manual",
@@ -97,20 +94,20 @@ namespace KtaneWeb
                 HasValue = m => m.TutorialVideoUrl != null
             });
 
+        static readonly (string readable, string id)[] _displays = Ut.NewArray(
+            (readable: "Description", id: "description"),
+            //(readable: "Author", id: "author"),
+            //(readable: "Type", id: "type"),
+            (readable: "Difficulty", id: "difficulty"),
+            (readable: "Origin", id: "origin"),
+            (readable: "Twitch support", id: "twitch"),
+            (readable: "Souvenir support", id: "souvenir"),
+            (readable: "Rule seed support", id: "rule-seed"),
+            (readable: "Date published", id: "published"),
+            (readable: "Module ID", id: "id"));
+
         private HttpResponse mainPage(HttpRequest req)
         {
-            var displays = Ut.NewArray(
-                new { Readable = "Description", Id = "description" },
-                //new { Readable = "Author", Id = "author" },
-                //new { Readable = "Type", Id = "type" },
-                new { Readable = "Difficulty", Id = "difficulty" },
-                new { Readable = "Origin", Id = "origin" },
-                new { Readable = "Twitch support", Id = "twitch" },
-                new { Readable = "Souvenir support", Id = "souvenir" },
-                new { Readable = "Rule seed support", Id = "rule-seed" },
-                new { Readable = "Date published", Id = "published" },
-                new { Readable = "Module ID", Id = "id" });
-
             var cssLink = req.Url.WithParent("css");
 #if DEBUG
             cssLink = cssLink.WithQuery("u", DateTime.UtcNow.Ticks.ToString());
@@ -203,9 +200,9 @@ namespace KtaneWeb
                             new DIV { class_ = "filters" }._(
                                 new DIV { class_ = "display" }._(
                                     new H4("Display:"),
-                                    displays.Select(dspl => new DIV(
-                                        new INPUT { id = "display-" + dspl.Id, name = "display", value = dspl.Id, class_ = "display", type = itype.checkbox },
-                                        new LABEL { for_ = "display-" + dspl.Id }._("\u00a0", dspl.Readable)))),
+                                    _displays.Select(dspl => new DIV(
+                                        new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
+                                        new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
                                 new DIV { class_ = "site-theme" }._(
                                     new H4("Site theme:"),
                                     new DIV(
@@ -303,18 +300,8 @@ namespace KtaneWeb
 
                         new Func<object>(() =>
                         {
-                            var modules = _config.Current.KtaneModules.Select(mod =>
-                            {
-                                var mods = ClassifyJson.Serialize(mod);
-                                mods["Sheets"] = _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
-                                return mods;
-                            }).ToJsonList();
-                            var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
-                            var disps = displays.Select(d => d.Id).ToJsonList();
-                            var filters = _filters.Select(f => f.ToJson()).ToJsonList();
-                            var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
-                            var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
-                            return new SCRIPTLiteral($@"initializePage({modules},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir});");
+                            ensureModuleInfoCache();
+                            return new SCRIPTLiteral(_moduleInfoCache.ModuleInfoJs);
                         })))));
             resp.UseGzip = UseGzipOption.DontUseGzip;
             return resp;
