@@ -72,7 +72,7 @@ namespace KtaneWeb
                 return true;
             var str = val.ToString();
             var dic = json.GetDict();
-            return dic.ContainsKey(str) && dic[str].GetBool();
+            return (dic.ContainsKey(str) && dic[str].GetBool()) || dic.All(v => !v.Value.GetBool());
         }
     }
 
