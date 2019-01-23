@@ -227,8 +227,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     function updateFilter()
     {
-        filter.includeMissing = $('input#filter-include-missing').prop('checked');
-
         var noneSelected = {};
         for (var i = 0; i < initFilters.length; i++)
         {
@@ -298,7 +296,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 searchWhat += ' ' + mod.Author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + mod.Description.toLowerCase();
-            if (filteredIn && (filter.includeMissing || selectable === 'manual' || mod[selectable]) && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
+            if (filteredIn && searchKeywords.filter(x => searchWhat.indexOf(x) !== -1).length === searchKeywords.length)
             {
                 modCount++;
                 mod.tr.style.display = '';
@@ -474,7 +472,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             var sel = initSelectables[ix];
             var dataVal = sel.FncPropValue(mod, mod.Manuals);
             if (typeof dataVal !== 'undefined')
-                mod[sel.DataAttributeName] = dataVal;
+                mod[sel.PropName] = dataVal;
             var td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}`);
             mod.tr.appendChild(td);
             if (sel.ShowIconFunction(mod, mod.Manuals))
@@ -588,8 +586,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 $('input#filter-' + initFilters[i].id).prop('checked', filter[initFilters[i].id]);
                 break;
         }
-
-        $('input#filter-include-missing').prop('checked', filter.includeMissing);
     }
 
     setLinksAndPreferredManuals();

@@ -18,7 +18,7 @@ namespace KtaneWeb
         // F    Find
         // G    Glossary
         // H    link to Steam Workshop item
-        // I    include missing
+        // I
         // J    JSON
         // K    Dark Theme
         // L    Light Theme
@@ -233,10 +233,7 @@ namespace KtaneWeb
                                     new H4("Make links go to:"),
                                     _selectables.Select(sel => new DIV(
                                         new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
-                                        new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
-                                    new DIV { id = "include-missing" }._(
-                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-include-missing" }, " ",
-                                        new LABEL { for_ = "filter-include-missing", accesskey = "i" }._("Include missing".Accel('I')))),
+                                        new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel))))),
                                 new DIV { class_ = "profile none-selected" }._(
                                     new H4("Profile:"),
                                     new DIV { class_ = "filter-profile" }._(
