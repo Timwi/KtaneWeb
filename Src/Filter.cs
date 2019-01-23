@@ -21,7 +21,6 @@ namespace KtaneWeb
 
         public abstract JsonDict ToJson();
         public abstract object ToHtml();
-        public abstract string GetDataAttributeValue(KtaneModuleInfo mod);
         public abstract bool Matches(KtaneModuleInfo module, JsonDict json);
 
         public static KtaneFilter Slider<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsSlider(propName, readableName, typeof(TEnum), mod => getValue(mod), fncPropValue);
@@ -63,7 +62,6 @@ namespace KtaneWeb
             Options.Select(opt => $"filter-{PropName}-{opt.Name}".Apply(id => new DIV(
                 new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
                 new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value))))));
-        public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod)?.ToString();
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
@@ -89,7 +87,6 @@ namespace KtaneWeb
             new H4(ReadableName, ":"),
             new DIV { id = "filter-" + PropName, class_ = "slider" },
             new DIV { id = "filter-label-" + PropName, class_ = "slider-label" });
-        public override string GetDataAttributeValue(KtaneModuleInfo mod) => GetValue(mod)?.ToString();
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
