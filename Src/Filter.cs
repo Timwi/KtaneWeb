@@ -76,7 +76,7 @@ namespace KtaneWeb
 
     sealed class KtaneFilterOptionsSlider : KtaneFilterOptions
     {
-        public KtaneFilterOptionsSlider(string dataAttributeName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string dataAttributeFunction) : base(readableName, dataAttributeName, dataAttributeFunction, enumType, getValue) { }
+        public KtaneFilterOptionsSlider(string propName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string fncPropValue) : base(readableName, propName, fncPropValue, enumType, getValue) { }
         public override JsonDict ToJson() => new JsonDict {
             { "id", PropName },
             { "fnc", new JsonRaw(FncPropValue) },

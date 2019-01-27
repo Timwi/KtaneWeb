@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
@@ -52,13 +52,10 @@ namespace KtaneWeb
             {
                 HumanReadable = "Manual",
                 Accel = 'u',
-                IconFunction = @"(_,s)=>el('img', 'icon manual-icon', { title: 'Manual', alt: 'Manual', src: s[0]['icon'] })",
+                Icon = "HTML/img/html_manual.png",
                 PropName = "manual",
-                FncPropValue = @"(_,s)=>s",
-                HasValue = m => true,
-                UrlFunction = @"(_,s)=>s.length?s[0]['url']:null",
-                ShowIconFunction = @"(_,s)=>!!s.length",
-                CssClass = "manual"
+                UrlFunction = @"mod=>null",
+                ShowIconFunction = @"(_,s)=>s.length>0"
             },
             new Selectable
             {
@@ -66,10 +63,8 @@ namespace KtaneWeb
                 Accel = 'h',
                 Icon = "HTML/img/steam-workshop-item.png",
                 PropName = "steam",
-                FncPropValue = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
-                UrlFunction = @"mod=>`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`",
+                UrlFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
                 ShowIconFunction = @"mod=>!!mod.SteamID",
-                HasValue = m => m.SteamID != null
             },
             new Selectable
             {
@@ -77,10 +72,8 @@ namespace KtaneWeb
                 Accel = 'c',
                 Icon = "HTML/img/unity.png",
                 PropName = "source",
-                FncPropValue = @"mod=>mod.SourceUrl",
                 UrlFunction = @"mod=>mod.SourceUrl",
                 ShowIconFunction = @"mod=>!!mod.SourceUrl",
-                HasValue = m => m.SourceUrl != null
             },
             new Selectable
             {
@@ -88,10 +81,8 @@ namespace KtaneWeb
                 Accel = 'T',
                 Icon = "HTML/img/video.png",
                 PropName = "video",
-                FncPropValue = @"mod=>mod.TutorialVideoUrl",
                 UrlFunction = @"mod=>mod.TutorialVideoUrl",
                 ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl",
-                HasValue = m => m.TutorialVideoUrl != null
             });
 
         static readonly (string readable, string id)[] _displays = Ut.NewArray(

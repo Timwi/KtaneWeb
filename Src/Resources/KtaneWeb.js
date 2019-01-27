@@ -62,7 +62,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
     var selectable = lStorage.getItem('selectable') || 'manual';
-    if (initSelectables.map(sel => sel.DataAttributeName).indexOf(selectable) === -1)
+    if (initSelectables.map(sel => sel.PropName).indexOf(selectable) === -1)
         selectable = 'manual';
     var preferredManuals = {};
     try { preferredManuals = JSON.parse(lStorage.getItem('preferredManuals') || '{}') || {}; }
@@ -335,11 +335,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
             $(mod.tr)
                 // Manual icon
-                .find('img.manual-icon').attr('src', manual.icon).end()
+                .find('img.icon[title="Manual"]').attr('src', manual.icon).end()
                 // Manual icon link
                 .find('a.manual').attr('href', manual.url + seedHash).end()
                 // Module text link
-                .find('a.modlink').attr('href', selectable === 'manual' ? (manual.url + seedHash) : mod[selectable]).end()
+                .find('a.modlink').attr('href', selectable === 'manual' ? (manual.url + seedHash) : (mod[selectable] || null)).end()
         });
         lStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
@@ -458,28 +458,26 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     for (var modIx = 0; modIx < modules.length; modIx++)
     {
         var mod = modules[modIx];
-        mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => { return { name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`, icon: initIcons[arr[2]] }; });
-        mod.tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
-        mainTable.appendChild(mod.tr);
+        mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => ({ name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`, icon: initIcons[arr[2]] }));
         for (var ix = 0; ix < initFilters.length; ix++)
         {
             var value = initFilters[ix].fnc(mod);
             if (typeof value !== 'undefined')
                 mod[initFilters[ix].id] = value;
         }
+
+        mod.tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
+        mainTable.appendChild(mod.tr);
         for (var ix = 0; ix < initSelectables.length; ix++)
         {
             var sel = initSelectables[ix];
-            var dataVal = sel.FncPropValue(mod, mod.Manuals);
-            if (typeof dataVal !== 'undefined')
-                mod[sel.PropName] = dataVal;
-            var td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}${sel.CssClass ? " " + sel.CssClass : ""}`);
+            var td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}`);
             mod.tr.appendChild(td);
             if (sel.ShowIconFunction(mod, mod.Manuals))
-                td.appendChild(el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, sel.IconFunction ? sel.IconFunction(mod, mod.Manuals) : el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon })));
+                td.appendChild(el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon })));
         }
 
-        var icon = el("div", "mod-icon", { title: mod.Symbol, /*src: `Icons/${mod.Name}.png`,*/ style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
+        var icon = el("div", "mod-icon", { title: mod.Symbol, style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
         var td1 = el("td", "infos-1",
             el("div", "modlink-wrap",
                 el("a", "modlink",
