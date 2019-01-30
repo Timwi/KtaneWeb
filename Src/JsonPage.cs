@@ -68,6 +68,7 @@ namespace KtaneWeb
             {
                 return jsonDefaultPage(req, editable: true, error: $"{e.Message} ({e.GetType().Name})");
             }
+            _moduleInfoCache = null;
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
@@ -134,6 +135,7 @@ namespace KtaneWeb
             {
                 return jsonDefaultPage(req, editable, error: $"{e.Message} ({e.GetType().Name})");
             }
+            _moduleInfoCache = null;
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
@@ -159,6 +161,8 @@ namespace KtaneWeb
             {
                 return jsonDefaultPage(req, editable, content, error: $"{e.Message} ({e.GetType().Name})");
             }
+            if (editable)
+                _moduleInfoCache = null;
             return HttpResponse.Redirect(req.Url.WithPath("").ToHref());
         }
 
