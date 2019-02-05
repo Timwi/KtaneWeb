@@ -99,15 +99,6 @@ textarea {
             padding-left: .5em;
         }
 
-div .error {
-    background: #fee;
-    text-align: center;
-    border: 1px solid black;
-    font-size: 115%;
-    padding: 1em 3em;
-    margin: .5em 0;
-}
-
 div.modlink-wrap {
     line-height: 1;
 }
@@ -275,70 +266,9 @@ body.sort-published #main-table th.infos::after {
 
 #icons {
     float: right;
-    font-size: 85%;
     padding-top: 2.5em;
 }
 
-#profiles {
-    display: none;
-    width: 25em;
-}
-
-    #profiles > p.editor {
-        font-size: 150%;
-        text-align: center;
-        margin: .5em 0 1em;
-        font-weight: bold;
-    }
-
-    #profiles > p.heading {
-        font-size: 12pt;
-        border-top: 1px solid #ccc;
-        padding: 2em 0 0;
-        margin: .25em;
-        text-align: center;
-        font-weight: bold;
-    }
-
-    #profiles > p.zip {
-        font-size: 12pt;
-        margin: 0 0 1.5em;
-        text-align: center;
-    }
-
-    #profiles > div.wrapper {
-        display: flex;
-        flex-direction: row;
-    }
-
-        #profiles > div.wrapper > div {
-            flex: 1;
-            text-align: center;
-        }
-
-            #profiles > div.wrapper > div.defuser {
-                margin-right: 1em;
-                padding-right: 1em;
-                border-right: 1px solid #ccc;
-            }
-
-            #profiles > div.wrapper > div > p {
-                margin: 0;
-                font-size: 11pt;
-            }
-
-            #profiles > div.wrapper > div > menu {
-                list-style-type: none;
-                padding: 0;
-            }
-
-                #profiles > div.wrapper > div > menu > li {
-                    padding: 0;
-                }
-
-            #profiles > div.wrapper > div > p.explain {
-                font-size: 8pt;
-            }
 
 /* Mobile interface only */
 #page-opt, td.mobile-ui {
@@ -381,7 +311,7 @@ body.sort-published #main-table th.infos::after {
 
         #main-table-container #tabs > .tab {
             display: inline-block;
-            background: #eef;
+            background-color: #eef;
             border: 1px solid #eef;
             border-bottom: none;
             border-top-color: #ccf;
@@ -391,10 +321,25 @@ body.sort-published #main-table th.infos::after {
             border-top-right-radius: .5em;
             text-decoration: none;
             color: #024;
-            padding: .1em .5em;
+            padding: .18em .5em .15em 28px;
             margin-left: .2em;
             vertical-align: bottom;
+            background-size: 20px 20px;
+            background-position: 4px center;
+            background-repeat: no-repeat;
         }
+
+            #main-table-container #tabs > .tab#rule-seed-link {
+                background-image: url(HTML/img/spanner.png);
+            }
+
+            #main-table-container #tabs > .tab#filters-link {
+                background-image: url(HTML/img/filter-icon.png);
+            }
+
+            #main-table-container #tabs > .tab#options-link {
+                background-image: url(HTML/img/sliders.png);
+            }
 
 #module-count {
     text-align: right;
@@ -421,31 +366,16 @@ body.sort-published #main-table th.infos::after {
     display: none;
 }
 
-/* Lay out the displays/themes/filters/selectables in a four-column way */
-#filters {
-    width: 42em;
+#filters, #options {
+    column-count: 2;
+    column-gap: 3em;
 }
 
-    #filters > div.filters {
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        height: 30em;
-    }
-
-        #filters > div.filters > div {
-            padding: 0 1.3em;
-        }
-
-        #filters > div.filters #include-missing {
-            margin-top: .5em;
-        }
-
-    #filters .profile.none-selected .filter-profile:not(.upload) {
+    #filters.no-profile-selected .filter-profile:not(.upload) {
         display: none;
     }
 
-    #filters .profile > .upload > label {
+    #filters .upload > label {
         text-decoration: underline;
         color: blue;
         cursor: pointer;
@@ -453,26 +383,8 @@ body.sort-published #main-table th.infos::after {
 
 #more {
     width: 35em;
-    padding: 2em;
+    padding: 0 2em 2em;
 }
-
-    #more h3 {
-        margin-bottom: 1em;
-        border-bottom: 1px solid #aaa;
-    }
-
-    #more h4 {
-        border-bottom: 1px solid #ccc;
-    }
-
-    #more li {
-        margin: 1em 0;
-    }
-
-        #more li div.link-extra {
-            margin-left: 1em;
-            font-size: 10pt;
-        }
 
     #more table {
         border: none;
@@ -501,14 +413,6 @@ body.sort-published #main-table th.infos::after {
             white-space: nowrap;
         }
 
-    #more > ul.dev {
-        margin: 0;
-    }
-
-    #more > .icon-credits {
-        margin: 1.5em 0 .5em;
-    }
-
     #more > .json {
         float: right;
         margin: 1.5em 0 .5em;
@@ -518,7 +422,7 @@ div.popup {
     display: none;
     position: absolute;
     border: 2px solid black;
-    padding: 10px;
+    padding: 2em;
     background: #fafaff;
     box-shadow: 5px 5px 5px rgba(0,0,0,.3);
 }
@@ -594,30 +498,28 @@ div.popup {
                 transform: translateY(-50%);
             }
 
-    div.popup h3 {
-        margin: 2em 0 .5em;
+    div.popup h3, div.popup h4 {
+        border-bottom: 1px solid #ccc;
     }
 
     div.popup h4 {
-        margin: 1em 0 .25em;
+        margin: 0 0 .5em;
+    }
+
+    div.popup .option-group:not(:last-child) {
+        margin-bottom: 1.5em;
     }
 
 .icons {
     text-align: center;
+    margin: 1em 0;
 }
 
-    .icons > .icon-page {
-        display: none;
-    }
-
-        .icons > .icon-page.shown {
-            display: inline;
-        }
-
     .icons .icon {
-        margin: 0 1em;
-        position: relative;
+        margin: 0 .6em;
         display: inline-block;
+        vertical-align: top;
+        padding-bottom: .25em;
     }
 
         .icons .icon.mobile-only {
@@ -632,29 +534,43 @@ div.popup {
                 color: #551A8B;
             }
 
-            .icons .icon > .icon-link button {
-                width: 60px;
-                border: none;
-                background: none;
-                padding: 0;
-                margin: 0;
-            }
-
-            .icons .icon > .icon-link button, .icons .icon > .icon-link label {
-                cursor: pointer;
-            }
-
             .icons .icon > .icon-link > .icon-img {
                 width: 60px;
             }
 
             .icons .icon > .icon-link > .icon-label {
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                top: 120%;
-                width: 130%;
+                display: block;
+                width: 5em;
             }
+
+ul.below-icons {
+    margin-top: 2.5em;
+}
+
+    ul.below-icons:not(.first) {
+        margin-top: 1.5em;
+        padding-top: .5em;
+        border-top: 1px solid #ccc;
+    }
+
+    ul.below-icons li {
+        margin: 1em 0;
+    }
+
+        ul.below-icons li div.link-extra {
+            margin-left: 1em;
+            font-size: 10pt;
+        }
+
+    ul.below-icons .important {
+        font-weight: bold;
+        font-size: 18pt;
+    }
+
+.pdf-merge {
+    text-align: center;
+    padding: .75em 0;
+}
 
 /* When RULE SEED is active */
 body.rule-seed-active tr.mod.rs td.infos-1 {
@@ -745,7 +661,7 @@ pre.diff {
         float: none;
         width: 35em;
         padding-right: 10em;
-        margin: -3.5em auto 5.5em;
+        margin: -3.5em auto 2em;
         text-align: right;
     }
 
@@ -828,15 +744,6 @@ pre.diff {
         width: 33em;
     }
 
-    /* Lay out the filters in a two-column way */
-    #filters {
-        width: 30em;
-    }
-
-        #filters > div.filters {
-            height: 45em;
-        }
-
     tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
         padding-left: 3.5em;
         background-position: 2.25em 50%;
@@ -875,10 +782,6 @@ pre.diff {
     }
 
     #main-content > #icons {
-        display: none;
-    }
-
-    #icon-page-next {
         display: none;
     }
 
@@ -1084,58 +987,41 @@ pre.diff {
         display: none;
     }
 
-    div.popup {
-        padding: 1.5em .5em;
+    div.popup > div.icons, div.popup > #icons {
+        float: none;
+        padding: 0;
+        line-height: 140px;
     }
 
-        div.popup > div.icons, div.popup > #icons {
-            float: none;
-            padding: 0;
-            line-height: 140px;
+        div.popup > div.icons div.icon {
+            display: inline-block;
+            margin: 0 .6em;
+            text-align: center;
+            vertical-align: top;
+            line-height: 1.4;
         }
 
-            div.popup > div.icons > div.icon-page {
+            div.popup > div.icons div.icon > .icon-link > .icon-img {
+                width: 60px;
+            }
+
+            div.popup > div.icons div.icon > .icon-link > .icon-label {
+                position: static;
                 display: block;
+                margin-top: .5em;
+                width: 5em;
+                transform: none;
             }
 
-            div.popup > div.icons div.icon {
-                display: inline-block;
-                margin: 0 .6em;
-                text-align: center;
-                vertical-align: top;
-                line-height: 1.4;
-            }
-
-                div.popup > div.icons div.icon > .icon-link > .icon-img {
-                    width: 60px;
-                }
-
-                div.popup > div.icons div.icon > .icon-link > .icon-label {
-                    position: static;
-                    display: block;
-                    margin-top: .5em;
-                    width: 5em;
-                    transform: none;
-                }
-
-        div.popup div.module-further-info {
-            padding: .7em .5em;
-            font-size: 90%;
-            border-top: 1px solid #ccc;
-            border-bottom: 1px solid #ccc;
-        }
-
-            div.popup div.module-further-info + div.module-further-info {
-                border-top: none;
-            }
-
-    #filters > div.filters {
-        font-size: 75%;
-        height: 55em;
+    div.popup div.module-further-info {
+        padding: .7em .5em;
+        font-size: 90%;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
     }
 
-        #filters > div.filters > div {
-            padding: 0 1.5em;
+        div.popup div.module-further-info + div.module-further-info {
+            border-top: none;
         }
 
     #more div.highlighting-controls {
@@ -1188,6 +1074,10 @@ pre.diff {
             background-size: cover;
             background-repeat: no-repeat;
         }
+
+    #filters, #options {
+        column-count: initial;
+    }
 }
 
 @media print {

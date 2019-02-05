@@ -190,7 +190,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     profileVetoList = profile.DisabledList;
                     $(".filter-profile-enabled-text").text('\u00a0Enabled by ' + file.name);
                     $(".filter-profile-disabled-text").text('\u00a0Vetoed by ' + file.name);
-                    $(".profile").removeClass("none-selected");
+                    $("#filters").removeClass("no-profile-selected");
                     $('#filter-profile-enabled').prop('checked', true);
                     $('#filter-profile-disabled').prop('checked', false);
                     updateFilter();
@@ -271,18 +271,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             var filteredIn = true;
             for (var i = 0; i < initFilters.length; i++)
             {
-                if (initFilters[i].id in mod)
+                if (typeof initFilters[i].fnc(mod) !== 'undefined')
                 {
                     switch (initFilters[i].type)
                     {
                         case "slider":
-                            filteredIn = filteredIn && initFilters[i].values.indexOf(mod[initFilters[i].id]) >= filter[initFilters[i].id].min && initFilters[i].values.indexOf(mod[initFilters[i].id]) <= filter[initFilters[i].id].max;
+                            filteredIn = filteredIn && initFilters[i].values.indexOf(initFilters[i].fnc(mod)) >= filter[initFilters[i].id].min && initFilters[i].values.indexOf(initFilters[i].fnc(mod)) <= filter[initFilters[i].id].max;
                             break;
                         case "checkboxes":
-                            filteredIn = filteredIn && (filter[initFilters[i].id][mod[initFilters[i].id]] || noneSelected[initFilters[i].id]);
+                            filteredIn = filteredIn && (filter[initFilters[i].id][initFilters[i].fnc(mod)] || noneSelected[initFilters[i].id]);
                             break;
                         case "boolean":
-                            filteredIn = filteredIn && (!filter[initFilters[i].id] || mod[initFilters[i].id] === 'True');
+                            filteredIn = filteredIn && (!filter[initFilters[i].id] || initFilters[i].fnc(mod) === 'True');
                             break;
                     }
                 }
@@ -339,7 +339,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 // Manual icon link
                 .find('a.manual').attr('href', manual.url + seedHash).end()
                 // Module text link
-                .find('a.modlink').attr('href', selectable === 'manual' ? (manual.url + seedHash) : (mod[selectable] || null)).end()
+                .find('a.modlink').attr('href', selectable === 'manual' ? (manual.url + seedHash) : (initSelectables.filter(sl => sl.PropName === selectable).map(sl => sl.UrlFunction(mod))[0] || null)).end()
         });
         lStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
@@ -454,18 +454,20 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         };
     }
 
-    // ** GENERATE THE MAIN TABLE ** //
+    // ** PROCESS ALL THE MODULES ** //
     for (var modIx = 0; modIx < modules.length; modIx++)
     {
         var mod = modules[modIx];
-        mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => ({ name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`, url: `${initDocDirs[(arr[2] / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`, icon: initIcons[arr[2]] }));
-        for (var ix = 0; ix < initFilters.length; ix++)
-        {
-            var value = initFilters[ix].fnc(mod);
-            if (typeof value !== 'undefined')
-                mod[initFilters[ix].id] = value;
-        }
 
+        // Construct the list of manuals. (The list provided in .Sheets is kinda compressed.)
+        mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => ({
+            name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`,
+            url: `${initDocDirs[(arr[2] / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`,
+            icon: initIcons[arr[2]]
+        }));
+
+
+        // ** GENERATE THE MAIN TABLE ** //
         mod.tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
         mainTable.appendChild(mod.tr);
         for (var ix = 0; ix < initSelectables.length; ix++)
@@ -613,22 +615,23 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     function popup(lnk, wnd, width)
     {
-        if (!wnd.is(':visible'))
+        var wasVisible = wnd.is(':visible');
+        disappear();
+        if (!wasVisible)
         {
-            disappear();
+            wnd.css({ left: '', top: '' });
             wnd.show();
             if (window.innerWidth <= 650)
             {
                 // Mobile interface: CSS does it all
-                wnd.css({ width: '', left: '', top: '' });
-            } else
+                wnd.css({ width: '' });
+            }
+            else
             {
                 // Desktop interface: position relative to the tab
-                wnd.css({ width: width || wnd.data('width') }).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
+                wnd.css({ width: width || wnd.data('width') }).position({ my: `${lnk.data('my') || 'right'} top`, at: `${lnk.data('at') || 'right'} bottom`, of: lnk, collision: 'fit none' });
             }
         }
-        else
-            disappear();
         return false;
     }
 

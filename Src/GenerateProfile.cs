@@ -18,26 +18,15 @@ namespace KtaneWeb
             public Stream GetSource() => new MemoryStream(Data);
         }
 
-        private HttpResponse generateProfile(HttpRequest req)
+        private HttpResponse generateProfileZip(HttpRequest req)
         {
-            byte[] generateDefExp(KtaneModuleDifficulty desired, int operation, Func<KtaneModuleInfo, bool> filter)
+            byte[] generateProfile(int operation, Func<KtaneModuleInfo, bool> filter)
             {
                 var jsonList = _config.Current.KtaneModules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy) && filter(k)).Select(k => k.ModuleID).ToJsonList();
                 return new JsonDict { { "DisabledList", jsonList }, { "Operation", operation } }.ToString().ToUtf8();
             }
 
-            HttpResponse generateDefExpResponse(HttpRequest rq, int operation, string name, Func<KtaneModuleInfo, KtaneModuleDifficulty, bool> filter)
-            {
-                var desired = EnumStrong.Parse<KtaneModuleDifficulty>(rq.Url.Path.Substring(1));
-                return HttpResponse.Create(
-                    generateDefExp(desired, operation, k => filter(k, desired)),
-                    "application/octet-stream",
-                    headers: new HttpResponseHeaders { ContentDisposition = new HttpContentDisposition { Mode = HttpContentDispositionMode.Attachment, Filename = name.Fmt(desired.ToReadable()) } });
-            }
-
             return new UrlResolver(
-                new UrlMapping(path: "/defuser", handler: rq => generateDefExpResponse(rq, 1, @"""Veto defuser {0}.json""", (k, d) => k.DefuserDifficulty == d)),
-                new UrlMapping(path: "/expert", handler: rq => generateDefExpResponse(rq, 0, @"""+ Expert {0}.json""", (k, d) => k.ExpertDifficulty != d)),
                 new UrlMapping(path: "/zip", handler: rq =>
                 {
                     using (var mem = new MemoryStream())
@@ -46,9 +35,13 @@ namespace KtaneWeb
                         zipFile.BeginUpdate(new MemoryArchiveStorage(FileUpdateMode.Direct));
                         foreach (var difficulty in EnumStrong.GetValues<KtaneModuleDifficulty>())
                         {
-                            zipFile.Add(new InMemoryDataSource(generateDefExp(difficulty, 1, k => k.DefuserDifficulty == difficulty)), @"Veto defuser {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
-                            zipFile.Add(new InMemoryDataSource(generateDefExp(difficulty, 0, k => k.ExpertDifficulty != difficulty)), @"+ Expert {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
+                            zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.DefuserDifficulty == difficulty)), @"Veto defuser {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
+                            zipFile.Add(new InMemoryDataSource(generateProfile(0, k => k.ExpertDifficulty != difficulty)), @"+ Expert {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
                         }
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.RuleSeedSupport != KtaneSupport.Supported)), @"Only rule-seeded.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.TwitchPlaysSupport != KtaneSupport.Supported)), @"Only Twitch Plays supported.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Souvenir == null || k.Souvenir.Status != KtaneModuleSouvenir.Supported)), @"Only Souvenir supported.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Compatibility != KtaneModuleCompatibility.Compatible)), @"Veto incompatible.json", CompressionMethod.Deflated, true);
                         zipFile.CommitUpdate();
                         zipFile.Close();
                         return HttpResponse.Create(mem.ToArray(), "application/octet-stream",

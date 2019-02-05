@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RT.Servers;
 using RT.TagSoup;
@@ -37,12 +37,13 @@ namespace KtaneWeb
         // Y    include/exclude needy modules
         // Z
         // .    Filters
+        // /    Options
 
         static readonly KtaneFilter[] _filters = Ut.NewArray(
-            KtaneFilter.Checkboxes("Origin", "origin", mod => mod.Origin, @"mod=>mod.Origin"),
-            KtaneFilter.Checkboxes("Type", "type", mod => mod.Type, @"mod=>mod.Type"),
             KtaneFilter.Slider("Defuser difficulty", "defdiff", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
             KtaneFilter.Slider("Expert difficulty", "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
+            KtaneFilter.Checkboxes("Type", "type", mod => mod.Type, @"mod=>mod.Type"),
+            KtaneFilter.Checkboxes("Origin", "origin", mod => mod.Origin, @"mod=>mod.Origin"),
             KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
             KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, @"mod=>mod.RuleSeedSupport||'NotSupported'"),
             KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
@@ -121,21 +122,17 @@ namespace KtaneWeb
                         new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
                         new DIV { id = "icons", class_ = "icons" }._(
                             new DIV { class_ = "icon-page shown" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link popup-link", href = "More/Profile%20Editor.html", id = "profiles-link" }.Data("popup", "profiles")._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label", id = "profiles-rel" }._("Profiles"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link", href = "/More/FAQs.html", id = "faq-link-mobile" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._("Glossary"))),
+                                new DIV { class_ = "icon", id = "links-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "links")._(new IMG { class_ = "icon-img", src = "HTML/img/links-icon.png" }, new SPAN { class_ = "icon-label" }._("Links"))),
+                                new DIV { class_ = "icon", id = "tools-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "tools")._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Tools"))),
+                                //new DIV { class_ = "icon", id = "view-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "view")._(new IMG { class_ = "icon-img", src = "HTML/img/view-icon.png" }, new SPAN { class_ = "icon-label" }._("View"))),
+                                new DIV { class_ = "icon", id = "more-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/spanner.png" }, new SPAN { class_ = "icon-label" }._("Rule seed"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/filter-icon.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "more-link-mobile" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More")))),
-                            new DIV { class_ = "icon-page" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Playing with Mods"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Making Mods"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://www.youtube.com/playlist?list=PL-1P5EmkkFxrAXBhqvyUAXH-ErGjh7Zrx" }._(new IMG { class_ = "icon-img", src = "HTML/img/video-playlist.png" }, new SPAN { class_ = "icon-label" }._("Tutorial videos playlist")))),
-                            new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "icon-page-next" }._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More")))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "options-link-mobile" }.Data("popup", "options")._(new IMG { class_ = "icon-img", src = "HTML/img/sliders.png" }, new SPAN { class_ = "icon-label" }._("Options"))))),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
 
+                        // SEARCH FIELD (and rule seed display on mobile)
                         new DIV { id = "top-controls" }._(
                             new DIV { class_ = "search-container" }._(
                                 new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
@@ -149,109 +146,68 @@ namespace KtaneWeb
                             new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
 
                         new DIV { id = "main-table-container" }._(
+
+                            // TABS
                             new DIV { id = "tabs" }._(
                                 new A { href = "#", class_ = "tab popup-link", id = "rule-seed-link", accesskey = "s" }.Data("popup", "rule-seed")._("Rule seed".Accel('s'), new SPAN { id = "rule-seed-number" }),
-                                new A { href = "/More/FAQs.html", class_ = "tab", id = "faq-link", accesskey = "g" }._("Glossary".Accel('G')),
                                 new A { href = "#", class_ = "tab popup-link", id = "filters-link", accesskey = "." }.Data("popup", "filters")._("Filters"),
-                                new A { href = "#", class_ = "tab popup-link", id = "more-link", accesskey = "/" }.Data("popup", "more")._("More")),
+                                new A { href = "#", class_ = "tab popup-link", id = "options-link", accesskey = "/" }.Data("popup", "options")._("Options")),
+
+                            // MAIN TABLE
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = _selectables.Length }._("Links"),
                                     new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._("Name")),
-                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information"))))),
+                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information")))),
+
+                            // PERIODIC TABLE
+                            new DIV { id = "main-periodic-table" }),
                         new DIV { id = "module-count" },
-                        new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")),
 
-                        new DIV { id = "profiles", class_ = "popup disappear stay" }._(
+                        // LINKS (icon popup)
+                        new DIV { id = "links", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
-                            new P { class_ = "editor" }._(new A { href = "More/Profile%20Editor.html", accesskey = "p" }._("Open Profile Editor".Accel('P'))),
-                            new P { class_ = "heading" }._("Download profiles by difficulty:"),
-                            new P { class_ = "zip" }._(new A { href = "/profile/zip" }._("Download all as ZIP")),
-                            new DIV { class_ = "wrapper" }._(
-                                new DIV { class_ = "defuser" }._(
-                                    new P("By defuser difficulty:"),
-                                    new MENU(EnumStrong.GetValues<KtaneModuleDifficulty>().Select(d => new LI(new A { href = "/profile/defuser/" + d }._(d.ToReadable())))),
-                                    new P { class_ = "explain" }._("These are veto profiles, i.e. you can use these to ", new EM("disable"), " certain modules.")),
-                                new DIV { class_ = "expert" }._(
-                                    new P("By expert difficulty:"),
-                                    new MENU(EnumStrong.GetValues<KtaneModuleDifficulty>().Select(d => new LI(new A { href = "/profile/expert/" + d }._(d.ToReadable())))),
-                                    new P { class_ = "explain" }._("These are expert profiles, i.e. you can use these to ", new EM("include"), " certain modules.")))),
+                            new DIV { class_ = "icons" }._(
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "/More/FAQs.html", accesskey = "g" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._("Glossary".Accel('G')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Playing with Mods"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Making Mods"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://www.youtube.com/playlist?list=PL-1P5EmkkFxrAXBhqvyUAXH-ErGjh7Zrx" }._(new IMG { class_ = "icon-img", src = "HTML/img/video-playlist.png" }, new SPAN { class_ = "icon-label" }._("Tutorial videos playlist")))),
+                            new UL { class_ = "below-icons" }._(
+                                new LI(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
+                                new LI(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement")),
+                                new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._("KtaneContent github repository"), new DIV { class_ = "link-extra" }._("(contains the manuals, Profile Editor, Logfile Analyzer and other static files)")),
+                                new LI(new A { href = "https://github.com/Timwi/KtaneWeb" }._("KtaneWeb github repository"), new DIV { class_ = "link-extra" }._("(contains this website’s server code)")))),
 
-                        new DIV { id = "rule-seed", class_ = "popup disappear stay" }._(
+                        // TOOLS (icon popup)
+                        new DIV { id = "tools", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
-                            new P { class_ = "ui" }._(
-                                "Rule seed: ",
-                                new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }),
-                            new P { class_ = "explain" }._("Varies the rules/manuals for supported modules."),
-                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=1224413364" }._("Rule Seed Modifier"), " mod."),
-                            new P { class_ = "explain" }._("Set to 1 to revert to default rules.")),
-
-                        new DIV { id = "filters", class_ = "popup disappear stay" }._(
-                            new DIV { class_ = "close" },
-                            new DIV { class_ = "filters" }._(
-                                new DIV { class_ = "display" }._(
-                                    new H4("Display:"),
-                                    _displays.Select(dspl => new DIV(
-                                        new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
-                                        new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
-                                new DIV { class_ = "site-theme" }._(
-                                    new H4("Site theme:"),
-                                    new DIV(
-                                        new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
-                                        new LABEL { for_ = "theme-default", accesskey = "l" }._("Light".Accel('L'))),
-                                    new DIV(
-                                        new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
-                                        new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
-                                _filters.Select(filter => new DIV { class_ = "filter " + filter.PropName }._(filter.ToHtml())),
-                                new DIV { class_ = "sort" }._(
-                                    new H4("Sort order:"),
-                                    new DIV(
-                                        new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-defuser-difficulty", accesskey = "o" }._("\u00a0Sort by defuser difficulty".Accel('o'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d')))),
-                                new DIV { class_ = "link-targets" }._(
-                                    new H4("Make links go to:"),
-                                    _selectables.Select(sel => new DIV(
-                                        new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
-                                        new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel))))),
-                                new DIV { class_ = "profile none-selected" }._(
-                                    new H4("Profile:"),
-                                    new DIV { class_ = "filter-profile" }._(
-                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
-                                        new LABEL { for_ = "filter-profile-enabled", class_ = "filter-profile-enabled-text" }),
-                                    new DIV { class_ = "filter-profile" }._(
-                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-disabled" },
-                                        new LABEL { for_ = "filter-profile-disabled", class_ = "filter-profile-disabled-text" }),
-                                    new DIV { class_ = "filter-profile upload" }._(
-                                        new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
-                                        new LABEL { for_ = "profile-file" }._("Filter by a profile"))))),
-
-                        new DIV { id = "more", class_ = "popup disappear stay" }._(
-                            new DIV { class_ = "close" },
+                            new DIV { class_ = "icons" }._(
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Profile Editor"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "/profile/zip", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Download pre-made profiles".Accel('p')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Mode Settings Editor")))),
                             !_pdfEnabled ? null : new DIV { class_ = "pdf-merge" }._(
                                 new FORM { action = "merge-pdf", method = method.post }._(
                                 new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
-                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter"))),
-                            new UL { class_ = "dev" }._(
-                                new LI(new A { href = "More/Periodic Table.html" }._("Periodic Table of Modules")),
+                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter")))),
+
+                        /*
+                        // VIEW (icon popup)
+                        new DIV { id = "view", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new DIV { class_ = "icons" }._(
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#" }._(new IMG { class_ = "icon-img", src = "HTML/img/list-icon.png" }, new SPAN { class_ = "icon-label" }._("List"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#" }._(new IMG { class_ = "icon-img", src = "HTML/img/grid-icon.png" }, new SPAN { class_ = "icon-label" }._("Periodic Table"))))),
+                        */
+
+                        // MORE (icon popup)
+                        new DIV { id = "more", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new UL { class_ = "below-icons first" }._(
+                                new LI(new A { href = "/puzzles", class_ = "important" }._("PUZZLES")),
                                 new LI(new A { href = "More/Experting Template.png" }._("Experting template"), new DIV { class_ = "link-extra" }._("(printable page with boxes to fill in while experting)")),
-                                new LI(new A { href = "https://form.jotform.com/62686042776162" }._("Submit an idea for a new mod")),
-                                new LI(new A { href = "https://form.jotform.com/62718595122156" }._("Find a mod idea to implement")),
-                                new LI(new A { href = "More/Template%20Manual.zip" }._("Template manual"), new DIV { class_ = "link-extra" }._("(for modders wishing to create a manual page for a new module)")),
-                                new LI(new A { href = "More/Mode Settings Editor.html" }._("Mode Settings Editor")),
-                                new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._("KtaneContent github repository"), new DIV { class_ = "link-extra" }._("(contains the manuals, Profile Editor, Logfile Analyzer and other static files)")),
-                                new LI(new A { href = "https://github.com/Timwi/KtaneWeb" }._("KtaneWeb github repository"), new DIV { class_ = "link-extra" }._("(contains this website’s server code)"))),
+                                new LI(new A { href = "More/Template%20Manual.zip" }._("Template manual"), new DIV { class_ = "link-extra" }._("(for modders wishing to create a manual page for a new module)"))),
                             new DIV { class_ = "highlighting-controls" }._(
                                 new H3("Controls to highlight elements in HTML manuals"),
                                 new TABLE { class_ = "highlighting-controls" }._(
@@ -284,13 +240,81 @@ namespace KtaneWeb
                                 new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J')))),
 
+                        // RULE SEED (tab popup)
+                        new DIV { id = "rule-seed", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new P { class_ = "ui" }._(
+                                "Rule seed: ",
+                                new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }),
+                            new P { class_ = "explain" }._("Varies the rules/manuals for supported modules."),
+                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=1224413364" }._("Rule Seed Modifier"), " mod."),
+                            new P { class_ = "explain" }._("Set to 1 to revert to default rules.")),
+
+                        // FILTERS (tab popup)
+                        new DIV { id = "filters", class_ = "popup disappear stay no-profile-selected" }._(
+                            new DIV { class_ = "close" },
+                            new DIV { class_ = "filters" }._(
+                                _filters.Select(filter => filter.ToHtml()),
+                                new H4("Sort order"),
+                                new DIV { class_ = "option-group" }._(
+                                    new DIV(
+                                        new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
+                                    new DIV(
+                                        new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defdiff", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-defuser-difficulty", accesskey = "o" }._("\u00a0Sort by defuser difficulty".Accel('o'))),
+                                    new DIV(
+                                        new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e'))),
+                                    new DIV(
+                                        new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
+                                    new DIV(
+                                        new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d')))),
+                                new H4("Profile"),
+                                new DIV { class_ = "option-group" }._(
+                                    new DIV { class_ = "filter-profile" }._(
+                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
+                                        new LABEL { for_ = "filter-profile-enabled", class_ = "filter-profile-enabled-text" }),
+                                    new DIV { class_ = "filter-profile" }._(
+                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-disabled" },
+                                        new LABEL { for_ = "filter-profile-disabled", class_ = "filter-profile-disabled-text" }),
+                                    new DIV { class_ = "filter-profile upload" }._(
+                                        new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
+                                        new LABEL { for_ = "profile-file" }._("Filter by a profile"))))),
+
+                        // OPTIONS (tab popup)
+                        new DIV { id = "options", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new H4("Display"),
+                            new DIV { class_ = "option-group" }._(
+                                _displays.Select(dspl => new DIV(
+                                    new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
+                                    new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
+                            new H4("Site theme"),
+                            new DIV { class_ = "option-group" }._(
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
+                                    new LABEL { for_ = "theme-default", accesskey = "l" }._("Light".Accel('L'))),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
+                                    new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
+                            new H4("Make links go to"),
+                            new DIV { class_ = "option-group" }._(
+                                _selectables.Select(sel => new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
+                                    new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))))),
+
                         new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
 
                         new Func<object>(() =>
                         {
                             ensureModuleInfoCache();
                             return new SCRIPTLiteral(_moduleInfoCache.ModuleInfoJs);
-                        })))));
+                        }),
+
+                        new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung"))))));
             resp.UseGzip = UseGzipOption.DontUseGzip;
             return resp;
         }
