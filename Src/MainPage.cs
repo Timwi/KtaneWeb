@@ -169,7 +169,7 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/Fv7YEDj" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "/More/FAQs.html", accesskey = "g" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._("Glossary".Accel('G')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/FAQs.html", accesskey = "g" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._("Glossary".Accel('G')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Entering%20the%20World%20of%20Mods.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Playing with Mods"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://docs.google.com/document/d/1fFkBprpo1CMy-EJ-TyD6C_NoX1_7kgiOFeCRdBsh6hk/edit?usp=sharing" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Making Mods"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://www.youtube.com/playlist?list=PL-1P5EmkkFxrAXBhqvyUAXH-ErGjh7Zrx" }._(new IMG { class_ = "icon-img", src = "HTML/img/video-playlist.png" }, new SPAN { class_ = "icon-label" }._("Tutorial videos playlist")))),
@@ -185,7 +185,7 @@ namespace KtaneWeb
                             new DIV { class_ = "icons" }._(
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Profile Editor"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "/profile/zip", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Download pre-made profiles".Accel('p')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "profile/zip", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Download pre-made profiles".Accel('p')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Mode Settings Editor")))),
                             !_pdfEnabled ? null : new DIV { class_ = "pdf-merge" }._(
                                 new FORM { action = "merge-pdf", method = method.post }._(
@@ -205,8 +205,9 @@ namespace KtaneWeb
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new UL { class_ = "below-icons first" }._(
-                                new LI(new A { href = "/puzzles", class_ = "important" }._("PUZZLES")),
-                                new LI(new A { href = "More/Experting Template.png" }._("Experting template"), new DIV { class_ = "link-extra" }._("(printable page with boxes to fill in while experting)")),
+                                new LI(new A { href = "puzzles", class_ = "important" }._("PUZZLES")),
+                                new LI(new A { href = "More/Periodic%20Table.html", class_ = "important" }._("Periodic Table of Modules")),
+                                new LI(new A { href = "More/Experting%20Template.png" }._("Experting template"), new DIV { class_ = "link-extra" }._("(printable page with boxes to fill in while experting)")),
                                 new LI(new A { href = "More/Template%20Manual.zip" }._("Template manual"), new DIV { class_ = "link-extra" }._("(for modders wishing to create a manual page for a new module)"))),
                             new DIV { class_ = "highlighting-controls" }._(
                                 new H3("Controls to highlight elements in HTML manuals"),
@@ -238,7 +239,7 @@ namespace KtaneWeb
                                 new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
                                 new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
                                 new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
-                            new DIV { class_ = "json" }._(new A { href = "/json", accesskey = "j" }._("See JSON".Accel('J')))),
+                            new DIV { class_ = "json" }._(new A { href = "json", accesskey = "j" }._("See JSON".Accel('J')))),
 
                         // RULE SEED (tab popup)
                         new DIV { id = "rule-seed", class_ = "popup disappear stay" }._(
