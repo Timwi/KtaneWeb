@@ -207,7 +207,6 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new UL { class_ = "below-icons first" }._(
                                 new LI(new A { href = "puzzles", class_ = "important" }._("PUZZLES")),
-                                new LI(new A { href = "More/Periodic%20Table.html", class_ = "important" }._("Periodic Table of Modules")),
                                 new LI(new A { href = "More/Experting%20Template.png" }._("Experting template"), new DIV { class_ = "link-extra" }._("(printable page with boxes to fill in while experting)")),
                                 new LI(new A { href = "More/Template%20Manual.zip" }._("Template manual"), new DIV { class_ = "link-extra" }._("(for modders wishing to create a manual page for a new module)"))),
                             new DIV { class_ = "highlighting-controls" }._(
