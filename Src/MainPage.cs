@@ -124,7 +124,7 @@ namespace KtaneWeb
                             new DIV { class_ = "icon-page shown" }._(
                                 new DIV { class_ = "icon", id = "links-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "links")._(new IMG { class_ = "icon-img", src = "HTML/img/links-icon.png" }, new SPAN { class_ = "icon-label" }._("Links"))),
                                 new DIV { class_ = "icon", id = "tools-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "tools")._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Tools"))),
-                                //new DIV { class_ = "icon", id = "view-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "view")._(new IMG { class_ = "icon-img", src = "HTML/img/view-icon.png" }, new SPAN { class_ = "icon-label" }._("View"))),
+                                new DIV { class_ = "icon", id = "view-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "view")._(new IMG { class_ = "icon-img", src = "HTML/img/view-icon.png" }, new SPAN { class_ = "icon-label" }._("View"))),
                                 new DIV { class_ = "icon", id = "more-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/spanner.png" }, new SPAN { class_ = "icon-label" }._("Rule seed"))),
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/filter-icon.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
@@ -161,7 +161,9 @@ namespace KtaneWeb
                                     new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information")))),
 
                             // PERIODIC TABLE
-                            new DIV { id = "main-periodic-table" }),
+                            new DIV { id = "main-periodic-table" }._(
+                                new DIV { id = "actual-periodic-table" },
+                                new DIV { id = "assignment-table" })),
                         new DIV { id = "module-count" },
 
                         // LINKS (icon popup)
@@ -192,14 +194,12 @@ namespace KtaneWeb
                                 new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
                                 new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter")))),
 
-                        /*
                         // VIEW (icon popup)
                         new DIV { id = "view", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#" }._(new IMG { class_ = "icon-img", src = "HTML/img/list-icon.png" }, new SPAN { class_ = "icon-label" }._("List"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#" }._(new IMG { class_ = "icon-img", src = "HTML/img/grid-icon.png" }, new SPAN { class_ = "icon-label" }._("Periodic Table"))))),
-                        */
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "list")._(new IMG { class_ = "icon-img", src = "HTML/img/list-icon.png" }, new SPAN { class_ = "icon-label" }._("List"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "periodic-table")._(new IMG { class_ = "icon-img", src = "HTML/img/grid-icon.png" }, new SPAN { class_ = "icon-label" }._("Periodic Table"))))),
 
                         // MORE (icon popup)
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
