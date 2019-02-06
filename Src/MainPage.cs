@@ -26,7 +26,7 @@ namespace KtaneWeb
         // N    sort by name
         // O    sort by defuser difficulty
         // P    Profile Editor
-        // Q
+        // Q    
         // R    include/exclude regular modules
         // S    Rule seed
         // T    link to Tutorial video
@@ -163,6 +163,7 @@ namespace KtaneWeb
                             // PERIODIC TABLE
                             new DIV { id = "main-periodic-table" }._(
                                 new DIV { id = "actual-periodic-table" },
+                                new DIV { id = "periodic-table-links" }._(new A { href = "#", id = "assignment-table-toggle" }._("Show assignment table")),
                                 new DIV { id = "assignment-table" })),
                         new DIV { id = "module-count" },
 

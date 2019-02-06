@@ -23,9 +23,9 @@ table {
     width: 100%;
 }
 
-    table#main-table {
-        display: none;
-    }
+#main-table {
+    display: none;
+}
 
 td, th {
     border: 1px solid black;
@@ -597,117 +597,149 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 
 
 /* Periodic Table of Modules */
-#main-periodic-table {
+#actual-periodic-table .module {
+    border: 2px solid #666;
+    width: 91px;
+    height: 58px;
+    float: left;
+    text-align: center;
+    position: relative;
+    margin-right: -2px;
+    margin-bottom: -2px;
+    display: block;
+    color: black;
 }
 
-    #main-periodic-table .module {
-        border: 2px solid #666;
-        width: 91px;
-        height: 58px;
-        float: left;
-        text-align: center;
-        position: relative;
-        margin-right: -2px;
-        margin-bottom: -2px;
-        display: block;
-        color: black;
+    #actual-periodic-table .module.highlight {
+        z-index: 100;
+        box-shadow: 0 0 10px rgba(0,0,0,.6);
+        border-color: black;
     }
 
-        #main-periodic-table .module.highlight {
-            z-index: 100;
-            box-shadow: 0 0 10px rgba(0,0,0,.6);
-            border-color: black;
-        }
+#actual-periodic-table .manual-selector {
+    display: block;
+    position: absolute;
+    right: 1px;
+    top: 20px;
+    width: 8px;
+    height: 10px;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 10"><path fill="hsl(240, 60%, 70%)" d="M0,0 8,0 4,10z" /></svg>');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
 
-    #main-periodic-table .manual-selector {
-        display: block;
-        position: absolute;
-        right: 1px;
-        top: 20px;
-        width: 8px;
-        height: 10px;
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 10"><path fill="hsl(240, 60%, 70%)" d="M0,0 8,0 4,10z" /></svg>');
+#actual-periodic-table .symbol {
+    font-family: Georgia;
+    position: absolute;
+    box-sizing: border-box;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 36px;
+    padding: 7px 7px 0 36px;
+    font-size: 18pt;
+    text-align: center;
+}
+
+    #actual-periodic-table .symbol .icon {
         background-repeat: no-repeat;
-        background-size: contain;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 32px;
+        height: 32px;
     }
 
-    #main-periodic-table .symbol {
-        font-family: Georgia;
+#actual-periodic-table .VeryEasy {
+    background-color: #dfd;
+}
+
+#actual-periodic-table .Easy {
+    background-color: #efd;
+}
+
+#actual-periodic-table .Medium {
+    background-color: #ffd;
+}
+
+#actual-periodic-table .Hard {
+    background-color: #fed;
+}
+
+#actual-periodic-table .VeryHard {
+    background-color: #fdd;
+}
+
+#actual-periodic-table .souvenir {
+    position: absolute;
+    left: 35px;
+    top: -1px;
+    font-size: 8pt;
+    text-align: left;
+}
+
+#actual-periodic-table .tpscore {
+    position: absolute;
+    right: 2px;
+    top: -1px;
+    font-size: 8pt;
+    text-align: right;
+}
+
+#actual-periodic-table .name {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 36px;
+    bottom: 1px;
+    font-family: 'Agency FB';
+    font-size: 9pt;
+    line-height: 1;
+}
+
+    #actual-periodic-table .name .inner {
         position: absolute;
-        box-sizing: border-box;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: 36px;
-        padding: 7px 7px 0 36px;
-        font-size: 18pt;
+        left: 50%;
+        top: 50%;
+        width: 100%;
+        transform: translate(-50%, -50%);
+    }
+
+#periodic-table-links {
+    clear: both;
+    padding-top: 2em;
+    font-size: 10pt;
+}
+
+#assignment-table {
+    display: none;
+    border-color: #ddd;
+    margin: 1em auto;
+}
+
+    #assignment-table th, #assignment-table td {
         text-align: center;
+        padding: .2em .2em;
+        border-color: #ddd;
     }
 
-        #main-periodic-table .symbol .icon {
-            background-repeat: no-repeat;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 32px;
-            height: 32px;
+        #assignment-table td.module {
+            padding: 0;
         }
 
-    #main-periodic-table .VeryEasy {
-        background-color: #dfd;
-    }
+            #assignment-table td.module .icon {
+                width: 32px;
+                height: 32px;
+                display: block;
+            }
 
-    #main-periodic-table .Easy {
-        background-color: #efd;
-    }
+            #assignment-table td.module.clash {
+                background-color: #f99;
+            }
 
-    #main-periodic-table .Medium {
-        background-color: #ffd;
-    }
-
-    #main-periodic-table .Hard {
-        background-color: #fed;
-    }
-
-    #main-periodic-table .VeryHard {
-        background-color: #fdd;
-    }
-
-    #main-periodic-table .souvenir {
-        position: absolute;
-        left: 35px;
-        top: -1px;
-        font-size: 8pt;
-        text-align: left;
-    }
-
-    #main-periodic-table .tpscore {
-        position: absolute;
-        right: 2px;
-        top: -1px;
-        font-size: 8pt;
-        text-align: right;
-    }
-
-    #main-periodic-table .name {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 36px;
-        bottom: 1px;
-        font-family: 'Agency FB';
-        font-size: 9pt;
-        line-height: 1;
-    }
-
-        #main-periodic-table .name .inner {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 100%;
-            transform: translate(-50%, -50%);
+        #assignment-table td.letter-list {
+            text-align: left;
         }
-
 
 /* JSON page */
 div.links {

@@ -50,7 +50,7 @@ function el(tagName, className, ...args)
             element.appendChild(document.createTextNode(arg));
         else
             for (const attr in arg)
-                if (arg[attr] != undefined)
+                if (arg[attr] !== undefined && arg[attr] !== null)
                     element.setAttribute(attr, arg[attr]);
     }
     return element;
@@ -370,75 +370,54 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 }
 
                 // Assignments table
-                let keys = modules.filter(m => m.Symbol).map(m => m.Symbol);
-                keys.sort();
+                let symbols = modules.filter(m => m.Symbol).map(m => m.Symbol);
+                symbols.sort();
                 let alphabet = ",a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z".split(',');
 
-                let table = document.createElement('table');
-                table.style.marginTop = '50px';
-                table.style.tableLayout = 'fixed';
-                table.style.width = '1px';
-                table.style.clear = 'both';
+                let table = el('table', 'assignment-table');
 
-                let colgroup = document.createElement('colgroup');
+                let colgroup = el('colgroup');
                 table.appendChild(colgroup);
                 for (let col = 0; col < alphabet.length + 3; col++)
                 {
-                    let colTag = document.createElement('col');
-                    if (col < alphabet.length + 2)
+                    let colTag = el('col');
+                    if (col > 0 && col < alphabet.length + 1)
                         colTag.style.width = '32px';
                     colgroup.appendChild(colTag);
                 }
 
                 // Header row
-                let tr = document.createElement('tr');
-                tr.appendChild(document.createElement('td'));
+                let tr = el('tr', null, el('td'));
                 for (let col = 0; col < alphabet.length; col++)
-                {
-                    let th = document.createElement('th');
-                    th.innerText = alphabet[col].length ? alphabet[col] : '∅';
-                    tr.appendChild(th);
-                }
+                    tr.appendChild(el('th', 'letter', alphabet[col].length ? alphabet[col] : '∅'));
                 table.appendChild(tr);
 
                 for (let row = 0; row < 26; row++)
                 {
                     let letter = String.fromCharCode(65 + row);
-                    tr = document.createElement('tr');
+                    tr = el('tr');
                     function makeTh()
                     {
-                        let th = document.createElement('th');
-                        th.style.width = '32px';
-                        th.style.textAlign = 'center';
-                        th.innerText = letter;
-                        th.title = keys.filter(k => k.startsWith(letter)).map(k => `${k} = ${modules.filter(m => m.Symbol === k)[0].Name}`).join("\n");
-                        return th;
+                        tr.appendChild(el('th', 'letter', { title: symbols.filter(k => k.startsWith(letter)).map(k => `${k} = ${modules.filter(m => m.Symbol === k)[0].Name}`).join("\n") }, letter));
                     }
-                    tr.appendChild(makeTh());
+                    makeTh();
                     for (let col = 0; col < alphabet.length; col++)
                     {
-                        let td = document.createElement('td');
                         let module = modules.filter(m => m.Symbol === letter + alphabet[col]);
-                        td.title = module.length > 0 ? `${module[0].Symbol} = ${module[0].Name}` : '';
-                        td.style.backgroundColor = module.length > 1 ? '#f99' : module.length === 1 ? '' : '#bfb';
+                        let td = el('td', `module${module.length > 1 ? ' clash' : ''}`, { title: module.length > 0 ? module.map(md => `${md.Symbol} = ${md.Name}`).join('\n') : '' });
                         if (module.length === 1)
-                            td.style.backgroundImage = `url('../Icons/${module[0].Name}.png')`;
-                        td.style.width = '32px';
-                        td.style.height = '32px';
-                        td.style.padding = '0';
+                            td.appendChild(el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5}); background-position:-${module[0].X * 32}px -${module[0].Y * 32}px;` }));
                         tr.appendChild(td);
                     }
-                    tr.appendChild(makeTh());
+                    makeTh();
 
-                    let td2 = document.createElement('td');
-                    let filtered = keys.filter(a => a.startsWith(letter));
-                    td2.innerText = `${alphabet.filter(lt => filtered.indexOf(letter + lt) === -1).map(lt => lt === '' ? '∅' : lt).join('')}`;
-                    td2.style.paddingLeft = '10px';
+                    let filtered = symbols.filter(a => a.startsWith(letter));
+                    let td2 = el('td', 'letter-list', `${alphabet.filter(lt => filtered.indexOf(letter + lt) === -1).map(lt => lt === '' ? '∅' : lt).join('')}`);
                     tr.appendChild(td2);
 
                     table.appendChild(tr);
                 }
-                //document.getElementById("assignment-table").appendChild(table);
+                document.getElementById("assignment-table").appendChild(table);
 
                 viewsReady['periodic-table'] = {
                     show: function() { document.getElementById("main-periodic-table").style.display = 'block'; },
@@ -979,5 +958,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             filterVetoedByProfile: $('input#filter-profile-disabled').prop('checked')
         }));
         return true;
+    });
+
+    $('#assignment-table-toggle').click(function()
+    {
+        if ($('#assignment-table:visible').length)
+            $('#assignment-table').hide();
+        else
+            $('#assignment-table').show();
+        return false;
     });
 }
