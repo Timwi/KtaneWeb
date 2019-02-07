@@ -197,6 +197,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             const reader = new FileReader();
             reader.onload = () =>
             {
+                if (typeof reader.result != 'string')
+                    return;
                 const profile = JSON.parse(reader.result);
                 if (profile.DisabledList)
                 {
@@ -229,7 +231,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                 for (var i = 0; i < modules.length; i++)
                 {
-                    mod = modules[i];
+                    let mod = modules[i];
 
                     let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
                     mod.ViewData.list = { tr: tr };
@@ -619,17 +621,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         else
             preventDisappear--;
     }
-    $(document).click(disappear)
-        .on("dragover", () => false)
-        .on("drop", function(event)
+
+    document.addEventListener('click', disappear);
+    document.addEventListener('dragover', () => false);
+    document.addEventListener('drop', event =>
         {
             event.preventDefault();
             event.stopPropagation();
-
-            handleDataTransfer(event.originalEvent.dataTransfer);
-        }).on("paste", function(event)
+        handleDataTransfer(event.dataTransfer);
+    });
+    document.addEventListener('paste', event =>
         {
-            if (handleDataTransfer(event.originalEvent.clipboardData))
+        if (handleDataTransfer(event.clipboardData))
                 event.preventDefault();
         });
 
@@ -638,9 +641,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         return function()
         {
-            var already = $('.popup').filter((_, p) => $(p).data('lnk') === lnk).length;
+            var numAlready = $('.popup').filter((_, p) => $(p).data('lnk') === lnk).length;
             disappear();
-            if (already)
+            if (numAlready)
                 return false;
             var menuDiv = $('<div>').addClass('popup disappear manual-select').data('lnk', lnk).css('display', 'block').appendTo(document.body);
             menuDiv.click(function() { preventDisappear++; });
@@ -698,7 +701,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         trow = ["", mod.Name, `<div class='descriptor'>${rx2[1]}</div><div class='author'>by ${rx2[2]}</div>`];
                     else
                         trow = ["", mod.Name, `<div class='descriptor'>${rx1[1]}</div>`];
-                    trowHtml = `<div><div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link-HTML'></div><div class='link-PDF'></div></div>`;
+                    let trowHtml = `<div><div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link-HTML'></div><div class='link-PDF'></div></div>`;
                     already[rx1[1]] = $(trowHtml).appendTo(menu);
                     if (rx1[2] === 'HTML')
                         already[rx1[1]].click(clickHandler);
@@ -746,9 +749,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             icon: initIcons[arr[2]]
         }));
     }
-
-    function modTrs() { return modules.map(mod => mod.tr); }
-    function visibleMods() { return modTrs().filter(x => x.style.display != "none"); }
 
     // Set filters from saved settings
     for (var i = 0; i < initFilters.length; i++)
