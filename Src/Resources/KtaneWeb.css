@@ -23,7 +23,7 @@ table {
     width: 100%;
 }
 
-#main-table {
+#main-table, #main-periodic-table {
     display: none;
 }
 

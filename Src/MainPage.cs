@@ -18,7 +18,7 @@ namespace KtaneWeb
         // F    Find
         // G    Glossary
         // H    link to Steam Workshop item
-        // I
+        // I    toggle views
         // J    JSON
         // K    Dark Theme
         // L    Light Theme
@@ -239,7 +239,8 @@ namespace KtaneWeb
                                 new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
                                 new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
                                 new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
-                            new DIV { class_ = "json" }._(new A { href = "json", accesskey = "j" }._("See JSON".Accel('J')))),
+                            new DIV { class_ = "json" }._(new A { href = "json", accesskey = "j" }._("See JSON".Accel('J'))),
+                            new DIV { class_ = "hidden-shortcuts" }._(new A { href = "#", accesskey = "i", id = "toggle-view" })),
 
                         // RULE SEED (tab popup)
                         new DIV { id = "rule-seed", class_ = "popup disappear stay" }._(

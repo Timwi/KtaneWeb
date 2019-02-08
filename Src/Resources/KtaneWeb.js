@@ -236,7 +236,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
                     mod.ViewData.list = { tr: tr };
                     mainTable.appendChild(tr);
-                    mod.FncsShowHide.push(sh => { tr.style.display = (sh ? 'table-row' : 'none'); });
+                    mod.FncsShowHide.push(sh => { tr.style.display = (sh ? '' : 'none'); });
                     mod.FncsSetHighlight.push(hgh =>
                     {
                         if (hgh)
@@ -625,16 +625,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     document.addEventListener('click', disappear);
     document.addEventListener('dragover', () => false);
     document.addEventListener('drop', event =>
-        {
-            event.preventDefault();
-            event.stopPropagation();
+    {
+        event.preventDefault();
+        event.stopPropagation();
         handleDataTransfer(event.dataTransfer);
     });
     document.addEventListener('paste', event =>
-        {
+    {
         if (handleDataTransfer(event.clipboardData))
-                event.preventDefault();
-        });
+            event.preventDefault();
+    });
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
     function makeClickHander(lnk, isMobileOpt, mod)
@@ -867,6 +867,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('.view-link').click(function()
     {
         setView($(this).data('view'));
+        return false;
+    });
+    $('#toggle-view').click(function()
+    {
+        setView(validViews[(validViews.indexOf(view) + 1) % validViews.length]);
         return false;
     });
 
