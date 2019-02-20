@@ -255,7 +255,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
                             let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
                             td.appendChild(lnkA);
-                            if (sel === 'manual')
+                            if (sel.PropName === 'manual')
                             {
                                 mod.FncsSetManualIcon.push(url => { iconImg.src = url; });
                                 mod.FncsSetManualLink.push(url => { lnkA.href = url; });
@@ -582,27 +582,27 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let seedHash = (seed === 1 ? '' : '#' + seed);
         for (let mod of modules)
         {
-            if (mod.Manuals.length === 0)
-                return;
-
-            let manual = mod.Manuals[0];
-            for (let i = 0; i < mod.Manuals.length; i++)
-                if (mod.Manuals[i].name === mod.Name + " (PDF)")
-                    manual = mod.Manuals[i];
-            for (let i = 0; i < mod.Manuals.length; i++)
-                if (mod.Manuals[i].name === mod.Name + " (HTML)")
-                    manual = mod.Manuals[i];
-            if (mod.Name in preferredManuals)
+            let manual = null;
+            if (mod.Manuals.length > 0)
+            {
+                manual = mod.Manuals[0];
                 for (let i = 0; i < mod.Manuals.length; i++)
-                    if (preferredManuals[mod.Name] === mod.Manuals[i].name)
+                    if (mod.Manuals[i].name === mod.Name + " (PDF)")
                         manual = mod.Manuals[i];
-
-            for (let fnc of mod.FncsSetManualIcon)
-                fnc(manual.icon);
-            for (let fnc of mod.FncsSetManualLink)
-                fnc(manual.url + seedHash);
+                for (let i = 0; i < mod.Manuals.length; i++)
+                    if (mod.Manuals[i].name === mod.Name + " (HTML)")
+                        manual = mod.Manuals[i];
+                if (mod.Name in preferredManuals)
+                    for (let i = 0; i < mod.Manuals.length; i++)
+                        if (preferredManuals[mod.Name] === mod.Manuals[i].name)
+                            manual = mod.Manuals[i];
+                for (let fnc of mod.FncsSetManualIcon)
+                    fnc(manual === null ? null : manual.icon);
+                for (let fnc of mod.FncsSetManualLink)
+                    fnc(manual === null ? null : manual.url + seedHash);
+            }
             for (let fnc of mod.FncsSetSelectable)
-                fnc(selectable === 'manual' ? (manual.url + seedHash) : (initSelectables.filter(sl => sl.PropName === selectable).map(sl => sl.UrlFunction(mod))[0] || null));
+                fnc(selectable === 'manual' ? (manual === null ? null : manual.url + seedHash) : (initSelectables.filter(sl => sl.PropName === selectable).map(sl => sl.UrlFunction(mod))[0] || null));
         }
         lStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
