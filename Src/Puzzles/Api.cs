@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
+using RT.Util;
 using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb.Puzzles
@@ -39,33 +40,35 @@ namespace KtaneWeb.Puzzles
                     new LI(new BUTTON { id = "show-pristine" }._("Show pristine"))
                 );
 
-            yield return new H1("PUZZLES".Select(ch => new SPAN(ch)));
-
-            yield return _puzzles.PuzzleGroups.Where(gr => gr.IsPublished || canView(gr)).OrderByDescending(gr => gr.Published).Select(group => new DIV { class_ = "puzzle-group" + (group.IsPublished ? " published" : " req-priv") }._(
-                new DIV { class_ = "title" }._(
-                    group.Title,
-                    editIcon(nameof(RenameGroup), group, group.Title)
-                ),
-                new DIV { class_ = "author" }._(group.Author, editIcon(nameof(ChangeGroupAuthor), group, group.Author)),
-                new DIV { class_ = "date-published" }._(group.Published.ToString("MMM yyyy"), editIcon(nameof(ChangeGroupMonth), group, group.Published.Month.ToString()), editIcon(nameof(ChangeGroupYear), group, group.Published.Year.ToString())),
-                new DIV { class_ = "puzzles" }._(
-                    group.Puzzles.Where(puzzle => puzzle.IsPublished || canView(group)).Select((puzzle, ix) => new DIV { class_ = "puzzle" + (puzzle.IsPublished ? " published" : " req-priv") + (File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.Filename)) ? "" : " missing") }._(
-                        canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", ix)._("move here") : null,
-                        new A { href = $"{group.Folder}/{puzzle.Filename}", class_ = "puzzle-inner" }._(
-                            new SPAN { class_ = "puzzle-title" }._(puzzle.Title),
-                            editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title),
-                            canEdit(group) ? new BUTTON { class_ = "operable req-priv" }.Data("fn", puzzle.IsPublished ? nameof(UnpublishPuzzle) : nameof(PublishPuzzle)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsPublished ? "hide" : "publish") : null,
-                            canEdit(group) ? new BUTTON { class_ = "operable req-priv" + (puzzle.MovingMark ? " perm" : "") }.Data("fn", nameof(MovePuzzleMark)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.MovingMark ? "move where?" : "move") : null
-                        ),
-                        ix == group.Puzzles.Count - 1 && canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", group.Puzzles.Count)._("move here") : null
-                    ))
-                ),
-                canEdit() ? new MENU { class_ = "controls req-priv" }._(
-                    new LI(new BUTTON { class_ = "operable" }.Data("fn", group.IsPublished ? nameof(UnpublishGroup) : nameof(PublishGroup)).Data("groupname", group.Title)._(group.IsPublished ? "Hide" : "Publish")),
-                    new LI(new BUTTON { class_ = "operable" }.Data("fn", nameof(AddPuzzle)).Data("groupname", group.Title)._("Add puzzle")),
-                    new LI(new SPAN { class_ = "folder" }._(group.Folder, editIcon(nameof(ChangeGroupFolder), group, group.Folder)))
-                ) : null
-            ));
+            yield return _puzzles.PuzzleGroups.Where(gr => gr.IsPublished || canView(gr)).OrderByDescending(gr => gr.Published).Select(group => Ut.NewArray<object>(
+                File.Exists(Path.Combine(_puzzleDir, group.Folder, "Logo.png"))
+                    ? new H1 { class_ = "logo" + (group.IsPublished ? " published" : " req-priv") }._(new IMG { class_ = "logo", src = $"{group.Folder}/Logo.png", alt = group.Title })
+                    : new H1 { class_ = "text" + (group.IsPublished ? " published" : " req-priv") }._(group.Title.Select(ch => new SPAN(ch))),
+                new DIV { class_ = "puzzle-group" + (group.IsPublished ? " published" : " req-priv") }._(
+                    new DIV { class_ = "title" }._(
+                        group.Title,
+                        editIcon(nameof(RenameGroup), group, group.Title)
+                    ),
+                    new DIV { class_ = "author" }._(group.Author, editIcon(nameof(ChangeGroupAuthor), group, group.Author)),
+                    new DIV { class_ = "date-published" }._(group.Published.ToString("MMM yyyy"), editIcon(nameof(ChangeGroupMonth), group, group.Published.Month.ToString()), editIcon(nameof(ChangeGroupYear), group, group.Published.Year.ToString())),
+                    new DIV { class_ = "puzzles" }._(
+                        group.Puzzles.Where(puzzle => puzzle.IsPublished || canView(group)).Select((puzzle, ix) => new DIV { class_ = "puzzle" + (puzzle.IsPublished ? " published" : " req-priv") + (File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.Filename)) ? "" : " missing") }._(
+                            canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", ix)._("move here") : null,
+                            new A { href = $"{group.Folder}/{puzzle.Filename}", class_ = "puzzle-inner" }._(
+                                new SPAN { class_ = "puzzle-title" }._(puzzle.Title),
+                                editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title),
+                                canEdit(group) ? new BUTTON { class_ = "operable req-priv" }.Data("fn", puzzle.IsPublished ? nameof(UnpublishPuzzle) : nameof(PublishPuzzle)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsPublished ? "hide" : "publish") : null,
+                                canEdit(group) ? new BUTTON { class_ = "operable req-priv" + (puzzle.MovingMark ? " perm" : "") }.Data("fn", nameof(MovePuzzleMark)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.MovingMark ? "move where?" : "move") : null
+                            ),
+                            ix == group.Puzzles.Count - 1 && canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", group.Puzzles.Count)._("move here") : null
+                        ))
+                    ),
+                    canEdit() ? new MENU { class_ = "controls req-priv" }._(
+                        new LI(new BUTTON { class_ = "operable" }.Data("fn", group.IsPublished ? nameof(UnpublishGroup) : nameof(PublishGroup)).Data("groupname", group.Title)._(group.IsPublished ? "Hide" : "Publish")),
+                        new LI(new BUTTON { class_ = "operable" }.Data("fn", nameof(AddPuzzle)).Data("groupname", group.Title)._("Add puzzle")),
+                        new LI(new SPAN { class_ = "folder" }._(group.Folder, editIcon(nameof(ChangeGroupFolder), group, group.Folder)))
+                    ) : null
+                )));
         }
 
         private object editIcon(string fn, PuzzleGroup group, string prevValue) => canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" }.Data("fn", fn).Data("groupname", group.Title).Data("query", prevValue) : null;

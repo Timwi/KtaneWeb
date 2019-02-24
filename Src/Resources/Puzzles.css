@@ -53,37 +53,22 @@ button {
     }
 
 h1 {
-    font-family: DayPosterBlack;
-    font-size: 100pt;
-    margin-top: 20pt;
     text-align: center;
-    transform: scale(1.5, 1.3);
-    color: hsl(220, 50%, 50%);
-    text-shadow: 0 0 10px rgba(0,0,0,.3);
 }
 
-    h1 span:nth-child(2) {
-        margin-left: 0;
+    h1.text {
+        font-family: DayPosterBlack;
+        font-size: 100pt;
+        margin-top: 128pt;
+        text-align: center;
+        transform: scale(1.5, 1.3);
+        color: hsl(220, 50%, 50%);
+        text-shadow: 0 0 10px rgba(0,0,0,.3);
+        line-height: .9;
     }
 
-    h1 span:nth-child(3) {
-        margin-left: -3pt;
-    }
-
-    h1 span:nth-child(4) {
-        margin-left: 2pt;
-    }
-
-    h1 span:nth-child(5) {
-        margin-left: 5pt;
-    }
-
-    h1 span:nth-child(6) {
-        margin-left: 0;
-    }
-
-    h1 span:nth-child(7) {
-        margin-left: -1pt;
+    h1.logo img.logo {
+        max-width: 95%;
     }
 
 #everything {
