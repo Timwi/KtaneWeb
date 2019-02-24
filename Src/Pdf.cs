@@ -18,6 +18,8 @@ namespace KtaneWeb
         private static readonly bool _pdfEnabled = true;
         private HttpResponse pdf(HttpRequest req)
         {
+            ensureModuleInfoCache();
+
             string lastExaminedPdfFile = "<none>";
             try
             {
@@ -36,7 +38,7 @@ namespace KtaneWeb
                 var profileVetoList = (filterEnabledByProfile == filterVetoedByProfile) ? null : json["profileVetoList"]?.GetList().Select(j => j.GetString()).ToArray();
 
                 // Filter
-                var matchingModules = _config.Current.KtaneModules.Where(m =>
+                var matchingModules = _moduleInfoCache.Modules.Where(m =>
                 {
                     if (profileVetoList != null && !(profileVetoList.Contains(m.ModuleID) ? filterVetoedByProfile : filterEnabledByProfile))
                         return false;

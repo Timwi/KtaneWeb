@@ -16,6 +16,8 @@ namespace KtaneWeb
     {
         private sealed class ModuleInfoCache
         {
+            public KtaneModuleInfo[] Modules;
+            public JsonDict ModulesJson;
             public byte[] IconSpritePng;
             public string IconSpriteMd5;
             public string ModuleInfoJs;
@@ -59,21 +61,34 @@ namespace KtaneWeb
                                 _moduleInfoCache = new ModuleInfoCache { IconSpritePng = mem.ToArray() };
                                 _moduleInfoCache.IconSpriteMd5 = MD5.Create().ComputeHash(_moduleInfoCache.IconSpritePng).ToHex();
 
-                                var modules = _config.Current.KtaneModules.ParallelSelect(4, mod =>
+                                var modules = new DirectoryInfo(_config.ModJsonDir)
+                                    .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
+                                    .ParallelSelect(4, file =>
+                                    {
+                                        var modJson = JsonDict.Parse(File.ReadAllText(file.FullName));
+                                        var mod = ClassifyJson.Deserialize<KtaneModuleInfo>(modJson);
+                                        return (modJson, mod);
+                                    })
+                                    .ToArray();
+                                _moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
+                                _moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
+
+                                var modJsons = modules.Select(tup =>
                                 {
-                                    var modJson = ClassifyJson.Serialize(mod);
-                                    modJson["Sheets"] = _config.EnumerateSheetUrls(mod.Name, _config.Current.KtaneModules.Select(m => m.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
+                                    var (modJson, mod) = tup;
+                                    modJson["Sheets"] = _config.EnumerateSheetUrls(mod.Name, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
                                     var (x, y) = coords.Get(mod.Name, (x: 0, y: 0));
                                     modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
                                     modJson["Y"] = y;
                                     return modJson;
                                 }).ToJsonList();
+
                                 var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
                                 var disps = _displays.Select(d => d.id).ToJsonList();
                                 var filters = _filters.Select(f => f.ToJson()).ToJsonList();
                                 var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
                                 var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
-                                _moduleInfoCache.ModuleInfoJs = $@"initializePage({modules},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},'{_moduleInfoCache.IconSpriteMd5}');";
+                                _moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},'{_moduleInfoCache.IconSpriteMd5}');";
                             }
                         }
                     }

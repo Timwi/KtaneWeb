@@ -33,7 +33,13 @@ namespace KtaneWeb
 
                     new UrlMapping(path: "/", specificPath: true, handler: mainPage),
                     new UrlMapping(path: "/profile", handler: generateProfileZip),
-                    new UrlMapping(path: "/json", handler: req => jsonPage(req, session)),
+                    new UrlMapping(path: "/json", handler: req =>
+                    {
+                        if (req.Url.Path != "/raw")
+                            return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON/"));
+                        ensureModuleInfoCache();
+                        return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
+                    }),
                     new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/proxy", handler: proxy),
                     new UrlMapping(path: "/merge-pdf", handler: pdf),

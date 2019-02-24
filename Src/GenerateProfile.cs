@@ -22,7 +22,7 @@ namespace KtaneWeb
         {
             byte[] generateProfile(int operation, Func<KtaneModuleInfo, bool> filter)
             {
-                var jsonList = _config.Current.KtaneModules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy) && filter(k)).Select(k => k.ModuleID).ToJsonList();
+                var jsonList = _moduleInfoCache.Modules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy) && filter(k)).Select(k => k.ModuleID).ToJsonList();
                 return new JsonDict { { "DisabledList", jsonList }, { "Operation", operation } }.ToString().ToUtf8();
             }
 

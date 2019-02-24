@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KtaneWeb.Puzzles;
-using RT.Util;
-using RT.Util.Collections;
 using RT.Util.ExtensionMethods;
 using RT.Util.Json;
 using RT.Util.Serialization;
 
 namespace KtaneWeb
 {
-    sealed class KtaneWebConfig : IClassifyJsonObjectProcessor
+    sealed class KtaneWebConfig
     {
 #pragma warning disable 0649 // Field is never assigned to, and will always have its default value
 
@@ -26,6 +24,7 @@ namespace KtaneWeb
         public string[] OriginalDocumentIcons = new[] { "HTML/img/html_manual.png", "HTML/img/pdf_manual.png" };
         public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
         public string ModIconDir = @"C:\Sites\KTANE\Public\Icons";
+        public string ModJsonDir = @"C:\Sites\KTANE\Public\JSON";
 
         public string LogfilesDir = @"C:\Sites\KTANE\Logfiles";
         public string MergedPdfsDir = @"C:\Sites\KTANE\MergedPdfs";
@@ -37,15 +36,6 @@ namespace KtaneWeb
         public string VanillaRuleModifierMods;
 
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value
-
-        /// <summary>Keep the list sorted by date (most recent first).</summary>
-        [ClassifyNotNull]
-        public ListSorted<HistoryEntry<KtaneWebConfigEntry>> History = new ListSorted<HistoryEntry<KtaneWebConfigEntry>>(new CustomComparer<HistoryEntry<KtaneWebConfigEntry>>((a, b) => b.Time.CompareTo(a.Time)));
-
-        [ClassifyNotNull]
-        public ListSorted<HistoryEntry<KtaneWebConfigEntry>> HistoryDeleted = new ListSorted<HistoryEntry<KtaneWebConfigEntry>>(new CustomComparer<HistoryEntry<KtaneWebConfigEntry>>((a, b) => b.Time.CompareTo(a.Time)));
-
-        public KtaneWebConfigEntry Current => History.Count == 0 ? null : History.First(h => !h.IsSuggestion).Entry;
 
         [ClassifyNotNull]
         public PuzzleInfo Puzzles = new PuzzleInfo();
@@ -68,19 +58,6 @@ namespace KtaneWeb
                         list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
             }
             return list.OrderBy(x => x.Substring(0, x.IndexOf('|'))).ToJsonList();
-        }
-
-        void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
-        void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element) { }
-
-        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
-        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element)
-        {
-            while (HistoryDeleted.Count > 10)
-                HistoryDeleted.RemoveAt(10);
-            foreach (var del in HistoryDeleted)
-                if (del.DeletedBy == null)
-                    del.DeletedBy = "(unknown)";
         }
     }
 }
