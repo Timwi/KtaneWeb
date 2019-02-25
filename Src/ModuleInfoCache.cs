@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -65,10 +66,19 @@ namespace KtaneWeb
                                     .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
                                     .ParallelSelect(4, file =>
                                     {
-                                        var modJson = JsonDict.Parse(File.ReadAllText(file.FullName));
-                                        var mod = ClassifyJson.Deserialize<KtaneModuleInfo>(modJson);
-                                        return (modJson, mod);
+                                        try
+                                        {
+                                            var modJson = JsonDict.Parse(File.ReadAllText(file.FullName));
+                                            var mod = ClassifyJson.Deserialize<KtaneModuleInfo>(modJson);
+                                            return (modJson, mod).Nullable();
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            _logger.Exception(e);
+                                            return null;
+                                        }
                                     })
+                                    .WhereNotNull()
                                     .ToArray();
                                 _moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
                                 _moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
