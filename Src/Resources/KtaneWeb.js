@@ -50,8 +50,12 @@ function el(tagName, className, ...args)
             element.appendChild(document.createTextNode(arg));
         else
             for (const attr in arg)
-                if (arg[attr] !== undefined && arg[attr] !== null)
+            {
+                if (typeof arg[attr] === 'function')
+                    element[attr] = arg[attr];
+                else if (arg[attr] !== undefined && arg[attr] !== null)
                     element.setAttribute(attr, arg[attr]);
+            }
     }
     return element;
 }
@@ -302,16 +306,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     infos.append(el("div", "inf-author inf", mod.Author),
                         el("div", "inf-published inf inf2", mod.Published));
                     if (mod.TwitchPlaysSupport === 'Supported')
-                        infos.append(
-                            el("div", "inf-twitch inf inf2", { title: `This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}` },
-                                mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore === undefined ? '' : mod.TwitchPlaysScore));
+                    {
+                        mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}`;
+                        infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchInfo },
+                            mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore === undefined ? '' : mod.TwitchPlaysScore));
+                    }
                     if (mod.RuleSeedSupport === 'Supported')
-                        infos.append(el("div", "inf-rule-seed inf inf2", { title: 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.' }));
+                    {
+                        mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
+                        infos.append(el("div", "inf-rule-seed inf inf2", { title: mod.RuleSeedInfo }));
+                    }
 
                     var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
                     var attr = souvenirAttributes[value];
                     var expl = mod.Souvenir && mod.Souvenir.Explanation;
-                    infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: `${attr.Tooltip}${expl ? "\n" + expl : ""}` }, attr.Char));
+                    mod.SouvenirInfo = `${attr.Tooltip}${expl ? "\n" + expl : ""}`;
+                    infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
                     if (mod.ModuleID)
                         infos.append(el("div", "inf-id inf", mod.ModuleID));
                     infos.append(el("div", "inf-description inf", mod.Description));
@@ -641,35 +651,42 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         return function()
         {
-            var numAlready = $('.popup').filter((_, p) => $(p).data('lnk') === lnk).length;
+            var numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p.getAttribute('data-lnk') === lnk).length;
             disappear();
             if (numAlready)
                 return false;
-            var menuDiv = $('<div>').addClass('popup disappear manual-select').data('lnk', lnk).css('display', 'block').appendTo(document.body);
-            menuDiv.click(function() { preventDisappear++; });
+            var menuDiv = el('div', 'popup disappear manual-select', { 'data-lnk': lnk, 'style': 'display: block', onclick: function() { preventDisappear++; } });
+            document.body.appendChild(menuDiv);
             if (isMobileOpt)
             {
-                menuDiv.append($('<div class="close">').click(disappear));
-                var iconsDiv = $('<div>').addClass('icons');
-                $(mod.tr).find('td.selectable:not(.manual) img.icon').each(function(_, ic)
+                var closeButton = el('div', 'close', { onclick: disappear });
+                menuDiv.appendChild(closeButton);
+                var iconsDiv = el('div', 'icons');
+
+                for (let ix = 0; ix < initSelectables.length; ix++)
                 {
-                    var iconDiv = $("<div class='icon'><a class='icon-link'><img class='icon-img' /><span class='icon-label'></span></a></div>");
-                    iconDiv.find('a').attr('href', $(ic).parent().attr('href'));
-                    iconDiv.find('img').attr('src', $(ic).attr('src'));
-                    iconDiv.find('span').text($(ic).attr('title'));
-                    iconsDiv.append(iconDiv);
-                });
-                menuDiv.append(iconsDiv);
+                    let sel = initSelectables[ix];
+                    if (sel.PropName === 'manual' || !sel.ShowIconFunction(mod, mod.Manuals))
+                        continue;
+                    var iconDiv = el('div', 'icon',
+                        el('a', 'icon-link', { href: sel.UrlFunction(mod, mod.Manuals) },
+                            el('img', 'icon-img', { src: sel.Icon }),
+                            el('span', 'icon-label', sel.HumanReadable)));
+                    iconsDiv.appendChild(iconDiv);
+                }
+
+                menuDiv.appendChild(iconsDiv);
                 if ($('#display-souvenir').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text($(mod.tr).find('.inf-souvenir').attr('title')));
-                if ($('#display-twitch').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text(mod.TwitchPlaysSupport === "Supported" ? $(mod.tr).find('.inf-twitch').attr('title') : 'This module cannot be played in “Twitch Plays: KTANE”.'));
-                if ($('#display-rule-seed').prop('checked'))
-                    menuDiv.append($('<div class="module-further-info"></div>').text(mod.RuleSeedSupport === "Supported" ? $(mod.tr).find('.inf-rule-seed').attr('title') : 'This module does not support rule modification through Rule Seed Modifier.'));
+                    menuDiv.appendChild(el('div', 'module-further-info', mod.SouvenirInfo));
+                if ($('#display-twitch').prop('checked') && 'TwitchPlaysInfo' in mod)
+                    menuDiv.appendChild(el('div', 'module-further-info', mod.TwitchPlaysInfo));
+                if ($('#display-rule-seed').prop('checked') && 'RuleSeedInfo' in mod)
+                    menuDiv.appendChild(el('div', 'module-further-info', mod.RuleSeedInfo));
             }
-            menuDiv.append('<p class="small-print">Select your preferred manual for this module.</p>');
-            var menu = $('<div>').addClass('manual-select').appendTo(menuDiv);
-            var seed = $('#rule-seed-input').val() | 0;
+            menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.'));
+            var menu = el('div', 'manual-select');
+            menuDiv.appendChild(menu);
+            var seed = document.getElementById('rule-seed-input').value | 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
             var already = {};
             for (var i = 0; i < mod.Manuals.length; i++)
@@ -685,7 +702,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         return false;
                     };
                 }(mod.Manuals[i].name);
-                var link = $(`<a href='${mod.Manuals[i].url + seedHash}'>${rx1[2]}</a>`).click(clickHandler);
+                var link = el('a', null, { href: mod.Manuals[i].url + seedHash, onclick: clickHandler }, rx1[2]);
                 if (!(rx1[1] in already))
                 {
                     var trow, rx2;
@@ -710,7 +727,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].name)
                     link.addClass('checked');
             }
-            menuDiv.append(`<p class="small-print"><a href="find-log?find=${encodeURIComponent(mod.ModuleID)}">Find example logfile</a></p>`);
+            menuDiv.appendChild(el('p', 'small-print', el('a', { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')));
 
             if (!isMobileOpt)
                 menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });

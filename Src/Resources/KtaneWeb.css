@@ -835,7 +835,6 @@ pre.diff {
             }
 
             td.infos-1 div.modlink-wrap a.modlink .mod-name {
-                display: block;
                 margin: 0;
             }
 
@@ -863,6 +862,10 @@ pre.diff {
             td.infos-1 div.infos > div.inf-author::before {
                 content: ' • by ';
             }
+
+    tr.mod.compatibility-Untested .mod-name, tr.mod.compatibility-Unplayable .mod-name, tr.mod.compatibility-Problematic .mod-name {
+        padding-left: 1.25em;
+    }
 
     body.display-description td.infos-1 div.infos > div.inf-description, body.display-id td.infos-1 div.infos > div.inf-id {
         display: block;
@@ -996,7 +999,7 @@ pre.diff {
 
                 #main-table div.modlink-wrap a.modlink .mod-name {
                     width: 14.5em;
-                    line-height: 1.2;
+                    line-height: 1;
                     display: block;
                 }
 
