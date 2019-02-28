@@ -49,6 +49,10 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault]
         public KtaneSupport RuleSeedSupport = KtaneSupport.NotSupported;
 
+        // Specifies which modules this module should ignore. Applies to boss and semi-boss modules such as Forget Me Not, Alchemy, Hogwarts, etc.
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty]
+        public string[] Ignore = null;
+
         public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });
 
