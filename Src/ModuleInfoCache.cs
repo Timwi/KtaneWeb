@@ -68,8 +68,18 @@ namespace KtaneWeb
                                     {
                                         try
                                         {
-                                            var modJson = JsonDict.Parse(File.ReadAllText(file.FullName));
+                                            var origFile = File.ReadAllText(file.FullName);
+                                            var modJson = JsonDict.Parse(origFile);
                                             var mod = ClassifyJson.Deserialize<KtaneModuleInfo>(modJson);
+
+#if DEBUG
+                                            var newJson = (JsonDict) ClassifyJson.Serialize(mod);
+                                            var newJsonStr = newJson.ToStringIndented();
+                                            if (newJsonStr != origFile)
+                                                File.WriteAllText(file.FullName, newJsonStr);
+                                            modJson = newJson;
+#endif
+
                                             return (modJson, mod).Nullable();
                                         }
                                         catch (Exception e)

@@ -153,6 +153,9 @@ namespace KtaneWeb
 
             if (TutorialVideoUrl == "")
                 TutorialVideoUrl = null;
+
+            if (Ignore != null)
+                Array.Sort(Ignore, StringComparer.InvariantCultureIgnoreCase);
         }
 
         void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)
