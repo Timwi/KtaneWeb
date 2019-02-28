@@ -11,7 +11,7 @@ namespace KtaneWeb
             var output = new StringBuilder();
             var cmd = new CommandRunner
             {
-                Command = "git pull",
+                Command = "git pull --rebase",
                 WorkingDirectory = _config.BaseDir
             };
             cmd.StdoutText += str => output.Append(str);
