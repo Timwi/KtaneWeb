@@ -730,7 +730,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             menuDiv.appendChild(el('p', 'small-print', el('a', { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')));
 
             if (!isMobileOpt)
-                menuDiv.position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
+                $(menuDiv).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
             return false;
         };
     }
