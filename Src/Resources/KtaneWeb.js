@@ -727,7 +727,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].name)
                     link.addClass('checked');
             }
-            menuDiv.appendChild(el('p', 'small-print', el('a', { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')));
+            menuDiv.appendChild(el('p', 'small-print', el('a', null, { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')));
 
             if (!isMobileOpt)
                 $(menuDiv).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
