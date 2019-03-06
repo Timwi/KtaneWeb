@@ -12,10 +12,10 @@ namespace KtaneWeb.Puzzles
 {
     sealed class Api
     {
-        private PuzzleInfo _puzzles;
-        private string _puzzleDir;
-        private KtaneWebSession _session;
-        private Action _save;
+        private readonly PuzzleInfo _puzzles;
+        private readonly string _puzzleDir;
+        private readonly KtaneWebSession _session;
+        private readonly Action _save;
 
         private bool canEdit() => _puzzles.EditAccess.Contains(_session.Username);
         private bool canView(PuzzleGroup gr) => gr.ViewAccess.Contains(_session.Username) || canEdit(gr);
@@ -36,7 +36,7 @@ namespace KtaneWeb.Puzzles
 
             if (canEdit())
                 yield return new MENU { class_ = "controls req-priv" }._(
-                    new LI(new BUTTON { class_ = "operable" }.Data("fn", "AddGroup")._("Add puzzle group")),
+                    new LI(new BUTTON { class_ = "operable" }.Data("fn", nameof(AddGroup))._("Add puzzle group")),
                     new LI(new BUTTON { id = "show-pristine" }._("Show pristine"))
                 );
 
@@ -52,13 +52,18 @@ namespace KtaneWeb.Puzzles
                     new DIV { class_ = "author" }._(group.Author, editIcon(nameof(ChangeGroupAuthor), group, group.Author)),
                     new DIV { class_ = "date-published" }._(group.Published.ToString("MMM yyyy"), editIcon(nameof(ChangeGroupMonth), group, group.Published.Month.ToString()), editIcon(nameof(ChangeGroupYear), group, group.Published.Year.ToString())),
                     new DIV { class_ = "puzzles" }._(
-                        group.Puzzles.Where(puzzle => puzzle.IsPublished || canView(group)).Select((puzzle, ix) => new DIV { class_ = "puzzle" + (puzzle.IsPublished ? " published" : " req-priv") + (File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.Filename)) ? "" : " missing") }._(
+                        group.Puzzles.Where(puzzle => puzzle.IsPublished || canView(group)).Select((puzzle, ix) => new DIV { class_ = "puzzle" + (puzzle.IsPublished ? " published" : " req-priv") + (puzzle.IsNew ? " new" : null) + (File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.Filename)) ? null : " missing") }._(
                             canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", ix)._("move here") : null,
                             new A { href = $"{group.Folder}/{puzzle.Filename}", class_ = "puzzle-inner" }._(
                                 new SPAN { class_ = "puzzle-title" }._(puzzle.Title),
-                                editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title),
-                                canEdit(group) ? new BUTTON { class_ = "operable req-priv" }.Data("fn", puzzle.IsPublished ? nameof(UnpublishPuzzle) : nameof(PublishPuzzle)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsPublished ? "hide" : "publish") : null,
-                                canEdit(group) ? new BUTTON { class_ = "operable req-priv" + (puzzle.MovingMark ? " perm" : "") }.Data("fn", nameof(MovePuzzleMark)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.MovingMark ? "move where?" : "move") : null
+                                editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title, "name-edit-icon"),
+                                editIcon(nameof(EditPuzzleAuthor), group, puzzle, puzzle.Author),
+                                puzzle.Author == null ? null : new SPAN { class_ = "puzzle-author" }._(puzzle.Author),
+                                !canEdit(group) ? null : Ut.NewArray<object>(
+                                    new BUTTON { class_ = "operable req-priv" }.Data("fn", puzzle.IsPublished ? nameof(UnpublishPuzzle) : nameof(PublishPuzzle)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsPublished ? "hide" : "publish"),
+                                    new BUTTON { class_ = "operable req-priv" + (puzzle.MovingMark ? " perm" : "") }.Data("fn", nameof(MovePuzzleMark)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.MovingMark ? "move where?" : "move"),
+                                    new BUTTON { class_ = "operable req-priv" }.Data("fn", nameof(TogglePuzzleNew)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsNew ? "unmark new" : "mark new")
+                                )
                             ),
                             ix == group.Puzzles.Count - 1 && canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", group.Puzzles.Count)._("move here") : null
                         ))
@@ -71,8 +76,8 @@ namespace KtaneWeb.Puzzles
                 )));
         }
 
-        private object editIcon(string fn, PuzzleGroup group, string prevValue) => canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" }.Data("fn", fn).Data("groupname", group.Title).Data("query", prevValue) : null;
-        private object editIcon(string fn, PuzzleGroup group, Puzzle puzzle, string prevValue) => canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" }.Data("fn", fn).Data("groupname", group.Title).Data("puzzlename", puzzle.Title).Data("query", prevValue) : null;
+        private object editIcon(string fn, PuzzleGroup group, string prevValue, string extraClass = null) => canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" + (extraClass == null ? null : " " + extraClass) }.Data("fn", fn).Data("groupname", group.Title).Data("query", prevValue ?? "") : null;
+        private object editIcon(string fn, PuzzleGroup group, Puzzle puzzle, string prevValue, string extraClass = null) => canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" + (extraClass == null ? null : " " + extraClass) }.Data("fn", fn).Data("groupname", group.Title).Data("puzzlename", puzzle.Title).Data("query", prevValue ?? "") : null;
 
         public string RenderBodyStr(string error = null) => Tag.ToString(RenderBody(error));
 
@@ -107,9 +112,9 @@ namespace KtaneWeb.Puzzles
         public string RenameGroup(string groupname, string query)
         {
             var already = groupname.EqualsNoCase(query) ? null : _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsNoCase(query));
-            if (already != null)
-                return RenderBodyStr($"There is already a puzzle group titled “{already.Title}”.");
-            return editGroup(groupname, gr => { gr.Title = query; });
+            return already != null
+                ? RenderBodyStr($"There is already a puzzle group titled “{already.Title}”.")
+                : editGroup(groupname, gr => { gr.Title = query; });
         }
 
         [AjaxMethod]
@@ -159,6 +164,10 @@ namespace KtaneWeb.Puzzles
             puzzle.Filename = newFilename;
         });
 
+        [AjaxMethod]
+        public string TogglePuzzleNew(string groupname, string puzzlename) => editPuzzle(groupname, puzzlename, (group, puzzle) => { puzzle.IsNew = !puzzle.IsNew; });
+        [AjaxMethod]
+        public string EditPuzzleAuthor(string groupname, string puzzlename, string query) => editPuzzle(groupname, puzzlename, (group, puzzle) => { puzzle.Author = query == "" ? null : query; });
         [AjaxMethod]
         public string PublishPuzzle(string groupname, string puzzlename) => editPuzzle(groupname, puzzlename, (gr, pz) => { pz.IsPublished = true; });
         [AjaxMethod]

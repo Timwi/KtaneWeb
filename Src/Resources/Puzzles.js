@@ -35,7 +35,7 @@ $(function()
     {
         $('.operable').click(function()
         {
-            var data = $(this).data();
+            var data = this.dataset;
             if (!('fn' in data))
                 return false;
             if ('query' in data)
