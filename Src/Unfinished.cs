@@ -11,9 +11,9 @@ namespace KtaneWeb
             if (!path.StartsWith("/") || path == "/")
                 return null;
             var pieces = path.Substring(1).Split('/');
-            if (Directory.Exists(Path.Combine(_config.BaseDir, "HTML", pieces[0])))
-                return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/HTML/" + pieces[0] + path.Substring(1 + pieces[0].Length)));
-            return null;
+            return Directory.Exists(Path.Combine(_config.BaseDir, "HTML", pieces[0]))
+                ? HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/HTML/" + pieces[0] + path.Substring(1 + pieces[0].Length)))
+                : null; // make use of skippable handler
         }
     }
 }

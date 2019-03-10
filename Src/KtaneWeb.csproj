@@ -56,6 +56,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
+    <Compile Include="SitemapXml.cs" />
     <Compile Include="Logfiles.cs" />
     <Compile Include="ModuleInfoCache.cs" />
     <Compile Include="Pdf.cs" />

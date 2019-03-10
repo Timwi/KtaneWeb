@@ -45,8 +45,10 @@ namespace KtaneWeb
                     new UrlMapping(path: "/merge-pdf", handler: pdf),
                     new UrlMapping(path: "/upload-log", handler: uploadLogfile),
                     new UrlMapping(path: "/find-log", handler: findLogfile),
-                    new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
                     new UrlMapping(path: "/iconsprite", handler: iconSpritePng),
+                    new UrlMapping(path: "/sitemap", specificPath: true, handler: sitemapXml),
+
+                    new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
 
                     new UrlMapping(path: "/Unfinished", handler: unfinished, skippable: true),
                     new UrlMapping(path: "/Logfiles", handler: req => new FileSystemHandler(_config.LogfilesDir).Handle(req)),

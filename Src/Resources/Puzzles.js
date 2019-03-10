@@ -1,68 +1,54 @@
-﻿// Handle access to localStorage
-var lStorage = localStorage;
-
-try
-{
-    localStorage.setItem("testStorage", "testData");
-    localStorage.removeItem("testStorage");
-}
-catch (e)
-{
-    lStorage = {
-        storage: {},
-        getItem: function(key)
-        {
-            return this.storage[key] || null;
-        },
-        setItem: function(key, data)
-        {
-            this.storage[key] = data;
-        },
-        removeItem: function(key)
-        {
-            delete this.storage[key];
-        },
-        clear: function()
-        {
-            this.storage = {};
-        }
-    };
-}
-
-$(function()
+﻿function initializePuzzles()
 {
     function setEvents()
     {
-        $('.operable').click(function()
+        Array.from(document.getElementsByClassName('operable')).forEach(opElem =>
         {
-            var data = this.dataset;
-            if (!('fn' in data))
-                return false;
-            if ('query' in data)
+            opElem.onclick = function()
             {
-                data.query = prompt('Enter new value:', data.query);
-                if (data.query === null)
+                var data = this.dataset;
+                if (!('fn' in data))
                     return false;
-            }
+                if ('query' in data)
+                {
+                    data.query = prompt('Enter new value:', data.query);
+                    if (data.query === null)
+                        return false;
+                }
 
-            $.post('api/' + data.fn, { data: JSON.stringify(data) }, function(resp)
-            {
-                $('#everything').html(resp.result);
-                setEvents();
-            })
-                .fail(function()
+                var req = new XMLHttpRequest();
+                req.open('POST', `api/${data.fn}`, true);
+                req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                req.onload = function() 
+                {
+                    var json = JSON.parse(req.response);
+                    if (json.status === 'ok')
+                    {
+                        document.getElementById('everything').innerHTML = json.result;
+                        setEvents();
+                    }
+                    else
+                    {
+                        console.log(arguments);
+                        console.log(json);
+                        alert("Request failed. Error logged in console.");
+                    }
+                };
+                req.onerror = function()
                 {
                     console.log(arguments);
                     alert("Request failed. Error logged in console.");
-                });
-            return false;
+                };
+                req.send(`data=${encodeURIComponent(JSON.stringify(data))}`);
+                return false;
+            };
         });
 
-        $('#show-pristine').click(function()
+        document.getElementById('show-pristine').onclick = function()
         {
-            $('.req-priv').remove();
+            Array.from(document.getElementsByClassName('req-priv')).forEach(elem => { elem.parentNode.removeChild(elem); });
             return false;
-        });
+        };
     }
     setEvents();
-});
+}

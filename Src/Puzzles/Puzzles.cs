@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using KtaneWeb.Puzzles;
 using RT.Servers;
 using RT.TagSoup;
-using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb
 {
@@ -15,15 +11,15 @@ namespace KtaneWeb
         {
             var resolver = new UrlResolver(
 #if DEBUG
-                new UrlMapping(path: "/js", specificPath: true, handler: rq => HttpResponse.File(_config.PuzzlesJavaScriptFile, "text/javascript; charset=utf-8")),
-                new UrlMapping(path: "/css", specificPath: true, handler: rq => HttpResponse.File(_config.PuzzlesCssFile, "text/css; charset=utf-8")),
+                new UrlMapping(path: "/js", specificPath: true, handler: rq => HttpResponse.File(_config.Puzzles.JavaScriptFile, "text/javascript; charset=utf-8")),
+                new UrlMapping(path: "/css", specificPath: true, handler: rq => HttpResponse.File(_config.Puzzles.CssFile, "text/css; charset=utf-8")),
 #else
                 new UrlMapping(path: "/js", specificPath: true, handler: rq => HttpResponse.JavaScript(Resources.PuzzlesJs)),
                 new UrlMapping(path: "/css", specificPath: true, handler: rq => HttpResponse.Css(Resources.PuzzlesCss)),
 #endif
 
-                new UrlMapping(path: "/api", handler: rq => _ajax.Handle(rq, new Api(_config, session, saveConfig))),
-                new UrlMapping(path: "/HTML", handler: rq => _ajax.Handle(rq, new Api(_config, session, saveConfig))),
+                new UrlMapping(path: "/api", handler: rq => _puzzlesAjax.Handle(rq, new Api(_config, session, saveConfig))),
+                new UrlMapping(path: "/HTML", handler: rq => _puzzlesAjax.Handle(rq, new Api(_config, session, saveConfig))),
                 new UrlMapping(path: "", specificPath: true, handler: rq => HttpResponse.Redirect(rq.Url.WithPath("/"))),
                 new UrlMapping(path: "/", specificPath: true, handler: rq => puzzlesMainPage(rq, info, session)),
 
@@ -43,15 +39,15 @@ namespace KtaneWeb
                 new HEAD(
                     new META { httpEquiv = "Content-Type", content = "text/html; charset=utf-8" },
                     new TITLE("Puzzles"),
-                    new SCRIPT { src = "../HTML/js/jquery.3.1.1.min.js" },
                     new SCRIPT { src = "js" },
                     new LINK { href = "css", rel = "stylesheet", type = "text/css" }
                 ),
-                new BODY(new DIV { id = "everything" }._(new Api(_config, session).RenderBody()))
+                new BODY(new DIV { id = "everything" }._(new Api(_config, session).RenderBody())),
+                new SCRIPTLiteral("initializePuzzles();")
             ));
         }
 
-        private AjaxHandler<Api> _ajax = new AjaxHandler<Api>(
+        private AjaxHandler<Api> _puzzlesAjax = new AjaxHandler<Api>(
 #if DEBUG
             AjaxHandlerOptions.PropagateExceptions
 #else

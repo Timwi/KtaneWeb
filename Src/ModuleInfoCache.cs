@@ -22,6 +22,7 @@ namespace KtaneWeb
             public byte[] IconSpritePng;
             public string IconSpriteMd5;
             public string ModuleInfoJs;
+            public DateTime LastModifiedUtc;
         }
         private ModuleInfoCache _moduleInfoCache = null;
 
@@ -80,10 +81,15 @@ namespace KtaneWeb
                                             modJson = newJson;
 #endif
 
-                                            return (modJson, mod).Nullable();
+                                            return (modJson, mod, file.LastWriteTimeUtc).Nullable();
                                         }
                                         catch (Exception e)
                                         {
+#if DEBUG
+                                            Console.WriteLine(e.Message);
+                                            Console.WriteLine(e.GetType().FullName);
+                                            Console.WriteLine(e.StackTrace);
+#endif
                                             _logger.Exception(e);
                                             return null;
                                         }
@@ -92,10 +98,11 @@ namespace KtaneWeb
                                     .ToArray();
                                 _moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
                                 _moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
+                                _moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
 
                                 var modJsons = modules.Select(tup =>
                                 {
-                                    var (modJson, mod) = tup;
+                                    var (modJson, mod, _) = tup;
                                     modJson["Sheets"] = _config.EnumerateSheetUrls(mod.Name, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
                                     var (x, y) = coords.Get(mod.Name, (x: 0, y: 0));
                                     modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon

@@ -9,14 +9,17 @@ namespace KtaneWeb
         private HttpResponse pull(HttpRequest req)
         {
             var output = new StringBuilder();
-            var cmd = new CommandRunner
+            if (req.Url["dont"] != "1")
             {
-                Command = "git pull --rebase",
-                WorkingDirectory = _config.BaseDir
-            };
-            cmd.StdoutText += str => output.Append(str);
-            cmd.StderrText += str => output.Append(str);
-            cmd.StartAndWait();
+                var cmd = new CommandRunner
+                {
+                    Command = "git pull --rebase",
+                    WorkingDirectory = _config.BaseDir
+                };
+                cmd.StdoutText += str => output.Append(str);
+                cmd.StderrText += str => output.Append(str);
+                cmd.StartAndWait();
+            }
             _moduleInfoCache = null;
             return HttpResponse.PlainText(output.ToString());
         }

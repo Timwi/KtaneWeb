@@ -414,9 +414,9 @@ body.sort-published #main-table th.infos::after {
             white-space: nowrap;
         }
 
-    #more > .json {
-        float: right;
-        margin: 1.5em 0 .5em;
+    #more > .small-links {
+        text-align: right;
+        font-size: 9pt;
     }
 
 div.popup {
@@ -740,51 +740,6 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         #assignment-table td.letter-list {
             text-align: left;
         }
-
-/* JSON page */
-div.links {
-    float: right;
-}
-
-pre.diff {
-    border: 1px solid #ccc;
-    background: #eee;
-    padding: 1em 2em;
-}
-
-    pre.diff .ins {
-        background: #8f8;
-        font-weight: bold;
-        padding: 0 .3em;
-        margin: 0 .1em;
-    }
-
-    pre.diff .del {
-        background: #f88;
-        text-decoration: line-through;
-        padding: 0 .3em;
-        margin: 0 .1em;
-    }
-
-    pre.diff .sep {
-        background: #ccf;
-        font-weight: bold;
-        padding: 0 .5em;
-        display: block;
-    }
-
-    pre.diff span.sep::after {
-        content: '...';
-    }
-
-.json-history td.commands, .json-history td.time, .json-history td.changes .module {
-    white-space: nowrap;
-}
-
-.json-history tr.deleted td {
-    background: #fee;
-    position: static !important;
-}
 
 #legal {
     position: absolute;
