@@ -85,6 +85,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     var sort = lStorage.getItem('sort') || 'name';
     if (!(sort in sorts))
         sort = 'name';
+    var reverse = lStorage.getItem('sort-reverse') == "true" || false;
+
     var defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published'];
     var displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
@@ -141,10 +143,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             updateSearchHighlight();
     }
 
-    function setSort(srt)
+    function setSort(srt, rvrse)
     {
         sort = srt;
         lStorage.setItem('sort', srt);
+
+        reverse = rvrse;
+        lStorage.setItem('reverse', rvrse);
+
         modules.sort(function(a, b)
         {
             if (a === filterCurrentlyIncludesSymbol)
@@ -154,6 +160,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare(a.SortKey, b.SortKey, false) : c;
         });
+
+        if (rvrse) modules.reverse();
 
         viewsReady[view].sort();
 
@@ -463,7 +471,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             }
             view = newView;
             lStorage.setItem('view', newView);
-            setSort(sort);
+            setSort(sort, reverse);
         }
     }
 
@@ -581,7 +589,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if (includesSymbol !== filterCurrentlyIncludesSymbol)
         {
             filterCurrentlyIncludesSymbol = includesSymbol;
-            setSort(sort);
+            setSort(sort, reverse);
         }
     }
 
@@ -813,7 +821,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     setView(view);
     setLinksAndPreferredManuals();
-    setSort(sort);
+    setSort(sort, reverse);
     setTheme(theme);
     setDisplayOptions(displayOptions);
     setSearchOptions(searchOptions);
@@ -918,12 +926,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (arr[i] === sort)
                 ix = i;
         ix = (ix + 1) % arr.length;
-        setSort(arr[ix]);
+        setSort(arr[ix], reverse);
         return false;
     });
 
     // Radio buttons (in “Filters”)
-    $('input.sort').click(function() { setSort(this.value); return true; });
+    $('input.sort').click(function() { setSort(this.value, reverse); return true; });
+    $('input.sort-reverse').click(function() { setSort(sort, this.checked); return true; });
     $('.popup').click(function() { preventDisappear++; });
     $('.popup>.close').click(disappear);
 

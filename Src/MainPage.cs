@@ -14,7 +14,7 @@ namespace KtaneWeb
         // B    sort by Twitch Plays score
         // C    link to Source code
         // D    sort by date published
-        // E    sort by expert difficulty
+        // E    Reverse sort
         // F    Find
         // G    Glossary
         // H    link to Steam Workshop item
@@ -273,7 +273,10 @@ namespace KtaneWeb
                                         new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
                                     new DIV(
                                         new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d')))),
+                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d'))),
+									new DIV(
+										new INPUT { id = "sort-reverse", name = "sort", class_ = "sort-reverse", type = itype.checkbox },
+										new LABEL { for_ = "sort-reverse", accesskey = "e" }._("\u00a0Reverse".Accel('e')))),
                                 new H4("Profile"),
                                 new DIV { class_ = "option-group" }._(
                                     new DIV { class_ = "filter-profile" }._(
