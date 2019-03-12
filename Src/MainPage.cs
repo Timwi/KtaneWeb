@@ -24,7 +24,7 @@ namespace KtaneWeb
         // L    Light Theme
         // M    include/exclude mods
         // N    sort by name
-        // O    sort by defuser difficulty
+        // O
         // P    Profile Editor
         // Q    
         // R    include/exclude regular modules
@@ -264,10 +264,10 @@ namespace KtaneWeb
                                         new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
                                     new DIV(
                                         new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-defuser-difficulty", accesskey = "o" }._("\u00a0Sort by defuser difficulty".Accel('o'))),
+                                        new LABEL { for_ = "sort-defuser-difficulty" }._("\u00a0Sort by defuser difficulty")),
                                     new DIV(
                                         new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-expert-difficulty", accesskey = "e" }._("\u00a0Sort by expert difficulty".Accel('e'))),
+                                        new LABEL { for_ = "sort-expert-difficulty" }._("\u00a0Sort by expert difficulty")),
                                     new DIV(
                                         new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),

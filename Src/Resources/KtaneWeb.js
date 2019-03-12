@@ -63,7 +63,8 @@ function el(tagName, className, ...args)
 function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
 {
     // Find all the languages
-    function getLanguageFromSheet(sheet) {
+    function getLanguageFromSheet(sheet)
+    {
         const matches = sheet.match(/^ translated \((?:(.+) — .+|(.+))?\)/);
         return matches !== null ? (matches[2] || matches[1]) : "English";
     }
@@ -72,7 +73,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         .map(module => module.Sheets.map(getLanguageFromSheet))
         .reduce((a, b) => a.concat(b))
         .filter((value, index, array) => array.indexOf(value) === index);
-    
+
     languages.sort();
 
     var filter = {};
@@ -162,11 +163,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     function setLanguages(langs)
     {
         preferredLanguages = langs;
-        for (const lang of languages) {
+        for (const lang of languages)
             $(`[data-lang="${lang}"]`).prop('checked', langs[lang] === undefined ? true : langs[lang]);
-        }
         lStorage.setItem('preferredLanguages', JSON.stringify(langs));
-
         updateFilter();
     }
 
@@ -758,7 +757,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         trow = ["", mod.Name, `<div class='descriptor'>${rx1[1]}</div>`];
 
                     const language = trow[0] || "English";
-                    if (preferredLanguages[language] === false) continue;
+                    if (preferredLanguages[language] === false)
+                        continue;
 
                     let trowHtml = `<div><div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link-HTML'></div><div class='link-PDF'></div></div>`;
                     already[rx1[1]] = $(trowHtml).appendTo(menu);
@@ -854,8 +854,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
 
     // Make language checkboxes
-    const languagesOption = document.querySelector(".languages-option"); 
-    for (const language of languages) {
+    const languagesOption = document.querySelector(".languages-option");
+    for (const language of languages)
+    {
         languagesOption.appendChild(
             el("div", null,
                 el("input", "language-toggle", { type: "checkbox", name: "language", id: `lang-${language}`, "data-lang": language }),
@@ -867,11 +868,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     setLanguages(preferredLanguages);
 
     $("input.language-toggle").click(function() { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
-    $("button.toggle-all-languages").click(function() {
-        for (const lang of languages) {
+    $("button.toggle-all-languages").click(function()
+    {
+        for (const lang of languages)
             preferredLanguages[lang] = !preferredLanguages[lang];
-        }
-
         setLanguages(preferredLanguages);
     });
 
