@@ -62,6 +62,19 @@ function el(tagName, className, ...args)
 
 function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
 {
+    // Find all the languages
+    function getLanguageFromSheet(sheet) {
+        const matches = sheet.match(/^ translated \((?:(.+) — .+|(.+))?\)/);
+        return matches !== null ? (matches[2] || matches[1]) : "English";
+    }
+
+    const languages = modules
+        .map(module => module.Sheets.map(getLanguageFromSheet))
+        .reduce((a, b) => a.concat(b))
+        .filter((value, index, array) => array.indexOf(value) === index);
+    
+    languages.sort();
+
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
@@ -70,6 +83,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         selectable = 'manual';
     var preferredManuals = {};
     try { preferredManuals = JSON.parse(lStorage.getItem('preferredManuals') || '{}') || {}; }
+    catch (exc) { }
+    var preferredLanguages = {};
+    try { preferredLanguages = JSON.parse(lStorage.getItem('preferredLanguages') || '{}') || {}; }
     catch (exc) { }
 
     function compare(a, b, rev) { return (rev ? -1 : 1) * ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
@@ -141,6 +157,17 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         setLinksAndPreferredManuals();
         if ($("input#search-field").is(':focus'))
             updateSearchHighlight();
+    }
+
+    function setLanguages(langs)
+    {
+        preferredLanguages = langs;
+        for (const lang of languages) {
+            $(`[data-lang="${lang}"]`).prop('checked', langs[lang] === undefined ? true : langs[lang]);
+        }
+        lStorage.setItem('preferredLanguages', JSON.stringify(langs));
+
+        updateFilter();
     }
 
     function setSort(srt, rvrse)
@@ -560,6 +587,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     }
                 }
             }
+
+            filteredIn &= mod.Sheets.map(getLanguageFromSheet).some(sheet => preferredLanguages[sheet] !== false);
+
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
             let searchWhat = '';
@@ -726,6 +756,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         trow = ["", mod.Name, `<div class='descriptor'>${rx2[1]}</div><div class='author'>by ${rx2[2]}</div>`];
                     else
                         trow = ["", mod.Name, `<div class='descriptor'>${rx1[1]}</div>`];
+
+                    const language = trow[0] || "English";
+                    if (preferredLanguages[language] === false) continue;
+
                     let trowHtml = `<div><div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link-HTML'></div><div class='link-PDF'></div></div>`;
                     already[rx1[1]] = $(trowHtml).appendTo(menu);
                     if (rx1[2] === 'HTML')
@@ -818,6 +852,28 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 break;
         }
     }
+
+    // Make language checkboxes
+    const languagesOption = document.querySelector(".languages-option"); 
+    for (const language of languages) {
+        languagesOption.appendChild(
+            el("div", null,
+                el("input", "language-toggle", { type: "checkbox", name: "language", id: `lang-${language}`, "data-lang": language }),
+                el("label", null, { for: `lang-${language}` }, language)
+            )
+        );
+    }
+
+    setLanguages(preferredLanguages);
+
+    $("input.language-toggle").click(function() { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
+    $("button.toggle-all-languages").click(function() {
+        for (const lang of languages) {
+            preferredLanguages[lang] = !preferredLanguages[lang];
+        }
+
+        setLanguages(preferredLanguages);
+    });
 
     setView(view);
     setLinksAndPreferredManuals();

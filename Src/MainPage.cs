@@ -309,7 +309,10 @@ namespace KtaneWeb
                             new DIV { class_ = "option-group" }._(
                                 _selectables.Select(sel => new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
-                                    new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))))),
+                                    new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel))))),
+							new H4("Languages"),
+							new DIV { class_ = "option-group languages-option" },
+							new BUTTON { class_ = "toggle-all-languages" }._("Toggle All Languages")),
 
                         new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
 
