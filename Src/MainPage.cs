@@ -257,8 +257,8 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new DIV { class_ = "filters" }._(
                                 _filters.Select(filter => filter.ToHtml()),
-                                new H4("Sort order"),
                                 new DIV { class_ = "option-group" }._(
+                                    new H4("Sort order"),
                                     new DIV(
                                         new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
@@ -274,11 +274,11 @@ namespace KtaneWeb
                                     new DIV(
                                         new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d'))),
-									new DIV(
-										new INPUT { id = "sort-reverse", name = "sort", class_ = "sort-reverse", type = itype.checkbox },
-										new LABEL { for_ = "sort-reverse", accesskey = "e" }._("\u00a0Reverse".Accel('e')))),
-                                new H4("Profile"),
+                                    new DIV(
+                                        new INPUT { id = "sort-reverse", name = "sort", class_ = "sort-reverse", type = itype.checkbox },
+                                        new LABEL { for_ = "sort-reverse", accesskey = "e" }._("\u00a0Reverse".Accel('e')))),
                                 new DIV { class_ = "option-group" }._(
+                                    new H4("Profile"),
                                     new DIV { class_ = "filter-profile" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
                                         new LABEL { for_ = "filter-profile-enabled", class_ = "filter-profile-enabled-text" }),
@@ -292,27 +292,26 @@ namespace KtaneWeb
                         // OPTIONS (tab popup)
                         new DIV { id = "options", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
-                            new H4("Display"),
                             new DIV { class_ = "option-group" }._(
+                                new H4("Display"),
                                 _displays.Select(dspl => new DIV(
                                     new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
                                     new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
-                            new H4("Site theme"),
                             new DIV { class_ = "option-group" }._(
+                                new H4("Site theme"),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
                                     new LABEL { for_ = "theme-default", accesskey = "l" }._("Light".Accel('L'))),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
                                     new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
-                            new H4("Make links go to"),
                             new DIV { class_ = "option-group" }._(
+                                new H4("Make links go to"),
                                 _selectables.Select(sel => new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
                                     new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel))))),
-							new H4("Languages"),
-							new DIV { class_ = "option-group languages-option" },
-							new BUTTON { class_ = "toggle-all-languages" }._("Toggle All Languages")),
+                            new DIV { class_ = "option-group" }._(new H4("Languages"), new DIV { id = "languages-option" }),
+                            new BUTTON { class_ = "toggle-all-languages" }._("Toggle All Languages")),
 
                         new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
 

@@ -58,10 +58,11 @@ namespace KtaneWeb
             { "type", "checkboxes" }
         };
         public override object ToHtml() => Ut.NewArray<object>(
-            new H4(ReadableName),
-            new DIV { class_ = "option-group" }._(Options.Select(opt => $"filter-{PropName}-{opt.Name}".Apply(id => new DIV(
-                new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
-                new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value)))))));
+            new DIV { class_ = "option-group" }._(
+                new H4(ReadableName),
+                Options.Select(opt => $"filter-{PropName}-{opt.Name}".Apply(id => new DIV(
+                    new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
+                    new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value)))))));
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
@@ -84,8 +85,8 @@ namespace KtaneWeb
             { "type", "slider" }
         };
         public override object ToHtml() => Ut.NewArray<object>(
-            new H4(ReadableName),
             new DIV { class_ = "option-group" }._(
+                new H4(ReadableName),
                 new DIV { id = "filter-" + PropName, class_ = "slider" },
                 new DIV { id = "filter-label-" + PropName, class_ = "slider-label" }));
 

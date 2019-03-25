@@ -854,7 +854,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
 
     // Make language checkboxes
-    const languagesOption = document.querySelector(".languages-option");
+    const languagesOption = document.getElementById('languages-option');
     for (const language of languages)
     {
         languagesOption.appendChild(
