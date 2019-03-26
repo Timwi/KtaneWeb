@@ -16,6 +16,7 @@
     <IntermediateOutputPath>..\Builds\$(Configuration)\obj-$(AssemblyName)\</IntermediateOutputPath>
     <BaseIntermediateOutputPath>..\Builds\$(Configuration)\obj-$(AssemblyName)\</BaseIntermediateOutputPath>
     <TargetFrameworkProfile />
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -117,13 +118,13 @@
     <Content Include="Resources\Puzzles.css">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
-    <Content Include="Resources\Puzzles.js">
+    <Content Include="Resources\Generated\Puzzles.js">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
     <Content Include="Resources\KtaneWeb.css">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
-    <Content Include="Resources\KtaneWeb.js">
+    <Content Include="Resources\Generated\KtaneWeb.js">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
   </ItemGroup>
@@ -136,8 +137,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="tsconfig.json" />
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Resources\KtaneWeb.ts" />
+    <TypeScriptCompile Include="Resources\Puzzles.ts" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>cd /d $(ProjectDir)
+npx tsc</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

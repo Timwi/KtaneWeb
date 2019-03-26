@@ -1,0 +1,21 @@
+{
+  "name": "ktaneweb",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Timwi/KtaneWeb.git"
+  },
+  "author": "Timwi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Timwi/KtaneWeb/issues"
+  },
+  "homepage": "https://github.com/Timwi/KtaneWeb#readme",
+  "devDependencies": {
+    "@types/jquery": "^3.3.29",
+    "@types/jqueryui": "^1.12.7",
+    "typescript": "^3.3.4000"
+  }
+}

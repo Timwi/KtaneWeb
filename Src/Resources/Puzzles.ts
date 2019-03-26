@@ -2,9 +2,9 @@
 {
     function setEvents()
     {
-        Array.from(document.getElementsByClassName('operable')).forEach(opElem =>
+        Array.from(document.getElementsByClassName('operable')).forEach((opElem: HTMLElement) =>
         {
-            opElem.onclick = function()
+            opElem.onclick = function(this: HTMLElement)
             {
                 var data = this.dataset;
                 if (!('fn' in data))

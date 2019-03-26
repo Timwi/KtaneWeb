@@ -1,4 +1,6 @@
-﻿// Handle access to localStorage
+﻿declare const Ktane: { Themes: any };
+
+// Handle access to localStorage
 var lStorage = localStorage;
 
 try
@@ -10,6 +12,16 @@ catch (e)
 {
     lStorage = {
         storage: {},
+        key: function(index)
+        {
+            let counter = 0;
+            for (const key in this.storage)
+            {
+                if (counter == index) return key;
+                else counter++;
+            }
+            return null;
+        },
         getItem: function(key)
         {
             return this.storage[key] || null;
@@ -25,6 +37,19 @@ catch (e)
         clear: function()
         {
             this.storage = {};
+            this.length = 0;
+        },
+        get length()
+        {
+            let length = 0;
+            for (var key in this.storage)
+            {
+                if (this.storage.hasOwnProperty(key))
+                {
+                    length += 1;
+                }
+            }
+            return length;
         }
     };
 }
@@ -38,13 +63,13 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
-function el(tagName, className, ...args)
+function el(tagName, className?, ...args)
 {
     const element = document.createElement(tagName);
     if (className) element.className = className;
     for (const arg of args)
     {
-        if (arg instanceof window.Element)
+        if (arg instanceof Element)
             element.appendChild(arg);
         else if (typeof arg !== "object")
             element.appendChild(document.createTextNode(arg));
@@ -120,7 +145,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     let profileVetoList = null;
 
-    var version = lStorage.getItem('version');
+    var version: number = JSON.parse(lStorage.getItem('version')) || 0;
     if (version < 2)
     {
         sort = 'name';
@@ -257,7 +282,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         }
     }
 
-    var viewsReady = {};
+    var viewsReady: any = {};
     function createView(newView)
     {
         if (newView in viewsReady)
@@ -558,7 +583,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             noneSelected[initFilters[i].id] = none;
         }
 
-        let searchRaw = $("input#search-field").val().toLowerCase();
+        let searchRaw = $("input#search-field").val().toString().toLowerCase();
         let searchKeywords = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/'/g, '’'));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
@@ -587,7 +612,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 }
             }
 
-            filteredIn &= mod.Sheets.map(getLanguageFromSheet).some(sheet => preferredLanguages[sheet] !== false);
+            filteredIn = filteredIn && mod.Sheets.map(getLanguageFromSheet).some(sheet => preferredLanguages[sheet] !== false);
 
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
@@ -625,7 +650,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     // Sets the module links to the current selectable and the manual icon link to the preferred manuals
     function setLinksAndPreferredManuals()
     {
-        let seed = $('#rule-seed-input').val() | 0;
+        let seed = $('#rule-seed-input').val() || 0;
         let seedHash = (seed === 1 ? '' : '#' + seed);
         for (let mod of modules)
         {
@@ -723,7 +748,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.'));
             var menu = el('div', 'manual-select');
             menuDiv.appendChild(menu);
-            var seed = document.getElementById('rule-seed-input').value | 0;
+            var seed = (<HTMLInputElement>document.getElementById('rule-seed-input')).value || 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
             var already = {};
             for (var i = 0; i < mod.Manuals.length; i++)
@@ -854,7 +879,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
 
     // Make language checkboxes
-    const languagesOption = document.getElementById('languages-option');
+    const languagesOption = document.getElementById("languages-option");
     for (const language of languages)
     {
         languagesOption.appendChild(
@@ -867,7 +892,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     setLanguages(preferredLanguages);
 
-    $("input.language-toggle").click(function() { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
+    $("input.language-toggle").click(function(this: HTMLInputElement) { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
     $("button.toggle-all-languages").click(function()
     {
         for (const lang of languages)
@@ -889,7 +914,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
-    $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
+    $('input#profile-file').change(function() { const files = (<HTMLInputElement>document.getElementById('profile-file')).files; if (files.length === 1) { setProfile(files[0]); } });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
     $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
@@ -901,7 +926,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         return false;
     });
 
-    function popup(lnk, wnd, width)
+    function popup(lnk, wnd, width?)
     {
         var wasVisible = wnd.is(':visible');
         disappear();
@@ -942,7 +967,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         var rel = $(`#${pp}-rel`);
         var $pp = $(`#${pp}`);
         popup(rel.length ? rel : $(`#${pp}-link`), $pp);
-        Array.from($pp.find('.focus-on-show').focus()).forEach(x => x.select());
+        Array.from($pp.find('.focus-on-show').focus()).forEach(x => $(x).select());
         return false;
     });
     $('.view-link').click(function()
@@ -959,7 +984,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('#rule-seed-input').on('change', function()
     {
         setLinksAndPreferredManuals();
-        var seed = $('#rule-seed-input').val() | 0;
+        var seed = $('#rule-seed-input').val() || 0;
         if (seed === 1)
         {
             document.body.classList.remove('rule-seed-active');
@@ -969,7 +994,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         {
             document.body.classList.add('rule-seed-active');
             document.getElementById('rule-seed-number').innerText = ' = ' + seed;
-            document.getElementById('rule-seed-mobile').innerText = seed;
+            document.getElementById('rule-seed-mobile').innerText = seed.toString();
         }
     });
 
@@ -987,8 +1012,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     });
 
     // Radio buttons (in “Filters”)
-    $('input.sort').click(function() { setSort(this.value, reverse); return true; });
-    $('input.sort-reverse').click(function() { setSort(sort, this.checked); return true; });
+    $('input.sort').click(function(this: HTMLInputElement) { setSort(this.value, reverse); return true; });
+    $('input.sort-reverse').click(function(this: HTMLInputElement) { setSort(sort, this.checked); return true; });
     $('.popup').click(function() { preventDisappear++; });
     $('.popup>.close').click(disappear);
 
@@ -1019,7 +1044,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     visible[selectedIndex].ViewData[view].SelectableLink.focus();
                     setTimeout(function()
                     {
-                        let inp = document.getElementById('search-field');
+                        let inp = (<HTMLInputElement>document.getElementById('search-field'));
                         inp.focus();
                         inp.setSelectionRange(0, inp.value.length);
                     }, 1);
@@ -1029,7 +1054,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             updateSearchHighlight();
         });
 
-    $('.select-on-focus').focus(function() { this.setSelectionRange(0, this.value.length); });
+    $('.select-on-focus').focus(function(this: HTMLInputElement) { this.setSelectionRange(0, this.value.length); });
 
     $('#generate-pdf').click(function()
     {

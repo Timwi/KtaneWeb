@@ -6,3 +6,6 @@ packages
 *.csproj.user
 *.sln.cache
 *.orig
+
+/node_modules/
+/Src/Resources/Generated/

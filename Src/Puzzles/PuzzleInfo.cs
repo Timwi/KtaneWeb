@@ -6,9 +6,9 @@ namespace KtaneWeb.Puzzles
     sealed class PuzzleInfo
     {
         [ClassifyIgnoreIfDefault]
-        public string JavaScriptFile;
+        public string JavaScriptFile = null;
         [ClassifyIgnoreIfDefault]
-        public string CssFile;
+        public string CssFile = null;
 
         [ClassifyNotNull]
         public List<PuzzleGroup> PuzzleGroups = new List<PuzzleGroup>();
