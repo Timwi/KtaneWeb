@@ -984,7 +984,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('#rule-seed-input').on('change', function()
     {
         setLinksAndPreferredManuals();
-        var seed = $('#rule-seed-input').val() || 0;
+        var seed = +($('#rule-seed-input').val() || 0);
         if (seed === 1)
         {
             document.body.classList.remove('rule-seed-active');
