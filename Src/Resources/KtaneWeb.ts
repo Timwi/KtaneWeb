@@ -612,7 +612,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 }
             }
 
-            filteredIn = filteredIn && mod.Sheets.map(getLanguageFromSheet).some(sheet => preferredLanguages[sheet] !== false);
+            if (mod.Sheets.length > 0)
+                filteredIn = filteredIn && mod.Sheets.map(getLanguageFromSheet).some(sheet => preferredLanguages[sheet] !== false);
 
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
@@ -650,7 +651,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     // Sets the module links to the current selectable and the manual icon link to the preferred manuals
     function setLinksAndPreferredManuals()
     {
-        let seed = $('#rule-seed-input').val() || 0;
+        let seed = +$('#rule-seed-input').val();
         let seedHash = (seed === 1 ? '' : '#' + seed);
         for (let mod of modules)
         {
