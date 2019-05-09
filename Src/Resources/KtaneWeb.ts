@@ -287,6 +287,17 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         if (newView in viewsReady)
             return true;
+
+        function setCompatibilityTooltip(element, compatibility)
+        {
+            switch (compatibility)
+            {
+                case 'Unplayable': element.setAttribute('title', 'This module has a programming bug that prevents it from being played reliably.'); break;
+                case 'Untested': element.setAttribute('title', 'The compatibility of this module has not yet been determined.'); break;
+                case 'Problematic': element.setAttribute('title', 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.'); break;
+            }
+        }
+
         switch (newView)
         {
             case 'list': {
@@ -326,7 +337,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         }
                     }
 
-                    let icon = el("div", "mod-icon", { title: mod.Symbol, style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
+                    let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
+                    setCompatibilityTooltip(icon, mod.Compatibility);
                     let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.Name));
                     mod.ViewData.list.SelectableLink = modlink;
                     let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
@@ -417,12 +429,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 {
                     let mod = modules[i];
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
-                    let div = el('a', `module ${mod.ExpertDifficulty}`,
+                    let div = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
                         el('div', 'name', el('div', 'inner', mod.Name)),
                         el('div', 'tpscore', mod.TwitchPlaysScore || ''),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
+                    setCompatibilityTooltip(div, mod.Compatibility);
 
                     $(manualSelector).click(makeClickHander(manualSelector, false, mod));
 

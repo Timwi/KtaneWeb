@@ -209,22 +209,38 @@ td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div {
     display: none;
 }
 
-tr.mod.compatibility-Untested .mod-name {
-    padding-left: 1.5em;
+/** COMPATIBILITY ICONS **/
+tr.mod:not(.compatibility-Compatible) .mod-name::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: .25em;
+    vertical-align: middle;
+}
+
+#actual-periodic-table a.module:not(.compatibility-Compatible) div.icon::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    width: 17px;
+    height: 17px;
+}
+
+tr.mod.compatibility-Untested .mod-name::before, #actual-periodic-table a.compatibility-Untested div.icon::after {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><text x=".5" y="1" font-size="0.99pt" font-family="Arial" fill="%23482" text-anchor="middle">?</text></svg>') left top no-repeat;
-    background-size: 1em 1em;
+    background-size: 100% 100%;
 }
 
-tr.mod.compatibility-Unplayable .mod-name {
-    padding-left: 1.5em;
+tr.mod.compatibility-Unplayable .mod-name::before, #actual-periodic-table a.compatibility-Unplayable div.icon::after {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0 1 .5 0 1 1 z" fill="%23f24" stroke="none" /></svg>') left top no-repeat;
-    background-size: 1em 1em;
+    background-size: 100% 100%;
 }
 
-tr.mod.compatibility-Problematic .mod-name {
-    padding-left: 1.5em;
+tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.compatibility-Problematic div.icon::after {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle cx=".5" cy=".5" r=".5" fill="%23fc4" stroke="none" /></svg>') left top no-repeat;
-    background-size: 1em 1em;
+    background-size: 100% 100%;
 }
 
 .slider {
@@ -511,9 +527,9 @@ div.popup {
         break-inside: avoid;
     }
 
-    div.popup .option-group:not(:last-child) {
-        margin-bottom: 1.5em;
-    }
+        div.popup .option-group:not(:last-child) {
+            margin-bottom: 1.5em;
+        }
 
     div.popup.manual-select {
         padding: 1em;
