@@ -844,10 +844,6 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
                 content: ' • by ';
             }
 
-    tr.mod.compatibility-Untested .mod-name, tr.mod.compatibility-Unplayable .mod-name, tr.mod.compatibility-Problematic .mod-name {
-        padding-left: 1.25em;
-    }
-
     body.display-description td.infos-1 div.infos > div.inf-description, body.display-id td.infos-1 div.infos > div.inf-id {
         display: block;
     }

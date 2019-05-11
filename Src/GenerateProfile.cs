@@ -39,7 +39,6 @@ namespace KtaneWeb
                             zipFile.Add(new InMemoryDataSource(generateProfile(0, k => k.ExpertDifficulty != difficulty)), @"+ Expert {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
                         }
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.RuleSeedSupport != KtaneSupport.Supported)), @"Only rule-seeded.json", CompressionMethod.Deflated, true);
-                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.TwitchPlaysSupport != KtaneSupport.Supported)), @"Only Twitch Plays supported.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Souvenir == null || k.Souvenir.Status != KtaneModuleSouvenir.Supported)), @"Only Souvenir supported.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Compatibility != KtaneModuleCompatibility.Compatible)), @"Veto incompatible.json", CompressionMethod.Deflated, true);
                         zipFile.CommitUpdate();
