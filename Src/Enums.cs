@@ -65,8 +65,6 @@
         NotACandidate,
         [KtaneFilterOption("Considered"), KtaneSouvenirInfo('C', "This module may be a candidate for inclusion in Souvenir.")]
         Considered,
-        [KtaneFilterOption("Planned"), KtaneSouvenirInfo('P', "Future inclusion in Souvenir is planned for this module.")]
-        Planned,
         [KtaneFilterOption("Supported"), KtaneSouvenirInfo('S', "This module is included in Souvenir. Refer to the Souvenir manual for details.")]
         Supported
     }
