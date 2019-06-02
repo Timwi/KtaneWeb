@@ -35,20 +35,22 @@ body {
     background: hsl(218, 80%, 95%);
 }
 
-body, button, input, textarea {
+body, button, a.button, input, textarea {
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 13pt;
     margin: 0;
 }
 
-button {
+button, a.button {
     border: none;
     cursor: pointer;
     box-shadow: rgba(0,0,0,.3) 2px 2px 5px;
     border-radius: 5pt;
+    text-decoration: none;
+    color: black;
 }
 
-    button:hover, button.perm {
+    button:hover, button.perm, a.button:hover, a.button.perm {
         color: white;
     }
 
@@ -134,41 +136,55 @@ h1 {
     }
 
 .puzzle-group {
-    background: hsl(0,90%,95%);
+    background: hsl(220,90%,95%);
     position: relative;
     padding: 3pt;
     margin-top: 25pt;
 }
 
-    .puzzle-group.published {
-        background: hsl(220,90%,95%);
+    .puzzle-group.req-priv {
+        background: hsl(0,90%,95%);
     }
 
     .puzzle-group .title {
         font-size: 20pt;
         font-weight: bold;
-        background: hsl(0,90%,85%);
+        background: hsl(220,90%,85%);
         padding: 3pt 7pt;
     }
 
-    .puzzle-group.published .title {
-        background: hsl(220,90%,85%);
+    .puzzle-group.req-priv .title {
+        background: hsl(0,90%,85%);
     }
 
-    .puzzle-group .title button, .puzzle-group .author button, .puzzle-group .date-published button, .puzzle-group .puzzle button {
-        background-color: hsl(0,90%,75%);
-    }
-
-        .puzzle-group .title button:hover, .puzzle-group .author button:hover, .puzzle-group .date-published button:hover, .puzzle-group .puzzle button:hover, .puzzle-group .puzzle button.perm {
-            background-color: hsl(0,100%,20%);
-        }
-
-    .puzzle-group.published .title button, .puzzle-group.published .author button, .puzzle-group.published .date-published button, .puzzle-group .puzzle.published button {
+    .puzzle-group button, .puzzle-group.req-priv .puzzle:not(.req-priv) button,
+    .puzzle-group a.button, .puzzle-group.req-priv .puzzle:not(.req-priv) a.button {
         background-color: hsl(220,90%,75%);
     }
 
-        .puzzle-group.published .title button:hover, .puzzle-group.published .author button:hover, .puzzle-group.published .date-published button:hover, .puzzle-group .puzzle.published button:hover, .puzzle-group .puzzle.published button.perm {
+        .puzzle-group button:hover, .puzzle-group button.perm, .puzzle-group.req-priv .puzzle:not(.req-priv) button:hover, .puzzle-group.req-priv .puzzle:not(.req-priv) button.perm,
+        .puzzle-group a.button:hover, .puzzle-group a.button.perm, .puzzle-group.req-priv .puzzle:not(.req-priv) a.button:hover, .puzzle-group.req-priv .puzzle:not(.req-priv) a.button.perm {
             background-color: hsl(220,100%,20%);
+        }
+
+    .puzzle-group.req-priv button, .puzzle.req-priv > button,
+    .puzzle-group.req-priv a.button, .puzzle.req-priv > a.button {
+        background-color: hsl(0,90%,75%);
+    }
+
+        .puzzle-group.req-priv button:hover, .puzzle-group.req-priv button.perm, .puzzle.req-priv > button:hover, .puzzle.req-priv > button.perm,
+        .puzzle-group.req-priv a.button:hover, .puzzle-group.req-priv a.button.perm, .puzzle.req-priv > a.button:hover, .puzzle.req-priv > a.button.perm {
+            background-color: hsl(0,100%,20%);
+        }
+
+    .puzzle-group .puzzle.req-priv > button,
+    .puzzle-group .puzzle.req-priv > a.button {
+        background-color: hsl(0,90%,75%);
+    }
+
+        .puzzle-group .puzzle.req-priv > button:hover, .puzzle.req-priv > button.perm,
+        .puzzle-group .puzzle.req-priv > a.button:hover, .puzzle.req-priv > a.button.perm {
+            background-color: hsl(0,100%,20%);
         }
 
     .puzzle-group .author, .puzzle-group .date-published {
@@ -186,22 +202,6 @@ h1 {
         padding: 5pt 10pt;
     }
 
-        .puzzle-group .controls button {
-            background-color: hsl(0, 90%, 85%);
-        }
-
-            .puzzle-group .controls button:hover {
-                background-color: hsl(0, 100%, 20%);
-            }
-
-    .puzzle-group.published .controls button {
-        background-color: hsl(220, 90%, 85%);
-    }
-
-        .puzzle-group.published .controls button:hover {
-            background-color: hsl(220, 100%, 20%);
-        }
-
     .puzzle-group .puzzles {
         list-style: none;
         padding: 5pt 10pt;
@@ -209,29 +209,26 @@ h1 {
     }
 
         .puzzle-group .puzzles .puzzle {
-            padding: 0;
             margin: 5pt 0;
+            display: block;
             position: relative;
+            padding: 5pt 10pt 5pt 25pt;
+            background-color: hsl(220, 90%, 85%);
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(220, 90%, 75%)" /></svg>');
+            background-position: 3pt center;
+            background-size: auto 75%;
+            background-repeat: no-repeat;
         }
 
-            .puzzle-group .puzzles .puzzle .puzzle-inner {
-                display: block;
-                position: relative;
-                padding: 5pt 10pt 5pt 25pt;
-                text-decoration: none;
-                color: hsl(0, 100%, 10%);
-                background-color: hsl(0, 90%, 85%);
-                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(0, 90%, 75%)" /></svg>');
-                background-position: 3pt center;
-                background-size: auto 75%;
-                background-repeat: no-repeat;
+            .puzzle-group .puzzles .puzzle .puzzle-title {
+                color: hsl(220, 100%, 10%);
             }
 
-            .puzzle-group .puzzles .puzzle.new .puzzle-inner {
+            .puzzle-group .puzzles .puzzle.new {
                 padding-left: 55pt;
             }
 
-                .puzzle-group .puzzles .puzzle.new .puzzle-inner:before {
+                .puzzle-group .puzzles .puzzle.new:before {
                     content: '';
                     position: absolute;
                     left: 25px;
@@ -244,47 +241,54 @@ h1 {
                     background-repeat: no-repeat;
                 }
 
-            .puzzle-group .puzzles .puzzle.missing .puzzle-inner {
-                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(0, 90%, 75%)" /></svg>');
-            }
-
-            .puzzle-group .puzzles .puzzle .puzzle-inner:visited {
-                color: hsl(0, 100%, 35%);
-            }
-
-            .puzzle-group .puzzles .puzzle .puzzle-inner:hover {
-                background-color: hsl(0, 100%, 75%);
-                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(0, 100%, 65%)" /></svg>');
-            }
-
-            .puzzle-group .puzzles .puzzle.missing .puzzle-inner:hover {
-                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(0, 100%, 65%)" /></svg>');
-            }
-
-            .puzzle-group .puzzles .puzzle.published .puzzle-inner {
-                color: hsl(220, 100%, 10%);
-                background-color: hsl(220, 90%, 85%);
-                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(220, 90%, 75%)" /></svg>');
-            }
-
-            .puzzle-group .puzzles .puzzle.published.missing .puzzle-inner {
+            .puzzle-group .puzzles .puzzle.missing {
                 background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(220, 90%, 75%)" /></svg>');
             }
 
-            .puzzle-group .puzzles .puzzle.published .puzzle-inner:hover {
+            .puzzle-group .puzzles .puzzle:visited {
+                color: hsl(0, 100%, 35%);
+            }
+
+            .puzzle-group .puzzles .puzzle:hover {
                 background-color: hsl(220, 100%, 75%);
                 background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(220, 100%, 65%)" /></svg>');
             }
 
-            .puzzle-group .puzzles .puzzle.published.missing .puzzle-inner:hover {
+            .puzzle-group .puzzles .puzzle.missing:hover {
                 background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(220, 100%, 65%)" /></svg>');
             }
 
-            .puzzle-group .puzzles .puzzle.published .puzzle-inner:visited {
+            .puzzle-group .puzzles .puzzle .puzzle-title:visited {
                 color: hsl(220, 100%, 35%);
             }
 
-            .puzzle-group .puzzles .puzzle button {
+            .puzzle-group .puzzles .puzzle.req-priv {
+                background-color: hsl(0, 90%, 85%);
+                background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(0, 90%, 75%)" /></svg>');
+            }
+
+                .puzzle-group .puzzles .puzzle.req-priv .puzzle-title {
+                    color: hsl(0, 100%, 10%);
+                }
+
+                .puzzle-group .puzzles .puzzle.req-priv.missing {
+                    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(0, 90%, 75%)" /></svg>');
+                }
+
+                .puzzle-group .puzzles .puzzle.req-priv:hover {
+                    background-color: hsl(0, 100%, 75%);
+                    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(0, 100%, 65%)" /></svg>');
+                }
+
+                .puzzle-group .puzzles .puzzle.req-priv.missing:hover {
+                    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(0, 100%, 65%)" /></svg>');
+                }
+
+                .puzzle-group .puzzles .puzzle.req-priv .puzzle-title:visited {
+                    color: hsl(0, 100%, 35%);
+                }
+
+            .puzzle-group .puzzles .puzzle button, .puzzle-group .puzzles .puzzle a.button {
                 padding: 3pt 6pt;
                 margin-left: 10pt;
                 font-size: 10pt;
@@ -292,7 +296,7 @@ h1 {
                 top: -1pt;
             }
 
-                .puzzle-group .puzzles .puzzle button:not(.name-edit-icon) {
+                .puzzle-group .puzzles .puzzle button:not(.name-edit-icon), .puzzle-group .puzzles .puzzle a.button:not(.name-edit-icon) {
                     float: right;
                 }
 
@@ -310,6 +314,7 @@ h1 {
                     }
 
             .puzzle-group .puzzles .puzzle .puzzle-title {
+                text-decoration: none;
                 font-weight: bold;
             }
 

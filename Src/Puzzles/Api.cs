@@ -52,18 +52,17 @@ namespace KtaneWeb.Puzzles
                     new DIV { class_ = "author" }._(group.Author, editIcon(nameof(ChangeGroupAuthor), group, group.Author)),
                     new DIV { class_ = "date-published" }._(group.Published.ToString("MMM yyyy"), editIcon(nameof(ChangeGroupMonth), group, group.Published.Month.ToString()), editIcon(nameof(ChangeGroupYear), group, group.Published.Year.ToString())),
                     new DIV { class_ = "puzzles" }._(
-                        group.Puzzles.Where(puzzle => puzzle.IsPublished || canView(group)).Select((puzzle, ix) => new DIV { class_ = "puzzle" + (puzzle.IsPublished ? " published" : " req-priv") + (puzzle.IsNew ? " new" : null) + (File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.Filename)) ? null : " missing") }._(
+                        group.Puzzles.Where(puzzle => puzzle.IsPublished || canView(group)).Select((puzzle, ix) => new DIV { class_ = "puzzle" + (puzzle.IsPublished ? "" : " req-priv") + (puzzle.IsNew ? " new" : null) + (File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.Filename)) ? null : " missing") }._(
                             canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", ix)._("move here") : null,
-                            new A { href = $"{group.Folder}/{puzzle.Filename}", class_ = "puzzle-inner" }._(
-                                new SPAN { class_ = "puzzle-title" }._(puzzle.Title),
-                                editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title, "name-edit-icon"),
-                                editIcon(nameof(EditPuzzleAuthor), group, puzzle, puzzle.Author),
-                                puzzle.Author == null ? null : new SPAN { class_ = "puzzle-author" }._(puzzle.Author),
-                                !canEdit(group) ? null : Ut.NewArray<object>(
-                                    new BUTTON { class_ = "operable req-priv" }.Data("fn", puzzle.IsPublished ? nameof(UnpublishPuzzle) : nameof(PublishPuzzle)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsPublished ? "hide" : "publish"),
-                                    new BUTTON { class_ = "operable req-priv" + (puzzle.MovingMark ? " perm" : "") }.Data("fn", nameof(MovePuzzleMark)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.MovingMark ? "move where?" : "move"),
-                                    new BUTTON { class_ = "operable req-priv" }.Data("fn", nameof(TogglePuzzleNew)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsNew ? "unmark new" : "mark new")
-                                )
+                            new A { href = $"{group.Folder}/{puzzle.Filename}", class_ = "puzzle-title" }._(puzzle.Title),
+                            editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title, "name-edit-icon"),
+                            !File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.SolutionFilename)) ? null : new A { class_ = "button", href = $"{group.Folder}/{puzzle.SolutionFilename}" }._("View solution"),
+                            editIcon(nameof(EditPuzzleAuthor), group, puzzle, puzzle.Author),
+                            puzzle.Author == null ? null : new SPAN { class_ = "puzzle-author" }._(puzzle.Author),
+                            !canEdit(group) ? null : Ut.NewArray<object>(
+                                new BUTTON { class_ = "operable req-priv" }.Data("fn", puzzle.IsPublished ? nameof(UnpublishPuzzle) : nameof(PublishPuzzle)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsPublished ? "hide" : "publish"),
+                                new BUTTON { class_ = "operable req-priv" + (puzzle.MovingMark ? " perm" : "") }.Data("fn", nameof(MovePuzzleMark)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.MovingMark ? "move where?" : "move"),
+                                new BUTTON { class_ = "operable req-priv" }.Data("fn", nameof(TogglePuzzleNew)).Data("groupname", group.Title).Data("puzzlename", puzzle.Title)._(puzzle.IsNew ? "unmark new" : "mark new")
                             ),
                             ix == group.Puzzles.Count - 1 && canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", group.Puzzles.Count)._("move here") : null
                         ))
@@ -156,12 +155,14 @@ namespace KtaneWeb.Puzzles
             var already = puzzlename.EqualsNoCase(query) ? null : group.Puzzles.FirstOrDefault(pz => pz.Title.EqualsNoCase(query));
             if (already != null)
                 throw new Exception($"There is already a puzzle titled “{already.Title}”.");
-            var newFilename = Regex.Replace(query, @"[\*\?<>/]", " ").Trim() + ".html";
+            var newFilenameStub = Regex.Replace(query, @"[\*\?<>/#\\&%]", "_").Trim();
+            var newFilename = newFilenameStub + ".html";
             already = group.Puzzles.FirstOrDefault(pz => pz != puzzle && pz.Filename.EqualsNoCase(newFilename));
             if (already != null)
                 throw new Exception($"There is already a puzzle with the filename “{already.Filename}”.");
             puzzle.Title = query;
             puzzle.Filename = newFilename;
+            puzzle.SolutionFilename = newFilenameStub + " solution.html";
         });
 
         [AjaxMethod]
