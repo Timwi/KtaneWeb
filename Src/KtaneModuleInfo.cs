@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using RT.TagSoup;
@@ -32,7 +31,7 @@ namespace KtaneWeb
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
         public DateTime Published = DateTime.UtcNow.Date;
 
-        // The following are only relevant for modules (not game rooms, mission packs, etc.)
+        // The following are only relevant for modules (not widgets)
         [ClassifyIgnoreIfDefault]
         public KtaneModuleDifficulty? DefuserDifficulty;
         [ClassifyIgnoreIfDefault]
@@ -82,52 +81,6 @@ namespace KtaneWeb
                 other.RuleSeedSupport == RuleSeedSupport;
         }
 
-        public IEnumerable<string> Differences(KtaneModuleInfo other)
-        {
-            var diff = new List<string>();
-            if (other.Name != Name)
-                diff.Add(nameof(Name));
-            if (other.Description != Description)
-                diff.Add(nameof(Description));
-            if (other.ModuleID != ModuleID)
-                diff.Add(nameof(ModuleID));
-            if (other.SortKey != SortKey)
-                diff.Add(nameof(SortKey));
-            if (other.SteamID != SteamID)
-                diff.Add(nameof(SteamID));
-            if (other.Type != Type)
-                diff.Add(nameof(Type));
-            if (other.Origin != Origin)
-                diff.Add(nameof(Origin));
-            if (other.DefuserDifficulty != DefuserDifficulty)
-                diff.Add(nameof(DefuserDifficulty));
-            if (other.ExpertDifficulty != ExpertDifficulty)
-                diff.Add(nameof(ExpertDifficulty));
-            if (other.Author != Author)
-                diff.Add(nameof(Author));
-            if (other.SourceUrl != SourceUrl)
-                diff.Add(nameof(SourceUrl));
-            if (other.TutorialVideoUrl != TutorialVideoUrl)
-                diff.Add(nameof(TutorialVideoUrl));
-            if (other.TwitchPlaysSupport != TwitchPlaysSupport)
-                diff.Add(nameof(TwitchPlaysSupport));
-            if (other.Compatibility != Compatibility)
-                diff.Add(nameof(Compatibility));
-            if (other.Published != Published || other.Published.Kind != Published.Kind)
-                diff.Add(nameof(Published));
-            if (!Equals(other.Souvenir, Souvenir))
-                diff.Add(nameof(Souvenir));
-            if (other.TwitchPlaysScore != TwitchPlaysScore)
-                diff.Add(nameof(TwitchPlaysScore));
-            if (other.TwitchPlaysSpecial != TwitchPlaysSpecial)
-                diff.Add(nameof(TwitchPlaysSpecial));
-            if (other.Symbol != Symbol)
-                diff.Add(nameof(Symbol));
-            if (other.RuleSeedSupport != RuleSeedSupport)
-                diff.Add(nameof(RuleSeedSupport));
-            return diff;
-        }
-
         public override int GetHashCode() => Ut.ArrayHash(Name, SortKey, Symbol, Type, Origin, DefuserDifficulty, ExpertDifficulty, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysSupport, TwitchPlaysScore, TwitchPlaysSpecial, RuleSeedSupport);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
@@ -167,7 +120,30 @@ namespace KtaneWeb
         void IClassifyObjectProcessor.BeforeSerialize() { }
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
         void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
-        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
+        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element)
+        {
+            if (Type == KtaneModuleType.Widget)
+            {
+                DefuserDifficulty = null;
+                ExpertDifficulty = null;
+                TwitchPlaysSupport = null;
+            }
+            else
+            {
+                DefuserDifficulty = DefuserDifficulty ?? KtaneModuleDifficulty.Medium;
+                ExpertDifficulty = ExpertDifficulty ?? KtaneModuleDifficulty.Medium;
+                TwitchPlaysSupport = TwitchPlaysSupport ?? KtaneSupport.NotSupported;
+                if (TwitchPlaysSupport == KtaneSupport.NotSupported || Type == KtaneModuleType.Needy)
+                {
+                    TwitchPlaysSpecial = null;
+                    TwitchPlaysScore = null;
+                }
+                if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Unexamined)
+                    Souvenir = null;
+                else if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Supported)
+                    Souvenir.Explanation = null;
+            }
+        }
     }
 
     sealed class KtaneSouvenirInfo : IEquatable<KtaneSouvenirInfo>

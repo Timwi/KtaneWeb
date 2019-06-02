@@ -338,8 +338,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     }
 
                     let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
-                    setCompatibilityTooltip(icon, mod.Compatibility);
                     let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.Name));
+                    setCompatibilityTooltip(modlink, mod.Compatibility);
                     mod.ViewData.list.SelectableLink = modlink;
                     let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
                     tr.appendChild(td1);
@@ -762,7 +762,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.'));
             var menu = el('div', 'manual-select');
             menuDiv.appendChild(menu);
-            var seed = (<HTMLInputElement>document.getElementById('rule-seed-input')).value || 0;
+            var seed = +(<HTMLInputElement>document.getElementById('rule-seed-input')).value || 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
             var already = {};
             for (var i = 0; i < mod.Manuals.length; i++)

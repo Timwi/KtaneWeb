@@ -86,6 +86,7 @@ namespace KtaneWeb
                                         catch (Exception e)
                                         {
 #if DEBUG
+                                            Console.WriteLine(file);
                                             Console.WriteLine(e.Message);
                                             Console.WriteLine(e.GetType().FullName);
                                             Console.WriteLine(e.StackTrace);
