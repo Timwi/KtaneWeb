@@ -114,6 +114,25 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     try { preferredLanguages = JSON.parse(lStorage.getItem('preferredLanguages') || '{}') || {}; }
     catch (exc) { }
 
+    $('#rule-seed-input').val(+lStorage.getItem('ruleseed') || 1);
+    function updateRuleseed()
+    {
+        setLinksAndPreferredManuals();
+        var seed = +($('#rule-seed-input').val() || 0);
+        lStorage.setItem('ruleseed', `${seed}`);
+        if (seed === 1)
+        {
+            document.body.classList.remove('rule-seed-active');
+            document.getElementById('rule-seed-number').innerText = '';
+        }
+        else
+        {
+            document.body.classList.add('rule-seed-active');
+            document.getElementById('rule-seed-number').innerText = ' = ' + seed;
+            document.getElementById('rule-seed-mobile').innerText = seed.toString();
+        }
+    }
+
     function compare(a, b, rev) { return (rev ? -1 : 1) * ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
     var defdiffFilterValues = initFilters.filter(f => f.id === 'defdiff')[0].values;
     var expdiffFilterValues = initFilters.filter(f => f.id === 'expdiff')[0].values;
@@ -914,6 +933,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         setLanguages(preferredLanguages);
     });
 
+    updateRuleseed();
     setView(view);
     setLinksAndPreferredManuals();
     setSort(sort, reverse);
@@ -995,22 +1015,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         return false;
     });
 
-    $('#rule-seed-input').on('change', function()
-    {
-        setLinksAndPreferredManuals();
-        var seed = +($('#rule-seed-input').val() || 0);
-        if (seed === 1)
-        {
-            document.body.classList.remove('rule-seed-active');
-            document.getElementById('rule-seed-number').innerText = '';
-        }
-        else
-        {
-            document.body.classList.add('rule-seed-active');
-            document.getElementById('rule-seed-number').innerText = ' = ' + seed;
-            document.getElementById('rule-seed-mobile').innerText = seed.toString();
-        }
-    });
+    $('#rule-seed-input').on('change', updateRuleseed);
 
     // Links in the table headers (not visible on mobile UI)
     $('.sort-header').click(function()
