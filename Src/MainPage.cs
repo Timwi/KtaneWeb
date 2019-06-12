@@ -119,7 +119,7 @@ namespace KtaneWeb
                     new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
-                        new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.png" }),
+                        new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.svg" }),
                         new DIV { id = "icons", class_ = "icons" }._(
                             new DIV { class_ = "icon-page shown" }._(
                                 new DIV { class_ = "icon", id = "links-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "links")._(new IMG { class_ = "icon-img", src = "HTML/img/links-icon.png" }, new SPAN { class_ = "icon-label" }._("Links"))),
