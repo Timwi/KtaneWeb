@@ -95,10 +95,6 @@
       <Project>{5770ee79-8340-41fb-9b8e-eb4a3c487ff1}</Project>
       <Name>PropellerApi</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Propeller\Src\Propeller.csproj">
-      <Project>{3b02d01e-2cb9-49f3-86b9-97bf8cd161fa}</Project>
-      <Name>Propeller</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\RT.Servers\Lib\SharpZipLib\ICSharpCode.SharpZLib.csproj">
       <Project>{0e7413ff-eb9e-4714-acf2-be3a6a7b2ffd}</Project>
       <Name>ICSharpCode.SharpZLib</Name>
