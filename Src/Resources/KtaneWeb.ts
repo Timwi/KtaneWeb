@@ -307,14 +307,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if (newView in viewsReady)
             return true;
 
-        function setCompatibilityTooltip(element, compatibility)
+        function setCompatibilityTooltip(element, mod)
         {
-            switch (compatibility)
-            {
-                case 'Unplayable': element.setAttribute('title', 'This module has a programming bug that prevents it from being played reliably.'); break;
-                case 'Untested': element.setAttribute('title', 'The compatibility of this module has not yet been determined.'); break;
-                case 'Problematic': element.setAttribute('title', 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.'); break;
-            }
+            const compatiblities = {
+                Unplayable: 'This module has a programming bug that prevents it from being played reliably.',
+                Untested: 'The compatibility of this module has not yet been determined.',
+                Problematic: 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.',
+            };
+
+            if (compatiblities[mod.Compatibility] === undefined)
+                return;
+
+            element.setAttribute('title', compatiblities[mod.Compatibility] + (mod.CompatibilityExplanation !== undefined ? ` ${mod.CompatibilityExplanation}` : ''));
         }
 
         switch (newView)
@@ -358,7 +362,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                     let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
                     let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.Name));
-                    setCompatibilityTooltip(modlink, mod.Compatibility);
+                    setCompatibilityTooltip(modlink, mod);
                     mod.ViewData.list.SelectableLink = modlink;
                     let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
                     tr.appendChild(td1);

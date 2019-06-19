@@ -29,6 +29,8 @@ namespace KtaneWeb
         public KtaneModuleType Type = KtaneModuleType.Regular;
         public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
+        [ClassifyIgnoreIfDefault]
+        public string CompatibilityExplanation = null;
         public DateTime Published = DateTime.UtcNow.Date;
 
         // The following are only relevant for modules (not widgets)
