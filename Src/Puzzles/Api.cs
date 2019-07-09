@@ -83,11 +83,17 @@ namespace KtaneWeb.Puzzles
         [AjaxMethod]
         public string AddGroup()
         {
+            if (!canEdit())
+                return RenderBodyStr("You do not have access to edit puzzles.");
             var newGroup = new PuzzleGroup();
             var already = _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsNoCase(newGroup.Title));
             if (already != null)
                 return RenderBodyStr($"There is already a puzzle group titled “{already.Title}”. Please rename that group first.");
 
+            if (!newGroup.ViewAccess.Contains(_session.Username))
+                newGroup.ViewAccess.Add(_session.Username);
+            if (!newGroup.EditAccess.Contains(_session.Username))
+                newGroup.EditAccess.Add(_session.Username);
             _puzzles.PuzzleGroups.Add(newGroup);
             _save();
             return RenderBodyStr();
