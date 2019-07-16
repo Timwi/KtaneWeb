@@ -66,14 +66,16 @@
 
     public enum KtaneTwitchPlaysTagPosition
     {
+        [KtaneFilterOption("Automatic")]
+        Automatic,
         [KtaneFilterOption("Top-right")]
-        TopRight = 0,   // the default for most modules
+        TopRight,
         [KtaneFilterOption("Top-left")]
-        TopLeft = 1,
+        TopLeft,
         [KtaneFilterOption("Bottom-right")]
-        BottomRight = 2,
+        BottomRight,
         [KtaneFilterOption("Bottom-left")]
-        BottomLeft = 3
+        BottomLeft
     }
 
     public enum KtaneTwitchPlaysNeedyScoring

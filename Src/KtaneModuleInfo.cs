@@ -190,8 +190,8 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Special scoring", "Explain in words if the module’s scoring is special (e.g. Souvenir).")]
         public string ScoreExplanation;
 
-        [ClassifyIgnoreIfDefault, EditableField("Tag position", "The position of the tag with the module code and claimant name. This is usually where the status light is.")]
-        public KtaneTwitchPlaysTagPosition TagPosition = KtaneTwitchPlaysTagPosition.TopRight;
+        [ClassifyIgnoreIfDefault, EditableField("Tag position", "Overrides the position of the tag with the module code and claimant name. “Automatic” will usually place it where the status light is.")]
+        public KtaneTwitchPlaysTagPosition TagPosition = KtaneTwitchPlaysTagPosition.Automatic;
 
         // Specifies whether the module can be pinned in TP by a normal user. (Moderators can always pin any module.)
         [ClassifyIgnoreIfDefault, EditableField("Auto-pin", "Tick if this module should be automatically pinned at the start of a game. This will also allow regular users to re-pin the module, and it will cause the module to be announced in the chat.")]
