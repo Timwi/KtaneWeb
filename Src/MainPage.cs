@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -19,7 +21,7 @@ namespace KtaneWeb
         // G    Glossary
         // H    link to Steam Workshop item
         // I    toggle views
-        // J    JSON
+        // J    Generate JSON button (module edit UI)
         // K    Dark Theme
         // L    Light Theme
         // M    include/exclude mods
@@ -44,7 +46,7 @@ namespace KtaneWeb
             KtaneFilter.Slider("Expert difficulty", "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
             KtaneFilter.Checkboxes("Type", "type", mod => mod.Type, @"mod=>mod.Type"),
             KtaneFilter.Checkboxes("Origin", "origin", mod => mod.Origin, @"mod=>mod.Origin"),
-            KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlaysSupport, @"mod=>mod.TwitchPlaysSupport"),
+            KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlays == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
             KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, @"mod=>mod.RuleSeedSupport||'NotSupported'"),
             KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
 
@@ -167,6 +169,8 @@ namespace KtaneWeb
                                 new DIV { id = "assignment-table" })),
                         new DIV { id = "module-count" },
 
+                        new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")),
+
                         // LINKS (icon popup)
                         new DIV { id = "links", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
@@ -187,9 +191,10 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Profile Editor"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "profile/zip", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Download pre-made profiles".Accel('p')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Mode Settings Editor")))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Profile Editor"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "profile/zip" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Download pre-made profiles".Accel('p')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Mode Settings Editor"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "module-json-new" }._(new IMG { class_ = "icon-img", src = "HTML/img/edit-icon.png" }, new SPAN { class_ = "icon-label" }._("Create new module")))),
                             !_pdfEnabled ? null : new DIV { class_ = "pdf-merge" }._(
                                 new FORM { action = "merge-pdf", method = method.post }._(
                                 new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
@@ -199,8 +204,8 @@ namespace KtaneWeb
                         new DIV { id = "view", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "list")._(new IMG { class_ = "icon-img", src = "HTML/img/list-icon.png" }, new SPAN { class_ = "icon-label" }._("List"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "periodic-table")._(new IMG { class_ = "icon-img", src = "HTML/img/grid-icon.png" }, new SPAN { class_ = "icon-label" }._("Periodic Table"))))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "List")._(new IMG { class_ = "icon-img", src = "HTML/img/list-icon.png" }, new SPAN { class_ = "icon-label" }._("List"))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "PeriodicTable")._(new IMG { class_ = "icon-img", src = "HTML/img/grid-icon.png" }, new SPAN { class_ = "icon-label" }._("Periodic Table"))))),
 
                         // MORE (icon popup)
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
@@ -315,13 +320,87 @@ namespace KtaneWeb
 
                         new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
 
+                        // Module info editing UI
+                        new DIV { id = "module-ui", class_ = "popup disappear stay" }._(new FORM { action = "generate-json", method = method.post }._(new Func<object>(() =>
+                        {
+                            IEnumerable<object> createTableCellContent(FieldInfo field, EditableFieldAttribute attr)
+                            {
+                                var type = field.FieldType;
+                                if (field.FieldType.TryGetGenericParameters(typeof(Nullable<>), out var types))
+                                    type = types[0];
+
+                                yield return new DIV { class_ = "explain" }._(attr.Explanation);
+                                if (type.IsEnum)
+                                    yield return new SELECT { name = field.Name }._(Enum.GetValues(type).Cast<Enum>().Select(val => new OPTION { value = val.ToString() }._(val.GetCustomAttribute<KtaneFilterOptionAttribute>()?.ReadableName ?? val.ToString())));
+                                else if (type == typeof(string) && attr.Multiline)
+                                    yield return new TEXTAREA { name = field.Name };
+                                else if (type == typeof(string))
+                                    yield return new INPUT { type = itype.text, name = field.Name };
+                                else if (type == typeof(string[]))
+                                    yield return new INPUT { type = itype.text, name = field.Name, class_ = "use-tag-editor" };
+                                else if (type == typeof(DateTime))
+                                    yield return new INPUT { type = itype.date, value = DateTime.UtcNow.Date.ToString("dd/MM/yyyy"), name = field.Name };
+                                else if (type == typeof(int))
+                                    yield return new INPUT { type = itype.number, step = "1", value = "0", name = field.Name };
+                                else if (type == typeof(decimal))
+                                    yield return new INPUT { type = itype.number, step = "0.01", value = "0", name = field.Name };
+                                else if (type == typeof(bool))
+                                {
+                                    yield return new INPUT { type = itype.checkbox, name = field.Name, id = $"input-{field.Name}" };
+                                    yield return "\u00a0";
+                                    yield return new LABEL { for_ = $"input-{field.Name}" }._(attr.ReadableName);
+                                }
+                                else
+                                    yield return new DIV { class_ = "oops" }._("Bug. Please let Timwi know.");
+                            }
+
+                            IEnumerable<object> iterateNormalFields(Type typeToBeEdited)
+                            {
+                                foreach (var field in typeToBeEdited.GetFields())
+                                {
+                                    var attr = field.GetCustomAttribute<EditableFieldAttribute>();
+                                    if (attr == null || attr.ReadableName == null || field.GetCustomAttribute<EditableNestedAttribute>() != null)
+                                        continue;
+                                    var ifAttr = field.GetCustomAttribute<EditableIfAttribute>();
+                                    yield return new TR { id = $"edit-{field.Name}", class_ = "editable-row" }
+                                        .Data("editable-if", ifAttr.NullOr(a => a.OtherField))
+                                        .Data("editable-if-values", ifAttr.NullOr(a => a.Values.Select(v => v.ToString()).JoinString(",")))
+                                        ._(new TH(attr.ReadableName), new TD(createTableCellContent(field, attr)));
+                                }
+                            }
+                            IEnumerable<object> iterateHiddenFields(Type typeToBeEdited)
+                            {
+                                foreach (var field in typeToBeEdited.GetFields())
+                                {
+                                    var attr = field.GetCustomAttribute<EditableFieldAttribute>();
+                                    if (attr != null && attr.ReadableName == null)
+                                        yield return new INPUT { type = itype.hidden, name = field.Name };
+                                }
+                            }
+                            IEnumerable<object> iterateNestedFields(Type typeToBeEdited)
+                            {
+                                var nestedFields = typeToBeEdited.GetFields()
+                                    .Where(f => f.GetCustomAttribute<EditableNestedAttribute>() != null)
+                                    .Select(f => (field: f, attr: f.GetCustomAttribute<EditableFieldAttribute>()))
+                                    .Where(tup => tup.attr != null)
+                                    .ToArray();
+                                yield return new TR(nestedFields.Select(tup => new TH(new H2(new INPUT { type = itype.checkbox, name = tup.field.Name, id = $"nested-{tup.field.Name}" }, "\u00a0", new LABEL { for_ = $"nested-{tup.field.Name}" }._(tup.attr.ReadableName)))));
+                                yield return new TR(nestedFields.Select(tup => new TD(
+                                    new TABLE { class_ = "fields", id = $"nested-table-{tup.field.Name}" }.Data("nested", tup.field.Name)._(iterateNormalFields(tup.field.FieldType)),
+                                    iterateHiddenFields(tup.field.FieldType))));
+                            }
+                            return Ut.NewArray<object>(
+                                new TABLE { class_ = "fields" }._(iterateNormalFields(typeof(KtaneModuleInfo))),
+                                iterateHiddenFields(typeof(KtaneModuleInfo)),
+                                new TABLE { class_ = "nested" }._(iterateNestedFields(typeof(KtaneModuleInfo))),
+                                new DIV { class_ = "submit" }._(new BUTTON { id = "generate-json", type = btype.submit, accesskey = "j" }._("Generate JSON".Accel('J'))));
+                        }))),
+
                         new Func<object>(() =>
                         {
                             ensureModuleInfoCache();
                             return new SCRIPTLiteral(_moduleInfoCache.ModuleInfoJs);
-                        }),
-
-                        new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung"))))));
+                        })))));
             resp.UseGzip = UseGzipOption.DontUseGzip;
             return resp;
         }

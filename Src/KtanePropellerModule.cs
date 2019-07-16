@@ -45,6 +45,7 @@ namespace KtaneWeb
                     new UrlMapping(path: "/merge-pdf", handler: pdf),
                     new UrlMapping(path: "/upload-log", handler: uploadLogfile),
                     new UrlMapping(path: "/find-log", handler: findLogfile),
+                    new UrlMapping(path: "/generate-json", handler: generateJson),
                     new UrlMapping(path: "/iconsprite", handler: iconSpritePng),
                     new UrlMapping(path: "/sitemap", specificPath: true, handler: sitemapXml),
 

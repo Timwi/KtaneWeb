@@ -453,6 +453,37 @@ div.popup {
         margin: .1em .25em;
     }
 
+    div.popup div.bottom-links {
+        font-size: 70%;
+        margin: 1em .25em;
+        border-top: 1px solid #ccc;
+        padding-top: 1em;
+    }
+
+        div.popup div.bottom-links > div {
+            display: inline;
+        }
+
+            div.popup div.bottom-links > div:not(:first-child) {
+                padding-left: 1.5em;
+                border-left: 1px solid #888;
+            }
+
+            div.popup div.bottom-links > div:not(:last-child) {
+                padding-right: 1.5em;
+            }
+
+    div.popup form div.submit {
+        text-align: center;
+        margin-top: 1em;
+    }
+
+        div.popup form div.submit button {
+            font-size: 24pt;
+            font-weight: bold;
+            padding: .2em 1em;
+        }
+
     div.popup div.manual-select {
         display: table;
         width: 100%;
@@ -766,6 +797,48 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         #assignment-table td.letter-list {
             text-align: left;
         }
+
+#module-ui table td, #module-ui table th {
+    border: none;
+}
+
+#module-ui table th {
+    font-size: 16pt;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#module-ui table.fields th {
+    text-align: right;
+}
+
+#module-ui table.nested > tbody > tr > th {
+    text-align: left;
+}
+
+    #module-ui table.nested > tbody > tr > th h2 {
+        font-size: 20pt;
+        border-bottom: 1px solid #888;
+        margin: 0;
+    }
+
+#module-ui table.nested > tbody > tr > td {
+    vertical-align: top;
+}
+
+#module-ui table td .explain {
+    font-size: 9pt;
+    white-space: pre-line;
+}
+
+#module-ui table td input:not([type="checkbox"]), #module-ui table td select, #module-ui table td textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#module-ui table td textarea {
+    height: 10em;
+}
 
 #legal {
     position: absolute;

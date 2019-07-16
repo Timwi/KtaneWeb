@@ -63,13 +63,13 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
-function el(tagName, className?, ...args)
+function el<K extends keyof HTMLElementTagNameMap>(tagName: K, className?: string, ...args: any[]): HTMLElementTagNameMap[K]
 {
     const element = document.createElement(tagName);
     if (className) element.className = className;
     for (const arg of args)
     {
-        if (arg instanceof Element)
+        if (arg instanceof HTMLElement)
             element.appendChild(arg);
         else if (typeof arg !== "object")
             element.appendChild(document.createTextNode(arg));
@@ -85,7 +85,7 @@ function el(tagName, className?, ...args)
     return element;
 }
 
-function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
+function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
 {
     // Find all the languages
     function getLanguageFromSheet(sheet)
@@ -140,7 +140,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         'name': { fnc: function(mod) { return mod.SortKey.toLowerCase(); }, reverse: false, bodyCss: 'sort-name', radioButton: '#sort-name' },
         'defdiff': { fnc: function(mod) { return defdiffFilterValues.indexOf(mod.DefuserDifficulty); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
         'expdiff': { fnc: function(mod) { return expdiffFilterValues.indexOf(mod.ExpertDifficulty); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
-        'twitchscore': { fnc: function(mod) { return mod.TwitchPlaysScore || 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
+        'twitchscore': { fnc: function(mod) { return mod.TwitchPlays ? mod.TwitchPlays.Score : 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
         'published': { fnc: function(mod) { return mod.Published; }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
     var sort = lStorage.getItem('sort') || 'name';
@@ -157,10 +157,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     var searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
 
-    var validViews = ['list', 'periodic-table'];
-    var view = lStorage.getItem('view') || 'list';
+    var validViews: (keyof ModuleViewDatas)[] = ['List', 'PeriodicTable'];
+    var view: keyof ModuleViewDatas = <keyof ModuleViewDatas>lStorage.getItem('view');
     if (validViews.indexOf(view) === -1)
-        view = 'list';
+        view = 'List';
 
     let profileVetoList = null;
 
@@ -171,7 +171,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         selectable = 'manual';
         displayOptions = defaultDisplayOptions;
         filter = {};
-        view = 'list';
+        view = 'List';
     }
     lStorage.setItem('version', '2');
 
@@ -219,7 +219,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         lStorage.setItem('sort', srt);
 
         reverse = rvrse;
-        lStorage.setItem('reverse', rvrse);
+        lStorage.setItem('sort-reverse', rvrse);
 
         modules.sort(function(a, b)
         {
@@ -233,7 +233,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         if (rvrse) modules.reverse();
 
-        viewsReady[view].sort();
+        viewsReady.get(view).Sort();
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
@@ -301,10 +301,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         }
     }
 
-    var viewsReady: any = {};
-    function createView(newView)
+    //var viewsReady: { [view in keyof ModuleViewDatas]: ViewData } = {};
+    var viewsReady: Map<keyof ModuleViewDatas, ViewData> = new Map();
+
+    function createView(newView: keyof ModuleViewDatas)
     {
-        if (newView in viewsReady)
+        if (viewsReady.has(newView))
             return true;
 
         function setCompatibilityTooltip(element, mod)
@@ -323,15 +325,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         switch (newView)
         {
-            case 'list': {
+            case 'List': {
                 const mainTable = document.getElementById("main-table").getElementsByTagName("tbody")[0];
 
                 for (var i = 0; i < modules.length; i++)
                 {
                     let mod = modules[i];
 
-                    let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlaysSupport === 'Supported' ? ' tp' : ''}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
-                    mod.ViewData.list = { tr: tr };
+                    let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
                     mainTable.appendChild(tr);
                     mod.FncsShowHide.push(sh => { tr.style.display = (sh ? '' : 'none'); });
                     mod.FncsSetHighlight.push(hgh =>
@@ -363,7 +364,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
                     let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.Name));
                     setCompatibilityTooltip(modlink, mod);
-                    mod.ViewData.list.SelectableLink = modlink;
+                    mod.ViewData.List = { TableRow: tr, SelectableLink: modlink };
                     let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
                     tr.appendChild(td1);
                     mod.FncsSetSelectable.push(url =>
@@ -399,11 +400,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     }
                     infos.append(el("div", "inf-author inf", mod.Author),
                         el("div", "inf-published inf inf2", mod.Published));
-                    if (mod.TwitchPlaysSupport === 'Supported')
+                    if (mod.TwitchPlays)
                     {
-                        mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”${mod.TwitchPlaysSpecial ? `. ${mod.TwitchPlaysSpecial}` : mod.TwitchPlaysScore ? ` for a score of ${mod.TwitchPlaysScore}.` : "."}`;
-                        infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchInfo },
-                            mod.TwitchPlaysSpecial ? 'S' : mod.TwitchPlaysScore === undefined ? '' : mod.TwitchPlaysScore));
+                        if (mod.Type === 'Needy')
+                            mod.TwitchPlaysInfo = `This needy module can be played in “Twitch Plays: KTANE” for a ${mod.TwitchPlays.NeedyScoring === 'Time' ? 'time-based' : 'solve-based'} score of ${mod.TwitchPlays.Score}.`;
+                        else if (mod.TwitchPlays.ScorePerModule)
+                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score ? `${mod.TwitchPlays.Score}, plus ` : ''}${mod.TwitchPlays.ScorePerModule} for each module on the bomb${mod.TwitchPlays.ScorePerModuleCap ? ` up to a maximum of ${mod.TwitchPlays.ScorePerModuleCap}` : ''}.`;
+                        else
+                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score}.`;
+                        infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
+                            mod.TwitchPlays.ScorePerModule ? 'S' : mod.TwitchPlays.Score));
                     }
                     if (mod.RuleSeedSupport === 'Supported')
                     {
@@ -431,15 +437,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     tr.appendChild(el("td", "mobile-ui", lnk2));
                 }
 
-                viewsReady.list = {
-                    show: function() { document.getElementById("main-table").style.display = 'table'; },
-                    hide: function() { document.getElementById("main-table").style.display = 'none'; },
-                    sort: function() { mainTable.append(...modules.map(mod => mod.ViewData.list.tr)); }
-                };
+                viewsReady.set('List', {
+                    Show: function() { document.getElementById("main-table").style.display = 'table'; },
+                    Hide: function() { document.getElementById("main-table").style.display = 'none'; },
+                    Sort: function() { mainTable.append(...modules.map(mod => mod.ViewData.List.TableRow)); }
+                });
                 break;
             }
 
-            case 'periodic-table': {
+            case 'PeriodicTable': {
                 const souvenirStatuses = {
                     Unexamined: 'U',
                     NotACandidate: 'N',
@@ -452,27 +458,27 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 {
                     let mod = modules[i];
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
-                    let div = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
+                    let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
                         el('div', 'name', el('div', 'inner', mod.Name)),
-                        el('div', 'tpscore', mod.TwitchPlaysScore || ''),
+                        el('div', 'tpscore', mod.TwitchPlays ? mod.TwitchPlays.Score : ''),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
-                    setCompatibilityTooltip(div, mod.Compatibility);
+                    setCompatibilityTooltip(a, mod.Compatibility);
 
                     $(manualSelector).click(makeClickHander(manualSelector, false, mod));
 
-                    document.getElementById("actual-periodic-table").appendChild(div);
+                    document.getElementById("actual-periodic-table").appendChild(a);
 
-                    mod.ViewData['periodic-table'] = { SelectableLink: div };
-                    mod.FncsShowHide.push(sh => { div.style.display = sh ? 'block' : 'none'; });
-                    mod.FncsSetSelectable.push(url => { div.href = url; });
+                    mod.ViewData.PeriodicTable = { SelectableLink: a };
+                    mod.FncsShowHide.push(sh => { a.style.display = sh ? 'block' : 'none'; });
+                    mod.FncsSetSelectable.push(url => { a.href = url; });
                     mod.FncsSetHighlight.push(hgh =>
                     {
                         if (hgh)
-                            div.classList.add('highlight');
+                            a.classList.add('highlight');
                         else
-                            div.classList.remove('highlight');
+                            a.classList.remove('highlight');
                     });
                 }
 
@@ -526,11 +532,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 }
                 document.getElementById("assignment-table").appendChild(table);
 
-                viewsReady['periodic-table'] = {
-                    show: function() { document.getElementById("main-periodic-table").style.display = 'block'; },
-                    hide: function() { document.getElementById("main-periodic-table").style.display = 'none'; },
-                    sort: function() { document.getElementById("actual-periodic-table").append(...modules.map(mod => mod.ViewData['periodic-table'].SelectableLink)); }
-                };
+                viewsReady.set('PeriodicTable', {
+                    Show: function() { document.getElementById("main-periodic-table").style.display = 'block'; },
+                    Hide: function() { document.getElementById("main-periodic-table").style.display = 'none'; },
+                    Sort: function() { document.getElementById("actual-periodic-table").append(...modules.map(mod => mod.ViewData.PeriodicTable.SelectableLink)); }
+                });
                 break;
             }
 
@@ -545,16 +551,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         return true;
     }
 
-    function setView(newView)
+    function setView(newView: keyof ModuleViewDatas)
     {
         if (createView(newView))
         {
-            for (var v in viewsReady)
+            for (var [k, v] of viewsReady)
             {
-                if (v === newView)
-                    viewsReady[v].show();
+                if (k === newView)
+                    v.Show();
                 else
-                    viewsReady[v].hide();
+                    v.Hide();
             }
             view = newView;
             lStorage.setItem('view', newView);
@@ -691,27 +697,27 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let seedHash = (seed === 1 ? '' : '#' + seed);
         for (let mod of modules)
         {
-            let manual = null;
+            let manual: KtaneModuleManual = null;
             if (mod.Manuals.length > 0)
             {
                 manual = mod.Manuals[0];
                 for (let i = 0; i < mod.Manuals.length; i++)
-                    if (mod.Manuals[i].name === mod.Name + " (PDF)")
+                    if (mod.Manuals[i].Name === mod.Name + " (PDF)")
                         manual = mod.Manuals[i];
                 for (let i = 0; i < mod.Manuals.length; i++)
-                    if (mod.Manuals[i].name === mod.Name + " (HTML)")
+                    if (mod.Manuals[i].Name === mod.Name + " (HTML)")
                         manual = mod.Manuals[i];
                 if (mod.Name in preferredManuals)
                     for (let i = 0; i < mod.Manuals.length; i++)
-                        if (preferredManuals[mod.Name] === mod.Manuals[i].name)
+                        if (preferredManuals[mod.Name] === mod.Manuals[i].Name)
                             manual = mod.Manuals[i];
                 for (let fnc of mod.FncsSetManualIcon)
-                    fnc(manual === null ? null : manual.icon);
+                    fnc(manual === null ? null : manual.Icon);
                 for (let fnc of mod.FncsSetManualLink)
-                    fnc(manual === null ? null : manual.url + seedHash);
+                    fnc(manual === null ? null : manual.Url + seedHash);
             }
             for (let fnc of mod.FncsSetSelectable)
-                fnc(selectable === 'manual' ? (manual === null ? null : manual.url + seedHash) : (initSelectables.filter(sl => sl.PropName === selectable).map(sl => sl.UrlFunction(mod))[0] || null));
+                fnc(selectable === 'manual' ? (manual === null ? null : manual.Url + seedHash) : (initSelectables.filter(sl => sl.PropName === selectable).map(sl => sl.UrlFunction(mod))[0] || null));
         }
         lStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
@@ -746,15 +752,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     });
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
-    function makeClickHander(lnk, isMobileOpt, mod)
+    function makeClickHander(lnk: HTMLElement, isMobileOpt: boolean, mod: KtaneModuleInfo)
     {
         return function()
         {
-            var numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p.getAttribute('data-lnk') === lnk).length;
+            var numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p['data-lnk'] === lnk).length;
             disappear();
             if (numAlready)
                 return false;
-            var menuDiv = el('div', 'popup disappear manual-select', { 'data-lnk': lnk, 'style': 'display: block', onclick: function() { preventDisappear++; } });
+            var menuDiv = el('div', 'popup disappear manual-select', { 'style': 'display: block', onclick: function() { preventDisappear++; } });
+            menuDiv['data-lnk'] = lnk;
             document.body.appendChild(menuDiv);
             if (isMobileOpt)
             {
@@ -787,10 +794,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             menuDiv.appendChild(menu);
             var seed = +(<HTMLInputElement>document.getElementById('rule-seed-input')).value || 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
-            var already = {};
+            var already: Map<string, { Html: Element, Pdf: Element, Row: HTMLDivElement }> = new Map();
             for (var i = 0; i < mod.Manuals.length; i++)
             {
-                var rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].name.substr(mod.Name.length));
+                var rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].Name.substr(mod.Name.length));
                 var clickHandler = function(sh)
                 {
                     return function()
@@ -800,11 +807,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         setLinksAndPreferredManuals();
                         return false;
                     };
-                }(mod.Manuals[i].name);
-                var link = el('a', null, { href: mod.Manuals[i].url + seedHash, onclick: clickHandler }, rx1[2]);
-                if (!(rx1[1] in already))
+                }(mod.Manuals[i].Name);
+                var link = el('a', 'link', { href: mod.Manuals[i].Url + seedHash, onclick: clickHandler }, rx1[2]);
+                if (!already.has(rx1[1]))
                 {
-                    var trow, rx2;
+                    var trow: string[], rx2: RegExpExecArray;
                     if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(rx1[1]))
                         trow = [rx2[1], rx2[2], `<div class='descriptor'>${rx2[3]}</div><div class='author'>by ${rx2[4]}</div>`];
                     else if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*)$/.exec(rx1[1]))
@@ -822,16 +829,27 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     if (preferredLanguages[language] === false)
                         continue;
 
-                    let trowHtml = `<div><div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link-HTML'></div><div class='link-PDF'></div></div>`;
-                    already[rx1[1]] = $(trowHtml).appendTo(menu);
-                    if (rx1[2] === 'HTML')
-                        already[rx1[1]].click(clickHandler);
+                    let trowElem = el('div');
+                    trowElem.innerHTML = `<div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link link-HTML'></div><div class='link link-PDF'></div>`;
+                    menu.appendChild(trowElem);
+
+                    already.set(rx1[1], {
+                        Html: trowElem.getElementsByClassName('link-HTML')[0],
+                        Pdf: trowElem.getElementsByClassName('link-PDF')[0],
+                        Row: trowElem
+                    });
                 }
-                var link = already[rx1[1]].find(`.link-${rx1[2]}`).html(link).addClass('link').click(clickHandler);
-                if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].name)
-                    link.addClass('checked');
+                var inf = already.get(rx1[1]);
+                if (rx1[2] === 'HTML')
+                    inf.Row.onclick = clickHandler;
+                var elem = rx1[2] === 'HTML' ? inf.Html : inf.Pdf;
+                elem.appendChild(link);
+                if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].Name)
+                    elem.classList.add('checked');
             }
-            menuDiv.appendChild(el('p', 'small-print', el('a', null, { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')));
+            menuDiv.appendChild(el('div', 'bottom-links',
+                el('div', null, el('a', null, { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')),
+                el('div', null, el('a', null, { href: '#', onclick: function() { setEditUi(mod); popup($(lnk), $('#module-ui')); return false; } }, `Edit this ${mod.Type === 'Widget' ? 'widget' : 'module'}`))));
 
             if (!isMobileOpt)
                 $(menuDiv).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
@@ -865,10 +883,28 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         // Construct the list of manuals. (The list provided in .Sheets is kinda compressed.)
         mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => ({
-            name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`,
-            url: `${initDocDirs[(arr[2] / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`,
-            icon: initIcons[arr[2]]
+            Name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`,
+            Url: `${initDocDirs[(parseInt(arr[2]) / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`,
+            Icon: initIcons[arr[2]]
         }));
+
+        // Default values
+        if (!mod.RuleSeedSupport)
+            mod.RuleSeedSupport = 'NotSupported';
+        if (!mod.Compatibility)
+            mod.Compatibility = 'Untested';
+        if (mod.TwitchPlays && !mod.TwitchPlays.Score)
+            mod.TwitchPlays.Score = 0;
+        if (mod.TwitchPlays && !mod.TwitchPlays.ScorePerModule)
+            mod.TwitchPlays.ScorePerModule = 0;
+        if (mod.TwitchPlays && !mod.TwitchPlays.ScorePerModuleCap)
+            mod.TwitchPlays.ScorePerModuleCap = 0;
+        if (mod.TwitchPlays && !mod.TwitchPlays.NeedyScoring)
+            mod.TwitchPlays.NeedyScoring = 'Solves';
+        if (mod.TwitchPlays && !mod.TwitchPlays.TagPosition)
+            mod.TwitchPlays.TagPosition = 'TopRight';
+        if (mod.TwitchPlays && !mod.TwitchPlays.AutoPin)
+            mod.TwitchPlays.AutoPin = false;
     }
 
     // Set filters from saved settings
@@ -1103,4 +1139,57 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             $('#assignment-table').show();
         return false;
     });
+
+
+    // For the JSON module info editing UI
+    function setEditUi(mod: KtaneModuleInfo)
+    {
+        let ui = document.getElementById('module-ui');
+        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,TutorialVideoUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,RuleSeedSupport'.split(','))
+            (<any>ui.querySelector(`[name="${key}"]`)).value = (mod[key] || '');
+
+        if ((<any>document.getElementById('nested-Souvenir')).checked = mod.Souvenir != undefined)
+            for (var key of 'Status,Explanation'.split(','))
+                (<any>ui.querySelector(`[name="${key}"]`)).value = (mod.Souvenir[key] || '');
+
+        if ((<any>document.getElementById('nested-TwitchPlays')).checked = mod.TwitchPlays != undefined)
+            for (var key of 'Score,ScorePerModule,ScorePerModuleCap,NeedyScoring,ScoreExplanation,TagPosition'.split(','))
+                (<any>ui.querySelector(`[name="${key}"]`)).value = mod.TwitchPlays[key] === undefined ? '' : mod.TwitchPlays[key];
+
+        (<any>ui.querySelector(`[name="AutoPin"]`)).checked = mod.TwitchPlays && mod.TwitchPlays.AutoPin;
+        (<any>ui.querySelector(`[name="Ignore"]`)).value = mod.Ignore ? mod.Ignore.join('; ') : '';
+        UpdateEditUiElements();
+    }
+    function UpdateEditUiElements()
+    {
+        let ui = document.getElementById('module-ui');
+        let rows = ui.querySelectorAll('tr.editable-row');
+        for (let i = 0; i < rows.length; i++)
+        {
+            let attr = rows[i].getAttribute('data-editable-if');
+            if (!attr)
+                continue;
+            let elem = ui.querySelector(`[name="${attr}"]`);
+            var val = <string>(<any>elem).value;
+            let vals = rows[i].getAttribute('data-editable-if-values').split(',');
+            (<HTMLElement>rows[i]).style.display = vals.indexOf(val) === -1 ? 'none' : '';
+        }
+        let tables = ui.querySelectorAll('table.fields');
+        for (let i = 0; i < tables.length; i++)
+        {
+            let attr = tables[i].getAttribute('data-nested');
+            if (!attr)
+                continue;
+            let elem = <HTMLInputElement>document.getElementById(`nested-${attr}`);
+            (<HTMLTableElement>tables[i]).style.display = elem.checked ? '' : 'none';
+        }
+    }
+    Array.from(document.getElementById('module-ui').querySelectorAll('input,textarea,select')).forEach(elem => { (<HTMLElement>elem).onchange = UpdateEditUiElements; });
+    UpdateEditUiElements();
+
+    document.getElementById('module-json-new').onclick = function()
+    {
+        popup($('#tools-rel'), $('#module-ui'));
+        return false;
+    }
 }

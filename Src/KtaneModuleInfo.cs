@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using RT.TagSoup;
 using RT.Util;
@@ -12,47 +13,60 @@ namespace KtaneWeb
 
     sealed class KtaneModuleInfo : IEquatable<KtaneModuleInfo>, IComparable<KtaneModuleInfo>, IClassifyObjectProcessor, IClassifyJsonObjectProcessor
     {
+        [EditableField("Type", "Regular module = solvable; Widget = edgework item.")]
+        public KtaneModuleType Type = KtaneModuleType.Regular;
+        [EditableField(null)]   // invisible field
+        public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
+
+        [EditableField("Name", "The display name of the module or widget.")]
         public string Name;
+        [EditableField("Description", "A concise description of what sets this module or widget apart from others. Include tags at the end.")]
         public string Description;
+        [EditableField("Module ID", "The ID that mission makers need for this module. This is the same as the ModuleType property on the KMBombModule component.")]
+        [EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public string ModuleID;
+        [EditableField("Sort key", "The name of the module or widget in all-caps, without spaces, and without initial “The”.")]
         public string SortKey;
+        [EditableField("Steam ID", "The numerical ID of the Steam Workshop item.")]
         public string SteamID;
+        [EditableField("Author", "A comma-separated list of contributors to the development of the module or widget.")]
         public string Author;
 
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableField("Source code", "A link to the source code of the module or widget, usually a link to a GitHub repository.")]
         public string SourceUrl;
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube).")]
         public string TutorialVideoUrl;
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableField("Symbol", "A one- or two-letter symbol for the Periodic Table of Modules."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public string Symbol;
 
-        public KtaneModuleType Type = KtaneModuleType.Regular;
-        public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
+        [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes, even if rare.")]
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Compatibility setting above."), EditableIf(nameof(Compatibility), KtaneModuleCompatibility.Problematic, KtaneModuleCompatibility.Unplayable)]
         public string CompatibilityExplanation = null;
+        [EditableField("Published", "The date of publication.")]
         public DateTime Published = DateTime.UtcNow.Date;
 
         // The following are only relevant for modules (not widgets)
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [EditableField("Defuser difficulty", "An approximate difficulty rating for the defuser.")]
         public KtaneModuleDifficulty? DefuserDifficulty;
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [EditableField("Expert difficulty", "An approximate difficulty rating for the expert.")]
         public KtaneModuleDifficulty? ExpertDifficulty;
-        [ClassifyIgnoreIfDefault]
-        public KtaneSupport? TwitchPlaysSupport;
 
-        [ClassifyIgnoreIfDefault]
-        public int? TwitchPlaysScore = null;
-        [ClassifyIgnoreIfDefault]
-        public string TwitchPlaysSpecial = null;
-        [ClassifyIgnoreIfDefault]
-        public KtaneSouvenirInfo Souvenir = null;
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableField("Rule-seed", "Does the module vary its rules and manual under the Rule Seed Modifier?")]
         public KtaneSupport RuleSeedSupport = KtaneSupport.NotSupported;
 
         // Specifies which modules this module should ignore. Applies to boss and semi-boss modules such as Forget Me Not, Alchemy, Hogwarts, etc.
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore.")]
         public string[] Ignore = null;
+
+        [ClassifyIgnoreIfDefault, EditableNested, EditableField("Souvenir", "Uncheck for modules that have not been assessed."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        public KtaneSouvenirInfo Souvenir = null;
+
+        // null if the module doesn’t support TP. Always null for widgets.
+        [ClassifyIgnoreIfDefault, EditableNested, EditableField("Twitch Plays"), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        public KtaneTwitchPlaysInfo TwitchPlays = null;
 
         public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.ModIconDir, "blank.png")))}" });
@@ -60,30 +74,28 @@ namespace KtaneWeb
         public bool Equals(KtaneModuleInfo other)
         {
             return other != null &&
-                other.Name == Name &&
-                other.Description == Description &&
-                other.ModuleID == ModuleID &&
-                other.SortKey == SortKey &&
-                other.SteamID == SteamID &&
-                other.Type == Type &&
-                other.Origin == Origin &&
-                other.DefuserDifficulty == DefuserDifficulty &&
-                other.ExpertDifficulty == ExpertDifficulty &&
                 other.Author == Author &&
-                other.SourceUrl == SourceUrl &&
-                other.TutorialVideoUrl == TutorialVideoUrl &&
-                other.TwitchPlaysSupport == TwitchPlaysSupport &&
                 other.Compatibility == Compatibility &&
+                other.DefuserDifficulty == DefuserDifficulty &&
+                other.Description == Description &&
+                other.ExpertDifficulty == ExpertDifficulty &&
+                other.ModuleID == ModuleID &&
+                other.Name == Name &&
+                other.Origin == Origin &&
                 other.Published == Published &&
                 other.Published.Kind == Published.Kind &&
+                other.RuleSeedSupport == RuleSeedSupport &&
+                other.SortKey == SortKey &&
+                other.SourceUrl == SourceUrl &&
                 Equals(other.Souvenir, Souvenir) &&
-                other.TwitchPlaysScore == TwitchPlaysScore &&
-                other.TwitchPlaysSpecial == TwitchPlaysSpecial &&
+                other.SteamID == SteamID &&
                 other.Symbol == Symbol &&
-                other.RuleSeedSupport == RuleSeedSupport;
+                other.TutorialVideoUrl == TutorialVideoUrl &&
+                Equals(other.TwitchPlays, TwitchPlays) &&
+                other.Type == Type;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(Name, SortKey, Symbol, Type, Origin, DefuserDifficulty, ExpertDifficulty, SteamID, Author, SourceUrl, TutorialVideoUrl, Published, Souvenir, TwitchPlaysSupport, TwitchPlaysScore, TwitchPlaysSpecial, RuleSeedSupport);
+        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Description, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideoUrl, TwitchPlays, Type);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
 
         int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);
@@ -97,20 +109,35 @@ namespace KtaneWeb
             {
                 DefuserDifficulty = DefuserDifficulty ?? KtaneModuleDifficulty.Easy;
                 ExpertDifficulty = ExpertDifficulty ?? KtaneModuleDifficulty.Easy;
-                TwitchPlaysSupport = TwitchPlaysSupport ?? KtaneSupport.NotSupported;
             }
             else
             {
                 DefuserDifficulty = null;
                 ExpertDifficulty = null;
-                TwitchPlaysSupport = null;
+                TwitchPlays = null;
+                RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
             if (TutorialVideoUrl == "")
                 TutorialVideoUrl = null;
 
+            if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Unexamined)
+                Souvenir = null;
+            else if (Souvenir != null && Souvenir.Status != KtaneModuleSouvenir.Considered)
+                Souvenir.Explanation = null;
+
             if (Ignore != null)
                 Array.Sort(Ignore, StringComparer.InvariantCultureIgnoreCase);
+
+            if (TwitchPlays != null)
+                TwitchPlays.NeedyScoring = Type == KtaneModuleType.Needy ? (TwitchPlays.NeedyScoring ?? KtaneTwitchPlaysNeedyScoring.Solves).Nullable() : null;
+
+            if (Ignore != null)
+            {
+                Ignore = Ignore.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+                if (Ignore.Length == 0)
+                    Ignore = null;
+            }
         }
 
         void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)
@@ -122,36 +149,14 @@ namespace KtaneWeb
         void IClassifyObjectProcessor.BeforeSerialize() { }
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
         void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
-        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element)
-        {
-            if (Type == KtaneModuleType.Widget)
-            {
-                DefuserDifficulty = null;
-                ExpertDifficulty = null;
-                TwitchPlaysSupport = null;
-            }
-            else
-            {
-                DefuserDifficulty = DefuserDifficulty ?? KtaneModuleDifficulty.Medium;
-                ExpertDifficulty = ExpertDifficulty ?? KtaneModuleDifficulty.Medium;
-                TwitchPlaysSupport = TwitchPlaysSupport ?? KtaneSupport.NotSupported;
-                if (TwitchPlaysSupport == KtaneSupport.NotSupported || Type == KtaneModuleType.Needy)
-                {
-                    TwitchPlaysSpecial = null;
-                    TwitchPlaysScore = null;
-                }
-                if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Unexamined)
-                    Souvenir = null;
-                else if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Supported)
-                    Souvenir.Explanation = null;
-            }
-        }
+        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
     }
 
     sealed class KtaneSouvenirInfo : IEquatable<KtaneSouvenirInfo>
     {
+        [EditableField("Status", "Status of Souvenir implementation.")]
         public KtaneModuleSouvenir Status;
-        [ClassifyIgnoreIfDefault]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Status), KtaneModuleSouvenir.Considered), EditableField("Explain", "Explain what question(s) Souvenir could ask about this module.", Multiline = true)]
         public string Explanation;
 
         public static object GetTag(KtaneSouvenirInfo inf)
@@ -168,6 +173,35 @@ namespace KtaneWeb
         public override bool Equals(object obj) => obj != null && obj is KtaneSouvenirInfo && Equals((KtaneSouvenirInfo) obj);
         public bool Equals(KtaneSouvenirInfo other) => other != null && other.Status == Status && other.Explanation == Explanation;
         public override int GetHashCode() => Ut.ArrayHash(Status, Explanation);
+    }
+
+    sealed class KtaneTwitchPlaysInfo : IEquatable<KtaneTwitchPlaysInfo>
+    {
+        [ClassifyIgnoreIfDefault, EditableField("Score", "For regular modules, the score for solving it. For needy modules, depends on the scoring method.")]
+        public decimal Score;
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score per module", "For boss modules, a score value that is multiplied by the total number of modules on the bomb.")]
+        public decimal ScorePerModule;          // for boss modules like FMN
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score-per-module cap", "For boss modules, a maximum number of modules up to which the boss module is scored. Use 0 if there is no cap.")]
+        public int ScorePerModuleCap;    // for modules like FE that cap out at a certain module count
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Needy), EditableField("Needy scoring", "How are the points for a needy module calculated?")]
+        public KtaneTwitchPlaysNeedyScoring? NeedyScoring = null;
+
+        // Human-readable explanation for special scoring (e.g. Souvenir)
+        [ClassifyIgnoreIfDefault, EditableField("Special scoring", "Explain in words if the module’s scoring is special (e.g. Souvenir).")]
+        public string ScoreExplanation;
+
+        [ClassifyIgnoreIfDefault, EditableField("Tag position", "The position of the tag with the module code and claimant name. This is usually where the status light is.")]
+        public KtaneTwitchPlaysTagPosition TagPosition = KtaneTwitchPlaysTagPosition.TopRight;
+
+        // Specifies whether the module can be pinned in TP by a normal user. (Moderators can always pin any module.)
+        [ClassifyIgnoreIfDefault, EditableField("Auto-pin", "Tick if this module should be automatically pinned at the start of a game. This will also allow regular users to re-pin the module, and it will cause the module to be announced in the chat.")]
+        public bool AutoPin = false;
+
+        public override bool Equals(object obj) => obj != null && obj is KtaneTwitchPlaysInfo && Equals((KtaneTwitchPlaysInfo) obj);
+        public bool Equals(KtaneTwitchPlaysInfo other) => other != null &&
+            other.Score == Score && other.ScorePerModule == ScorePerModule && other.ScorePerModuleCap == ScorePerModuleCap &&
+            other.ScoreExplanation == ScoreExplanation && other.TagPosition == TagPosition && other.NeedyScoring == NeedyScoring && other.AutoPin == AutoPin;
+        public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, ScorePerModuleCap, ScoreExplanation, TagPosition, NeedyScoring, AutoPin);
     }
 
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value

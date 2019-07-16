@@ -7,17 +7,7 @@
         [KtaneFilterOption("Needy module", 'y')]
         Needy,
         [KtaneFilterOption("Widget", 'W')]
-        Widget,
-        //[KtaneFilterOption("Gameplay room", 'G')]
-        Room,
-        //[KtaneFilterOption("Bomb casing", 'B')]
-        Casing,
-        //[KtaneFilterOption("Mission pack", 'o')]
-        Missions,
-        //[KtaneFilterOption("Sound pack", 'd')]
-        Sounds,
-        //[KtaneFilterOption("Other", 'h')]
-        Other
+        Widget
     }
 
     public enum KtaneModuleOrigin
@@ -30,10 +20,15 @@
 
     public enum KtaneModuleDifficulty
     {
+        [KtaneFilterOption("Very easy")]
         VeryEasy,
+        [KtaneFilterOption("Easy")]
         Easy,
+        [KtaneFilterOption("Medium")]
         Medium,
+        [KtaneFilterOption("Hard")]
         Hard,
+        [KtaneFilterOption("Very hard")]
         VeryHard
     }
 
@@ -67,5 +62,25 @@
         Considered,
         [KtaneFilterOption("Supported"), KtaneSouvenirInfo('S', "This module is included in Souvenir. Refer to the Souvenir manual for details.")]
         Supported
+    }
+
+    public enum KtaneTwitchPlaysTagPosition
+    {
+        [KtaneFilterOption("Top-right")]
+        TopRight = 0,   // the default for most modules
+        [KtaneFilterOption("Top-left")]
+        TopLeft = 1,
+        [KtaneFilterOption("Bottom-right")]
+        BottomRight = 2,
+        [KtaneFilterOption("Bottom-left")]
+        BottomLeft = 3
+    }
+
+    public enum KtaneTwitchPlaysNeedyScoring
+    {
+        [KtaneFilterOption("Time-based")]
+        Time = 0,
+        [KtaneFilterOption("Solve-based")]
+        Solves = 1
     }
 }

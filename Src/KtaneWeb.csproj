@@ -59,6 +59,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
+    <Compile Include="GenerateJson.cs" />
     <Compile Include="SitemapXml.cs" />
     <Compile Include="Logfiles.cs" />
     <Compile Include="ModuleInfoCache.cs" />
@@ -119,9 +120,7 @@
     <Content Include="Resources\Generated\Puzzles.js">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
-    <Content Include="Resources\KtaneWeb.css">
-      <Generator>ResXFileCodeGenerator</Generator>
-    </Content>
+    <Content Include="Resources\KtaneWeb.css" />
     <Content Include="Resources\Generated\KtaneWeb.js">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
@@ -138,6 +137,9 @@
     <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Resources\TypeDeclarations.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Resources\KtaneWeb.ts" />
     <TypeScriptCompile Include="Resources\Puzzles.ts" />
   </ItemGroup>
