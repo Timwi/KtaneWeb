@@ -109,5 +109,5 @@ type KtaneModuleDifficulty = 'VeryEasy' | 'Easy' | 'Medium' | 'Hard' | 'VeryHard
 type KtaneSupport = 'NotSupported' | 'Supported';
 type KtaneModuleCompatibility = 'Untested' | 'Unplayable' | 'Problematic' | 'Compatible';
 type KtaneModuleSouvenir = 'Unexamined' | 'NotACandidate' | 'Considered' | 'Supported';
-type KtaneTwitchPlaysTagPosition = 'TopRight' | 'TopLeft' | 'BottomRight' | 'BottomLeft';
+type KtaneTwitchPlaysTagPosition = 'Automatic' | 'TopRight' | 'TopLeft' | 'BottomRight' | 'BottomLeft';
 type KtaneTwitchPlaysNeedyScoring = 'Time' | 'Solves';

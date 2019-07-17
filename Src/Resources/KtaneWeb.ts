@@ -902,7 +902,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         if (mod.TwitchPlays && !mod.TwitchPlays.NeedyScoring)
             mod.TwitchPlays.NeedyScoring = 'Solves';
         if (mod.TwitchPlays && !mod.TwitchPlays.TagPosition)
-            mod.TwitchPlays.TagPosition = 'TopRight';
+            mod.TwitchPlays.TagPosition = 'Automatic';
         if (mod.TwitchPlays && !mod.TwitchPlays.AutoPin)
             mod.TwitchPlays.AutoPin = false;
     }
