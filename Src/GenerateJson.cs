@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using RT.Servers;
@@ -24,42 +23,51 @@ namespace KtaneWeb
                     if (attr == null)
                         continue;
 
-                    var val = req.Post[f.Name].Value;
-                    if (f.GetCustomAttribute<EditableNestedAttribute>() != null)
-                    {
-                        if (val != "on")
-                            f.SetValue(obj, null);
-                        else
-                        {
-                            var nestedObj = Activator.CreateInstance(f.FieldType);
-                            populateObject(nestedObj, f.FieldType);
-                            f.SetValue(obj, nestedObj);
-                        }
-                        continue;
-                    }
+                    var fType = f.FieldType;
+                    if (f.FieldType.TryGetGenericParameters(typeof(Nullable<>), out var fTypes))
+                        fType = fTypes[0];
 
-                    if (f.FieldType == typeof(string))
-                        f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? null : val.Trim());
-                    else if (f.FieldType.IsEnum)
+                    var val = req.Post[f.Name].Value;
+                    try
                     {
-                        var enumVal = val == null ? null : Enum.Parse(f.FieldType, val);
-                        if (enumVal != null)
-                            f.SetValue(obj, enumVal);
+                        if (f.GetCustomAttribute<EditableNestedAttribute>() != null)
+                        {
+                            if (val != "on")
+                                f.SetValue(obj, null);
+                            else
+                            {
+                                var nestedObj = Activator.CreateInstance(f.FieldType);
+                                populateObject(nestedObj, f.FieldType);
+                                f.SetValue(obj, nestedObj);
+                            }
+                            continue;
+                        }
+
+                        if (fType == typeof(string))
+                            f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? null : val.Trim());
+                        else if (fType.IsEnum)
+                        {
+                            var enumVal = val == null ? null : Enum.Parse(fType, val);
+                            if (enumVal != null)
+                                f.SetValue(obj, enumVal);
+                        }
+                        else if (fType == typeof(DateTime))
+                            f.SetValue(obj, DateTime.ParseExact(val, "yyyy-MM-dd", null));
+                        else if (fType == typeof(string[]))
+                            f.SetValue(obj, val.Split(';').Select(str => str.Trim()).ToArray());
+                        else if (fType == typeof(int))
+                            f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0 : int.Parse(val));
+                        else if (fType == typeof(decimal))
+                            f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0m : decimal.Parse(val));
+                        else if (fType == typeof(bool))
+                            f.SetValue(obj, val == "on");
+                        else
+                            throw new InvalidOperationException($"Unrecognized field type: {fType.FullName}");
                     }
-                    else if (f.FieldType.TryGetGenericParameters(typeof(Nullable<>), out var types) && types[0].IsEnum)
-                        f.SetValue(obj, val == null ? null : Enum.Parse(types[0], val));
-                    else if (f.FieldType == typeof(DateTime))
-                        f.SetValue(obj, DateTime.ParseExact(val, "yyyy-MM-dd", null));
-                    else if (f.FieldType == typeof(string[]))
-                        f.SetValue(obj, val.Split(';').Select(str => str.Trim()).ToArray());
-                    else if (f.FieldType == typeof(int))
-                        f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0 : int.Parse(val));
-                    else if (f.FieldType == typeof(decimal))
-                        f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0m : decimal.Parse(val));
-                    else if (f.FieldType == typeof(bool))
-                        f.SetValue(obj, val == "on");
-                    else
-                        Debugger.Break();
+                    catch (Exception e)
+                    {
+                        _logger.Warn($"Generate JSON: unrecognized value. Field: {f.Name}, Type: {fType}, Value: “{val ?? "<null>"}”, Exception: {e.Message} ({e.GetType().FullName})");
+                    }
                 }
             }
             var m = new KtaneModuleInfo();
