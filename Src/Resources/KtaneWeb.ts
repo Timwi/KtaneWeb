@@ -800,11 +800,12 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                 var rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].Name.substr(mod.Name.length));
                 var clickHandler = function(sh)
                 {
-                    return function()
+                    return function(e)
                     {
                         menuDiv.remove();
                         preferredManuals[mod.Name] = sh;
                         setLinksAndPreferredManuals();
+                        e.stopPropagation();
                         return false;
                     };
                 }(mod.Manuals[i].Name);
