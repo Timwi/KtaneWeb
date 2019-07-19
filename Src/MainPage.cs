@@ -339,7 +339,7 @@ namespace KtaneWeb
                                 else if (type == typeof(string[]))
                                     yield return new INPUT { type = itype.text, name = field.Name, class_ = "use-tag-editor" };
                                 else if (type == typeof(DateTime))
-                                    yield return new INPUT { type = itype.date, value = DateTime.UtcNow.Date.ToString("dd/MM/yyyy"), name = field.Name };
+                                    yield return new INPUT { type = itype.date, value = DateTime.UtcNow.Date.ToString("yyyy-MM-dd"), name = field.Name };
                                 else if (type == typeof(int))
                                     yield return new INPUT { type = itype.number, step = "1", value = "0", name = field.Name };
                                 else if (type == typeof(decimal))
