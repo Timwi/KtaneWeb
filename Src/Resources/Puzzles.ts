@@ -11,9 +11,11 @@
                     return false;
                 if ('query' in data)
                 {
-                    data.query = prompt('Enter new value:', data.query);
-                    if (data.query === null)
+                    // Don’t save this value in data.query directly because data.query is a DOMStringMap, so null would get converted to "null"
+                    let result = prompt('Enter new value:', data.query);
+                    if (result === null)
                         return false;
+                    data.query = result;
                 }
 
                 var req = new XMLHttpRequest();
