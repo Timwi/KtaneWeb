@@ -661,7 +661,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
             let searchWhat = '';
             if (searchOptions.indexOf('names') !== -1)
-                searchWhat += ' ' + mod.Name.toLowerCase();
+                searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
                 searchWhat += ' ' + mod.Author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
