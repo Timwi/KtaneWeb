@@ -1192,5 +1192,13 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     {
         popup($('#tools-rel'), $('#module-ui'));
         return false;
-    }
+    };
+    document.getElementById('generate-json').onclick = function()
+    {
+        if ((<any>document.getElementById('generate-json')).form.Name.value === "")
+        {
+            alert("You do need to supply at least a name for the module or widget.");
+            return false;
+        }
+    };
 }
