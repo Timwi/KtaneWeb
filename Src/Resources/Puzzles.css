@@ -114,6 +114,17 @@ h1 {
             content: '\a0 •\a0';
         }
 
+.header {
+    background: #def;
+    border: 1px solid #28c;
+    padding: .5em 1em;
+    font-size: 10pt;
+}
+
+    .header > strong {
+        font-size: 12pt;
+    }
+
 .edit-icon {
     width: 18pt;
     height: 18pt;
@@ -187,16 +198,23 @@ h1 {
             background-color: hsl(0,100%,20%);
         }
 
-    .puzzle-group .author, .puzzle-group .date-published {
+    .puzzle-group .group-info {
         position: absolute;
-        top: 3pt;
+        top: 17pt;
         right: 6pt;
+        transform: translate(0,-50%);
+        text-align: right;
     }
 
-    .puzzle-group .date-published {
-        top: 16pt;
-        white-space: nowrap;
-    }
+        .puzzle-group .group-info > * {
+            display: inline-block;
+            margin-left: .7em;
+        }
+
+        .puzzle-group .group-info > .author::before {
+            content: 'by\a0 ';
+            color: rgba(0,0,0,.4);
+        }
 
     .puzzle-group .controls {
         padding: 5pt 10pt;
@@ -296,10 +314,6 @@ h1 {
                 top: -1pt;
             }
 
-                .puzzle-group .puzzles .puzzle button:not(.name-edit-icon), .puzzle-group .puzzles .puzzle a.button:not(.name-edit-icon) {
-                    float: right;
-                }
-
                 .puzzle-group .puzzles .puzzle button.move-here {
                     position: absolute;
                     left: 50%;
@@ -318,14 +332,33 @@ h1 {
                 font-weight: bold;
             }
 
-            .puzzle-group .puzzles .puzzle .puzzle-author {
+            .puzzle-group .puzzles .puzzle .puzzle-buttons {
                 float: right;
-                margin-left: 10pt;
-                margin-top: 1pt;
-                font-size: 11pt;
+                position: relative;
+                top: -1px;
             }
 
-                .puzzle-group .puzzles .puzzle .puzzle-author::before {
+                .puzzle-group .puzzles .puzzle .puzzle-buttons > * {
+                    vertical-align: middle;
+                    display: inline-block;
+                }
+
+            .puzzle-group .puzzles .puzzle .puzzle-info {
+                display: inline-block;
+                margin-left: 10pt;
+                margin-top: 1pt;
+                font-size: 8pt;
+                text-align: right;
+                position: relative;
+                top: -2px;
+            }
+
+                .puzzle-group .puzzles .puzzle .puzzle-info > .puzzle-author::before {
                     content: 'by\a0 ';
+                    color: rgba(0,0,0,.4);
+                }
+
+                .puzzle-group .puzzles .puzzle .puzzle-info > .puzzle-date::before {
+                    content: 'released\a0 ';
                     color: rgba(0,0,0,.4);
                 }

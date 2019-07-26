@@ -1,4 +1,5 @@
-﻿using RT.Util.Serialization;
+﻿using System;
+using RT.Util.Serialization;
 
 namespace KtaneWeb.Puzzles
 {
@@ -10,6 +11,7 @@ namespace KtaneWeb.Puzzles
         public string Author = null;
         public bool IsPublished = false;
         public bool IsNew = false;
+        public DateTime? Date = null;
 
         [ClassifyIgnoreIfDefault]
         public bool MovingMark = false;

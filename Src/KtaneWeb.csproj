@@ -114,9 +114,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Puzzles.css">
-      <Generator>ResXFileCodeGenerator</Generator>
-    </Content>
+    <Content Include="Resources\Puzzles.css" />
     <Content Include="Resources\Generated\Puzzles.js">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>

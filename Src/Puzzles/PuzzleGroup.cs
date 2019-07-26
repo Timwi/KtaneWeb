@@ -8,7 +8,7 @@ namespace KtaneWeb.Puzzles
     {
         public string Title = "Untitled puzzle group";
         public string Author = "Unknown author";
-        public DateTime Published = new DateTime(2000, 1, 1);
+        public int Ordering = 0;
         public string Folder = "Unknown";
         public bool IsPublished = false;
 
