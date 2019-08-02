@@ -52,7 +52,7 @@ namespace KtaneWeb
                 var list = new DirectoryInfo(_config.LogfilesDir)
                     .EnumerateFiles("*.txt", SearchOption.TopDirectoryOnly)
                     .OrderByDescending(fi => fi.LastWriteTimeUtc)
-                    .Take(100)
+                    .Take(1000)
                     .Where(fi => File.ReadAllText(fi.FullName).Apply(text => regexes.All(re => re.IsMatch(text))))
                     .Take(5)
                     .ToArray();
