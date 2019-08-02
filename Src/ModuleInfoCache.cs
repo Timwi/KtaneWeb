@@ -101,7 +101,7 @@ namespace KtaneWeb
                                 _moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
                                 _moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
 
-                                var modJsons = modules.Select(tup =>
+                                var modJsons = modules.Where(tup => tup.mod.TranslationOf == null).Select(tup =>
                                 {
                                     var (modJson, mod, _) = tup;
                                     modJson["Sheets"] = _config.EnumerateSheetUrls(mod.Name, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());

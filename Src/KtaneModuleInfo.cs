@@ -61,6 +61,10 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore.")]
         public string[] Ignore = null;
 
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [EditableField("Translation of", "Only enter this if this module is a translation of another module. Specify the original name of the other module (e.g., “The Button”). It will not be listed separately on the website.")]
+        public string TranslationOf = null;
+
         [ClassifyIgnoreIfDefault, EditableNested, EditableField("Souvenir", "Uncheck for modules that have not been assessed."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public KtaneSouvenirInfo Souvenir = null;
 
@@ -196,6 +200,9 @@ namespace KtaneWeb
         // Specifies whether the module can be pinned in TP by a normal user. (Moderators can always pin any module.)
         [ClassifyIgnoreIfDefault, EditableField("Auto-pin", "Tick if this module should be automatically pinned at the start of a game. This will also allow regular users to re-pin the module, and it will cause the module to be announced in the chat.")]
         public bool AutoPin = false;
+
+        [ClassifyIgnoreIfDefault, EditableField("Help text", "ONLY if the module doesn’t already provide an adequate help message detailing its commands, provide a help message here.")]
+        public string HelpText = null;
 
         public override bool Equals(object obj) => obj != null && obj is KtaneTwitchPlaysInfo && Equals((KtaneTwitchPlaysInfo) obj);
         public bool Equals(KtaneTwitchPlaysInfo other) => other != null &&

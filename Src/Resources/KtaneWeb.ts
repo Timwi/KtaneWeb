@@ -1146,7 +1146,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     function setEditUi(mod: KtaneModuleInfo)
     {
         let ui = document.getElementById('module-ui');
-        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,TutorialVideoUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,RuleSeedSupport'.split(','))
+        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,TutorialVideoUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport'.split(','))
             (<any>ui.querySelector(`[name="${key}"]`)).value = (mod[key] || '');
 
         if ((<any>document.getElementById('nested-Souvenir')).checked = mod.Souvenir != undefined)
@@ -1154,7 +1154,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                 (<any>ui.querySelector(`[name="${key}"]`)).value = (mod.Souvenir[key] || '');
 
         if ((<any>document.getElementById('nested-TwitchPlays')).checked = mod.TwitchPlays != undefined)
-            for (var key of 'Score,ScorePerModule,ScorePerModuleCap,NeedyScoring,ScoreExplanation,TagPosition'.split(','))
+            for (var key of 'Score,ScorePerModule,ScorePerModuleCap,NeedyScoring,ScoreExplanation,TagPosition,HelpText'.split(','))
                 (<any>ui.querySelector(`[name="${key}"]`)).value = mod.TwitchPlays[key] === undefined ? '' : mod.TwitchPlays[key];
 
         (<any>ui.querySelector(`[name="AutoPin"]`)).checked = mod.TwitchPlays && mod.TwitchPlays.AutoPin;
