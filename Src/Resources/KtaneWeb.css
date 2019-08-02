@@ -760,6 +760,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         top: 50%;
         width: 100%;
         transform: translate(-50%, -50%);
+        line-height: .9;
     }
 
 #periodic-table-links {
