@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using RT.TagSoup;
 using RT.Util;
@@ -130,18 +129,11 @@ namespace KtaneWeb
             else if (Souvenir != null && Souvenir.Status != KtaneModuleSouvenir.Considered)
                 Souvenir.Explanation = null;
 
-            if (Ignore != null)
-                Array.Sort(Ignore, StringComparer.InvariantCultureIgnoreCase);
-
             if (TwitchPlays != null)
                 TwitchPlays.NeedyScoring = Type == KtaneModuleType.Needy ? (TwitchPlays.NeedyScoring ?? KtaneTwitchPlaysNeedyScoring.Solves).Nullable() : null;
 
-            if (Ignore != null)
-            {
-                Ignore = Ignore.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                if (Ignore.Length == 0)
-                    Ignore = null;
-            }
+            if (Ignore != null && Ignore.Length == 0)
+                Ignore = null;
         }
 
         void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)
