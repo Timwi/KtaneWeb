@@ -1,5 +1,5 @@
 ﻿using System;
-using RT.Util.Serialization;
+using RT.Serialization;
 
 namespace KtaneWeb.Puzzles
 {

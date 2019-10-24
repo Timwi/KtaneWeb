@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>KtaneWeb</RootNamespace>
     <AssemblyName>KtaneWeb</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <OutputPath>..\Builds\$(Configuration)\</OutputPath>
@@ -96,6 +96,10 @@
       <Project>{5770ee79-8340-41fb-9b8e-eb4a3c487ff1}</Project>
       <Name>PropellerApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.SelfService\Src\RT.SelfService.csproj">
+      <Project>{2d690226-ce76-4261-8778-87f7c213836a}</Project>
+      <Name>RT.SelfService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\RT.Servers\Lib\SharpZipLib\ICSharpCode.SharpZLib.csproj">
       <Project>{0e7413ff-eb9e-4714-acf2-be3a6a7b2ffd}</Project>
       <Name>ICSharpCode.SharpZLib</Name>
@@ -108,8 +112,28 @@
       <Project>{8f80d916-8999-45d8-acb2-ffa7e2698fd6}</Project>
       <Name>RT.TagSoup</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\RT.Util\Src\RT.Util.csproj">
+    <ProjectReference Include="..\..\..\RT.Util\RT.Json\RT.Json.csproj">
+      <Project>{ee88e456-4ab7-4c38-9269-32dbf0dd617e}</Project>
+      <Name>RT.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.Util\RT.Serialization.Json\RT.Serialization.Json.csproj">
+      <Project>{a8bfb98e-68bd-480e-9205-889480b31976}</Project>
+      <Name>RT.Serialization.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.Util\RT.Serialization.Xml\RT.Serialization.Xml.csproj">
+      <Project>{50f702e1-c05f-43fc-81b7-41e74b2f43de}</Project>
+      <Name>RT.Serialization.Xml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.Util\RT.Serialization\RT.Serialization.csproj">
+      <Project>{f2878b44-81b5-4183-98c2-47643645d328}</Project>
+      <Name>RT.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.Util\RT.Util.Core\RT.Util.Core.csproj">
       <Project>{8d0fe79c-ad8d-475c-9e6f-9cae85365b5d}</Project>
+      <Name>RT.Util.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RT.Util\RT.Util\RT.Util.csproj">
+      <Project>{f0de8edc-8466-4c2a-a829-04d185e4e7fc}</Project>
       <Name>RT.Util</Name>
     </ProjectReference>
   </ItemGroup>

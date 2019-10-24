@@ -3,8 +3,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using RT.TagSoup;
 using RT.Util;
-using RT.Util.Json;
-using RT.Util.Serialization;
+using RT.Json;
+using RT.Serialization;
 
 namespace KtaneWeb
 {
