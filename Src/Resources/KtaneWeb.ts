@@ -589,6 +589,12 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         return false;
     }
 
+    // Source: https://stackoverflow.com/a/37511463
+    function removeDiacritics(str: string)
+    {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
     function updateFilter()
     {
         var noneSelected = {};
@@ -626,7 +632,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         }
 
         let searchRaw = $("input#search-field").val().toString().toLowerCase();
-        let searchKeywords = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/'/g, '’'));
+        let searchKeywords = removeDiacritics(searchRaw).split(' ').filter(x => x.length > 0).map(x => x.replace(/'/g, '’'));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
@@ -668,6 +674,8 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                 searchWhat += ' ' + mod.Description.toLowerCase();
             if (mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
+
+            searchWhat = removeDiacritics(searchWhat);
 
             let sh = filteredIn && searchKeywords.filter(x => searchWhat.indexOf(x) === -1).length === 0;
             if (sh)
