@@ -101,6 +101,36 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
     languages.sort();
 
+    const languageCodes = {
+        "Dansk": "da",
+        "Deutsch": "de",
+        "Eesti": "et",
+        "English": "en",
+        "Español": "es",
+        "Esperanto": "eo",
+        "Français": "fr",
+        "Italiano": "it",
+        "Magyar": "hu",
+        "Nederlands": "nl",
+        "Norsk": "no",
+        "Polski": "pl",
+        "Português do Brasil": "pt-br",
+        "Suomi": "fi",
+        "Svenska": "sv",
+        "Türkçe": "tr",
+        "Čeština": "cs",
+        "Български": "bg",
+        "Русский": "ru",
+        "Українске": "uk",
+        "עברית": "he",
+        "العربية": "ar",
+        "ภาษาไทย": "th",
+        "日本語": "jp",
+        "简体中文": "zh-CN",
+        "繁體中文": "zh-TW",
+        "한국어": "ko"
+    };
+
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
@@ -837,6 +867,11 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                     const language = trow[0] || "English";
                     if (preferredLanguages[language] === false)
                         continue;
+
+                    var code = languageCodes[trow[0]];
+                    if (code !== undefined) {
+                        trow[0] += ` (${code})`;
+                    }
 
                     let trowElem = el('div');
                     trowElem.innerHTML = `<div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link link-HTML'></div><div class='link link-PDF'></div>`;
