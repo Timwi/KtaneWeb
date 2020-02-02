@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using RT.Json;
 using RT.Serialization;
 using RT.Servers;
@@ -63,6 +64,9 @@ namespace KtaneWeb
                                 _moduleInfoCache = new ModuleInfoCache { IconSpritePng = mem.ToArray() };
                                 _moduleInfoCache.IconSpriteMd5 = MD5.Create().ComputeHash(_moduleInfoCache.IconSpritePng).ToHex();
 
+                                // Load TP data from the spreadsheet
+                                var entries = new HClient().Get("https://spreadsheets.google.com/feeds/list/1WEzVOKxOO5CDGoqAHjJKrC-c-ZGgsTPRLXBCs8RrAwU/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+
                                 var modules = new DirectoryInfo(_config.ModJsonDir)
                                     .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
                                     .ParallelSelect(4, file =>
@@ -73,6 +77,14 @@ namespace KtaneWeb
                                             var modJson = JsonDict.Parse(origFile);
                                             var mod = ClassifyJson.Deserialize<KtaneModuleInfo>(modJson);
 
+                                            // Merge in TP data
+                                            bool equalNames(string nameA, string nameB) => nameA.Replace('’', '\'') == nameB.Replace('’', '\'');
+                                            var entry = entries.FirstOrDefault(entry => equalNames(entry["gsx$modulename"]["$t"].GetString(), mod.Name));
+                                            if (entry != null)
+                                            {
+                                                mergeTPData(mod, entry);
+                                                modJson = (JsonDict) ClassifyJson.Serialize(mod);
+                                            }
 #if DEBUG
                                             var newJson = (JsonDict) ClassifyJson.Serialize(mod);
                                             var newJsonStr = newJson.ToStringIndented();
@@ -120,6 +132,52 @@ namespace KtaneWeb
                             }
                         }
                     }
+        }
+
+        private void mergeTPData(KtaneModuleInfo mod, JsonValue entry)
+        {
+            string scoreString = entry["gsx$tpscore"]["$t"].GetString();
+            if (string.IsNullOrEmpty(scoreString))
+                return;
+
+            var moduleName = entry["gsx$modulename"]["$t"].GetString();
+
+            KtaneTwitchPlaysNeedyScoring? scoreMethod = null;
+            if (moduleName.EndsWith(" (Solve)"))
+                scoreMethod = KtaneTwitchPlaysNeedyScoring.Solves;
+            else if (moduleName.EndsWith(" (Time)"))
+                scoreMethod = KtaneTwitchPlaysNeedyScoring.Time;
+
+            if (mod.TwitchPlays == null)
+                mod.TwitchPlays = new KtaneTwitchPlaysInfo();
+
+            var tp = mod.TwitchPlays;
+
+            // The module has been determined, now parse the score.
+            tp.NeedyScoring ??= scoreMethod;
+
+            // UN and T is for unchanged and temporary score which are read normally.
+            scoreString = Regex.Replace(scoreString, @"(?:UN )?(\d+)T?", "$1");
+
+            // S is for special modules which we parse out the multiplier and put it into a dictionary and use later.
+            var dynamicMatch = Regex.Match(scoreString, @"S ([\d.]+)x");
+            if (dynamicMatch.Success && decimal.TryParse(dynamicMatch.Groups[1].Value, out decimal dynamicScore))
+            {
+                tp.ScorePerModule ??= dynamicScore;
+                return;
+            }
+
+            // PPA is for point per action modules which can be parsed in some cases.
+            scoreString = Regex.Replace(scoreString, @"PPA ([\d.]+) \+ ([\d.]+)", "$2");
+
+            // Catch any PPA or TDB modules which can't be parsed.
+            if (scoreString.StartsWith("PPA ") || scoreString == "TBD")
+                return;
+
+            if (decimal.TryParse(scoreString, out decimal score))
+            {
+                tp.Score ??= score;
+            }
         }
     }
 }
