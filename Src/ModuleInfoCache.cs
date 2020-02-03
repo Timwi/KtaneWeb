@@ -84,14 +84,6 @@ namespace KtaneWeb
                                     var modJson = JsonDict.Parse(origFile);
                                     var mod = ClassifyJson.Deserialize<KtaneModuleInfo>(modJson);
 
-                                    // Merge in TP data
-                                    static bool equalNames(string nameA, string nameB) => nameA.Replace('’', '\'') == nameB.Replace('’', '\'');
-                                    var entry = entries.FirstOrDefault(entry => equalNames(entry["gsx$modulename"]["$t"].GetString(), mod.Name));
-                                    if (entry != null)
-                                    {
-                                        mergeTPData(mod, entry);
-                                        modJson = (JsonDict) ClassifyJson.Serialize(mod);
-                                    }
 #if DEBUG
                                     var newJson = (JsonDict) ClassifyJson.Serialize(mod);
                                     var newJsonStr = newJson.ToStringIndented();
@@ -100,6 +92,14 @@ namespace KtaneWeb
                                     modJson = newJson;
 #endif
 
+                                    // Merge in TP data
+                                    static bool equalNames(string nameA, string nameB) => nameA.Replace('’', '\'') == nameB.Replace('’', '\'');
+                                    var entry = entries.FirstOrDefault(entry => equalNames(entry["gsx$modulename"]["$t"].GetString(), mod.Name));
+                                    if (entry != null)
+                                    {
+                                        mergeTPData(mod, entry);
+                                        modJson = (JsonDict) ClassifyJson.Serialize(mod);
+                                    }
                                     return (modJson, mod, file.LastWriteTimeUtc).Nullable();
                                 }
                                 catch (Exception e)
