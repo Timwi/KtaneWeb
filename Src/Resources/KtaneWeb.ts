@@ -436,10 +436,12 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                             mod.TwitchPlaysInfo = `This needy module can be played in “Twitch Plays: KTANE” for a ${mod.TwitchPlays.NeedyScoring === 'Time' ? 'time-based' : 'solve-based'} score of ${mod.TwitchPlays.Score}.`;
                         else if (mod.TwitchPlays.ScorePerModule)
                             mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score ? `${mod.TwitchPlays.Score}, plus ` : ''}${mod.TwitchPlays.ScorePerModule} for each module on the bomb${mod.TwitchPlays.ScorePerModuleCap ? ` up to a maximum of ${mod.TwitchPlays.ScorePerModuleCap}` : ''}.`;
+                        else if (mod.TwitchPlays.ScoreExplanation)
+                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”. ${mod.TwitchPlays.ScoreExplanation}`;
                         else
                             mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score}.`;
                         infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
-                            mod.TwitchPlays.ScorePerModule ? 'S' : mod.TwitchPlays.Score));
+                            mod.TwitchPlays.ScorePerModule || mod.TwitchPlays.ScoreExplanation ? 'S' : mod.TwitchPlays.Score));
                     }
                     if (mod.RuleSeedSupport === 'Supported')
                     {
