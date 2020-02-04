@@ -47,7 +47,8 @@ namespace KtaneWeb
             for (int i = 0; i < DocumentDirs.Length; i++)
             {
                 var dirInfo = new DirectoryInfo(Path.Combine(BaseDir, DocumentDirs[i]));
-                foreach (var inf in dirInfo.EnumerateFiles($"{moduleName}.*").Select(f => new { File = f, Icon = 2 * i }).Concat(dirInfo.EnumerateFiles($"{moduleName} *").Select(f => new { File = f, Icon = 2 * i + 1 })))
+                var ext = DocumentDirs[i].ToLowerInvariant();
+                foreach (var inf in dirInfo.EnumerateFiles($"{moduleName}.{ext}").Select(f => new { File = f, Icon = 2 * i }).Concat(dirInfo.EnumerateFiles($"{moduleName} *.{ext}").Select(f => new { File = f, Icon = 2 * i + 1 })))
                     if (!notModuleNames.Any(inf.File.Name.StartsWith))
                         list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
             }
