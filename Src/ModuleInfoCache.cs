@@ -165,9 +165,20 @@ namespace KtaneWeb
             scoreString = Regex.Replace(scoreString, @"(?:UN )?(\d+)T?", "$1");
 
             // S is for special modules which we parse out the multiplier and put it into a dictionary and use later.
-            var dynamicMatch = Regex.Match(scoreString, @"S ([\d.]+)x");
+            var dynamicMatch = Regex.Match(scoreString, @"S ([\d.]+)x(?: \+ ([\d.]+))?");
             if (dynamicMatch.Success && decimal.TryParse(dynamicMatch.Groups[1].Value, out decimal dynamicScore))
             {
+                // A + after S is for a static addition to the dynamic score.
+                if (dynamicMatch.Groups.Count > 2)
+                {
+                    if (decimal.TryParse(dynamicMatch.Groups[2].Value, out decimal staticScore))
+                        tp.Score ??= staticScore;
+                }
+                else
+                {
+                    tp.Score ??= 0;
+                }
+
                 tp.ScorePerModule ??= dynamicScore;
                 return;
             }
