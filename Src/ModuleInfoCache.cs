@@ -93,8 +93,13 @@ namespace KtaneWeb
 #endif
 
                                     // Merge in TP data
-                                    static bool equalNames(string nameA, string nameB) => nameA.Replace('’', '\'') == nameB.Replace('’', '\'');
-                                    var entry = entries.FirstOrDefault(entry => equalNames(entry["gsx$modulename"]["$t"].GetString(), mod.Name));
+                                    static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
+                                    var entry = entries.FirstOrDefault(entry =>
+                                    {
+                                        string entryName = Regex.Replace(entry["gsx$modulename"]["$t"].GetString(), @" \((Solve|Time)\)", "");
+                                        return normalize(entryName) == normalize(mod.Name);
+                                    });
+
                                     if (entry != null)
                                     {
                                         mergeTPData(mod, entry);
