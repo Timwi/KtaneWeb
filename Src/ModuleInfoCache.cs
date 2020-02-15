@@ -105,6 +105,12 @@ namespace KtaneWeb
                                         mergeTPData(mod, entry);
                                         modJson = (JsonDict) ClassifyJson.Serialize(mod);
                                     }
+
+                                    // Some module names contain characters that can’t be used in filenames (e.g. “?”)
+                                    var fileName = Path.GetFileNameWithoutExtension(file.Name);
+                                    if (mod.Name != fileName)
+                                        modJson["FileName"] = fileName;
+
                                     return (modJson, mod, file.LastWriteTimeUtc).Nullable();
                                 }
                                 catch (Exception e)
@@ -128,8 +134,9 @@ namespace KtaneWeb
                         var modJsons = modules.Where(tup => tup.mod.TranslationOf == null).Select(tup =>
                         {
                             var (modJson, mod, _) = tup;
-                            modJson["Sheets"] = _config.EnumerateSheetUrls(mod.Name, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
-                            var (x, y) = coords.Get(mod.Name, (x: 0, y: 0));
+                            var fileName = modJson.ContainsKey("FileName") ? modJson["FileName"].GetString() : mod.Name;
+                            modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
+                            var (x, y) = coords.Get(fileName, (x: 0, y: 0));
                             modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
                             modJson["Y"] = y;
                             return modJson;

@@ -935,7 +935,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         // Construct the list of manuals. (The list provided in .Sheets is kinda compressed.)
         mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => ({
             Name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`,
-            Url: `${initDocDirs[(parseInt(arr[2]) / 2) | 0]}/${encodeURIComponent(mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`,
+            Url: `${initDocDirs[(parseInt(arr[2]) / 2) | 0]}/${encodeURIComponent(mod.FileName || mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`,
             Icon: initIcons[arr[2]]
         }));
 

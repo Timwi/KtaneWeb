@@ -38,19 +38,19 @@ namespace KtaneWeb
         [ClassifyNotNull]
         public Dictionary<string, string> Sessions = new Dictionary<string, string>();
 
-        public JsonList EnumerateSheetUrls(string moduleName, string[] notModuleNames)
+        public JsonList EnumerateSheetUrls(string moduleFileName, string[] notModuleNames)
         {
-            if (moduleName == null)
-                throw new ArgumentNullException(nameof(moduleName));
+            if (moduleFileName == null)
+                throw new ArgumentNullException(nameof(moduleFileName));
 
             var list = new List<string>();
             for (int i = 0; i < DocumentDirs.Length; i++)
             {
                 var dirInfo = new DirectoryInfo(Path.Combine(BaseDir, DocumentDirs[i]));
                 var ext = DocumentDirs[i].ToLowerInvariant();
-                foreach (var inf in dirInfo.EnumerateFiles($"{moduleName}.{ext}").Select(f => new { File = f, Icon = 2 * i }).Concat(dirInfo.EnumerateFiles($"{moduleName} *.{ext}").Select(f => new { File = f, Icon = 2 * i + 1 })))
+                foreach (var inf in dirInfo.EnumerateFiles($"{moduleFileName}.{ext}").Select(f => new { File = f, Icon = 2 * i }).Concat(dirInfo.EnumerateFiles($"{moduleFileName} *.{ext}").Select(f => new { File = f, Icon = 2 * i + 1 })))
                     if (!notModuleNames.Any(inf.File.Name.StartsWith))
-                        list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
+                        list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
             }
             return list.OrderBy(x => x.Substring(0, x.IndexOf('|'))).ToJsonList();
         }
