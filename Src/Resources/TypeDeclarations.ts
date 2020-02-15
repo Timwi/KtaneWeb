@@ -36,6 +36,7 @@
     Sheets: string[];
     X: number;
     Y: number;
+    FileName: string | null;
 
     // Things used on the client side
     IsVisible: boolean;
