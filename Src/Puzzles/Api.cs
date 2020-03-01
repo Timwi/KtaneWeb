@@ -103,7 +103,7 @@ namespace KtaneWeb.Puzzles
                             // “Move here” at the bottom of the last element
                             ix == group.Puzzles.Count - 1 && canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", group.Puzzles.Count)._("move here") : null))),
 
-                    canEdit() ? new MENU { class_ = "controls req-priv" }._(
+                    canEdit(group) ? new MENU { class_ = "controls req-priv" }._(
                         new LI(new BUTTON { class_ = "operable" }.Data("fn", group.IsPublished ? nameof(UnpublishGroup) : nameof(PublishGroup)).Data("groupname", group.Title)._(group.IsPublished ? "Hide" : "Publish")),
                         new LI(new BUTTON { class_ = "operable" }.Data("fn", nameof(AddPuzzle)).Data("groupname", group.Title)._("Add puzzle")),
                         new LI(new SPAN { class_ = "folder" }._(group.Folder, editIcon(nameof(ChangeGroupFolder), group, group.Folder)))
