@@ -68,7 +68,7 @@ namespace KtaneWeb
         public KtaneSouvenirInfo Souvenir = null;
 
         // null if the module doesn’t support TP. Always null for widgets.
-        [ClassifyIgnoreIfDefault, EditableNested, EditableField("Twitch Plays"), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [ClassifyIgnoreIfDefault, EditableField(null)]
         public KtaneTwitchPlaysInfo TwitchPlays = null;
 
         public object Icon(KtaneWebConfig config) => Path.Combine(config.ModIconDir, Name + ".png")
