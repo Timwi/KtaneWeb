@@ -51,7 +51,8 @@ namespace KtaneWeb
                     return keywords == null ||
                         (searchOptions.Contains("names") && keywords.All(k => m.Name.ContainsNoCase(k))) ||
                         (searchOptions.Contains("authors") && keywords.All(k => m.Author.ContainsNoCase(k))) ||
-                        (searchOptions.Contains("descriptions") && keywords.All(k => m.Description.ContainsNoCase(k)));
+                        (searchOptions.Contains("descriptions") && keywords.All(k => m.Description.ContainsNoCase(k))) ||
+                        (searchOptions.Contains("workshopids") && keywords.All(k => m.SteamID.JsEscapeNull().Contains(k)));
                 });
 
                 // Sort

@@ -182,7 +182,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     var displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
-    var validSearchOptions = ['names', 'authors', 'descriptions'];
+    var validSearchOptions = ['names', 'authors', 'descriptions', 'workshopids'];
     var defaultSearchOptions = ['names'];
     var searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
@@ -709,6 +709,8 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                 searchWhat += ' ' + mod.Author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + mod.Description.toLowerCase();
+            if (searchOptions.indexOf('workshopids') !== -1)
+                searchWhat += ' ' + mod.SteamID;
             if (mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
 
