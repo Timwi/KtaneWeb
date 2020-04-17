@@ -144,8 +144,7 @@ namespace KtaneWeb
                                 new DIV { class_ = "search-options" }._(
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._("Names")),
                                     new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._("Authors")),
-                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")),
-                                    new SPAN { class_ = "search-option", id = "search-opt-workshopids" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-workshopids" }, new LABEL { for_ = "search-workshopids" }._("Workshop IDs")))),
+                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
                             new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
 
                         new DIV { id = "main-table-container" }._(

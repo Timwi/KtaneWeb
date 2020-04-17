@@ -182,7 +182,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     var displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
-    var validSearchOptions = ['names', 'authors', 'descriptions', 'workshopids'];
+    var validSearchOptions = ['names', 'authors', 'descriptions'];
     var defaultSearchOptions = ['names'];
     var searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
@@ -702,15 +702,13 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
-            let searchWhat = '';
+            let searchWhat = mod.SteamID;   // Since SteamIDs are numerical, always allow the user to search for those
             if (searchOptions.indexOf('names') !== -1)
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
                 searchWhat += ' ' + mod.Author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + mod.Description.toLowerCase();
-            if (searchOptions.indexOf('workshopids') !== -1)
-                searchWhat += ' ' + mod.SteamID;
             if (mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
 
