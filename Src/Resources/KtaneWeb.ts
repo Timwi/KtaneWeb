@@ -1203,11 +1203,6 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
             for (var key of 'Status,Explanation'.split(','))
                 (<any>ui.querySelector(`[name="${key}"]`)).value = (mod.Souvenir[key] || '');
 
-        if ((<any>document.getElementById('nested-TwitchPlays')).checked = mod.TwitchPlays != undefined)
-            for (var key of 'Score,ScorePerModule,ScorePerModuleCap,NeedyScoring,ScoreExplanation,TagPosition,HelpText'.split(','))
-                (<any>ui.querySelector(`[name="${key}"]`)).value = mod.TwitchPlays[key] === undefined ? '' : mod.TwitchPlays[key];
-
-        (<any>ui.querySelector(`[name="AutoPin"]`)).checked = mod.TwitchPlays && mod.TwitchPlays.AutoPin;
         (<any>ui.querySelector(`[name="Ignore"]`)).value = mod.Ignore ? mod.Ignore.join('; ') : '';
         UpdateEditUiElements();
     }
