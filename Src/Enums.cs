@@ -85,4 +85,18 @@
         [KtaneFilterOption("Solve-based")]
         Solves = 1
     }
+
+    public enum KtaneMysteryModuleCompatibility
+    {
+        [KtaneFilterOption("No conflict")]
+        NoConflict,
+        [KtaneFilterOption("MM must not hide this")]
+        MustNotBeHidden,
+        [KtaneFilterOption("MM must not require this")]
+        MustNotBeKey,
+        [KtaneFilterOption("MM must not use this at all")]
+        MustNotBeHiddenOrKey,
+        [KtaneFilterOption("MM must auto-solve")]
+        RequiresAutoSolve,
+    }
 }

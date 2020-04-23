@@ -35,7 +35,7 @@ namespace KtaneWeb
         public string SourceUrl;
         [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube).")]
         public string TutorialVideoUrl;
-        [ClassifyIgnoreIfDefault, EditableField("Symbol", "A one- or two-letter symbol for the Periodic Table of Modules."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules (up to three letters)."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public string Symbol;
 
         [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes, even if rare.")]
@@ -67,7 +67,10 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableNested, EditableField("Souvenir", "Uncheck for modules that have not been assessed."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public KtaneSouvenirInfo Souvenir = null;
 
-        // null if the module doesn’t support TP. Always null for widgets.
+        [ClassifyIgnoreIfDefault, EditableField("Mystery Module compatibility", "Specify how Mystery Module may affect this module. Use “MM must not hide this” if this module requires other modules to be solved earlier (e.g. Encryption Bingo, Hogwarts). Use “MM must not require this” if the module depends on whether or not other modules are on the bomb (e.g. Free Parking, Mafia). Use “MM must not use this at all” if both is the case. Use “MM must auto-solve” if this module imposes a solve order on other modules (e.g. Organization, Turn the Keys).")]
+        public KtaneMysteryModuleCompatibility MysteryModule = KtaneMysteryModuleCompatibility.NoConflict;
+
+        // This information is imported from a spreadsheet, so not serialized in JSON.
         [ClassifyIgnoreIfDefault, EditableField(null)]
         public KtaneTwitchPlaysInfo TwitchPlays = null;
 
