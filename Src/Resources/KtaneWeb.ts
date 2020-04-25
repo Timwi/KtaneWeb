@@ -702,7 +702,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
-            let searchWhat = mod.SteamID;   // Since SteamIDs are numerical, always allow the user to search for those
+            let searchWhat = (mod.SteamID || '');   // Since SteamIDs are numerical, always allow the user to search for those
             if (searchOptions.indexOf('names') !== -1)
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
