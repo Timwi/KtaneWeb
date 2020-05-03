@@ -59,8 +59,10 @@ namespace KtaneWeb
                         }
                         using var mem = new MemoryStream();
                         bmp.Save(mem, ImageFormat.Png);
-                        _moduleInfoCache = new ModuleInfoCache { IconSpritePng = mem.ToArray() };
-                        _moduleInfoCache.IconSpriteMd5 = MD5.Create().ComputeHash(_moduleInfoCache.IconSpritePng).ToHex();
+
+                        // This needs to be a separate variable (don’t use _moduleInfoCache itself) because that field needs to stay null until it is fully initialized
+                        var moduleInfoCache = new ModuleInfoCache { IconSpritePng = mem.ToArray() };
+                        moduleInfoCache.IconSpriteMd5 = MD5.Create().ComputeHash(moduleInfoCache.IconSpritePng).ToHex();
 
                         // Load TP data from the spreadsheet
                         JsonList entries;
@@ -127,9 +129,9 @@ namespace KtaneWeb
                             })
                             .WhereNotNull()
                             .ToArray();
-                        _moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
-                        _moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
-                        _moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
+                        moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
+                        moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
+                        moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
 
                         var modJsons = modules.Where(tup => tup.mod.TranslationOf == null).Select(tup =>
                         {
@@ -147,7 +149,8 @@ namespace KtaneWeb
                         var filters = _filters.Select(f => f.ToJson()).ToJsonList();
                         var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
                         var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
-                        _moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},'{_moduleInfoCache.IconSpriteMd5}');";
+                        moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},'{moduleInfoCache.IconSpriteMd5}');";
+                        _moduleInfoCache = moduleInfoCache;
                     }
         }
 
