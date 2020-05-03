@@ -144,11 +144,11 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     try { preferredLanguages = JSON.parse(lStorage.getItem('preferredLanguages') || '{}') || {}; }
     catch (exc) { }
 
-    $('#rule-seed-input').val(+lStorage.getItem('ruleseed') || 1);
+    (<HTMLInputElement>document.getElementById('rule-seed-input')).value = `${+lStorage.getItem('ruleseed') || 1}`;
     function updateRuleseed()
     {
         setLinksAndPreferredManuals();
-        var seed = +($('#rule-seed-input').val() || 0);
+        var seed = +(<HTMLInputElement>document.getElementById('rule-seed-input')).value || 1;
         lStorage.setItem('ruleseed', `${seed}`);
         if (seed === 1)
         {
@@ -178,7 +178,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         sort = 'name';
     var reverse = lStorage.getItem('sort-reverse') == "true" || false;
 
-    var defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published'];
+    var defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published', 'twitch', 'souvenir', 'rule-seed'];
     var displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
@@ -281,12 +281,16 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         lStorage.setItem('display', JSON.stringify(displayOptions));
     }
 
+    (<HTMLInputElement>document.getElementById('option-include-symbol')).checked = (lStorage.getItem('option-include-symbol') || '1') === '1';
+    (<HTMLInputElement>document.getElementById('option-include-steam-id')).checked = (lStorage.getItem('option-include-steam-id') || '1') === '1';
     function setSearchOptions(set)
     {
         searchOptions = (set instanceof Array) ? set.filter(function(x) { return validSearchOptions.indexOf(x) !== -1; }) : defaultSearchOptions;
         $('input.search-option-input').prop('checked', false);
         $(searchOptions.map(function(x) { return '#search-' + x; }).join(',')).prop('checked', true);
         lStorage.setItem('searchOptions', JSON.stringify(searchOptions));
+        lStorage.setItem('option-include-symbol', (<HTMLInputElement>document.getElementById('option-include-symbol')).checked ? '1' : '0');
+        lStorage.setItem('option-include-steam-id', (<HTMLInputElement>document.getElementById('option-include-steam-id')).checked ? '1' : '0');
     }
 
     function setTheme(theme)
@@ -675,6 +679,8 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
         let modCount = 0;
         let includesSymbol = null;
+        let searchBySymbol = (<HTMLInputElement>document.getElementById('option-include-symbol')).checked;
+        let searchBySteamID = (<HTMLInputElement>document.getElementById('option-include-steam-id')).checked;
         modules.forEach(function(mod)
         {
             let filteredIn = true;
@@ -702,14 +708,14 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
-            let searchWhat = (mod.SteamID || '');   // Since SteamIDs are numerical, always allow the user to search for those
+            let searchWhat = searchBySteamID ? (mod.SteamID || '') : '';
             if (searchOptions.indexOf('names') !== -1)
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
                 searchWhat += ' ' + mod.Author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + mod.Description.toLowerCase();
-            if (mod.Symbol)
+            if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
 
             searchWhat = unifyString(searchWhat);
@@ -1041,7 +1047,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('input#profile-file').change(function() { const files = (<HTMLInputElement>document.getElementById('profile-file')).files; if (files.length === 1) { setProfile(files[0]); } });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
-    $('input.search-option-input').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
+    $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
     // Page options pop-up (mobile only)
     $('#page-opt').click(function()

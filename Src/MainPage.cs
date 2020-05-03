@@ -305,6 +305,14 @@ namespace KtaneWeb
                                     new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
                                     new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
                             new DIV { class_ = "option-group" }._(
+                                new H4("Search options"),
+                                new DIV(
+                                    new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-steam-id" }, " ",
+                                    new LABEL { for_ = "option-include-steam-id" }._("Search by Steam ID")),
+                                new DIV(
+                                    new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-symbol" }, " ",
+                                    new LABEL { for_ = "option-include-symbol" }._("Search by Symbol"))),
+                            new DIV { class_ = "option-group" }._(
                                 new H4("Site theme"),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
