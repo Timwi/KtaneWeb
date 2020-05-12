@@ -1202,7 +1202,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     function setEditUi(mod: KtaneModuleInfo)
     {
         let ui = document.getElementById('module-ui');
-        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,TutorialVideoUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport'.split(','))
+        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,TutorialVideoUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,MysteryModule'.split(','))
             (<any>ui.querySelector(`[name="${key}"]`)).value = (mod[key] || '');
 
         if ((<any>document.getElementById('nested-Souvenir')).checked = mod.Souvenir != undefined)

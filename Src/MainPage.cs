@@ -333,7 +333,7 @@ namespace KtaneWeb
                         // Module info editing UI
                         new DIV { id = "module-ui", class_ = "popup disappear stay" }._(new FORM { action = "generate-json", method = method.post }._(new Func<object>(() =>
                         {
-                            IEnumerable<object> createTableCellContent(FieldInfo field, EditableFieldAttribute attr)
+                            static IEnumerable<object> createTableCellContent(FieldInfo field, EditableFieldAttribute attr)
                             {
                                 var type = field.FieldType;
                                 if (field.FieldType.TryGetGenericParameters(typeof(Nullable<>), out var types))
@@ -364,7 +364,7 @@ namespace KtaneWeb
                                     yield return new DIV { class_ = "oops" }._("Bug. Please let Timwi know.");
                             }
 
-                            IEnumerable<object> iterateNormalFields(Type typeToBeEdited)
+                            static IEnumerable<object> iterateNormalFields(Type typeToBeEdited)
                             {
                                 foreach (var field in typeToBeEdited.GetFields())
                                 {
@@ -378,7 +378,7 @@ namespace KtaneWeb
                                         ._(new TH(attr.ReadableName), new TD(createTableCellContent(field, attr)));
                                 }
                             }
-                            IEnumerable<object> iterateHiddenFields(Type typeToBeEdited)
+                            static IEnumerable<object> iterateHiddenFields(Type typeToBeEdited)
                             {
                                 foreach (var field in typeToBeEdited.GetFields())
                                 {
@@ -387,7 +387,7 @@ namespace KtaneWeb
                                         yield return new INPUT { type = itype.hidden, name = field.Name };
                                 }
                             }
-                            IEnumerable<object> iterateNestedFields(Type typeToBeEdited)
+                            static IEnumerable<object> iterateNestedFields(Type typeToBeEdited)
                             {
                                 var nestedFields = typeToBeEdited.GetFields()
                                     .Where(f => f.GetCustomAttribute<EditableNestedAttribute>() != null)
