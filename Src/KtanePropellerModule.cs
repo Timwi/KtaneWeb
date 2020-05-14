@@ -42,7 +42,7 @@ namespace KtaneWeb
                     }),
                     new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/proxy", handler: proxy),
-                    new UrlMapping(path: "/merge-pdf", handler: pdf),
+                    new UrlMapping(path: "/merge-pdf", handler: mergePdfs),
                     new UrlMapping(path: "/upload-log", handler: uploadLogfile),
                     new UrlMapping(path: "/find-log", handler: findLogfile),
                     new UrlMapping(path: "/generate-json", handler: generateJson),
@@ -59,8 +59,8 @@ namespace KtaneWeb
                     new UrlMapping(path: "/lfa", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Logfile Analyzer.html"))),
                     new UrlMapping(path: "/faq", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/FAQs.html"))),
 
-                    // Default fallback: file system handler
-                    new UrlMapping(req => new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req))
+                    // Default fallback: file system handler or PDF generator
+                    new UrlMapping(handler: pdfOrFileSystem)
                 );
 
                 foreach (string directory in Directory.GetDirectories(Path.Combine(_config.BaseDir, "HTML")))

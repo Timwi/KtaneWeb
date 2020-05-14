@@ -16,17 +16,55 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private static readonly bool _pdfEnabled = true;
-        private HttpResponse pdf(HttpRequest req)
+        private HttpResponse pdfOrFileSystem(HttpRequest req)
+        {
+            if (!req.Url.Path.StartsWith("/PDF/"))
+                goto doFileSystem;
+            var filename = req.Url.Path.Substring(5);
+            if (filename.Length < 1 || filename.Contains('/'))
+                goto doFileSystem;
+            filename = filename.UrlUnescape();
+            if (File.Exists(Path.Combine(_config.BaseDir, "PDF", filename)))
+                goto doFileSystem;
+            var htmlFile = Path.Combine(_config.BaseDir, "HTML", Path.GetFileNameWithoutExtension(filename) + ".html");
+            if (!File.Exists(htmlFile))
+                goto doFileSystem;
+
+            using (var md5 = MD5.Create())
+            {
+                var tempFilename = $"{md5.ComputeHash(File.ReadAllBytes(htmlFile)).ToHex()}.pdf";
+                var tempFilepath = Path.Combine(_config.PdfTempPath ?? Path.GetTempPath(), tempFilename);
+                if (!File.Exists(tempFilepath))
+                {
+                    var runner = new CommandRunner();
+                    runner.Command = $@"cmd.exe /S /C """"{_config.ChromePath}"" --headless --disable-gpu ""--print-to-pdf={tempFilepath}"" --no-margins ""{htmlFile}""""";
+                    runner.StartAndWait();
+                }
+                else
+                    File.SetLastAccessTimeUtc(tempFilepath, DateTime.UtcNow);
+
+                if (_config.PdfTempPath != null && Rnd.Next(0, 100) == 0)
+                {
+                    // Clean up older PDF files
+                    foreach (var file in new DirectoryInfo(_config.PdfTempPath).EnumerateFiles("*.pdf"))
+                        if ((DateTime.UtcNow - File.GetLastAccessTimeUtc(file.FullName)).TotalDays > 7)
+                            file.Delete();
+                }
+
+                return HttpResponse.File(tempFilepath, "application/pdf");
+            }
+
+            doFileSystem:
+            return new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req);
+        }
+
+        private HttpResponse mergePdfs(HttpRequest req)
         {
             ensureModuleInfoCache();
 
             string lastExaminedPdfFile = "<none>";
             try
             {
-                if (!_pdfEnabled)
-                    return HttpResponse.PlainText("This feature is temporarily disabled because it didn’t work for most people.");
-
                 if (req.Method != HttpMethod.Post)
                     return HttpResponse.Redirect(req.Url.WithPathParent().WithPath(""));
 

@@ -25,6 +25,8 @@ namespace KtaneWeb
         public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
         public string ModIconDir = @"C:\Sites\KTANE\Public\Icons";
         public string ModJsonDir = @"C:\Sites\KTANE\Public\JSON";
+        public string ChromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
+        public string PdfTempPath = null;
 
         public string LogfilesDir = @"C:\Sites\KTANE\Logfiles";
         public string MergedPdfsDir = @"C:\Sites\KTANE\MergedPdfs";
@@ -43,14 +45,18 @@ namespace KtaneWeb
             if (moduleFileName == null)
                 throw new ArgumentNullException(nameof(moduleFileName));
 
-            var list = new List<string>();
+            var list = new HashSet<string>();
             for (int i = 0; i < DocumentDirs.Length; i++)
             {
                 var dirInfo = new DirectoryInfo(Path.Combine(BaseDir, DocumentDirs[i]));
                 var ext = DocumentDirs[i].ToLowerInvariant();
                 foreach (var inf in dirInfo.EnumerateFiles($"{moduleFileName}.{ext}").Select(f => new { File = f, Icon = 2 * i }).Concat(dirInfo.EnumerateFiles($"{moduleFileName} *.{ext}").Select(f => new { File = f, Icon = 2 * i + 1 })))
                     if (!notModuleNames.Any(inf.File.Name.StartsWith))
+                    {
                         list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
+                        if (ext == "html")
+                            list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon + 2}");
+                    }
             }
             return list.OrderBy(x => x.Substring(0, x.IndexOf('|'))).ToJsonList();
         }
