@@ -146,6 +146,10 @@ h1 {
         border: 0;
     }
 
+body.pristine .req-priv {
+    display: none !important;
+}
+
 .puzzle-group {
     background: hsl(220,90%,95%);
     position: relative;
@@ -234,13 +238,9 @@ h1 {
             background-color: hsl(220, 90%, 85%);
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0,0 .7,.5 0,1 z" stroke="none" fill="hsl(220, 90%, 75%)" /></svg>');
             background-position: 3pt center;
-            background-size: auto 75%;
+            background-size: auto 20pt;
             background-repeat: no-repeat;
         }
-
-            .puzzle-group .puzzles .puzzle .puzzle-title {
-                color: hsl(220, 100%, 10%);
-            }
 
             .puzzle-group .puzzles .puzzle.new {
                 padding-left: 55pt;
@@ -276,9 +276,15 @@ h1 {
                 background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M .2,0 .5,.3 .8,0 1,.2 .7,.5 1,.8 .8,1 .5,.7 .2,1 0,.8 .3,.5 0,.2 z" stroke="none" fill="hsl(220, 100%, 65%)" /></svg>');
             }
 
-            .puzzle-group .puzzles .puzzle .puzzle-title:visited {
-                color: hsl(220, 100%, 35%);
+            .puzzle-group .puzzles .puzzle .puzzle-title {
+                text-decoration: none;
+                font-weight: bold;
+                color: hsl(220, 100%, 10%);
             }
+
+                .puzzle-group .puzzles .puzzle .puzzle-title:visited {
+                    color: hsl(220, 100%, 35%);
+                }
 
             .puzzle-group .puzzles .puzzle.req-priv {
                 background-color: hsl(0, 90%, 85%);
@@ -327,11 +333,6 @@ h1 {
                         top: -3pt;
                     }
 
-            .puzzle-group .puzzles .puzzle .puzzle-title {
-                text-decoration: none;
-                font-weight: bold;
-            }
-
             .puzzle-group .puzzles .puzzle .puzzle-buttons {
                 float: right;
                 position: relative;
@@ -361,4 +362,34 @@ h1 {
                 .puzzle-group .puzzles .puzzle .puzzle-info > .puzzle-date::before {
                     content: 'released\a0 ';
                     color: rgba(0,0,0,.4);
+                }
+
+            .puzzle-group .puzzles .puzzle .puzzle-answer {
+                font-size: 12pt;
+                padding-left: 20pt;
+            }
+
+            body:not(.pristine) .puzzle-group.editable .puzzles .puzzle .puzzle-buttons .check-answer-span {
+                display: none;
+            }
+            .puzzle-group .puzzles .puzzle .puzzle-buttons .check-answer-span {
+                margin-left: 10pt;
+            }
+            .puzzle-group .puzzles .puzzle .puzzle-buttons .check-answer-span .check-answer {
+                width: 100pt;
+            }
+            .puzzle-group .puzzles .puzzle .puzzle-buttons .check-answer-span.correct .check-answer,
+            .puzzle-group .puzzles .puzzle .puzzle-buttons .check-answer-span.correct .check-answer-btn,
+            .puzzle-group .puzzles .puzzle .puzzle-buttons .check-answer-span .correct-answer {
+                display: none;
+            }
+            .puzzle-group .puzzles .puzzle .puzzle-buttons .check-answer-span.correct .correct-answer {
+                display: inline;
+                font-weight: bold;
+                font-size: 14pt;
+            }
+                .puzzle-group .puzzles .puzzle .puzzle-buttons .check-answer-span.correct .correct-answer::after {
+                    content: '✓';
+                    color: #009200;
+                    padding-left: 6pt;
                 }

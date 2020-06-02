@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
@@ -51,19 +52,19 @@ namespace KtaneWeb.Puzzles
                 File.Exists(Path.Combine(_puzzleDir, group.Folder, "Logo.png"))
                     ? new H1 { class_ = "logo" + (group.IsPublished ? " published" : " req-priv") }._(new IMG { class_ = "logo", src = $"{group.Folder}/Logo.png", alt = group.Title })
                     : new H1 { class_ = "text" + (group.IsPublished ? " published" : " req-priv") }._(group.Title.Select(ch => new SPAN(ch))),
-                new DIV { class_ = "puzzle-group" + (group.IsPublished ? " published" : " req-priv") }._(
+                new DIV { class_ = "puzzle-group" + (group.IsPublished ? " published" : " req-priv") + (canEdit(group) ? " editable" : "") }._(
 
                     // Group title
                     new DIV { class_ = "title" }._(
                         group.Title,
-                        editIcon(nameof(RenameGroup), group, group.Title)),
+                        editIcon(nameof(RenameGroup), group, group.Title, tooltip: "Edit title")),
 
                     new DIV { class_ = "group-info" }._(
                         // Author
-                        new DIV { class_ = "author" }._(group.Author, editIcon(nameof(ChangeGroupAuthor), group, group.Author)),
+                        new DIV { class_ = "author" }._(group.Author, editIcon(nameof(ChangeGroupAuthor), group, group.Author, tooltip: "Edit author")),
 
                         // Ordering (only shown with editing privs)
-                        !canEdit(group) ? null : new DIV { class_ = "ordering req-priv" }._(group.Ordering, editIcon(nameof(ChangeGroupOrdering), group, group.Ordering.ToString()))),
+                        !canEdit(group) ? null : new DIV { class_ = "ordering req-priv" }._(group.Ordering, editIcon(nameof(ChangeGroupOrdering), group, group.Ordering.ToString(), tooltip: "Change ordering"))),
 
                     // List of puzzles
                     new DIV { class_ = "puzzles" }._(
@@ -88,17 +89,33 @@ namespace KtaneWeb.Puzzles
                                     puzzle.Date.NullOr(d => new DIV { class_ = "puzzle-date" }._(d.ToString("yyyy-MM-dd")))),
 
                                 // Edit author
-                                editIcon(nameof(EditPuzzleAuthor), group, puzzle, puzzle.Author),
+                                editIcon(nameof(EditPuzzleAuthor), group, puzzle, puzzle.Author, tooltip: "Edit author"),
                                 // Edit date
-                                editIcon(nameof(EditPuzzleDate), group, puzzle, puzzle.Date.NullOr(d => d.ToString("yyyy-MM-dd")) ?? ""),
+                                editIcon(nameof(EditPuzzleDate), group, puzzle, puzzle.Date.NullOr(d => d.ToString("yyyy-MM-dd")) ?? "", tooltip: "Edit publication date"),
 
+                                // Check answer
+                                puzzle.Answer == null ? null : new Func<object>(() =>
+                                {
+                                    using var sha = SHA256.Create();
+                                    return new SPAN { class_ = "check-answer-span" }._(
+                                        new INPUT { type = itype.text, class_ = "check-answer" },
+                                        new BUTTON { class_ = "check-answer-btn button" }.Data("sha256", sha.ComputeHash(puzzle.Answer.ToUpperInvariant().Where(ch => (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')).JoinString().ToUtf8()).ToHex())._("Check answer"),
+                                        new SPAN { class_ = "correct-answer" });
+                                }),
                                 // View solution
                                 !File.Exists(Path.Combine(_puzzleDir, group.Folder, puzzle.SolutionFilename)) ? null : new A { class_ = "button", href = $"{group.Folder}/{puzzle.SolutionFilename}" }._("View solution")),
 
                             // Puzzle title
                             new A { href = $"{group.Folder}/{puzzle.Filename}", class_ = "puzzle-title" }._(puzzle.Title),
                             // Edit puzzle title
-                            editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title, "name-edit-icon"),
+                            editIcon(nameof(RenamePuzzle), group, puzzle, puzzle.Title, extraClass: "name-edit-icon", tooltip: "Edit puzzle title"),
+                            // Edit puzzle answer (if no answer given)
+                            puzzle.Answer != null ? null : editIcon(nameof(EditPuzzleAnswer), group, puzzle, puzzle.Answer, tooltip: "Edit puzzle answer"),
+
+                            // Puzzle answer
+                            !canEdit(group) || puzzle.Answer == null ? null : new DIV { class_ = "req-priv puzzle-answer" }._(
+                                puzzle.Answer,
+                                editIcon(nameof(EditPuzzleAnswer), group, puzzle, puzzle.Answer, tooltip: "Edit answer")),
 
                             // “Move here” at the bottom of the last element
                             ix == group.Puzzles.Count - 1 && canEdit(group) && group.Puzzles.Any(p => p.MovingMark) ? new BUTTON { class_ = "operable req-priv move-here" }.Data("fn", nameof(MovePuzzle)).Data("groupname", group.Title).Data("index", group.Puzzles.Count)._("move here") : null))),
@@ -106,13 +123,15 @@ namespace KtaneWeb.Puzzles
                     canEdit(group) ? new MENU { class_ = "controls req-priv" }._(
                         new LI(new BUTTON { class_ = "operable" }.Data("fn", group.IsPublished ? nameof(UnpublishGroup) : nameof(PublishGroup)).Data("groupname", group.Title)._(group.IsPublished ? "Hide" : "Publish")),
                         new LI(new BUTTON { class_ = "operable" }.Data("fn", nameof(AddPuzzle)).Data("groupname", group.Title)._("Add puzzle")),
-                        new LI(new SPAN { class_ = "folder" }._(group.Folder, editIcon(nameof(ChangeGroupFolder), group, group.Folder)))
+                        new LI(new SPAN { class_ = "folder" }._(group.Folder, editIcon(nameof(ChangeGroupFolder), group, group.Folder, tooltip: "Change folder name")))
                     ) : null
                 )));
         }
 
-        private object editIcon(string fn, PuzzleGroup group, string prevValue, string extraClass = null) => canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" + (extraClass == null ? null : " " + extraClass) }.Data("fn", fn).Data("groupname", group.Title).Data("query", prevValue ?? "") : null;
-        private object editIcon(string fn, PuzzleGroup group, Puzzle puzzle, string prevValue, string extraClass = null) => canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" + (extraClass == null ? null : " " + extraClass) }.Data("fn", fn).Data("groupname", group.Title).Data("puzzlename", puzzle.Title).Data("query", prevValue ?? "") : null;
+        private object editIcon(string fn, PuzzleGroup group, string prevValue, string extraClass = null, string tooltip = null) =>
+            canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" + (extraClass == null ? null : " " + extraClass), title = tooltip }.Data("fn", fn).Data("groupname", group.Title).Data("query", prevValue ?? "") : null;
+        private object editIcon(string fn, PuzzleGroup group, Puzzle puzzle, string prevValue, string extraClass = null, string tooltip = null) =>
+            canEdit(group) ? new BUTTON { class_ = "edit-icon req-priv operable" + (extraClass == null ? null : " " + extraClass), title = tooltip }.Data("fn", fn).Data("groupname", group.Title).Data("puzzlename", puzzle.Title).Data("query", prevValue ?? "") : null;
 
         public string RenderBodyStr(string error = null) => Tag.ToString(RenderBody(error));
 
@@ -209,6 +228,8 @@ namespace KtaneWeb.Puzzles
         public string TogglePuzzleNew(string groupname, string puzzlename) => editPuzzle(groupname, puzzlename, (group, puzzle) => { puzzle.IsNew = !puzzle.IsNew; });
         [AjaxMethod]
         public string EditPuzzleAuthor(string groupname, string puzzlename, string query) => editPuzzle(groupname, puzzlename, (group, puzzle) => { puzzle.Author = query == "" ? null : query; });
+        [AjaxMethod]
+        public string EditPuzzleAnswer(string groupname, string puzzlename, string query) => editPuzzle(groupname, puzzlename, (group, puzzle) => { puzzle.Answer = query == "" ? null : query; });
         [AjaxMethod]
         public string EditPuzzleDate(string groupname, string puzzlename, string query) => editPuzzle(groupname, puzzlename, (group, puzzle) =>
         {

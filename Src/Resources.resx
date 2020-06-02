@@ -122,12 +122,12 @@
     <value>resources\ktaneweb.css;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Js" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\generated\ktaneweb.js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>resources\ktaneweb.js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="PuzzlesCss" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>resources\puzzles.css;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="PuzzlesJs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\generated\puzzles.js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>resources\puzzles.js;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

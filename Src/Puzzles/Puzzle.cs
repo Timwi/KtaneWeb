@@ -12,6 +12,7 @@ namespace KtaneWeb.Puzzles
         public bool IsPublished = false;
         public bool IsNew = false;
         public DateTime? Date = null;
+        public string Answer;
 
         [ClassifyIgnoreIfDefault]
         public bool MovingMark = false;

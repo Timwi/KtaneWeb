@@ -1,5 +1,3 @@
-﻿declare const Ktane: { Themes: any };
-
 // Handle access to localStorage
 var lStorage = localStorage;
 
@@ -63,10 +61,11 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
-function el<K extends keyof HTMLElementTagNameMap>(tagName: K, className?: string, ...args: any[]): HTMLElementTagNameMap[K]
+function el(tagName, className, ...args)
 {
     const element = document.createElement(tagName);
-    if (className) element.className = className;
+    if (className)
+        element.className = className;
     for (const arg of args)
     {
         if (arg instanceof HTMLElement)
@@ -85,7 +84,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tagName: K, className?: strin
     return element;
 }
 
-function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
+function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
 {
     // Find all the languages
     function getLanguageFromSheet(sheet)
@@ -144,11 +143,11 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     try { preferredLanguages = JSON.parse(lStorage.getItem('preferredLanguages') || '{}') || {}; }
     catch (exc) { }
 
-    (<HTMLInputElement>document.getElementById('rule-seed-input')).value = `${+lStorage.getItem('ruleseed') || 1}`;
+    document.getElementById('rule-seed-input').value = `${+lStorage.getItem('ruleseed') || 1}`;
     function updateRuleseed()
     {
         setLinksAndPreferredManuals();
-        var seed = +(<HTMLInputElement>document.getElementById('rule-seed-input')).value || 1;
+        var seed = +document.getElementById('rule-seed-input').value || 1;
         lStorage.setItem('ruleseed', `${seed}`);
         if (seed === 1)
         {
@@ -187,14 +186,13 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     var searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
 
-    var validViews: (keyof ModuleViewDatas)[] = ['List', 'PeriodicTable'];
-    var view: keyof ModuleViewDatas = <keyof ModuleViewDatas>lStorage.getItem('view');
+    var validViews = ['List', 'PeriodicTable'];
+    var view = lStorage.getItem('view');
     if (validViews.indexOf(view) === -1)
         view = 'List';
 
     let profileVetoList = null;
-
-    var version: number = JSON.parse(lStorage.getItem('version')) || 0;
+    var version = JSON.parse(lStorage.getItem('version')) || 0;
     if (version < 2)
     {
         sort = 'name';
@@ -260,8 +258,8 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare(a.SortKey, b.SortKey, false) : c;
         });
-
-        if (rvrse) modules.reverse();
+        if (rvrse)
+            modules.reverse();
 
         viewsReady.get(view).Sort();
 
@@ -281,16 +279,16 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         lStorage.setItem('display', JSON.stringify(displayOptions));
     }
 
-    (<HTMLInputElement>document.getElementById('option-include-symbol')).checked = (lStorage.getItem('option-include-symbol') || '1') === '1';
-    (<HTMLInputElement>document.getElementById('option-include-steam-id')).checked = (lStorage.getItem('option-include-steam-id') || '1') === '1';
+    document.getElementById('option-include-symbol').checked = (lStorage.getItem('option-include-symbol') || '1') === '1';
+    document.getElementById('option-include-steam-id').checked = (lStorage.getItem('option-include-steam-id') || '1') === '1';
     function setSearchOptions(set)
     {
         searchOptions = (set instanceof Array) ? set.filter(function(x) { return validSearchOptions.indexOf(x) !== -1; }) : defaultSearchOptions;
         $('input.search-option-input').prop('checked', false);
         $(searchOptions.map(function(x) { return '#search-' + x; }).join(',')).prop('checked', true);
         lStorage.setItem('searchOptions', JSON.stringify(searchOptions));
-        lStorage.setItem('option-include-symbol', (<HTMLInputElement>document.getElementById('option-include-symbol')).checked ? '1' : '0');
-        lStorage.setItem('option-include-steam-id', (<HTMLInputElement>document.getElementById('option-include-steam-id')).checked ? '1' : '0');
+        lStorage.setItem('option-include-symbol', document.getElementById('option-include-symbol').checked ? '1' : '0');
+        lStorage.setItem('option-include-steam-id', document.getElementById('option-include-steam-id').checked ? '1' : '0');
     }
 
     function setTheme(theme)
@@ -335,10 +333,9 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         }
     }
 
-    //var viewsReady: { [view in keyof ModuleViewDatas]: ViewData } = {};
-    var viewsReady: Map<keyof ModuleViewDatas, ViewData> = new Map();
+    var viewsReady = new Map();
 
-    function createView(newView: keyof ModuleViewDatas)
+    function createView(newView)
     {
         if (viewsReady.has(newView))
             return true;
@@ -587,7 +584,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         return true;
     }
 
-    function setView(newView: keyof ModuleViewDatas)
+    function setView(newView)
     {
         if (createView(newView))
         {
@@ -626,12 +623,12 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     }
 
     // Source: https://stackoverflow.com/a/37511463
-    function removeDiacritics(str: string)
+    function removeDiacritics(str)
     {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    function unifyString(str: string)
+    function unifyString(str)
     {
         return removeDiacritics(str).replace(/grey/g, "gray").replace(/colour/g, "color");
     }
@@ -679,8 +676,8 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
         let modCount = 0;
         let includesSymbol = null;
-        let searchBySymbol = (<HTMLInputElement>document.getElementById('option-include-symbol')).checked;
-        let searchBySteamID = (<HTMLInputElement>document.getElementById('option-include-steam-id')).checked;
+        let searchBySymbol = document.getElementById('option-include-symbol').checked;
+        let searchBySteamID = document.getElementById('option-include-steam-id').checked;
         modules.forEach(function(mod)
         {
             let filteredIn = true;
@@ -748,7 +745,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         let seedHash = (seed === 1 ? '' : '#' + seed);
         for (let mod of modules)
         {
-            let manual: KtaneModuleManual = null;
+            let manual = null;
             if (mod.Manuals.length > 0)
             {
                 manual = mod.Manuals[0];
@@ -803,7 +800,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     });
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
-    function makeClickHander(lnk: HTMLElement, isMobileOpt: boolean, mod: KtaneModuleInfo)
+    function makeClickHander(lnk, isMobileOpt, mod)
     {
         return function()
         {
@@ -843,9 +840,9 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
             menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.'));
             var menu = el('div', 'manual-select');
             menuDiv.appendChild(menu);
-            var seed = +(<HTMLInputElement>document.getElementById('rule-seed-input')).value || 0;
+            var seed = +document.getElementById('rule-seed-input').value || 0;
             var seedHash = (seed === 1 ? '' : '#' + seed);
-            var already: Map<string, { Html: Element, Pdf: Element, Row: HTMLDivElement }> = new Map();
+            var already = new Map();
             for (var i = 0; i < mod.Manuals.length; i++)
             {
                 var rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].Name.substr(mod.Name.length));
@@ -863,7 +860,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                 var link = el('a', 'link', { href: mod.Manuals[i].Url + seedHash, onclick: clickHandler }, rx1[2]);
                 if (!already.has(rx1[1]))
                 {
-                    var trow: string[], rx2: RegExpExecArray;
+                    var trow, rx2;
                     if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(rx1[1]))
                         trow = [rx2[1], rx2[2], `<div class='descriptor'>${rx2[3]}</div><div class='author'>by ${rx2[4]}</div>`];
                     else if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*)$/.exec(rx1[1]))
@@ -1022,7 +1019,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
     setLanguages(preferredLanguages);
 
-    $("input.language-toggle").click(function(this: HTMLInputElement) { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
+    $("input.language-toggle").click(function () { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
     $("button.toggle-all-languages").click(function()
     {
         for (const lang of languages)
@@ -1045,7 +1042,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
-    $('input#profile-file').change(function() { const files = (<HTMLInputElement>document.getElementById('profile-file')).files; if (files.length === 1) { setProfile(files[0]); } });
+    $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
@@ -1057,7 +1054,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
         return false;
     });
 
-    function popup(lnk, wnd, width?)
+    function popup(lnk, wnd, width)
     {
         var wasVisible = wnd.is(':visible');
         disappear();
@@ -1128,8 +1125,8 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     });
 
     // Radio buttons (in “Filters”)
-    $('input.sort').click(function(this: HTMLInputElement) { setSort(this.value, reverse); return true; });
-    $('input.sort-reverse').click(function(this: HTMLInputElement) { setSort(sort, this.checked); return true; });
+    $('input.sort').click(function() { setSort(this.value, reverse); return true; });
+    $('input.sort-reverse').click(function() { setSort(sort, this.checked); return true; });
     $('.popup').click(function() { preventDisappear++; });
     $('.popup>.close').click(disappear);
 
@@ -1160,7 +1157,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
                     visible[selectedIndex].ViewData[view].SelectableLink.focus();
                     setTimeout(function()
                     {
-                        let inp = (<HTMLInputElement>document.getElementById('search-field'));
+                        let inp = document.getElementById('search-field');
                         inp.focus();
                         inp.setSelectionRange(0, inp.value.length);
                     }, 1);
@@ -1170,7 +1167,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
             updateSearchHighlight();
         });
 
-    $('.select-on-focus').focus(function(this: HTMLInputElement) { this.setSelectionRange(0, this.value.length); });
+    $('.select-on-focus').focus(function() { this.setSelectionRange(0, this.value.length); });
 
     $('#generate-pdf').click(function()
     {
@@ -1199,17 +1196,17 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
 
 
     // For the JSON module info editing UI
-    function setEditUi(mod: KtaneModuleInfo)
+    function setEditUi(mod)
     {
         let ui = document.getElementById('module-ui');
         for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,TutorialVideoUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,MysteryModule'.split(','))
-            (<any>ui.querySelector(`[name="${key}"]`)).value = (mod[key] || '');
+            ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
-        if ((<any>document.getElementById('nested-Souvenir')).checked = mod.Souvenir != undefined)
+        if (document.getElementById('nested-Souvenir').checked = mod.Souvenir != undefined)
             for (var key of 'Status,Explanation'.split(','))
-                (<any>ui.querySelector(`[name="${key}"]`)).value = (mod.Souvenir[key] || '');
+                ui.querySelector(`[name="${key}"]`).value = (mod.Souvenir[key] || '');
 
-        (<any>ui.querySelector(`[name="Ignore"]`)).value = mod.Ignore ? mod.Ignore.join('; ') : '';
+        ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
         UpdateEditUiElements();
     }
     function UpdateEditUiElements()
@@ -1222,9 +1219,9 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
             if (!attr)
                 continue;
             let elem = ui.querySelector(`[name="${attr}"]`);
-            var val = <string>(<any>elem).value;
+            var val = elem.value;
             let vals = rows[i].getAttribute('data-editable-if-values').split(',');
-            (<HTMLElement>rows[i]).style.display = vals.indexOf(val) === -1 ? 'none' : '';
+            rows[i].style.display = vals.indexOf(val) === -1 ? 'none' : '';
         }
         let tables = ui.querySelectorAll('table.fields');
         for (let i = 0; i < tables.length; i++)
@@ -1232,11 +1229,11 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
             let attr = tables[i].getAttribute('data-nested');
             if (!attr)
                 continue;
-            let elem = <HTMLInputElement>document.getElementById(`nested-${attr}`);
-            (<HTMLTableElement>tables[i]).style.display = elem.checked ? '' : 'none';
+            let elem = document.getElementById(`nested-${attr}`);
+            tables[i].style.display = elem.checked ? '' : 'none';
         }
     }
-    Array.from(document.getElementById('module-ui').querySelectorAll('input,textarea,select')).forEach(elem => { (<HTMLElement>elem).onchange = UpdateEditUiElements; });
+    Array.from(document.getElementById('module-ui').querySelectorAll('input,textarea,select')).forEach(elem => { elem.onchange = UpdateEditUiElements; });
     UpdateEditUiElements();
 
     document.getElementById('module-json-new').onclick = function()
@@ -1246,7 +1243,7 @@ function initializePage(modules: KtaneModuleInfo[], initIcons, initDocDirs, init
     };
     document.getElementById('generate-json').onclick = function()
     {
-        if ((<any>document.getElementById('generate-json')).form.Name.value === "")
+        if (document.getElementById('generate-json').form.Name.value === "")
         {
             alert("You do need to supply at least a name for the module or widget.");
             return false;

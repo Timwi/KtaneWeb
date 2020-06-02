@@ -139,11 +139,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Puzzles.css" />
-    <Content Include="Resources\Generated\Puzzles.js">
+    <Content Include="Resources\Puzzles.js">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
     <Content Include="Resources\KtaneWeb.css" />
-    <Content Include="Resources\Generated\KtaneWeb.js">
+    <Content Include="Resources\KtaneWeb.js">
       <Generator>ResXFileCodeGenerator</Generator>
     </Content>
   </ItemGroup>
@@ -156,21 +156,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="tsconfig.json" />
   </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="Resources\TypeDeclarations.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="Resources\KtaneWeb.ts" />
-    <TypeScriptCompile Include="Resources\Puzzles.ts" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>cd /d $(ProjectDir)
-call npm install
-call npx tsc</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
