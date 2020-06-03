@@ -203,8 +203,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
     lStorage.setItem('version', '2');
 
-    // Refers to a module if the “Find” box contains the exact Periodic Table symbol for a module
-    let filterCurrentlyIncludesSymbol = null;
+    // Refers to a module if the “Find” box contains the exact name or Periodic Table symbol for a module
+    let showAtTopOfResults = null;
 
     var selectedIndex = 0;
     function updateSearchHighlight()
@@ -251,9 +251,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         modules.sort(function(a, b)
         {
-            if (a === filterCurrentlyIncludesSymbol)
+            if (a === showAtTopOfResults)
                 return -1;
-            if (b === filterCurrentlyIncludesSymbol)
+            if (b === showAtTopOfResults)
                 return 1;
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare(a.SortKey, b.SortKey, false) : c;
@@ -675,7 +675,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
         let modCount = 0;
-        let includesSymbol = null;
+        let showAtTop = null;
         let searchBySymbol = document.getElementById('option-include-symbol').checked;
         let searchBySteamID = document.getElementById('option-include-steam-id').checked;
         modules.forEach(function(mod)
@@ -722,8 +722,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 modCount++;
             for (let fnc of mod.FncsShowHide)
                 fnc(sh);
-            if (mod.Symbol && searchRaw === mod.Symbol.toLowerCase())
-                includesSymbol = mod;
+            if (searchRaw === mod.Name.toLocaleLowerCase().replace(/\s/g, '') || (mod.Symbol && searchRaw === mod.Symbol.toLowerCase()))
+                showAtTop = mod;
         });
 
         $('#module-count').text(modCount);
@@ -731,9 +731,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if ($("input#search-field").is(':focus'))
             updateSearchHighlight();
 
-        if (includesSymbol !== filterCurrentlyIncludesSymbol)
+        if (showAtTop !== showAtTopOfResults)
         {
-            filterCurrentlyIncludesSymbol = includesSymbol;
+            showAtTopOfResults = showAtTop;
             setSort(sort, reverse);
         }
     }
