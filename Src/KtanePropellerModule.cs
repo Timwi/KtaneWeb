@@ -63,9 +63,6 @@ namespace KtaneWeb
                     new UrlMapping(handler: pdfOrFileSystem)
                 );
 
-                foreach (string directory in Directory.GetDirectories(Path.Combine(_config.BaseDir, "HTML")))
-                    resolver.Add(new UrlMapping(path: "/manual/" + Path.GetFileName(directory), handler: req => new FileSystemHandler(directory, new FileSystemOptions { MaxAge = null }).Handle(req)));
-
                 if (auth != null)
                     resolver.Add(new UrlMapping(path: "/auth", handler: req => auth.Handle(req, session.Username, user =>
                     {

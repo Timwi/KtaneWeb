@@ -879,9 +879,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         continue;
 
                     var code = languageCodes[trow[0]];
-                    if (code !== undefined) {
+                    if (code !== undefined)
                         trow[0] += ` (${code})`;
-                    }
 
                     let trowElem = el('div');
                     trowElem.innerHTML = `<div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link link-HTML'></div><div class='link link-PDF'></div>`;
@@ -1019,7 +1018,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     setLanguages(preferredLanguages);
 
-    $("input.language-toggle").click(function () { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
+    $("input.language-toggle").click(function() { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
     $("button.toggle-all-languages").click(function()
     {
         for (const lang of languages)
