@@ -18,17 +18,31 @@ namespace KtaneWeb
     {
         private HttpResponse pdfOrFileSystem(HttpRequest req)
         {
-            if (!req.Url.Path.StartsWith("/PDF/"))
+            if (!req.Url.Path.ToUpper().StartsWith("/PDF/"))
                 goto doFileSystem;
+
             var filename = req.Url.Path.Substring(5);
             if (filename.Length < 1 || filename.Contains('/'))
                 goto doFileSystem;
             filename = filename.UrlUnescape();
+
+            // The pdf file exists in the pre-generated PDFs folder and can be dealt with by FileSystemHandler
             if (File.Exists(Path.Combine(_config.BaseDir, "PDF", filename)))
                 goto doFileSystem;
-            var htmlFile = Path.Combine(_config.BaseDir, "HTML", Path.GetFileNameWithoutExtension(filename) + ".html");
-            if (!File.Exists(htmlFile))
+
+            // The line in RT.Servers.FileSystemHandler which accepts wildcards and incorrect filename capitilization.
+            string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
+
+            // The html file which will be used to generate this pdf doesn't exist
+            if (htmlFile == null)
                 goto doFileSystem;
+
+            // Check if the pdf is exactly correct and redirect if it isn't
+            string pdfUrl = "/PDF/" + Path.GetFileNameWithoutExtension(htmlFile) + ".pdf";
+            if (!Regex.IsMatch(pdfUrl, "^"+Regex.Escape("/PDF/"+filename).Replace("\\*",".*")+"$", RegexOptions.IgnoreCase))
+                goto doFileSystem;
+            if (pdfUrl != "/PDF/" + filename)
+                return HttpResponse.Redirect(req.Url.WithPath(pdfUrl));
 
             using (var md5 = MD5.Create())
             {
@@ -54,7 +68,7 @@ namespace KtaneWeb
                 return HttpResponse.File(tempFilepath, "application/pdf");
             }
 
-            doFileSystem:
+        doFileSystem:
             return new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req);
         }
 
