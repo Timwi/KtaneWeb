@@ -43,7 +43,7 @@ namespace KtaneWeb
                         const int w = 32;   // width of an icon in pixels
                         const int h = 32;   // height of an icon in pixels
 
-                        var iconFiles = new DirectoryInfo(_config.ModIconDir).EnumerateFiles("*.png", SearchOption.TopDirectoryOnly).OrderBy(file => file.Name != "blank.png").ToArray();
+                        var iconFiles = new DirectoryInfo(Path.Combine(_config.BaseDir, "Icons")).EnumerateFiles("*.png", SearchOption.TopDirectoryOnly).OrderBy(file => file.Name != "blank.png").ToArray();
                         var rows = (iconFiles.Length + cols - 1) / cols;
                         var coords = new Dictionary<string, (int x, int y)>();
 
@@ -76,7 +76,7 @@ namespace KtaneWeb
                             entries = new JsonList();
                         }
 
-                        var modules = new DirectoryInfo(_config.ModJsonDir)
+                        var modules = new DirectoryInfo(Path.Combine(_config.BaseDir, "JSON"))
                             .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
                             .ParallelSelect(4, file =>
                             {

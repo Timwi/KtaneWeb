@@ -6,6 +6,8 @@ using RT.PropellerApi;
 using RT.Serialization;
 using RT.Servers;
 using RT.Util;
+using RT.Util.Consoles;
+using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb
 {
@@ -83,6 +85,142 @@ namespace KtaneWeb
 
         public override void Init(LoggerBase log)
         {
+            if (string.IsNullOrWhiteSpace(Settings.ConfigFile))
+            {
+                var config = new KtaneWebConfig();
+                Console.WriteLine();
+                ConsoleUtil.WriteLine("It appears that you are running KtaneWeb for the first time.".Color(ConsoleColor.White));
+                tryAgain1:
+                ConsoleUtil.WriteLine(@"Please provide a location for the JSON settings file (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(@"C:\Path\KtaneWeb.settings.json"));
+                var path = Console.ReadLine();
+                try
+                {
+                    ClassifyJson.SerializeToFile(config, path);
+                }
+                catch (Exception e)
+                {
+                    ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {e.Message.Color(ConsoleColor.Red)} {$"({e.GetType().FullName})".Color(ConsoleColor.DarkRed)}", null);
+                    goto tryAgain1;
+                }
+
+                Console.WriteLine();
+                tryAgain2:
+                ConsoleUtil.WriteLine("Do you already have a local clone of the KtaneContent repository that you want the website to use?".Color(ConsoleColor.White));
+                Console.WriteLine("If yes, please type the full path to that repository. If no, just press Enter.");
+                var ktaneContent = Console.ReadLine();
+                var expectedSubfolders = "HTML,More,JSON,Icons".Split(',');
+                if (string.IsNullOrWhiteSpace(ktaneContent))
+                {
+                    ConsoleUtil.WriteLine(@"In that case we will create a new clone. I can do that automatically if you have git installed (if you don’t, please abort now).".Color(ConsoleColor.White));
+                    ConsoleUtil.WriteLine("This will take a long time as the repository is large.".Color(ConsoleColor.White));
+                    Console.WriteLine();
+                    tryAgain3:
+                    ConsoleUtil.WriteLine("Please choose a path where you would like all the data stored (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(@"C:\Path\KtaneContent"));
+                    var cloneFolder = Console.ReadLine();
+                    try
+                    {
+                        Directory.CreateDirectory(cloneFolder);
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {e.Message.Color(ConsoleColor.Red)} {$"({e.GetType().FullName})".Color(ConsoleColor.DarkRed)}", null);
+                        goto tryAgain3;
+                    }
+                    try
+                    {
+                        config.BaseDir = Path.Combine(cloneFolder, "Public");
+                        CommandRunner.Run("git", "clone", "https://github.com/Timwi/KtaneContent.git", config.BaseDir).Go();
+                        config.MergedPdfsDir = Path.Combine(cloneFolder, "MergedPdfs");
+                        Directory.CreateDirectory(config.MergedPdfsDir);
+                        config.LogfilesDir = Path.Combine(cloneFolder, "Logfiles");
+                        Directory.CreateDirectory(config.LogfilesDir);
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {e.Message.Color(ConsoleColor.Red)} {$"({e.GetType().FullName})".Color(ConsoleColor.DarkRed)}", null);
+                        goto tryAgain2;
+                    }
+                }
+                else if (expectedSubfolders.Any(s => !Directory.Exists(Path.Combine(ktaneContent, s))))
+                {
+                    ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {"That folder does not appear to contain KtaneContent.".Color(ConsoleColor.Red)}", null);
+                    ConsoleUtil.WriteLine("(We’re looking for a folder that contains subfolders named: {0/DarkMagenta})".Color(ConsoleColor.Magenta).Fmt(expectedSubfolders.JoinString(", ")));
+                    goto tryAgain2;
+                }
+                else
+                {
+                    var p = ktaneContent;
+                    while (p.EndsWith("\""))
+                        p = Path.GetDirectoryName(p);
+                    config.BaseDir = p;
+                    p = Path.GetDirectoryName(p);
+
+                    Console.WriteLine();
+                    tryAgain4:
+                    ConsoleUtil.WriteLine("Please choose a path where you would like KtaneWeb to store logfiles uploaded through the Logfile Analyzer (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "Logfiles")));
+                    config.LogfilesDir = Console.ReadLine();
+                    try
+                    {
+                        Directory.CreateDirectory(config.LogfilesDir);
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {e.Message.Color(ConsoleColor.Red)} {$"({e.GetType().FullName})".Color(ConsoleColor.DarkRed)}", null);
+                        goto tryAgain4;
+                    }
+
+                    Console.WriteLine();
+                    tryAgain5:
+                    ConsoleUtil.WriteLine("Please choose a path where you would like KtaneWeb to store merged PDFs (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "MergedPdfs")));
+                    config.MergedPdfsDir = Console.ReadLine();
+                    try
+                    {
+                        Directory.CreateDirectory(config.MergedPdfsDir);
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {e.Message.Color(ConsoleColor.Red)} {$"({e.GetType().FullName})".Color(ConsoleColor.DarkRed)}", null);
+                        goto tryAgain5;
+                    }
+
+                    var appPath = PathUtil.AppPathCombine(@"..\..");
+                    config.JavaScriptFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.js");
+                    config.CssFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.css");
+                    if (!File.Exists(config.JavaScriptFile) || !File.Exists(config.CssFile))
+                    {
+                        Console.WriteLine();
+                        tryAgain6:
+                        ConsoleUtil.WriteLine("Finally, please let me know where you placed the KtaneWeb source code (what you’re running right now):".Color(ConsoleColor.Gray));
+                        appPath = Console.ReadLine();
+                        config.JavaScriptFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.js");
+                        config.CssFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.css");
+                        if (!File.Exists(config.JavaScriptFile) || !File.Exists(config.CssFile))
+                        {
+                            ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {"That does not look like the KtaneWeb source code folder.".Color(ConsoleColor.Red)}", null);
+                            goto tryAgain6;
+                        }
+                    }
+                }
+
+                try
+                {
+                    ClassifyJson.SerializeToFile(config, path);
+                    Settings.ConfigFile = path;
+                    SaveSettings();
+                }
+                catch (Exception e)
+                {
+                    ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {e.Message.Color(ConsoleColor.Red)} {$"({e.GetType().FullName})".Color(ConsoleColor.DarkRed)}", null);
+                    goto tryAgain1;
+                }
+
+                Console.WriteLine();
+                ConsoleUtil.WriteLine("That should be all set up for you now!".Color(ConsoleColor.Green));
+                ConsoleUtil.WriteLine("Feel free to browse the settings file we just created if you’re curious.".Color(ConsoleColor.DarkGreen));
+                ConsoleUtil.WriteLine(@"For automatic PDF generation, we are assuming that Google Chrome is at its default location; if not, please change it manually in the JSON file.".Color(ConsoleColor.DarkGreen));
+                Console.WriteLine();
+                Console.WriteLine();
+            }
             var original = File.ReadAllText(Settings.ConfigFile);
             _config = ClassifyJson.Deserialize<KtaneWebConfig>(JsonValue.Parse(original));
             var rewrite = serializeConfig();

@@ -23,8 +23,6 @@ namespace KtaneWeb
         public string PdfDir = "PDF";
         public string[] OriginalDocumentIcons = new[] { "HTML/img/html_manual.png", "HTML/img/pdf_manual.png" };
         public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
-        public string ModIconDir = @"C:\Sites\KTANE\Public\Icons";
-        public string ModJsonDir = @"C:\Sites\KTANE\Public\JSON";
         public string ChromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
         public string PdfTempPath = null;
 
