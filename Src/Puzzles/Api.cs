@@ -42,11 +42,10 @@ namespace KtaneWeb.Puzzles
                 "The target audience is players who are familiar with a great majority of modules. If you have not played modded KTANE much, you can still solve " +
                 "the puzzles since technically ", new A { href = "https://ktane.timwi.de" }._("all the required information is available"), ", but brace yourself for a lot of research.");
 
-            if (canEdit())
+            if (canEdit() || _puzzles.PuzzleGroups.Any(gr => canEdit(gr)))
                 yield return new MENU { class_ = "controls req-priv" }._(
-                    new LI(new BUTTON { class_ = "operable" }.Data("fn", nameof(AddGroup))._("Add puzzle group")),
-                    new LI(new BUTTON { id = "show-pristine" }._("Show pristine"))
-                );
+                    !canEdit() ? null : new LI(new BUTTON { class_ = "operable" }.Data("fn", nameof(AddGroup))._("Add puzzle group")),
+                    new LI(new BUTTON { id = "show-pristine" }._("Show pristine")));
 
             yield return _puzzles.PuzzleGroups.Where(gr => gr.IsPublished || canView(gr)).OrderByDescending(gr => gr.Ordering).Select(group => Ut.NewArray<object>(
                 File.Exists(Path.Combine(_puzzleDir, group.Folder, "Logo.png"))
