@@ -1,78 +1,53 @@
-# How to setup KtaneWeb
+# How to set up KtaneWeb locally
 
-## Propeller config file (`KTANE-Propeller-standalone.json`)
+## 1. Clone the KtaneContent repository
 
-This file is generated in the build output directory with the executable. The executable will probably crash as it can't read the `KtaneWeb` config file which is defined in this file.
+This repository contains all the HTML manuals and many other files. To clone KtaneContent on the command line, run the following command but replace the path to whatever actual path you would like to use:
 
-There are a few settings which need to be setup
-
-Add the http endpoint
-
-```json
-{
-  "endpoints": {
-    "HTTP": {
-      "BindAddress": null,
-      "Port": 8990,
-      "Secure": false
-    }
-  }
-}
+```bash
+git clone https://github.com/Timwi/KtaneContent.git C:\\Path\\KtaneContent
 ```
 
-Add the KtaneWeb config file's path
+This will generate a folder at the specified location containing all the content.
+
+Next, we will need to deal with two configuration files before the site can run. The first one is for the web server system (Propeller) and the second one is for KtaneWeb itself.
+
+## 2. Propeller config file (`KTANE-Propeller-standalone.json`)
+
+The first time you run KtaneWeb, it will crash with an exception but it will generate this file in the build output directory with the executable. (Note this means there will be a separate such file for DEBUG and RELEASE mode.) Open this file in a text editor. In the `"Settings"` option, add a reference to the KtaneWeb config file that we will be dealing with in the following step. Choose any path where you would like to put the file. The following is just an example.
 
 ```json
 {
   "Settings": {
-    ":value": { "ConfigFile": "%site%\\KtaneWeb.config.json" }
+    ":value": { "ConfigFile": "C:\\SomePath\\KtaneWeb.config.json" }
   }
 }
 ```
 
-Change the line starting with `"Hooks":` to `"Hooks": [{ "Protocols":" All" }],` if you want to be able to load the page on any address other than localhost.
-
 ---
 
-## KtaneWeb config file (`KtaneWeb.config.json`)
+## 3. KtaneWeb config file (`KtaneWeb.config.json`)
 
-This path is the same as the settings value defined above and will auto-generate most required information. The path `%site%` can be any path which contains the KtaneContent repo as explained below. The path `%repo%` is the path for the KtaneWeb repo on your machine.
+Create this JSON file at the path you defined above in the previous JSON file. Fill that file as follows, but make the following replacements:
 
-The `CssFile` and `JavascriptFile` paths only need to be defined if it is run in `DEBUG` mode and otherwise can be left as `null`.
+* Replace `%KtaneContent%` with the path where you cloned the KtaneContent KtaneWeb in Step 1 above.
+* Replace `%KtaneWeb%` with the path where KtaneWeb’s source is on your machine.
+* Also decide on the other paths marked below with `!DECIDE!`. `LogfilesDir` is where logfiles uploaded through the LFA go. `MergedPdfsDir` is where merged PDFs go. `PdfTempPath` is optional; if left at `null` it will use your Windows default Temp folder.
 
 ```json
 {
-  "BaseDir": "%site%\\Public",
+  "BaseDir": "%KtaneContent%",
   "ChromePath": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-  "CssFile": "%repo%\\Src\\Resources\\KtaneWeb.css",
-  "DocumentDirs": ["HTML", "PDF"],
-  "ExtraDocumentIcons": [
-    "HTML/img/html_manual_embellished.png",
-    "HTML/img/pdf_manual_embellished.png"
-  ],
-  "JavaScriptFile": "%repo%\\Src\\Resources\\KtaneWeb.js",
-  "LogfilesDir": "%site%\\Logfiles",
-  "MergedPdfsDir": "%site%\\MergedPdfs",
-  "ModIconDir": "%site%\\Public\\Icons",
-  "ModJsonDir": "%site%\\Public\\JSON",
-  "OriginalDocumentIcons": [
-    "HTML/img/html_manual.png",
-    "HTML/img/pdf_manual.png"
-  ],
-  "PdfDir": "PDF",
-  "PdfTempPath": null,
-  "Puzzles": {
-    "EditAccess": ["Timwi"],
-    "PuzzleGroups": []
-  },
-  "Sessions": {},
-  "UsersFile": null
+  "CssFile": "%KtaneWeb%\\Src\\Resources\\KtaneWeb.css",
+  "JavaScriptFile": "%KtaneWeb%\\Src\\Resources\\KtaneWeb.js",
+  "LogfilesDir": "!DECIDE!",
+  "MergedPdfsDir": "!DECIDE!",
+  "ModIconDir": "%KtaneContent%\\Icons",
+  "ModJsonDir": "%KtaneContent%\\JSON",
+  "PdfTempPath": null
 }
 ```
 
-## KtaneContent public directory
+(The `CssFile` and `JavascriptFile` paths are only used in `DEBUG` mode to allow you to edit those files while the software is running. In `RELEASE` mode, those values are ignored and the CSS/JS files are baked into the EXE.)
 
-The `BaseDir` path defines where the `KtaneContent` repo lives. To clone the repo in the correct place run the following command making sure to replace `%clonepath%` with the path defined in `BaseDir`.
-```bash
-git clone https://github.com/Timwi/KtaneContent.git %clonepath%
-```
+After you run KtaneWeb, the above file will expand to contain all of the settings/options available. If you’re curious, feel free to take a look through it.
