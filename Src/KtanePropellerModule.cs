@@ -181,7 +181,7 @@ namespace KtaneWeb
                     ConsoleUtil.WriteLine("Please choose a path where you would like KtaneWeb to store merged PDFs, or just press Enter to use the default ({0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(mergedPdfs));
 
                     config.MergedPdfsDir = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(config.LogfilesDir))
+                    if (string.IsNullOrWhiteSpace(config.MergedPdfsDir))
                     {
                         ConsoleUtil.WriteLine("Using default: {0/DarkCyan}".Color(ConsoleColor.Gray).Fmt(mergedPdfs));
                         config.MergedPdfsDir = mergedPdfs;
