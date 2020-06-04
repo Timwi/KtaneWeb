@@ -27,6 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RT.Serialization.Xml", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RT.Util", "..\..\RT.Util\RT.Util\RT.Util.csproj", "{F0DE8EDC-8466-4C2A-A829-04D185E4E7FC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RT.PostBuild", "..\..\RT.Util\RT.PostBuild\RT.PostBuild.csproj", "{C4EB44A0-F0F7-4E1D-82D7-E8B9E447569C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RT.Serialization.Binary", "..\..\RT.Util\RT.Serialization.Binary\RT.Serialization.Binary.csproj", "{1508C292-99D0-4BFD-96DF-7AB1847508A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,14 @@ Global
 		{F0DE8EDC-8466-4C2A-A829-04D185E4E7FC}.Debug|Any CPU.Build.0 = DebugUnsafe|Any CPU
 		{F0DE8EDC-8466-4C2A-A829-04D185E4E7FC}.Release|Any CPU.ActiveCfg = ReleaseUnsafe|Any CPU
 		{F0DE8EDC-8466-4C2A-A829-04D185E4E7FC}.Release|Any CPU.Build.0 = ReleaseUnsafe|Any CPU
+		{C4EB44A0-F0F7-4E1D-82D7-E8B9E447569C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4EB44A0-F0F7-4E1D-82D7-E8B9E447569C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4EB44A0-F0F7-4E1D-82D7-E8B9E447569C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4EB44A0-F0F7-4E1D-82D7-E8B9E447569C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1508C292-99D0-4BFD-96DF-7AB1847508A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1508C292-99D0-4BFD-96DF-7AB1847508A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1508C292-99D0-4BFD-96DF-7AB1847508A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1508C292-99D0-4BFD-96DF-7AB1847508A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
