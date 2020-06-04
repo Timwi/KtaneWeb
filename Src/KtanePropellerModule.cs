@@ -38,7 +38,7 @@ namespace KtaneWeb
                     new UrlMapping(path: "/json", handler: req =>
                     {
                         if (req.Url.Path != "/raw")
-                            return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON/"));
+                            return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON/"+req.Url.Path));
                         ensureModuleInfoCache();
                         return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                     }),
@@ -157,8 +157,13 @@ namespace KtaneWeb
 
                     Console.WriteLine();
                     tryAgain4:
-                    ConsoleUtil.WriteLine("Please choose a path where you would like KtaneWeb to store logfiles uploaded through the Logfile Analyzer (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "Logfiles")));
+                    ConsoleUtil.WriteLine("Please choose a path where you would like KtaneWeb to store logfiles uploaded through the Logfile Analyzer or just press enter to use the example (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "Logfiles")));
                     config.LogfilesDir = Console.ReadLine();
+                    if(string.IsNullOrWhiteSpace(config.LogfilesDir))
+                    {
+                        ConsoleUtil.WriteLine("Using the generated path: {0/DarkCyan}".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "Logfiles")));
+                        config.LogfilesDir = Path.Combine(p, "Logfiles");
+                    }
                     try
                     {
                         Directory.CreateDirectory(config.LogfilesDir);
@@ -171,8 +176,13 @@ namespace KtaneWeb
 
                     Console.WriteLine();
                     tryAgain5:
-                    ConsoleUtil.WriteLine("Please choose a path where you would like KtaneWeb to store merged PDFs (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "MergedPdfs")));
+                    ConsoleUtil.WriteLine("Please choose a path where you would like KtaneWeb to store merged PDFs or just press enter to use the example (for example: {0/DarkCyan}):".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "MergedPdfs")));
                     config.MergedPdfsDir = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(config.LogfilesDir))
+                    {
+                        ConsoleUtil.WriteLine("Using the generated path: {0/DarkCyan}".Color(ConsoleColor.Gray).Fmt(Path.Combine(p, "MergedPdfs")));
+                        config.LogfilesDir = Path.Combine(p, "MergedPdfs");
+                    }
                     try
                     {
                         Directory.CreateDirectory(config.MergedPdfsDir);
