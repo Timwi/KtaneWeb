@@ -18,7 +18,7 @@ namespace KtaneWeb
     {
         private HttpResponse pdfOrFileSystem(HttpRequest req)
         {
-            if (!req.Url.Path.ToUpper().StartsWith("/PDF/"))
+            if (!req.Url.Path.StartsWith("/PDF/", StringComparison.InvariantCultureIgnoreCase))
                 goto doFileSystem;
 
             var filename = req.Url.Path.Substring(5);
@@ -26,24 +26,23 @@ namespace KtaneWeb
                 goto doFileSystem;
             filename = filename.UrlUnescape();
 
-            // The pdf file exists in the pre-generated PDFs folder and can be dealt with by FileSystemHandler
+            // If the PDF file already exists in the PDF folder, use that
             if (File.Exists(Path.Combine(_config.BaseDir, "PDF", filename)))
                 goto doFileSystem;
 
-            // The line in RT.Servers.FileSystemHandler which accepts wildcards and incorrect filename capitilization.
+            // See if an equivalent HTML file exists, even with a wildcard match or incorrect filename capitilization
             string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
-
-            // The html file which will be used to generate this pdf doesn't exist
             if (htmlFile == null)
                 goto doFileSystem;
 
-            // Check if the pdf is exactly correct and redirect if it isn't
-            string pdfUrl = "/PDF/" + Path.GetFileNameWithoutExtension(htmlFile) + ".pdf";
-            if (!Regex.IsMatch(pdfUrl, "^"+Regex.Escape("/PDF/"+filename).Replace("\\*",".*")+"$", RegexOptions.IgnoreCase))
+            // Check if the PDF filename is exactly correct and redirect if it isn’t
+            string pdfUrl = $"/PDF/{Path.GetFileNameWithoutExtension(htmlFile)}.pdf";
+            if (!Regex.IsMatch(pdfUrl, $"^{Regex.Escape("/PDF/" + filename).Replace("\\*", ".*")}$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 goto doFileSystem;
-            if (pdfUrl != "/PDF/" + filename)
+            if (pdfUrl != req.Url.Path.Substring(0, 5) + filename)
                 return HttpResponse.Redirect(req.Url.WithPath(pdfUrl));
 
+            // Turns out an HTML file corresponding to the requested PDF file exists, so we will try to generate the PDF automatically by invoking Google Chrome
             using (var md5 = MD5.Create())
             {
                 var tempFilename = $"{md5.ComputeHash(File.ReadAllBytes(htmlFile)).ToHex()}.pdf";
@@ -68,7 +67,7 @@ namespace KtaneWeb
                 return HttpResponse.File(tempFilepath, "application/pdf");
             }
 
-        doFileSystem:
+            doFileSystem:
             return new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req);
         }
 
