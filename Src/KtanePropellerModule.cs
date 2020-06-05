@@ -85,6 +85,7 @@ namespace KtaneWeb
 
         public override void Init(LoggerBase log)
         {
+#if DEBUG
             if (string.IsNullOrWhiteSpace(Settings.ConfigFile))
             {
                 var config = new KtaneWebConfig();
@@ -234,6 +235,7 @@ namespace KtaneWeb
                 Console.WriteLine();
                 Console.WriteLine();
             }
+#endif
             var original = File.ReadAllText(Settings.ConfigFile);
             _config = ClassifyJson.Deserialize<KtaneWebConfig>(JsonValue.Parse(original));
             var rewrite = serializeConfig();
