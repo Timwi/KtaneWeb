@@ -722,7 +722,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 modCount++;
             for (let fnc of mod.FncsShowHide)
                 fnc(sh);
-            if (searchRaw === mod.Name.toLocaleLowerCase().replace(/\s/g, '') || (mod.Symbol && searchRaw === mod.Symbol.toLowerCase()))
+            if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, '') || (mod.Symbol && searchRaw === mod.Symbol.toLowerCase()))
                 showAtTop = mod;
         });
 
