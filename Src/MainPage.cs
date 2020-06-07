@@ -311,7 +311,10 @@ namespace KtaneWeb
                                     new LABEL { for_ = "option-include-steam-id" }._("Search by Steam ID")),
                                 new DIV(
                                     new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-symbol" }, " ",
-                                    new LABEL { for_ = "option-include-symbol" }._("Search by Symbol"))),
+                                    new LABEL { for_ = "option-include-symbol" }._("Search by Symbol")),
+                                new DIV(
+                                    new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-module-id" }, " ",
+                                    new LABEL { for_ = "option-include-module-id" }._("Search by Module ID"))),
                             new DIV { class_ = "option-group" }._(
                                 new H4("Site theme"),
                                 new DIV(

@@ -281,6 +281,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     document.getElementById('option-include-symbol').checked = (lStorage.getItem('option-include-symbol') || '1') === '1';
     document.getElementById('option-include-steam-id').checked = (lStorage.getItem('option-include-steam-id') || '1') === '1';
+    document.getElementById('option-include-module-id').checked = (lStorage.getItem('option-include-module-id') || '1') === '1';
     function setSearchOptions(set)
     {
         searchOptions = (set instanceof Array) ? set.filter(function(x) { return validSearchOptions.indexOf(x) !== -1; }) : defaultSearchOptions;
@@ -289,6 +290,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         lStorage.setItem('searchOptions', JSON.stringify(searchOptions));
         lStorage.setItem('option-include-symbol', document.getElementById('option-include-symbol').checked ? '1' : '0');
         lStorage.setItem('option-include-steam-id', document.getElementById('option-include-steam-id').checked ? '1' : '0');
+        lStorage.setItem('option-include-module-id', document.getElementById('option-include-module-id').checked ? '1' : '0');
     }
 
     function setTheme(theme)
@@ -678,6 +680,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let showAtTop = null;
         let searchBySymbol = document.getElementById('option-include-symbol').checked;
         let searchBySteamID = document.getElementById('option-include-steam-id').checked;
+        let searchByModuleID = document.getElementById('option-include-module-id').checked;
         modules.forEach(function(mod)
         {
             let filteredIn = true;
@@ -706,6 +709,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
             let searchWhat = searchBySteamID ? (mod.SteamID || '') : '';
+            if (searchByModuleID)
+                searchWhat += ' ' + mod.ModuleID.toLowerCase();
             if (searchOptions.indexOf('names') !== -1)
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
