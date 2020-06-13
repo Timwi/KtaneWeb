@@ -86,20 +86,6 @@ function el(tagName, className, ...args)
 
 function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
 {
-    // Find all the languages
-    function getLanguageFromSheet(sheet)
-    {
-        const matches = sheet.match(/^ translated \((?:(.+) — .+|(.+))?\)/);
-        return matches !== null ? (matches[2] || matches[1]) : "English";
-    }
-
-    const languages = modules
-        .map(module => module.Sheets.map(getLanguageFromSheet))
-        .reduce((a, b) => a.concat(b))
-        .filter((value, index, array) => array.indexOf(value) === index);
-
-    languages.sort();
-
     const languageCodes = {
         "Dansk": "da",
         "Deutsch": "de",
@@ -387,10 +373,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
                             td.appendChild(lnkA);
                             if (sel.PropName === 'manual')
-                            {
-                                mod.FncsSetManualIcon.push(url => { iconImg.src = url; });
                                 mod.FncsSetManualLink.push(url => { lnkA.href = url; });
-                            }
                         }
                     }
 
@@ -703,8 +686,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 }
             }
 
-            if (mod.Sheets.length > 0)
-                filteredIn = filteredIn && mod.Sheets.map(getLanguageFromSheet).some(sheet => preferredLanguages[sheet] !== false);
+            if (mod.Manuals.length > 0)
+                filteredIn = filteredIn && mod.Manuals.some(manual => preferredLanguages[manual.Language] !== false);
 
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
@@ -764,8 +747,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     for (let i = 0; i < mod.Manuals.length; i++)
                         if (preferredManuals[mod.Name] === mod.Manuals[i].Name)
                             manual = mod.Manuals[i];
-                for (let fnc of mod.FncsSetManualIcon)
-                    fnc(manual === null ? null : manual.Icon);
                 for (let fnc of mod.FncsSetManualLink)
                     fnc(manual === null ? null : manual.Url + seedHash);
             }
@@ -917,6 +898,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         };
     }
 
+    let languages = [];
+    function getLanguageFromSheet(sheet)
+    {
+        const matches = sheet.match(/^ translated \((?:(.+) — .+|(.+))?\)/);
+        return matches !== null ? (matches[2] || matches[1]) : "English";
+    }
+
     // ** PROCESS ALL THE MODULES ** //
     for (var i = 0; i < modules.length; i++)
     {
@@ -926,9 +914,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         // (bool sh) => shows (sh) or hides (!sh) the module
         mod.FncsShowHide = [sh => { mod.IsVisible = sh; }];
-
-        // (string url) => changes the manual icon to reflect HTML/PDF and original/embellished preference
-        mod.FncsSetManualIcon = [];
 
         // (string url) => changes what the manual icon links to (preferred manual)
         mod.FncsSetManualLink = [];
@@ -945,8 +930,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         mod.Manuals = mod.Sheets.map(str => str.split('|')).map(arr => ({
             Name: `${mod.Name}${arr[0]} (${arr[1].toUpperCase()})`,
             Url: `${initDocDirs[(parseInt(arr[2]) / 2) | 0]}/${encodeURIComponent(mod.FileName || mod.Name)}${encodeURIComponent(arr[0])}.${arr[1]}`,
-            Icon: initIcons[arr[2]]
+            Icon: initIcons[arr[2]],
+            Language: getLanguageFromSheet(arr[0])
         }));
+        for (let manualIx = 0; manualIx < mod.Manuals.length; manualIx++)
+            if (!languages.includes(mod.Manuals[manualIx].Language))
+                languages.push(mod.Manuals[manualIx].Language);
 
         // Default values
         if (!mod.RuleSeedSupport)
@@ -966,6 +955,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if (mod.TwitchPlays && !mod.TwitchPlays.AutoPin)
             mod.TwitchPlays.AutoPin = false;
     }
+    languages.sort();
 
     // Set filters from saved settings
     for (var i = 0; i < initFilters.length; i++)

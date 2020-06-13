@@ -56,7 +56,7 @@ namespace KtaneWeb
             {
                 HumanReadable = "Manual",
                 Accel = 'u',
-                Icon = "HTML/img/html_manual.png",
+                Icon = "HTML/img/manual.png",
                 PropName = "manual",
                 UrlFunction = @"mod=>null",
                 ShowIconFunction = @"(_,s)=>s.length>0"
