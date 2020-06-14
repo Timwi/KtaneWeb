@@ -1013,8 +1013,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         );
     }
 
-    setLanguages(preferredLanguages);
-
     $("input.language-toggle").click(function() { preferredLanguages[$(this).data("lang")] = this.checked; setLanguages(preferredLanguages); });
     $("button.toggle-all-languages").click(function()
     {
@@ -1025,6 +1023,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     updateRuleseed();
     setView(view);
+    setLanguages(preferredLanguages);
     setLinksAndPreferredManuals();
     setSort(sort, reverse);
     setTheme(theme);
