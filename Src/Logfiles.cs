@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using RT.Json;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -45,7 +46,21 @@ namespace KtaneWeb
             var keywords = req.Url.QueryValues("find").ToArray();
             if (keywords.Length < 1)
                 return HttpResponse.PlainText("No search keywords specified.");
-            var regexes = keywords.Select(kw => new Regex($@"\[BombGenerator\] Selected {Regex.Escape(kw)} \(.* \(\w+Component\)\)", RegexOptions.Compiled)).ToArray();
+            var keywordsJson = keywords.Select(k => $@"{k.JsEscape()}:").ToArray();
+
+            static bool containsModule(string[] logfileLines, string moduleIdJson)
+            {
+                for (var i = 0; i < logfileLines.Length; i++)
+                {
+                    const string str = @"[Tweaks] LFABombInfo ";
+                    if (logfileLines[i].StartsWith(str) &&
+                        int.TryParse(logfileLines[i].Substring(str.Length), out var num) &&
+                        logfileLines.Length >= i + 1 + num &&
+                        logfileLines.Subarray(i + 1, num).JoinString().Contains(moduleIdJson))
+                        return true;
+                }
+                return false;
+            }
 
             lock (this)
             {
@@ -53,7 +68,7 @@ namespace KtaneWeb
                     .EnumerateFiles("*.txt", SearchOption.TopDirectoryOnly)
                     .OrderByDescending(fi => fi.LastWriteTimeUtc)
                     .Take(1000)
-                    .Where(fi => File.ReadAllText(fi.FullName).Apply(text => regexes.All(re => re.IsMatch(text))))
+                    .Where(fi => keywordsJson.All(jsonStr => containsModule(File.ReadAllLines(fi.FullName), jsonStr)))
                     .Take(5)
                     .ToArray();
 
