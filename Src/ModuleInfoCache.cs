@@ -99,7 +99,7 @@ namespace KtaneWeb
                                     var entry = entries.FirstOrDefault(entry =>
                                     {
                                         string entryName = Regex.Replace(entry["gsx$modulename"]["$t"].GetString(), @" \((Solve|Time)\)", "");
-                                        return normalize(entryName) == normalize(mod.Name);
+                                        return normalize(entryName) == normalize(mod.DisplayName ?? mod.Name);
                                     });
 
                                     if (entry != null)

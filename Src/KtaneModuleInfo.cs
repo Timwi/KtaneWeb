@@ -19,6 +19,7 @@ namespace KtaneWeb
 
         [EditableField("Name", "The display name of the module or widget.")]
         public string Name;
+        public string DisplayName;
         [EditableField("Description", "A concise description of what sets this module or widget apart from others. Include tags at the end.")]
         public string Description;
         [EditableField("Module ID", "The ID that mission makers need for this module. This is the same as the ModuleType property on the KMBombModule component.")]
