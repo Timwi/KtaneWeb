@@ -546,6 +546,10 @@ div.popup {
                 transform: translateY(-50%);
             }
 
+        div.popup div.manual-select div.last-updated {
+            font-size: smaller;
+        }
+
     div.popup h3, div.popup h4 {
         border-bottom: 1px solid #ccc;
     }
