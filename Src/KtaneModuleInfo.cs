@@ -19,6 +19,7 @@ namespace KtaneWeb
 
         [EditableField("Name", "The display name of the module or widget.")]
         public string Name;
+        [ClassifyIgnoreIfDefault]
         public string DisplayName;
         [EditableField("Description", "A concise description of what sets this module or widget apart from others. Include tags at the end.")]
         public string Description;
