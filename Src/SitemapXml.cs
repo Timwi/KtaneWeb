@@ -13,11 +13,10 @@ namespace KtaneWeb
     {
         private HttpResponse sitemapXml(HttpRequest req)
         {
-            ensureModuleInfoCache();
             XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
-            string d(DateTime dt) => dt.ToString("s", CultureInfo.InvariantCulture) + "Z";
+            static string d(DateTime dt) => dt.ToString("s", CultureInfo.InvariantCulture) + "Z";
 
             return HttpResponse.Create(contentType: "application/xml; charset=utf-8", content:
                 new XDocument(
@@ -27,7 +26,7 @@ namespace KtaneWeb
                         // Main page
                         new XElement(ns + "url",
                             new XElement(ns + "loc", req.Url.WithPathParent().WithPathOnly($"/").ToFull()),
-                            new XElement(ns + "lastmod", d(_moduleInfoCache.LastModifiedUtc)),
+                            new XElement(ns + "lastmod", d(getModuleInfoCache().LastModifiedUtc)),
                             new XElement(ns + "priority", "1")),
 
                         // HTML and PDF folders

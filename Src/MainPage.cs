@@ -411,11 +411,7 @@ namespace KtaneWeb
                                 new DIV { class_ = "submit" }._(new BUTTON { id = "generate-json", type = btype.submit, accesskey = "j" }._("Generate JSON".Accel('J'))));
                         }))),
 
-                        new Func<object>(() =>
-                        {
-                            ensureModuleInfoCache();
-                            return new SCRIPTLiteral(_moduleInfoCache.ModuleInfoJs);
-                        })))));
+                        new Func<object>(() => new SCRIPTLiteral(getModuleInfoCache().ModuleInfoJs))))));
             resp.UseGzip = UseGzipOption.DontUseGzip;
             return resp;
         }

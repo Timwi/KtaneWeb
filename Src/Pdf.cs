@@ -73,8 +73,6 @@ namespace KtaneWeb
 
         private HttpResponse mergePdfs(HttpRequest req)
         {
-            ensureModuleInfoCache();
-
             string lastExaminedPdfFile = "<none>";
             try
             {
@@ -90,7 +88,7 @@ namespace KtaneWeb
                 var profileVetoList = (filterEnabledByProfile == filterVetoedByProfile) ? null : json["profileVetoList"]?.GetList().Select(j => j.GetString()).ToArray();
 
                 // Filter
-                var matchingModules = _moduleInfoCache.Modules.Where(m =>
+                var matchingModules = getModuleInfoCache().Modules.Where(m =>
                 {
                     if (profileVetoList != null && !(profileVetoList.Contains(m.ModuleID) ? filterVetoedByProfile : filterEnabledByProfile))
                         return false;

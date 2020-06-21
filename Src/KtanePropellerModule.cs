@@ -39,17 +39,16 @@ namespace KtaneWeb
                     {
                         if (req.Url.Path != "/raw")
                             return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON/" + req.Url.Path));
-                        ensureModuleInfoCache();
-                        return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
+                        return HttpResponse.Json(getModuleInfoCache().ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                     }),
                     new UrlMapping(path: "/pull", handler: pull),
-                    new UrlMapping(path: "/ManualLastUpdated",handler: ManualLastUpdated),
+                    new UrlMapping(path: "/ManualLastUpdated", handler: ManualLastUpdated),
                     new UrlMapping(path: "/proxy", handler: proxy),
                     new UrlMapping(path: "/merge-pdf", handler: mergePdfs),
                     new UrlMapping(path: "/upload-log", handler: uploadLogfile),
                     new UrlMapping(path: "/find-log", handler: findLogfile),
                     new UrlMapping(path: "/generate-json", handler: generateJson),
-                    new UrlMapping(path: "/iconsprite", handler: iconSpritePng),
+                    new UrlMapping(path: "/iconsprite", handler: req => HttpResponse.Create(getModuleInfoCache().IconSpritePng, "image/png")),
                     new UrlMapping(path: "/sitemap", specificPath: true, handler: sitemapXml),
 
                     new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using RT.Servers;
@@ -12,23 +11,34 @@ namespace KtaneWeb
     {
         private HttpResponse ManualLastUpdated(HttpRequest req)
         {
-            var output = new StringBuilder();
+            var moduleInfoCache = getModuleInfoCache();
 
-            var filename = req.Url.Path.UrlUnescape();
-
-            string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
-            if (htmlFile == null) return HttpResponse.PlainText("Manual doesn't exist", HttpStatusCode._404_NotFound);
-            string relativeFilename = Path.GetFileName(htmlFile);
-            if (filename != "/" + relativeFilename) return HttpResponse.Redirect(req.Url.WithPath("/" + relativeFilename));
-            var cmd = new CommandRunner
+            lock (moduleInfoCache.ManualsLastModified)
             {
-                Command = "git log -n 1 --format=%cd \"HTML/" + relativeFilename + "\"",
-                WorkingDirectory = _config.BaseDir
-            };
-            cmd.StdoutText += str => output.Append(str);
-            cmd.StderrText += str => output.Append(str);
-            cmd.StartAndWait();
-            return HttpResponse.PlainText(output.ToString());
+                var filename = req.Url.Path.UrlUnescape();
+                if (!moduleInfoCache.ManualsLastModified.TryGetValue(filename, out var result))
+                {
+                    string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
+                    if (htmlFile == null)
+                        return HttpResponse.PlainText("Manual doesn’t exist.", HttpStatusCode._404_NotFound);
+
+                    string relativeFilename = Path.GetFileName(htmlFile);
+                    if (filename != "/" + relativeFilename)
+                        return HttpResponse.Redirect(req.Url.WithPath("/" + relativeFilename));
+
+                    var output = new StringBuilder();
+                    var cmd = new CommandRunner
+                    {
+                        Command = $@"git log -n 1 --format=%cd ""HTML/{relativeFilename}""",
+                        WorkingDirectory = _config.BaseDir
+                    };
+                    cmd.StdoutText += str => output.Append(str);
+                    cmd.StderrText += str => output.Append(str);
+                    cmd.StartAndWait();
+                    result = moduleInfoCache.ManualsLastModified[filename] = output.ToString();
+                }
+                return HttpResponse.PlainText(result);
+            }
         }
     }
 }
