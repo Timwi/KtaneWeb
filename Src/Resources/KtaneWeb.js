@@ -823,7 +823,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if ($('#display-rule-seed').prop('checked') && 'RuleSeedInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.RuleSeedInfo));
             }
-            menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.'));
+            var lastupdatedEnabled = false
+            try { lastupdatedEnabled = (JSON.parse(lStorage.getItem('display')) || []).includes('last-updated') } catch (exc) {}
+            menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.', lastupdatedEnabled ? el('span', '', '(Last updated)', { style: 'float:right;' }) : undefined))
             var menu = el('div', 'manual-select');
             menuDiv.appendChild(menu);
             var seed = +document.getElementById('rule-seed-input').value || 0;
@@ -872,6 +874,29 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                     let trowElem = el('div');
                     trowElem.innerHTML = `<div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link link-HTML'></div><div class='link link-PDF'></div>`;
+
+                    if(lastupdatedEnabled && mod.Manuals[i].Url.toLowerCase().startsWith('html/')) {
+                        let lastupdatedElem = el('div','last-updated')
+                        console.log(mod.Manuals[i])
+                        $.ajax({
+                            method:'GET',
+                            url:"/ManualLastUpdated/"+mod.Manuals[i].Url.slice(5),
+                            cache:false,
+                            success:function(data) {
+                                let lastupdatedDate = new Date(data)
+                                let year = lastupdatedDate.getFullYear()
+                                let month = lastupdatedDate.getMonth()
+                                let day = lastupdatedDate.getDate()
+                                lastupdatedElem.innerText = year + "-" + (month > 9 ? month : "0" + month) + "-" + (day > 9 ? day : "0" + day)
+                                $(menuDiv).position({my:'right top',at: 'right bottom', of:lnk, collision:'fit none'})
+                            },
+                            error:function(data) {
+                                lastupdatedElem.innerText = "Failed to fetch last updated timestamp"
+                                $(menuDiv).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' })
+                            }
+                        })
+                        trowElem.appendChild(lastupdatedElem)
+                    }
                     menu.appendChild(trowElem);
 
                     already.set(rx1[1], {

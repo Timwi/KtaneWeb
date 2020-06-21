@@ -99,7 +99,8 @@ namespace KtaneWeb
             (readable: "Souvenir support", id: "souvenir"),
             (readable: "Rule seed support", id: "rule-seed"),
             (readable: "Date published", id: "published"),
-            (readable: "Module ID", id: "id"));
+            (readable: "Module ID", id: "id"),
+            (readable: "Last updated", id: "last-updated"));
 
         private HttpResponse mainPage(HttpRequest req)
         {
@@ -183,6 +184,7 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://www.youtube.com/playlist?list=PL-1P5EmkkFxrAXBhqvyUAXH-ErGjh7Zrx" }._(new IMG { class_ = "icon-img", src = "HTML/img/video-playlist.png" }, new SPAN { class_ = "icon-label" }._("Tutorial videos playlist")))),
                             new UL { class_ = "below-icons" }._(
                                 new LI(new A { href = "More/Repository%20Symbols%20Guide.html" }._("Repository Symbols Guide")),
+                                new LI(new A { href = "https://ktane.onpointcoding.net/ideas/" }._("Mod ideas website")),
                                 new LI(new A { href = "https://docs.google.com/spreadsheets/d/10Z7Ivc784QaFrQCaGwIPUYrS6NNXiLJPi8nADiFR_0s" }._("Mod ideas: spreadsheet of past ideas")),
                                 new LI(new A { href = "https://www.reddit.com/r/ktanemod/" }._("Mod ideas: subreddit")),
                                 new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._("KtaneContent github repository"), new DIV { class_ = "link-extra" }._("(contains the manuals, Profile Editor, Logfile Analyzer and other static files)")),

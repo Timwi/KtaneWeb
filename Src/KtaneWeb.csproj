@@ -60,6 +60,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="CustomAttributes.cs" />
     <Compile Include="GenerateJson.cs" />
+    <Compile Include="ManualLastUpdated.cs" />
     <Compile Include="SitemapXml.cs" />
     <Compile Include="Logfiles.cs" />
     <Compile Include="ModuleInfoCache.cs" />

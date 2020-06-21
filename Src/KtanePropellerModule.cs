@@ -43,6 +43,7 @@ namespace KtaneWeb
                         return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                     }),
                     new UrlMapping(path: "/pull", handler: pull),
+                    new UrlMapping(path: "/ManualLastUpdated",handler: ManualLastUpdated),
                     new UrlMapping(path: "/proxy", handler: proxy),
                     new UrlMapping(path: "/merge-pdf", handler: mergePdfs),
                     new UrlMapping(path: "/upload-log", handler: uploadLogfile),
