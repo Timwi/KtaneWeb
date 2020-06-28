@@ -37,7 +37,7 @@ namespace KtaneWeb
         public string SourceUrl;
         [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube).")]
         public string TutorialVideoUrl;
-        [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public string Symbol;
 
         [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes, even if rare.")]
@@ -139,6 +139,9 @@ namespace KtaneWeb
 
             if (Ignore != null && Ignore.Length == 0)
                 Ignore = null;
+
+            if (Symbol != null && Symbol.Length > 0)
+                Symbol = Symbol.Substring(0, 1).ToUpperInvariant() + Symbol.Substring(1).ToLowerInvariant();
         }
 
         void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)
