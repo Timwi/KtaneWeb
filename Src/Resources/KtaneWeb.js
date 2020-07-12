@@ -238,9 +238,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         modules.sort(function(a, b)
         {
             if (a === showAtTopOfResults)
-                return -1;
+                return rvrse ? 1 : - 1;
             if (b === showAtTopOfResults)
-                return 1;
+                return rvrse ? -1 : 1;
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare(a.SortKey, b.SortKey, false) : c;
         });
