@@ -352,7 +352,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let mod = modules[i];
 
                     let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
-                    mainTable.appendChild(tr);
                     mod.FncsShowHide.push(sh => { tr.style.display = (sh ? '' : 'none'); });
                     mod.FncsSetHighlight.push(hgh =>
                     {
