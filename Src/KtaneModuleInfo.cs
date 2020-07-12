@@ -17,6 +17,9 @@ namespace KtaneWeb
         [EditableField(null)]   // invisible field
         public KtaneModuleOrigin Origin = KtaneModuleOrigin.Mods;
 
+        [ClassifyIgnore]
+        public string FileName;
+
         [EditableField("Name", "The display name of the module or widget.")]
         public string Name;
         [ClassifyIgnoreIfDefault]

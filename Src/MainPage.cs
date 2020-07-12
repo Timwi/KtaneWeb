@@ -12,7 +12,7 @@ namespace KtaneWeb
     public sealed partial class KtanePropellerModule
     {
         // PDF merge disabled until somebody fixes it
-        const bool PdfMergeDisabled = true;
+        const bool PdfMergeDisabled = false;
 
         // Access keys:
         // A    Logfile Analyzer

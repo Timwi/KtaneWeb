@@ -1212,7 +1212,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             search: $("input#search-field").val(),
             profileVetoList: profileVetoList,
             filterEnabledByProfile: $('input#filter-profile-enabled').prop('checked'),
-            filterVetoedByProfile: $('input#filter-profile-disabled').prop('checked')
+            filterVetoedByProfile: $('input#filter-profile-disabled').prop('checked'),
+            searchBySymbol: document.getElementById('option-include-symbol').checked,
+            searchBySteamID: document.getElementById('option-include-steam-id').checked,
+            searchByModuleID: document.getElementById('option-include-module-id').checked
         }));
         return true;
     });
