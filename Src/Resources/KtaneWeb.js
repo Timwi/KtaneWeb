@@ -851,19 +851,19 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 {
                     var trow, rx2;
                     if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(rx1[1]))
-                        trow = [rx2[1], rx2[2], `<div class='descriptor'>${rx2[3]}</div><div class='author'>by ${rx2[4]}</div>`];
+                        trow = [rx2[1], rx2[2], [el('div', 'descriptor', rx2[3]), el('div', 'author', rx2[4])]];
                     else if (rx2 = /^translated(?: full)? \((.*) — (.*)\) \((.*)\)$/.exec(rx1[1]))
-                        trow = [rx2[1], rx2[2], `<div class='author'>by ${rx2[3]}</div>`];
+                        trow = [rx2[1], rx2[2], [el('div', 'author', rx2[3])]];
                     else if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*)$/.exec(rx1[1]))
-                        trow = [rx2[1], rx2[2], `<div class='descriptor'>${rx2[3]}</div>`];
+                        trow = [rx2[1], rx2[2], [el('div', 'descriptor', rx2[3])]];
                     else if (rx2 = /^translated(?: full)? \((.*) — (.*)\)$/.exec(rx1[1]))
-                        trow = [rx2[1], rx2[2], ""];
+                        trow = [rx2[1], rx2[2], []];
                     else if (rx2 = /^translated(?: full)? \((.*)\)$/.exec(rx1[1]))
-                        trow = [rx2[1], mod.Name, ""];
+                        trow = [rx2[1], mod.Name, []];
                     else if (rx2 = /^(.*) \((.*)\)$/.exec(rx1[1]))
-                        trow = ["", mod.Name, `<div class='descriptor'>${rx2[1]}</div><div class='author'>by ${rx2[2]}</div>`];
+                        trow = [null, mod.Name, [el('div', 'descriptor', rx2[1]), el('div', 'author', rx2[2])]];
                     else
-                        trow = ["", mod.Name, `<div class='descriptor'>${rx1[1]}</div>`];
+                        trow = [null, mod.Name, [el('div', 'descriptor', rx1[1])]];
 
                     const language = trow[0] || "English";
                     if (preferredLanguages[language] === false)
@@ -873,8 +873,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     if (code !== undefined)
                         trow[0] += ` (${code})`;
 
-                    let trowElem = el('div');
-                    trowElem.innerHTML = `<div class='mobile-cell'><div class='language'>${trow[0]}</div><div class='title'>${trow[1]}</div><div class='extra'>${trow[2]}</div></div><div class='link link-HTML'></div><div class='link link-PDF'></div>`;
+                    let trowElem = el('div', null,
+                        el('div', 'mobile-cell',
+                            el('div', 'language', trow[0]),
+                            el('div', 'title', trow[1]),
+                            el('div', 'extra', ...trow[2])),
+                        el('div', 'link link-HTML'),
+                        el('div', 'link link-PDF'));
 
                     if (lastupdatedEnabled && mod.Manuals[i].Url.startsWith('HTML/'))
                     {
