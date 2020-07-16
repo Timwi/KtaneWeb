@@ -11,11 +11,14 @@ namespace KtaneWeb
     {
         private HttpResponse ManualLastUpdated(HttpRequest req)
         {
+            var filename = req.Url.Path.UrlUnescape();
+            if (Path.GetInvalidPathChars().Any(ch => filename.Contains(ch)))
+                return HttpResponse.PlainText($"“{filename}” contains a character not allowed in file names.", HttpStatusCode._400_BadRequest);
+
             var moduleInfoCache = getModuleInfoCache();
 
             lock (moduleInfoCache.ManualsLastModified)
             {
-                var filename = req.Url.Path.UrlUnescape();
                 if (!moduleInfoCache.ManualsLastModified.TryGetValue(filename, out var result))
                 {
                     string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
