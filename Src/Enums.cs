@@ -46,6 +46,8 @@
         Untested,
         [KtaneFilterOption("Unplayable")]
         Unplayable,
+        [KtaneFilterOption("Inconsistent")]
+        Inconsistent,
         [KtaneFilterOption("Problematic")]
         Problematic,
         [KtaneFilterOption("Compatible")]

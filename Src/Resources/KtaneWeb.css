@@ -238,6 +238,11 @@ tr.mod.compatibility-Unplayable .mod-name::before, #actual-periodic-table a.comp
     background-size: 100% 100%;
 }
 
+tr.mod.compatibility-Inconsistent .mod-name::before, #actual-periodic-table a.compatibility-Unplayable div.icon::after {
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0 1 .5 0 1 1 z" fill="%23f80" stroke="none" /></svg>') left top no-repeat;
+    background-size: 100% 100%;
+}
+
 tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.compatibility-Problematic div.icon::after {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle cx=".5" cy=".5" r=".5" fill="%23fc4" stroke="none" /></svg>') left top no-repeat;
     background-size: 100% 100%;
@@ -954,7 +959,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         width: 33em;
     }
 
-    tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
+    tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Inconsistent"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
         padding-left: 3.5em;
         background-position: 2.25em 50%;
     }

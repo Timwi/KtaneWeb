@@ -43,9 +43,9 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public string Symbol;
 
-        [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes, even if rare.")]
+        [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Inconsistent” if only rare and specific case cause undeserved strikes.\nUse “Unplayable” if a bug causes undeserved strikes.")]
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
-        [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Compatibility setting above."), EditableIf(nameof(Compatibility), KtaneModuleCompatibility.Problematic, KtaneModuleCompatibility.Unplayable)]
+        [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Compatibility setting above."), EditableIf(nameof(Compatibility), KtaneModuleCompatibility.Problematic, KtaneModuleCompatibility.Inconsistent, KtaneModuleCompatibility.Unplayable)]
         public string CompatibilityExplanation = null;
         [EditableField("Published", "The date of publication.")]
         public DateTime Published = DateTime.UtcNow.Date;

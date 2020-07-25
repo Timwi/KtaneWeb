@@ -333,6 +333,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             const compatiblities = {
                 Unplayable: 'This module has a programming bug that prevents it from being played reliably.',
                 Untested: 'The compatibility of this module has not yet been determined.',
+                Inconsistent: 'This module contains a programming bug that happens rarely.',
                 Problematic: 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.',
             };
 
