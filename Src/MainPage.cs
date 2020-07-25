@@ -205,7 +205,9 @@ namespace KtaneWeb
                             PdfMergeDisabled ? null : new DIV { class_ = "pdf-merge" }._(
                                 new FORM { action = "merge-pdf", method = method.post }._(
                                 new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
-                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter")))),
+                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter"))),
+                            new UL { class_ = "below-icons" }._(
+                                new LI(new A { href = "https://files.timwi.de/Tools/Calculator.html" }._("Text Field Calculator")))),
 
                         // VIEW (icon popup)
                         new DIV { id = "view", class_ = "popup disappear stay" }._(
