@@ -105,24 +105,28 @@ namespace KtaneWeb
             (readable: "Module ID", id: "id"),
             (readable: "Last updated", id: "last-updated"));
 
+        private static string UniquifiedUrl(IHttpUrl url)
+        {
+#if DEBUG
+            return url.WithQuery("uniq", DateTime.UtcNow.Ticks.ToString()).ToHref();
+#else
+            return url.ToHref();
+#endif
+        }
+
         private HttpResponse mainPage(HttpRequest req)
         {
-            var cssLink = req.Url.WithParent("css");
-#if DEBUG
-            cssLink = cssLink.WithQuery("u", DateTime.UtcNow.Ticks.ToString());
-#endif
-
             var resp = HttpResponse.Html(new HTML(
                 new HEAD(
                     new TITLE("Repository of Manual Pages"),
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
-                    new LINK { href = cssLink.ToHref(), rel = "stylesheet", type = "text/css" },
+                    new LINK { href = UniquifiedUrl(req.Url.WithParent("css")), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), id = "theme-css", rel = "stylesheet", type = "text/css" },
                     new SCRIPT { src = "HTML/js/jquery.3.1.1.min.js" },
                     new SCRIPT { src = "HTML/js/jquery-ui.1.12.1.min.js" },
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPTLiteral(@"Ktane = { Themes: { 'dark': 'HTML/css/dark-theme.css' } };"),
-                    new SCRIPT { src = req.Url.WithParent("js").ToHref() },
+                    new SCRIPT { src = UniquifiedUrl(req.Url.WithParent("js")) },
                     new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
