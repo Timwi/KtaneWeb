@@ -84,8 +84,11 @@ function el(tagName, className, ...args)
     return element;
 }
 
-function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5)
+function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5, moduleLoadExceptions)
 {
+    for (let exception of moduleLoadExceptions)
+        console.error(exception);
+
     const languageCodes = {
         "Dansk": "da",
         "Deutsch": "de",
