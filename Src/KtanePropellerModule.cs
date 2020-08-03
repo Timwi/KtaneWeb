@@ -50,6 +50,7 @@ namespace KtaneWeb
                     new UrlMapping(path: "/find-log", handler: findLogfile),
                     new UrlMapping(path: "/generate-json", handler: generateJson),
                     new UrlMapping(path: "/iconsprite", handler: req => HttpResponse.Create(getModuleInfoCache().IconSpritePng, "image/png")),
+                    new UrlMapping(path: "/ignore-table", handler: ignoreTable),
                     new UrlMapping(path: "/sitemap", specificPath: true, handler: sitemapXml),
 
                     new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
