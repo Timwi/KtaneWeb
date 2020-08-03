@@ -173,9 +173,7 @@ namespace KtaneWeb
 
                             // PERIODIC TABLE
                             new DIV { id = "main-periodic-table" }._(
-                                new DIV { id = "actual-periodic-table" },
-                                new DIV { id = "periodic-table-links" }._(new A { href = "#", id = "assignment-table-toggle" }._("Show assignment table")),
-                                new DIV { id = "assignment-table" })),
+                                new DIV { id = "actual-periodic-table" })),
                         new DIV { id = "module-count" },
 
                         new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")),

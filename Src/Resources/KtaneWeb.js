@@ -502,56 +502,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     });
                 }
 
-                // Assignments table
-                let symbols = modules.filter(m => m.Symbol).map(m => m.Symbol);
-                symbols.sort();
-                let alphabet = ",a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z".split(',');
-
-                let table = el('table', 'assignment-table');
-
-                let colgroup = el('colgroup');
-                table.appendChild(colgroup);
-                for (let col = 0; col < alphabet.length + 3; col++)
-                {
-                    let colTag = el('col');
-                    if (col > 0 && col < alphabet.length + 1)
-                        colTag.style.width = '32px';
-                    colgroup.appendChild(colTag);
-                }
-
-                // Header row
-                let tr = el('tr', null, el('td'));
-                for (let col = 0; col < alphabet.length; col++)
-                    tr.appendChild(el('th', 'letter', alphabet[col].length ? alphabet[col] : '∅'));
-                table.appendChild(tr);
-
-                for (let row = 0; row < 26; row++)
-                {
-                    let letter = String.fromCharCode(65 + row);
-                    tr = el('tr');
-                    function makeTh()
-                    {
-                        tr.appendChild(el('th', 'letter', { title: symbols.filter(k => k.startsWith(letter)).map(k => `${k} = ${modules.filter(m => m.Symbol === k)[0].Name}`).join("\n") }, letter));
-                    }
-                    makeTh();
-                    for (let col = 0; col < alphabet.length; col++)
-                    {
-                        let module = modules.filter(m => m.Symbol === letter + alphabet[col]);
-                        let td = el('td', `module${module.length > 1 ? ' clash' : ''}`, { title: module.length > 0 ? module.map(md => `${md.Symbol} = ${md.Name}`).join('\n') : '' });
-                        if (module.length === 1)
-                            td.appendChild(el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5}); background-position:-${module[0].X * 32}px -${module[0].Y * 32}px;` }));
-                        tr.appendChild(td);
-                    }
-                    makeTh();
-
-                    let filtered = symbols.filter(a => a.startsWith(letter));
-                    let td2 = el('td', 'letter-list', `${alphabet.filter(lt => filtered.indexOf(letter + lt) === -1).map(lt => lt === '' ? '∅' : lt).join('')}`);
-                    tr.appendChild(td2);
-
-                    table.appendChild(tr);
-                }
-                document.getElementById("assignment-table").appendChild(table);
-
                 viewsReady.set('PeriodicTable', {
                     Show: function() { document.getElementById("main-periodic-table").style.display = 'block'; },
                     Hide: function() { document.getElementById("main-periodic-table").style.display = 'none'; },
@@ -1226,15 +1176,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             searchByModuleID: document.getElementById('option-include-module-id').checked
         }));
         return true;
-    });
-
-    $('#assignment-table-toggle').click(function()
-    {
-        if ($('#assignment-table:visible').length)
-            $('#assignment-table').hide();
-        else
-            $('#assignment-table').show();
-        return false;
     });
 
 

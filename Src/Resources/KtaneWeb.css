@@ -767,42 +767,6 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         line-height: .9;
     }
 
-#periodic-table-links {
-    clear: both;
-    padding-top: 2em;
-    font-size: 10pt;
-}
-
-#assignment-table {
-    display: none;
-    border-color: #ddd;
-    margin: 1em auto;
-}
-
-    #assignment-table th, #assignment-table td {
-        text-align: center;
-        padding: .2em .2em;
-        border-color: #ddd;
-    }
-
-        #assignment-table td.module {
-            padding: 0;
-        }
-
-            #assignment-table td.module .icon {
-                width: 32px;
-                height: 32px;
-                display: block;
-            }
-
-            #assignment-table td.module.clash {
-                background-color: #f99;
-            }
-
-        #assignment-table td.letter-list {
-            text-align: left;
-        }
-
 #module-ui table td, #module-ui table th {
     border: none;
 }
