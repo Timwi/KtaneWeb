@@ -115,6 +115,9 @@ namespace KtaneWeb
                                         if (mod.Name != mod.FileName)
                                             modJson["FileName"] = mod.FileName;
 
+                                        if (string.IsNullOrEmpty(mod.Author) && mod.Contributors != null)
+                                            modJson["Author"] = mod.Contributors.ToAuthorString();
+
                                         return (modJson, mod, file.LastWriteTimeUtc).Nullable();
                                     }
                                     catch (Exception e)

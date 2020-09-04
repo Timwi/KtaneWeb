@@ -5,6 +5,8 @@ using RT.TagSoup;
 using RT.Util;
 using RT.Json;
 using RT.Serialization;
+using RT.Util.ExtensionMethods;
+using System.Linq;
 
 namespace KtaneWeb
 {
@@ -35,6 +37,9 @@ namespace KtaneWeb
         public string SteamID;
         [EditableField("Author", "A comma-separated list of contributors to the development of the module or widget.")]
         public string Author;
+
+        [ClassifyIgnoreIfDefault, EditableNested, EditableField("Contributors", "The roles of the contributors to the development the module or widget. The author field will be automatically generated from this if it's empty.")]
+        public ContributorInfo Contributors;
 
         [ClassifyIgnoreIfDefault, EditableField("Source code", "A link to the source code of the module or widget, usually a link to a GitHub repository.")]
         public string SourceUrl;
@@ -212,6 +217,26 @@ namespace KtaneWeb
             other.Score == Score && other.ScorePerModule == ScorePerModule && other.ScorePerModuleCap == ScorePerModuleCap &&
             other.ScoreExplanation == ScoreExplanation && other.TagPosition == TagPosition && other.NeedyScoring == NeedyScoring && other.AutoPin == AutoPin;
         public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, ScorePerModuleCap, ScoreExplanation, TagPosition, NeedyScoring, AutoPin);
+    }
+
+    sealed class ContributorInfo : IEquatable<ContributorInfo>
+    {
+        [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual.")]
+        public string[] Manual;
+        [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed the module or widget.")]
+        public string[] Developer;
+        [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the module or widget.")]
+        public string[] Maintainer;
+        [ClassifyIgnoreIfDefault, EditableField("Twitch Plays", "People who added Twitch Plays support.")]
+        public string[] TwitchPlays;
+
+        public string ToAuthorString() => new[] { Manual, Developer, Maintainer, TwitchPlays }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
+
+        public override bool Equals(object obj) => obj != null && obj is ContributorInfo info && Equals(info);
+        public bool Equals(ContributorInfo other) => other != null &&
+            other.Manual == Manual && other.Developer == Developer && other.Maintainer == Maintainer &&
+            other.TwitchPlays == TwitchPlays;
+        public override int GetHashCode() => Ut.ArrayHash(Manual, Developer, Maintainer, TwitchPlays);
     }
 
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value
