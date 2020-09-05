@@ -350,7 +350,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (mod.Contributors === undefined)
                 return el("div", "inf-author inf", mod.Author);
 
-            const title = Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role.replace("TwitchPlays", "Twitch Plays")}: ${names.join(", ")}`).join("\n");
+            const title = Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(", ")}`).join("\n");
             return el("div", "inf-author inf", mod.Author, { title: title });
         }
 

@@ -35,7 +35,7 @@ namespace KtaneWeb
         public string SortKey;
         [EditableField("Steam ID", "The numerical ID of the Steam Workshop item.")]
         public string SteamID;
-        [EditableField("Author", "A comma-separated list of contributors to the development of the module or widget.")]
+        [ClassifyIgnoreIfDefault, EditableField("Author", "A comma-separated list of contributors to the development of the module or widget.")]
         public string Author;
 
         [ClassifyIgnoreIfDefault, EditableNested, EditableField("Contributors", "The roles of the contributors to the development the module or widget. The author field will be automatically generated from this if it's empty.")]
@@ -227,7 +227,7 @@ namespace KtaneWeb
         public string[] Developer;
         [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the module or widget.")]
         public string[] Maintainer;
-        [ClassifyIgnoreIfDefault, EditableField("Twitch Plays", "People who added Twitch Plays support.")]
+        [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support.")]
         public string[] TwitchPlays;
 
         public string ToAuthorString() => new[] { Manual, Developer, Maintainer, TwitchPlays }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
