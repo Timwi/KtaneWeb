@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
-using RT.TagSoup;
-using RT.Util;
 using RT.Json;
 using RT.Serialization;
+using RT.TagSoup;
+using RT.Util;
 using RT.Util.ExtensionMethods;
-using System.Linq;
 
 namespace KtaneWeb
 {
@@ -233,9 +233,9 @@ namespace KtaneWeb
         public string ToAuthorString() => new[] { Manual, Developer, Maintainer, TwitchPlays }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
 
         public override bool Equals(object obj) => obj != null && obj is ContributorInfo info && Equals(info);
-        public bool Equals(ContributorInfo other) => other != null &&
-            other.Manual == Manual && other.Developer == Developer && other.Maintainer == Maintainer &&
-            other.TwitchPlays == TwitchPlays;
+        private static bool sameArray(string[] one, string[] two) => (one == null && two == null) || (one != null && two != null && one.SequenceEqual(two));
+        public bool Equals(ContributorInfo other) => other != null && sameArray(other.Manual, Manual) &&
+            sameArray(other.Developer, Developer) && sameArray(other.Maintainer, Maintainer) && sameArray(other.TwitchPlays, TwitchPlays);
         public override int GetHashCode() => Ut.ArrayHash(Manual, Developer, Maintainer, TwitchPlays);
     }
 
