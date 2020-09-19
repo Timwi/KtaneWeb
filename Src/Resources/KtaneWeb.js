@@ -305,6 +305,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (typeof reader.result != 'string')
                     return;
                 const profile = JSON.parse(reader.result);
+                if (profile.Operation === 0 && profile.EnabledList)
+                    profile.DisabledList = modules.filter(mod => !profile.EnabledList.includes(mod.ModuleID)).map(mod => mod.ModuleID);
+
                 if (profile.DisabledList)
                 {
                     profileVetoList = profile.DisabledList;
