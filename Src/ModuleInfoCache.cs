@@ -139,16 +139,31 @@ namespace KtaneWeb
                             moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
                             moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
 
+                            static string getFileName((JsonDict modJson, KtaneModuleInfo mod, DateTime _) tup) => tup.modJson.ContainsKey("FileName") ? tup.modJson["FileName"].GetString() : tup.mod.Name;
+
                             var modJsons = modules.Where(tup => tup.mod.TranslationOf == null).Select(tup =>
                             {
                                 var (modJson, mod, _) = tup;
-                                var fileName = modJson.ContainsKey("FileName") ? modJson["FileName"].GetString() : mod.Name;
+                                var fileName = getFileName(tup);
                                 modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
                                 var (x, y) = coords.Get(fileName, (x: 0, y: 0));
                                 modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
                                 modJson["Y"] = y;
                                 return modJson;
                             }).ToJsonList();
+
+                            // Allow translated modules to have an icon
+                            foreach (var tup in modules.Where(tup => tup.mod.TranslationOf != null))
+                            {
+                                var (modJson, mod, _) = tup;
+                                var fileName = getFileName(tup);
+                                if (!coords.ContainsKey(fileName))
+                                    fileName = getFileName(modules.First(module => module.mod.ModuleID == mod.TranslationOf));
+
+                                var (x, y) = coords.Get(fileName, (x: 0, y: 0));
+                                modJson["X"] = x;
+                                modJson["Y"] = y;
+                            }
 
                             var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
                             var disps = _displays.Select(d => d.id).ToJsonList();
