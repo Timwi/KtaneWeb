@@ -354,7 +354,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 return el("div", "inf-author inf", mod.Author);
 
             const title = Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(", ")}`).join("\n");
-            return el("div", "inf-author inf", mod.Author, { title: title });
+            return el("div", "inf-author inf", el("span", "contributors", mod.Author), { title: title });
         }
 
         switch (newView)

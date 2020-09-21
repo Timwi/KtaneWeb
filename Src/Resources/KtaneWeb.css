@@ -151,6 +151,11 @@ div.infos .inf-author, div.infos .inf-published {
         white-space: pre;
     }
 
+    div.infos .inf-author span.contributors {
+        text-decoration: underline dotted;
+        cursor: help;
+    }
+
 div.infos .inf-published {
     font-size: smaller;
 }
