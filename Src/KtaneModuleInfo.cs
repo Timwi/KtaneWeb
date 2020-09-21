@@ -230,7 +230,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support.")]
         public string[] TwitchPlays;
 
-        public string ToAuthorString() => new[] { Manual, Developer, Maintainer, TwitchPlays }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
+        public string ToAuthorString() => new[] { Manual, Developer }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
 
         public override bool Equals(object obj) => obj != null && obj is ContributorInfo info && Equals(info);
         private static bool sameArray(string[] one, string[] two) => (one == null && two == null) || (one != null && two != null && one.SequenceEqual(two));
