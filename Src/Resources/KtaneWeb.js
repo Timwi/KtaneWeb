@@ -392,7 +392,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     }
 
                     let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
-                    let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.Name));
+                    let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.Name.replace(/'/g, "’")));
                     setCompatibilityTooltip(modlink, mod);
                     mod.ViewData.List = { TableRow: tr, SelectableLink: modlink };
                     let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
@@ -619,7 +619,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         }
 
         let searchRaw = $("input#search-field").val().toString().toLowerCase();
-        let searchKeywords = unifyString(searchRaw).split(' ').filter(x => x.length > 0).map(x => x.replace(/'/g, '’'));
+        let searchKeywords = unifyString(searchRaw).split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\''));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
