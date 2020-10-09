@@ -113,10 +113,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         "עברית": "he",
         "العربية": "ar",
         "ภาษาไทย": "th",
-        "日本語": "jp",
+        "日本語": "ja",
         "简体中文": "zh-CN",
         "繁體中文": "zh-TW",
-        "한국어": "ko"
+        "한국어": "ko",
+        "Frysk": "fy"
     };
 
     var filter = {};
