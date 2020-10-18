@@ -330,6 +330,21 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     var viewsReady = new Map();
 
+    function getCompatibilityText(mod)
+    {
+        const compatiblities = {
+            Unplayable: 'This module has a programming bug that prevents it from being played reliably.',
+            Untested: 'The compatibility of this module has not yet been determined.',
+            Problematic: 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.',
+        };
+
+        if (compatiblities[mod.Compatibility] === undefined)
+            return;
+        if (mod.CompatibilityExplanation !== undefined)
+            return `${compatiblities[mod.Compatibility]} ${mod.CompatibilityExplanation}`;
+        return compatiblities[mod.Compatibility];
+    }
+
     function createView(newView)
     {
         if (viewsReady.has(newView))
@@ -337,16 +352,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         function setCompatibilityTooltip(element, mod)
         {
-            const compatiblities = {
-                Unplayable: 'This module has a programming bug that prevents it from being played reliably.',
-                Untested: 'The compatibility of this module has not yet been determined.',
-                Problematic: 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.',
-            };
-
-            if (compatiblities[mod.Compatibility] === undefined)
-                return;
-
-            element.setAttribute('title', compatiblities[mod.Compatibility] + (mod.CompatibilityExplanation !== undefined ? ` ${mod.CompatibilityExplanation}` : ''));
+            var title = getCompatibilityText(mod);
+            if (title && title.length)
+                element.setAttribute('title', title);
         }
 
         function makeAuthorElement(mod)
@@ -789,6 +797,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     menuDiv.appendChild(el('div', 'module-further-info', mod.TwitchPlaysInfo));
                 if ($('#display-rule-seed').prop('checked') && 'RuleSeedInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.RuleSeedInfo));
+                var title = getCompatibilityText(mod);
+                if (title !== undefined)
+                    menuDiv.appendChild(el('div', 'module-further-info', title));
             }
             var lastupdatedEnabled = false;
             try { lastupdatedEnabled = (JSON.parse(lStorage.getItem('display')) || []).includes('last-updated') } catch (exc) { }
