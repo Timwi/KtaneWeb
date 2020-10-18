@@ -52,7 +52,8 @@ namespace KtaneWeb
             KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlays == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
             KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
             KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
-            KtaneFilter.Checkboxes("Mystery Module", "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"));
+            KtaneFilter.Checkboxes("Mystery Module", "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
+            KtaneFilter.Checkboxes("Button Messer", "buttonmesser", mod => mod.ButtonMesser, $@"mod=>mod.ButtonMesser||'{KtaneButtonMesserCompatibility.NoConflict}'"));
 
         static readonly Selectable[] _selectables = Ut.NewArray(
             new Selectable

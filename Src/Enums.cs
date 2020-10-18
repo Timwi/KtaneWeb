@@ -99,4 +99,14 @@
         [KtaneFilterOption("MM must auto-solve")]
         RequiresAutoSolve,
     }
+
+    public enum KtaneButtonMesserCompatibility
+    {
+        [KtaneFilterOption("No conflict")]
+        NoConflict,
+        [KtaneFilterOption("Ignore")]
+        Ignore,
+        [KtaneFilterOption("Ignore on Twitch Plays")]
+        IgnoreOnTwitchPlays
+    }
 }

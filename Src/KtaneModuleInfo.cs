@@ -80,6 +80,9 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Mystery Module compatibility", "Specify how Mystery Module may affect this module. Use “MM must not hide this” if this module requires other modules to be solved earlier (e.g. Encryption Bingo, Hogwarts). Use “MM must not require this” if the module depends on whether or not other modules are on the bomb (e.g. Free Parking, Mafia). Use “MM must not use this at all” if both is the case. Use “MM must auto-solve” if this module imposes a solve order on other modules (e.g. Organization, Turn the Keys).")]
         public KtaneMysteryModuleCompatibility MysteryModule = KtaneMysteryModuleCompatibility.NoConflict;
 
+        [ClassifyIgnoreIfDefault, EditableField("Button Messer compatibility", "Specify if Button Messer should ignore this module. Use “Ignore” if this module contains at least one button that can't be pressed at any point before solve (inactive buttons don't count). Ues “Ignore on Twitch Plays” if this module's Twitch Plays implementation (if it has) doesn't let the player press all the buttons.")]
+        public KtaneButtonMesserCompatibility ButtonMesser = KtaneButtonMesserCompatibility.NoConflict;
+
         // This information is imported from a spreadsheet, so not serialized in JSON.
         [ClassifyIgnoreIfDefault, EditableField(null)]
         public KtaneTwitchPlaysInfo TwitchPlays = null;
