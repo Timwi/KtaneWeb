@@ -470,11 +470,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     td2.appendChild(infos.cloneNode(true));
 
                     var lnk1 = el("a", "manual-selector", { href: "#" });
-                    $(lnk1).click(makeClickHander(lnk1, false, mod));
+                    lnk1.onclick = makeClickHander(lnk1, false, mod);
                     td1.appendChild(lnk1);
 
                     var lnk2 = el("a", "mobile-opt", { href: "#" });
-                    $(lnk2).click(makeClickHander(lnk2, true, mod));
+                    lnk2.onclick = makeClickHander(lnk2, true, mod);
                     tr.appendChild(el("td", "mobile-ui", lnk2));
                 }
 
@@ -763,7 +763,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
     function makeClickHander(lnk, isMobileOpt, mod)
     {
-        return function()
+        return function(event)
         {
             var numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p['data-lnk'] === lnk).length;
             disappear();
@@ -913,6 +913,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
             if (!isMobileOpt)
                 $(menuDiv).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
+            event.stopPropagation();
             return false;
         };
     }
