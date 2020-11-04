@@ -156,9 +156,12 @@ namespace KtaneWeb
                             foreach (var tup in modules.Where(tup => tup.mod.TranslationOf != null))
                             {
                                 var (modJson, mod, _) = tup;
+                                var origModule = modules.FirstOrNull(module => module.mod.ModuleID == mod.TranslationOf);
+                                if (origModule == null)
+                                    continue;
                                 var fileName = getFileName(tup);
                                 if (!coords.ContainsKey(fileName))
-                                    fileName = getFileName(modules.First(module => module.mod.ModuleID == mod.TranslationOf));
+                                    fileName = getFileName(origModule.Value);
 
                                 var (x, y) = coords.Get(fileName, (x: 0, y: 0));
                                 modJson["X"] = x;
