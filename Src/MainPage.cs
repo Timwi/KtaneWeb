@@ -420,7 +420,7 @@ namespace KtaneWeb
                         }))),
 
                         new Func<object>(() => new SCRIPTLiteral(getModuleInfoCache().ModuleInfoJs))))));
-            resp.UseGzip = UseGzipOption.DontUseGzip;
+            resp.UseGzip = UseGzipOption.AlwaysUseGzip;
             return resp;
         }
     }
