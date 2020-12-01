@@ -66,8 +66,13 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Rule-seed", "Does the module vary its rules and manual under the Rule Seed Modifier?")]
         public KtaneSupport RuleSeedSupport = KtaneSupport.NotSupported;
 
+        [ClassifyIgnoreIfDefault, EditableField("Full boss module", "Specifies that the module requires all non-boss modules to be solved before it can be solved. This affects the ignore lists for modules that use the Boss Module Manager. In general, full boss modules should ignore other full boss modules.")]
+        public bool IsFullBoss = false;
+        [ClassifyIgnoreIfDefault, EditableField("Semi-boss module", "Specifies that the module requires some regular modules to be solved before it can be solved. This affects the ignore lists for modules that use the Boss Module Manager. In general, semi-boss modules should ignore both semi-boss and full boss modules.")]
+        public bool IsSemiBoss = false;
+
         // Specifies which modules this module should ignore. Applies to boss and semi-boss modules such as Forget Me Not, Alchemy, Hogwarts, etc.
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore.")]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+FullBoss” or “+SemiBoss” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
         public string[] Ignore = null;
 
         [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]

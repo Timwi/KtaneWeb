@@ -135,6 +135,26 @@ namespace KtaneWeb
                                 })
                                 .WhereNotNull()
                                 .ToArray();
+
+                            // Process ignore lists that contain special operators
+                            foreach (var (modJson, mod, LastWriteTimeUtc) in modules)
+                                if (mod.Ignore != null && mod.Ignore.Any(str => str.StartsWith("+")))
+                                {
+                                    var processedIgnoreList = new List<string>();
+                                    foreach (var str in mod.Ignore)
+                                    {
+                                        if (str == "+FullBoss")
+                                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsFullBoss).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                                        else if (str == "+SemiBoss")
+                                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsSemiBoss).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                                        else if (str.StartsWith("-"))
+                                            processedIgnoreList.Remove(str.Substring(1));
+                                        else if (!str.StartsWith("+"))
+                                            processedIgnoreList.Add(str);
+                                    }
+                                    modJson["IgnoreProcessed"] = processedIgnoreList.ToJsonList();
+                                }
+
                             moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
                             moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
                             moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
