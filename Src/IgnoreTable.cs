@@ -12,7 +12,7 @@ namespace KtaneWeb
         {
             var moduleInfos = getModuleInfoCache();
             var ignoringModules = moduleInfos.Modules.Where(m => m.Ignore != null && m.Ignore.Length > 0).OrderBy(m => m.SortKey).ToArray();
-            var ignoredModules = moduleInfos.Modules.Where(m => ignoringModules.Contains(m)).OrderBy(m => m.SortKey).ToArray();
+            var ignoredModules = moduleInfos.Modules.Where(m => ignoringModules.Contains(m) || m.IsSemiBoss || m.IsFullBoss).OrderBy(m => m.SortKey).ToArray();
 
             return HttpResponse.Html(new HTML(
                 new HEAD(
@@ -37,7 +37,9 @@ namespace KtaneWeb
                         // Rest of the table
                         ignoringModules.Select(ignoring => new TR(
                             new TH { class_ = "ignoring-module" }._(new IMG { src = $"../Icons/{ignoring.FileName ?? ignoring.Name}.png", title = ignoring.Name }),
-                            ignoredModules.Select(im => ignoring.Ignore.Contains(im.DisplayName ?? im.Name).Apply(ig => new TD { class_ = ig ? "ignored" : null, title = ig ? $"{ignoring.Name} ignores {im.Name}" : null }))))))));
+                            ignoredModules.Select(im => 
+                            ((ignoring.Ignore.Contains(im.DisplayName ?? im.Name) || (ignoring.Ignore.Contains("+FullBoss") && im.IsFullBoss) || (ignoring.Ignore.Contains("+SemiBoss") && im.IsSemiBoss)) && 
+                            !ignoring.Ignore.Contains("-" + (im.DisplayName ?? im.Name))).Apply(ig => new TD { class_ = ig ? "ignored" : null, title = ig ? $"{ignoring.Name} ignores {im.Name}" : null }))))))));
         }
     }
 }
