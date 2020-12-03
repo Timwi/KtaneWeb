@@ -586,11 +586,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    function unifyString(str)
-    {
-        return removeDiacritics(str).replace(/grey/g, "gray").replace(/colour/g, "color");
-    }
-
     function updateFilter()
     {
         var noneSelected = {};
@@ -627,8 +622,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             noneSelected[initFilters[i].id] = none;
         }
 
+        function escapeRegExp(string)
+        {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
         let searchRaw = $("input#search-field").val().toString().toLowerCase();
-        let searchKeywords = unifyString(searchRaw).split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\''));
+        let searchKeywords = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\'')).map(x => new RegExp(escapeRegExp(x).replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y')));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
@@ -676,9 +676,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
 
-            searchWhat = unifyString(searchWhat);
-
-            let sh = filteredIn && searchKeywords.filter(x => searchWhat.indexOf(x) === -1).length === 0;
+            let sh = filteredIn && searchKeywords.every(x => x.test(searchWhat));
             if (sh)
                 modCount++;
             for (let fnc of mod.FncsShowHide)
