@@ -343,6 +343,39 @@ namespace KtaneWeb
 
                         new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
 
+                        // Modkit license summary
+                        new DIV { id = "license", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new DIV { class_ = "option-group" }._(() =>
+                            {
+                                Dictionary<string, List<string>> license = new Dictionary<string, List<string>>()
+                                {
+                                    { "You may:", new List<string>() {
+                                        "use the work commercially.",
+                                        "make changes to the work.",
+                                        "distribute the compiled code and / or source.",
+                                        "incorporate the work into something that has a more restrictive license.",
+                                        "use the work for private use.",
+                                    } },
+                                    { "You may not:", new List<string>() {
+                                        "hold the author liable.",
+                                    } },
+                                    { "You must:", new List<string>() {
+                                            "include the copyright notice in all copies or substantial uses of the work.",
+                                            "include the license notice in all copies or substantial uses of the work.",
+                                            "use the work to create mods for KTANE.",
+                                    } }
+                                };
+
+                                return Ut.NewArray<object>(
+                                    new BUTTON { id = "back-to-json" }._("Go Back"),
+                                    new P("Quick Summary: The modkit license extends the ", new A { href = "https://tldrlegal.com/license/mit-license" }._("MIT license"), " so you can only use it to create mods for KTANE."),
+                                    new TABLE(
+                                        new TR(license.Keys.Select(title => new TH()._(title))),
+                                        new TR(license.Values.Select(sentences => new TD()._(new UL()._(sentences.Select(sentence => new LI()._(sentence))))))),
+                                    new P("This is not legal advice."));
+                            })),
+
                         // Module info editing UI
                         new DIV { id = "module-ui", class_ = "popup disappear stay" }._(new FORM { action = "generate-json", method = method.post }._(new Func<object>(() =>
                         {
@@ -375,6 +408,14 @@ namespace KtaneWeb
                                 }
                                 else
                                     yield return new DIV { class_ = "oops" }._("Bug. Please let Timwi know.");
+
+                                if (field.Name == "License")
+								{
+                                    yield return new DIV { id ="license-agreement" }._(
+                                        new INPUT { type = itype.checkbox, name = "LicenseAgreement", id = "input-LicenseAgreement" },
+                                        new LABEL { for_ = "input-LicenseAgreement" }._("I have read and agree to the ", new A { href = "https://github.com/keeptalkinggame/ktanemodkit/blob/master/LICENSE" }._("modkit license"), ". "),
+                                        new BUTTON { id = "show-license" }._("See License Summary"));
+                                }
                             }
 
                             static IEnumerable<object> iterateNormalFields(Type typeToBeEdited)

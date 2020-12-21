@@ -43,6 +43,8 @@ namespace KtaneWeb
 
         [ClassifyIgnoreIfDefault, EditableField("Source code", "A link to the source code of the module or widget, usually a link to a GitHub repository.")]
         public string SourceUrl;
+        [EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
+        public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
         [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube).")]
         public string TutorialVideoUrl;
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
@@ -155,6 +157,9 @@ namespace KtaneWeb
 
             if (Symbol != null && Symbol.Length > 0)
                 Symbol = Symbol.Substring(0, 1).ToUpperInvariant() + Symbol.Substring(1).ToLowerInvariant();
+
+            if (SourceUrl != null)
+                License = KtaneModuleLicense.OpenSource;
         }
 
         void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)

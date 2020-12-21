@@ -1067,6 +1067,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         return false;
     });
 
+    let lastLnk;
     function popup(lnk, wnd, width)
     {
         var wasVisible = wnd.is(':visible');
@@ -1086,6 +1087,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 wnd.css({ width: width || wnd.data('width') }).position({ my: `${lnk.data('my') || 'right'} top`, at: `${lnk.data('at') || 'right'} bottom`, of: lnk, collision: 'fit none' });
             }
         }
+
+        if (wnd.is("#module-ui"))
+            lastLnk = lnk;
+
         return false;
     }
 
@@ -1239,6 +1244,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             let elem = document.getElementById(`nested-${attr}`);
             tables[i].style.display = elem.checked ? '' : 'none';
         }
+
+        const license = ui.querySelector('select[name="License"]');
+        const agreement = ui.querySelector('#license-agreement');
+        agreement.style.display = license.value == "OpenSource" ? '' : 'none';
     }
     Array.from(document.getElementById('module-ui').querySelectorAll('input,textarea,select')).forEach(elem => { elem.onchange = UpdateEditUiElements; });
     UpdateEditUiElements();
@@ -1250,10 +1259,30 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     };
     document.getElementById('generate-json').onclick = function()
     {
-        if (document.getElementById('generate-json').form.Name.value === "")
+        var form = document.getElementById('generate-json').form;
+        if (form.Name.value === "")
         {
             alert("You do need to supply at least a name for the module or widget.");
             return false;
+        } else if (form.SourceUrl.value === "" && form.License.value === "OpenSource") {
+            alert("A link to the source code must be provided to use the open source license.");
+            return false;
+        } else if (form.SourceUrl.value !== "" && form.License.value !== "OpenSource") {
+            alert("If a link to the source code is provided then you must use the open source license.");
+            return false;
+        } else if (form.License.value === "OpenSource" && !form.LicenseAgreement.checked) {
+            alert("You must read and agree to the modkit license.");
+            return false;
         }
+    };
+    document.getElementById('show-license').onclick = function()
+    {
+        popup(lastLnk, $('#license'));
+        return false;
+    };
+    document.getElementById('back-to-json').onclick = function()
+    {
+        popup(lastLnk, $('#module-ui'));
+        return false;
     };
 }

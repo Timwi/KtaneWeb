@@ -99,4 +99,14 @@
         [KtaneFilterOption("MM must auto-solve")]
         RequiresAutoSolve,
     }
+
+    public enum KtaneModuleLicense
+    {
+        [KtaneFilterOption("The module has it's source code released and will follow the module's license.")]
+		OpenSource,
+        [KtaneFilterOption("The module can only be republished on someone else's Steam account and any work cannot be reused.")]
+        Republishable,
+        [KtaneFilterOption("The module cannot be republished and any work cannot be reused.")]
+        Restricted,
+    }
 }
