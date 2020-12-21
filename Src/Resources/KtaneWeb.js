@@ -1264,13 +1264,19 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         {
             alert("You do need to supply at least a name for the module or widget.");
             return false;
-        } else if (form.SourceUrl.value === "" && form.License.value === "OpenSource") {
+        }
+        else if (form.SourceUrl.value === "" && form.License.value === "OpenSource")
+        {
             alert("A link to the source code must be provided to use the open source license.");
             return false;
-        } else if (form.SourceUrl.value !== "" && form.License.value !== "OpenSource") {
+        }
+        else if (form.SourceUrl.value !== "" && form.License.value !== "OpenSource")
+        {
             alert("If a link to the source code is provided then you must use the open source license.");
             return false;
-        } else if (form.License.value === "OpenSource" && !form.LicenseAgreement.checked) {
+        }
+        else if (form.License.value === "OpenSource" && !form.LicenseAgreement.checked)
+        {
             alert("You must read and agree to the modkit license.");
             return false;
         }

@@ -371,8 +371,8 @@ namespace KtaneWeb
                                     new BUTTON { id = "back-to-json" }._("Go Back"),
                                     new P("Quick Summary: The modkit license extends the ", new A { href = "https://tldrlegal.com/license/mit-license" }._("MIT license"), " so you can only use it to create mods for KTANE."),
                                     new TABLE(
-                                        new TR(license.Keys.Select(title => new TH()._(title))),
-                                        new TR(license.Values.Select(sentences => new TD()._(new UL()._(sentences.Select(sentence => new LI()._(sentence))))))),
+                                        new TR(license.Keys.Select(title => new TH(title))),
+                                        new TR(license.Values.Select(sentences => new TD(new UL(sentences.Select(sentence => new LI(sentence))))))),
                                     new P("This is not legal advice."));
                             })),
 
@@ -410,8 +410,8 @@ namespace KtaneWeb
                                     yield return new DIV { class_ = "oops" }._("Bug. Please let Timwi know.");
 
                                 if (field.Name == "License")
-								{
-                                    yield return new DIV { id ="license-agreement" }._(
+                                {
+                                    yield return new DIV { id = "license-agreement" }._(
                                         new INPUT { type = itype.checkbox, name = "LicenseAgreement", id = "input-LicenseAgreement" },
                                         new LABEL { for_ = "input-LicenseAgreement" }._("I have read and agree to the ", new A { href = "https://github.com/keeptalkinggame/ktanemodkit/blob/master/LICENSE" }._("modkit license"), ". "),
                                         new BUTTON { id = "show-license" }._("See License Summary"));
