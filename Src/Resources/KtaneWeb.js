@@ -202,7 +202,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     lStorage.setItem('version', '2');
 
     // Refers to a module if the “Find” box contains the exact name or Periodic Table symbol for a module
-    let showAtTopOfResults = null;
+    let showAtTopOfResults = [];
 
     var selectedIndex = 0;
     function updateSearchHighlight()
@@ -249,9 +249,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         modules.sort(function(a, b)
         {
-            if (a === showAtTopOfResults)
-                return rvrse ? 1 : - 1;
-            if (b === showAtTopOfResults)
+            if (showAtTopOfResults.includes(a))
+            {
+                if (showAtTopOfResults.includes(b) && showAtTopOfResults.indexOf(a) > showAtTopOfResults.indexOf(b))
+                    return rvrse ? -1 : 1;
+                else
+                    return rvrse ? 1 : -1;
+            }
+            if (showAtTopOfResults.includes(b))
                 return rvrse ? -1 : 1;
             var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
             return (c === 0) ? compare(a.SortKey, b.SortKey, false) : c;
@@ -654,7 +659,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
         let modCount = 0;
-        let showAtTop = null;
+        let showAtTop = [];
         let searchBySymbol = document.getElementById('option-include-symbol').checked;
         let searchBySteamID = document.getElementById('option-include-steam-id').checked;
         let searchByModuleID = document.getElementById('option-include-module-id').checked;
@@ -704,8 +709,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 modCount++;
             for (let fnc of mod.FncsShowHide)
                 fnc(sh);
-            if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, '') || (mod.Symbol && searchRaw === mod.Symbol.toLowerCase()))
-                showAtTop = mod;
+            if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, ''))
+                showAtTop.unshift(mod);
+            else if (mod.Symbol && searchRaw === mod.Symbol.toLowerCase())
+                showAtTop.push(mod);
         });
 
         $('#module-count').text(modCount);
