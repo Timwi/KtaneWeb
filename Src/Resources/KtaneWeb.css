@@ -98,6 +98,7 @@ div.modlink-wrap a.modlink {
         height: 32px;
         float: left;
         margin: 0 .5em 0 0;
+        image-rendering: pixelated;
     }
 
 body:not(.display-description) div.modlink-wrap a.modlink .mod-icon {
