@@ -73,7 +73,7 @@ namespace KtaneWeb
                             }
                             catch (Exception e)
                             {
-                                _logger.Exception(e);
+                                Log.Exception(e);
                                 entries = new JsonList();
                             }
 
@@ -128,7 +128,7 @@ namespace KtaneWeb
                                         Console.WriteLine(e.GetType().FullName);
                                         Console.WriteLine(e.StackTrace);
 #endif
-                                        _logger.Exception(e);
+                                        Log.Exception(e);
                                         moduleLoadExceptions.Add($"{file.Name} error: {e.Message}");
                                         return null;
                                     }

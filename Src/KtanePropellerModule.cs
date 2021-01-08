@@ -16,7 +16,6 @@ namespace KtaneWeb
         public override string Name => "Repository of Manual Pages for Keep Talking and Nobody Explodes";
 
         private KtaneWebConfig _config;
-        private LoggerBase _logger;
 
         public override HttpResponse Handle(HttpRequest request)
         {
@@ -86,7 +85,7 @@ namespace KtaneWeb
             });
         }
 
-        public override void Init(LoggerBase log)
+        public override void Init()
         {
 #if DEBUG
             if (string.IsNullOrWhiteSpace(Settings.ConfigFile))
@@ -244,8 +243,6 @@ namespace KtaneWeb
             var rewrite = serializeConfig();
             if (rewrite != original)
                 File.WriteAllText(Settings.ConfigFile, rewrite);
-            base.Init(log);
-            _logger = log;
         }
 
         private void saveConfig()

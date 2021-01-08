@@ -66,7 +66,7 @@ namespace KtaneWeb
                     }
                     catch (Exception e)
                     {
-                        _logger.Warn($"Generate JSON: unrecognized value. Field: {f.Name}, Type: {fType}, Value: “{val ?? "<null>"}”, Exception: {e.Message} ({e.GetType().FullName})");
+                        Log.Warn($"Generate JSON: unrecognized value. Field: {f.Name}, Type: {fType}, Value: “{val ?? "<null>"}”, Exception: {e.Message} ({e.GetType().FullName})");
                     }
                 }
             }
