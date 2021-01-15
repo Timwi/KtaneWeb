@@ -232,7 +232,7 @@ namespace KtaneWeb
                                     new TR(new TH("Highlight a table column"), new TD("Ctrl+Click (Windows)", new BR(), "Command+Click (Mac)")),
                                     new TR(new TH("Highlight a table row"), new TD("Shift+Click")),
                                     new TR(new TH("Highlight a table cell or an item in a list"), new TD("Alt+Click (Windows)", new BR(), "Ctrl+Shift+Click (Windows)", new BR(), "Command+Shift+Click (Mac)")),
-                                    new TR(new TH("Change highlighter color"), new TD("Alt+1, Alt+2, Alt+3, Alt+4")))),
+                                    new TR(new TH("Change highlighter color"), new TD("Alt+0 through Alt+9")))),
                             new H3("Default file locations"),
                             new H4("Windows"),
                             new TABLE { class_ = "file-locations" }._(
