@@ -107,20 +107,6 @@ namespace KtaneWeb
                                         modJson = newJson;
 #endif
 
-                                        // Merge in TP data
-                                        static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
-                                        var tpEntry = tpEntries.FirstOrDefault(entry =>
-                                        {
-                                            string entryName = Regex.Replace(entry["gsx$modulename"]["$t"].GetString(), @" \((Solve|Time)\)", "");
-                                            return normalize(entryName) == normalize(mod.DisplayName ?? mod.Name);
-                                        });
-
-                                        if (tpEntry != null)
-                                        {
-                                            mergeTPData(mod, tpEntry);
-                                            modJson = (JsonDict) ClassifyJson.Serialize(mod);
-                                        }
-
                                         // Merge in Time Mode data
                                         var timeModeEntry = timeModeEntries.FirstOrDefault(entry =>
                                         {
@@ -132,6 +118,29 @@ namespace KtaneWeb
                                         {
                                             mergeTimeModeData(mod, timeModeEntry);
                                             modJson = (JsonDict)ClassifyJson.Serialize(mod);
+                                        }
+
+                                        // Merge in TP data
+                                        static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
+                                        var tpEntry = tpEntries.FirstOrDefault(entry =>
+                                        {
+                                            string entryName = entry["gsx$modulename"]["$t"].GetString();
+                                            return normalize(entryName) == normalize(mod.DisplayName ?? mod.Name);
+                                        });
+
+                                        if (tpEntry != null)
+                                        {
+                                            string scoreString = tpEntry["gsx$tpscore"]["$t"].GetString();
+                                            if (!string.IsNullOrEmpty(scoreString))
+                                            {
+                                                if (mod.TwitchPlays == null)
+                                                    mod.TwitchPlays = new KtaneTwitchPlaysInfo();
+
+                                                mod.TwitchPlays.ScoreString = scoreString;
+                                            }
+
+                                            modJson = (JsonDict) ClassifyJson.Serialize(mod);
+                                            mergeTPData(modJson, mod);
                                         }
 
                                         // Some module names contain characters that can’t be used in filenames (e.g. “?”)
@@ -226,59 +235,60 @@ namespace KtaneWeb
             return mic;
         }
 
-        private void mergeTPData(KtaneModuleInfo mod, JsonValue entry)
+        private void mergeTPData(JsonDict modJson, KtaneModuleInfo mod)
         {
-            string scoreString = entry["gsx$tpscore"]["$t"].GetString();
-            if (string.IsNullOrEmpty(scoreString))
-                return;
-
-            var moduleName = entry["gsx$modulename"]["$t"].GetString();
-
-            KtaneTwitchPlaysNeedyScoring? scoreMethod = null;
-            if (moduleName.EndsWith(" (Solve)"))
-                scoreMethod = KtaneTwitchPlaysNeedyScoring.Solves;
-            else if (moduleName.EndsWith(" (Time)"))
-                scoreMethod = KtaneTwitchPlaysNeedyScoring.Time;
-
-            if (mod.TwitchPlays == null)
-                mod.TwitchPlays = new KtaneTwitchPlaysInfo();
-
-            var tp = mod.TwitchPlays;
-
-            // The module has been determined, now parse the score.
-            tp.NeedyScoring ??= scoreMethod;
-
             // UN and T is for unchanged and temporary score which are read normally.
-            scoreString = Regex.Replace(scoreString, @"(?:UN )?(\d+)T?", "$1");
+            string scoreString = Regex.Replace(mod.TwitchPlays.ScoreString, @"(UN|(?<=\d)T)", "");
 
-            // S is for special modules which we parse out the multiplier and put it into a dictionary and use later.
-            var dynamicMatch = Regex.Match(scoreString, @"S ([\d.]+)x(?: \+ ([\d.]+))?");
-            if (dynamicMatch.Success && decimal.TryParse(dynamicMatch.Groups[1].Value, out decimal dynamicScore))
+            var parts = new List<string>();
+            foreach (var factor in scoreString.SplitNoEmpty("+"))
             {
-                // A + after S is for a static addition to the dynamic score.
-                if (dynamicMatch.Groups.Count > 2)
+                if (factor == "TBD")
+                    continue;
+
+                var split = factor.SplitNoEmpty(" ");
+                if (!split.Length.IsBetween(1, 2))
                 {
-                    if (decimal.TryParse(dynamicMatch.Groups[2].Value, out decimal staticScore))
-                        tp.Score ??= staticScore;
-                }
-                else
-                {
-                    tp.Score ??= 0;
+                    continue;
                 }
 
-                tp.ScorePerModule ??= dynamicScore;
-                return;
+                var numberString = split[split.Length - 1];
+                if (numberString.EndsWith("x")) // To parse "5x" we need to remove the x.
+                    numberString = numberString.Substring(0, numberString.Length - 1);
+
+                if (!float.TryParse(numberString, out float number))
+                {
+                    continue;
+                }
+
+                switch (split.Length)
+                {
+                    case 1:
+                        parts.Add(number.Pluralize("base point"));
+                        break;
+
+                    case 2 when split[0] == "T":
+                        parts.Add(number.Pluralize("point") + " per second");
+                        break;
+
+                    // D is for needy deactivations.
+                    case 2 when split[0] == "D":
+                        parts.Add(number.Pluralize("point") + " per deactivation");
+                        break;
+
+                    // PPA is for point per action modules which can be parsed in some cases.
+                    case 2 when split[0] == "PPA":
+                        parts.Add(number.Pluralize("point") + " per action");
+                        break;
+
+                    // S is for special modules which we parse out the multiplier and put it into a dictionary and use later.
+                    case 2 when split[0] == "S":
+                        parts.Add(number.Pluralize("point") + " per module");
+                        break;
+                }
             }
 
-            // PPA is for point per action modules which can be parsed in some cases.
-            scoreString = Regex.Replace(scoreString, @"PPA ([\d.]+) \+ ([\d.]+)", "$2");
-
-            // Catch any PPA or TDB modules which can't be parsed.
-            if (scoreString.StartsWith("PPA ") || scoreString == "TBD")
-                return;
-
-            if (decimal.TryParse(scoreString, out decimal score))
-                tp.Score ??= score;
+            modJson["TwitchPlays"]["ScoreStringDescription"] = parts.JoinString(" + ");
         }
 
         private void mergeTimeModeData(KtaneModuleInfo mod, JsonValue entry)

@@ -155,9 +155,6 @@ namespace KtaneWeb
             else if (Souvenir != null && Souvenir.Status != KtaneModuleSouvenir.Considered)
                 Souvenir.Explanation = null;
 
-            if (TwitchPlays != null)
-                TwitchPlays.NeedyScoring = Type == KtaneModuleType.Needy ? (TwitchPlays.NeedyScoring ?? KtaneTwitchPlaysNeedyScoring.Solves).Nullable() : null;
-
             if (Ignore != null && Ignore.Length == 0)
                 Ignore = null;
 
@@ -212,14 +209,8 @@ namespace KtaneWeb
 
     sealed class KtaneTwitchPlaysInfo : IEquatable<KtaneTwitchPlaysInfo>
     {
-        [ClassifyIgnoreIfDefault, EditableField("Score", "For regular modules, the score for solving it. For needy modules, depends on the scoring method.")]
-        public decimal? Score;
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score per module", "For boss modules, a score value that is multiplied by the total number of modules on the bomb.")]
-        public decimal? ScorePerModule;          // for boss modules like FMN
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score-per-module cap", "For boss modules, a maximum number of modules up to which the boss module is scored. Use 0 if there is no cap.")]
-        public int ScorePerModuleCap;    // for modules like FE that cap out at a certain module count
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Needy), EditableField("Needy scoring", "How are the points for a needy module calculated?")]
-        public KtaneTwitchPlaysNeedyScoring? NeedyScoring = null;
+        [ClassifyIgnoreIfDefault, EditableField("Score String", "Defines how the module awards points.")]
+        public string ScoreString;
 
         // Human-readable explanation for special scoring (e.g. Souvenir)
         [ClassifyIgnoreIfDefault, EditableField("Special scoring", "Explain in words if the module’s scoring is special (e.g. Souvenir).")]
@@ -237,9 +228,8 @@ namespace KtaneWeb
 
         public override bool Equals(object obj) => obj != null && obj is KtaneTwitchPlaysInfo && Equals((KtaneTwitchPlaysInfo) obj);
         public bool Equals(KtaneTwitchPlaysInfo other) => other != null &&
-            other.Score == Score && other.ScorePerModule == ScorePerModule && other.ScorePerModuleCap == ScorePerModuleCap &&
-            other.ScoreExplanation == ScoreExplanation && other.TagPosition == TagPosition && other.NeedyScoring == NeedyScoring && other.AutoPin == AutoPin;
-        public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, ScorePerModuleCap, ScoreExplanation, TagPosition, NeedyScoring, AutoPin);
+            other.ScoreString == ScoreString && other.ScoreExplanation == ScoreExplanation && other.TagPosition == TagPosition && other.AutoPin == AutoPin;
+        public override int GetHashCode() => Ut.ArrayHash(ScoreString, ScoreExplanation, TagPosition, AutoPin);
     }
 
     sealed class KtaneTimeModeInfo : IEquatable<KtaneTimeModeInfo>

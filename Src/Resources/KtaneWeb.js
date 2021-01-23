@@ -553,16 +553,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 el("div", "inf-published inf inf2", mod.Published));
                             if (mod.TwitchPlays)
                             {
-                                if (mod.Type === 'Needy')
-                                    mod.TwitchPlaysInfo = `This needy module can be played in “Twitch Plays: KTANE” for a ${mod.TwitchPlays.NeedyScoring === 'Time' ? 'time-based' : 'solve-based'} score of ${mod.TwitchPlays.Score}.`;
-                                else if (mod.TwitchPlays.ScorePerModule)
-                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score ? `${mod.TwitchPlays.Score}, plus ` : ''}${mod.TwitchPlays.ScorePerModule} for each module on the bomb${mod.TwitchPlays.ScorePerModuleCap ? ` up to a maximum of ${mod.TwitchPlays.ScorePerModuleCap}` : ''}.`;
-                                else if (mod.TwitchPlays.ScoreExplanation)
-                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”. ${mod.TwitchPlays.ScoreExplanation}`;
-                                else
-                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score}.`;
-                                infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
-                                    mod.TwitchPlays.ScorePerModule || mod.TwitchPlays.ScoreExplanation ? 'S' : mod.TwitchPlays.Score));
+                                mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for ${mod.TwitchPlays.ScoreStringDescription}.`;
+                                infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo }, mod.TwitchPlays.ScoreStringDescription.replace(/( base)? points?/g, "")));
                             }
                             if (mod.TimeMode)
                             {
