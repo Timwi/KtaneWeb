@@ -120,6 +120,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         "Frysk": "fy"
     };
 
+    var pageLang = window.location.search.match(/lang=([^?&]+)/);
+    if(!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1) {
+        pageLang = null;
+    } else {
+        pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === pageLang[1])[0]
+    }
+
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
@@ -399,9 +406,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 mod.FncsSetManualLink.push(url => { lnkA.href = url; });
                         }
                     }
+ 
+                    if(pageLang === null || !mod.Manuals) {
+                        mod.localName = mod.Name;
+                    } else {
+                        for(let j = 0; j < mod.Manuals.length; j++) {
+                            let rx2 = mod.Manuals[j].Name.match(/translated(?: full)? \((.*) — ([^)]+)\)/);
+                            if(rx2 && rx2[1] === pageLang){
+                                mod.localName = rx2[2];
+                                continue;
+                            }
+                        }
+                        if(!mod.localName) mod.localName = mod.Name;
+                    }
 
                     let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
-                    let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.Name.replace(/'/g, "’")));
+                    let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
                     setCompatibilityTooltip(modlink, mod);
                     mod.ViewData.List = { TableRow: tr, SelectableLink: modlink };
                     let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
@@ -501,7 +521,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
-                        el('div', 'name', el('div', 'inner', mod.Name)),
+                        el('div', 'name', el('div', 'inner', mod.localName)),
                         el('div', 'tpscore', mod.TwitchPlays ? mod.TwitchPlays.Score : ''),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
@@ -675,6 +695,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 searchWhat += ' ' + mod.Description.toLowerCase();
             if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
+            if (pageLang)
+                searchWhat += ' ' + mod.localName.toLocaleLowerCase();
 
             let sh = filteredIn && searchKeywords.every(x => x.test(searchWhat));
             if (sh)
@@ -714,6 +736,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 for (let i = 0; i < mod.Manuals.length; i++)
                     if (mod.Manuals[i].Name === mod.Name + " (HTML)")
                         manual = mod.Manuals[i];
+                for (let i = 0; i < mod.Manuals.length; i++) {
+                    if (mod.Manuals[i].Language === pageLang && mod.Manuals[i].Name.slice(-6) === "(HTML)") {
+                        manual = mod.Manuals[i];
+                    }
+                }
                 if (mod.Name in preferredManuals)
                     for (let i = 0; i < mod.Manuals.length; i++)
                         if (preferredManuals[mod.Name] === mod.Manuals[i].Name)
