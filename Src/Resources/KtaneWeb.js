@@ -102,6 +102,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         "Nederlands": "nl",
         "Norsk": "no",
         "Polski": "pl",
+        "Português": "pt-PT",
         "Português do Brasil": "pt-br",
         "Suomi": "fi",
         "Svenska": "sv",
