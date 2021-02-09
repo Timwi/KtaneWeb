@@ -130,7 +130,7 @@ div.infos .inf-twitch {
     }
 
     div.infos .inf-twitch::before {
-        background-image: url(../HTML/img/twitch.svg);
+        background-image: url(HTML/img/twitch.svg);
         background-position: right 4px;
         background-position: calc(100% - 2px) 4px;
         padding-right: 12px;
