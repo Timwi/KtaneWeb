@@ -103,10 +103,10 @@
     public enum KtaneModuleLicense
     {
         [KtaneFilterOption("The module has its source code released and will follow the module’s license.")]
-		OpenSource,
+        OpenSource,
         [KtaneFilterOption("The module may be republished on someone else’s Steam account. Any work may not be reused.")]
         Republishable,
-        [KtaneFilterOption("The module may be republished and any work may be reused.")]
+        [KtaneFilterOption("The module may not be republished and any work may not be reused.")]
         Restricted,
     }
 }
