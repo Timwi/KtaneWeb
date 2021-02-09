@@ -183,8 +183,8 @@ namespace KtaneWeb
                         searchWhat += " " + m.ModuleID.ToLowerInvariant();
                     if (searchOptions.Contains("names"))
                         searchWhat += " " + m.Name.ToLowerInvariant() + " " + m.SortKey.ToLowerInvariant();
-                    if (searchOptions.Contains("authors"))
-                        searchWhat += " " + m.Author.ToLowerInvariant();
+                    if (searchOptions.Contains("authors") && (m.Author != null || m.Contributors != null))
+                        searchWhat += " " + (m.Author ?? m.Contributors.ToAuthorString()).ToLowerInvariant();
                     if (searchOptions.Contains("descriptions"))
                         searchWhat += " " + m.Description.ToLowerInvariant();
                     if (searchBySymbol && m.Symbol != null)
