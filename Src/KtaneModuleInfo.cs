@@ -47,7 +47,7 @@ namespace KtaneWeb
         public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
         [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube).")]
         public string TutorialVideoUrl;
-        [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;
 
         [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes, even if rare.")]
@@ -58,10 +58,10 @@ namespace KtaneWeb
         public DateTime Published = DateTime.UtcNow.Date;
 
         // The following are only relevant for modules (not widgets)
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         [EditableField("Defuser difficulty", "An approximate difficulty rating for the defuser.")]
         public KtaneModuleDifficulty? DefuserDifficulty;
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         [EditableField("Expert difficulty", "An approximate difficulty rating for the expert.")]
         public KtaneModuleDifficulty? ExpertDifficulty;
 
@@ -77,7 +77,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+FullBoss” or “+SemiBoss” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
         public string[] Ignore = null;
 
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         [EditableField("Translation of", "Only enter this if this module is a translation of another module. Specify the original name of the other module (e.g., “The Button”). It will not be listed separately on the website.")]
         public string TranslationOf = null;
 
@@ -128,7 +128,7 @@ namespace KtaneWeb
             if (SortKey == null || SortKey == "")
                 SortKey = Regex.Replace(Name, @"^The |[^a-zA-Z0-9]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
 
-            if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy)
+            if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy || Type == KtaneModuleType.Holdable)
             {
                 DefuserDifficulty = DefuserDifficulty ?? KtaneModuleDifficulty.Easy;
                 ExpertDifficulty = ExpertDifficulty ?? KtaneModuleDifficulty.Easy;

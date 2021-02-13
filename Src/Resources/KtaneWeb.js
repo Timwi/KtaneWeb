@@ -443,7 +443,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let infos = el("div", "infos",
                         el("div", "inf-type inf", mod.Type),
                         el("div", "inf-origin inf inf2", mod.Origin));
-                    if (mod.Type === 'Regular' || mod.Type === 'Needy')
+                    if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
                     {
                         function readable(difficulty)
                         {
@@ -938,7 +938,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             }
             menuDiv.appendChild(el('div', 'bottom-links',
                 el('div', null, el('a', null, { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')),
-                el('div', null, el('a', null, { href: '#', onclick: function() { setEditUi(mod); popup($(lnk), $('#module-ui')); return false; } }, `Edit this ${mod.Type === 'Widget' ? 'widget' : 'module'}`))));
+                el('div', null, el('a', null, { href: '#', onclick: function() { setEditUi(mod); popup($(lnk), $('#module-ui')); return false; } }, `Edit this ${mod.Type === 'Widget' ? 'widget' : mod.Type === 'Holdable' ? 'holdable' : 'module'}`))));
 
             if (!isMobileOpt)
                 $(menuDiv).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
