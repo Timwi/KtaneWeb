@@ -11,9 +11,6 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        // PDF merge disabled until somebody fixes it
-        const bool PdfMergeDisabled = false;
-
         // Access keys:
         // A    Logfile Analyzer
         // B    sort by Twitch Plays score
@@ -204,7 +201,7 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "profile/zip" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Download pre-made profiles".Accel('p')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Mode Settings Editor"))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "module-json-new" }._(new IMG { class_ = "icon-img", src = "HTML/img/edit-icon.png" }, new SPAN { class_ = "icon-label" }._("Create new module")))),
-                            PdfMergeDisabled ? null : new DIV { class_ = "pdf-merge" }._(
+                            new DIV { class_ = "pdf-merge" }._(
                                 new FORM { action = "merge-pdf", method = method.post }._(
                                 new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
                                 new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter"))),
