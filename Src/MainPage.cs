@@ -22,14 +22,14 @@ namespace KtaneWeb
         // E    Reverse sort
         // F    Find
         // G    Glossary
-        // H    link to Steam Workshop item
+        // H    include/exclude holdables
         // I    toggle views
         // J    Generate JSON button (module edit UI)
         // K    Dark Theme
         // L    Light Theme
         // M    include/exclude mods
         // N    sort by name
-        // O
+        // O    link to Steam Workshop item
         // P    Profile Editor
         // Q    
         // R    include/exclude regular modules
@@ -67,7 +67,7 @@ namespace KtaneWeb
             new Selectable
             {
                 HumanReadable = "Steam Workshop",
-                Accel = 'h',
+                Accel = 'o',
                 Icon = "HTML/img/steam-workshop-item.png",
                 PropName = "steam",
                 UrlFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
