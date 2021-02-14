@@ -43,7 +43,7 @@ namespace KtaneWeb
 
         [ClassifyIgnoreIfDefault, EditableField("Source code", "A link to the source code of the module or widget, usually a link to a GitHub repository.")]
         public string SourceUrl;
-        [EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
+        [ClassifyIgnoreIf(KtaneModuleLicense.Restricted), EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
         public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
         [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube).")]
         public string TutorialVideoUrl;
@@ -130,8 +130,8 @@ namespace KtaneWeb
 
             if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy || Type == KtaneModuleType.Holdable)
             {
-                DefuserDifficulty = DefuserDifficulty ?? KtaneModuleDifficulty.Easy;
-                ExpertDifficulty = ExpertDifficulty ?? KtaneModuleDifficulty.Easy;
+                DefuserDifficulty ??= KtaneModuleDifficulty.Easy;
+                ExpertDifficulty ??= KtaneModuleDifficulty.Easy;
             }
             else
             {
@@ -168,7 +168,14 @@ namespace KtaneWeb
                 element["Published"] = element["Published"].GetString().Apply(s => s.Remove(s.Length - 1));
         }
 
-        void IClassifyObjectProcessor.BeforeSerialize() { }
+        void IClassifyObjectProcessor.BeforeSerialize()
+        {
+            // This is a bit hacky, but let’s set License to its default value (which happens to be Restricted) to make the serializer omit that field.
+            // AfterDeserialize() will set it back to OpenSource if SourceUrl != null.
+            if (License == KtaneModuleLicense.OpenSource && SourceUrl != null)
+                License = KtaneModuleLicense.Restricted;
+        }
+
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
         void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
         void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
