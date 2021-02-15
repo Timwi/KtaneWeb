@@ -58,7 +58,6 @@ textarea {
 #top-controls {
     clear: both;
     margin: -10px 0;
-    margin-right: 1px;
     position: sticky;
     top: 0;
     z-index: 2;
@@ -338,7 +337,6 @@ body.sort-published #main-table th.infos::after {
         float: right;
         z-index: 21;
         margin-top: -14px;
-        margin-right: 1px;
     }
 
         #main-table-container #tabs > .tab {
@@ -955,6 +953,11 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
     #top-controls {
         border-bottom-color: #ccc;
         margin-bottom: -1px;
+        margin-right: 1px;
+    }
+    
+    #main-table-container > #tabs {
+        margin-right: 1px;
     }
 
     #page-opt {
