@@ -412,18 +412,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         }
                     }
 
-                    mod.localName = mod.Name;
-                    if (pageLang !== null && mod.Manuals)
-                        for (let j = 0; j < mod.Manuals.length; j++)
-                        {
-                            let rx2 = mod.Manuals[j].Name.match(/translated(?: full)? \((.*) — ([^)]+)\)/);
-                            if (rx2 && rx2[1] === pageLang)
-                            {
-                                mod.localName = rx2[2];
-                                break;
-                            }
-                        }
-
                     let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
                     let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
                     setCompatibilityTooltip(modlink, mod);
@@ -1003,6 +991,19 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             mod.TwitchPlays.TagPosition = 'Automatic';
         if (mod.TwitchPlays && !mod.TwitchPlays.AutoPin)
             mod.TwitchPlays.AutoPin = false;
+
+        // Potentially translated module names if user has specified ?lang=xx in the URL
+        mod.localName = mod.Name;
+        if (pageLang !== null && mod.Manuals)
+            for (let j = 0; j < mod.Manuals.length; j++)
+            {
+                let rx2 = mod.Manuals[j].Name.match(/translated(?: full)? \((.*) — ([^)]+)\)/);
+                if (rx2 && rx2[1] === pageLang)
+                {
+                    mod.localName = rx2[2];
+                    break;
+                }
+            }
     }
     languages.sort();
 

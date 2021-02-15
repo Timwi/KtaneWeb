@@ -25,6 +25,7 @@ table {
 
 #main-table, #main-periodic-table {
     display: none;
+    clear: both;
 }
 
 td, th {
@@ -63,7 +64,6 @@ textarea {
     z-index: 2;
     background-color: #fff;
     padding: 10px 0;
-    border-bottom: 1px solid #ccc;
 }
 
     #top-controls .search-container #search-field {
@@ -259,9 +259,48 @@ tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.com
     margin-top: .5em;
 }
 
-#main-table th, #main-table td.infos-2 {
-    white-space: nowrap;
+#main-table {
+    border-collapse: separate;
+    border-spacing: 0;
 }
+
+    #main-table th {
+        position: sticky;
+        top: 42px;
+        background: white;
+        z-index: 10;
+        border: 1px solid black;
+        box-sizing: border-box;
+    }
+
+    #main-table th, #main-table td.infos-2 {
+        white-space: nowrap;
+    }
+
+    #main-table td {
+        border-bottom: none;
+        border-right: none;
+    }
+
+        #main-table td.infos-2 {
+            border-right: 1px solid black;
+        }
+
+    #main-table tr:nth-child(2) td {
+        border-top: none;
+    }
+
+    #main-table tr:last-child td {
+        border-bottom: 1px solid black;
+    }
+
+    #main-table th {
+        border-right: none;
+    }
+
+        #main-table th.infos {
+            border-right: 1px solid black;
+        }
 
 body.sort-name #main-table th.modlink::after {
     content: '   • sorted by name';
@@ -672,114 +711,117 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 
 
 /* Periodic Table of Modules */
-#actual-periodic-table .module {
-    border: 2px solid #666;
-    width: 91px;
-    height: 58px;
-    float: left;
-    text-align: center;
-    position: relative;
-    margin-right: -2px;
-    margin-bottom: -2px;
-    display: block;
-    color: black;
+#actual-periodic-table {
+    display: flex;
+    flex-wrap: wrap;
 }
 
-    #actual-periodic-table .module.highlight {
-        z-index: 100;
-        box-shadow: 0 0 10px rgba(0,0,0,.6);
-        border-color: black;
+    #actual-periodic-table .module {
+        border: 2px solid #666;
+        width: 91px;
+        height: 58px;
+        text-align: center;
+        position: relative;
+        margin-right: -2px;
+        margin-bottom: -2px;
+        color: black;
     }
 
-#actual-periodic-table .manual-selector {
-    display: block;
-    position: absolute;
-    right: 1px;
-    top: 20px;
-    width: 8px;
-    height: 10px;
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 10"><path fill="hsl(240, 60%, 70%)" d="M0,0 8,0 4,10z" /></svg>');
-    background-repeat: no-repeat;
-    background-size: contain;
-}
+        #actual-periodic-table .module.highlight {
+            z-index: 100;
+            box-shadow: 0 0 10px rgba(0,0,0,.6);
+            border-color: black;
+        }
 
-#actual-periodic-table .symbol {
-    font-family: Georgia;
-    position: absolute;
-    box-sizing: border-box;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 36px;
-    padding: 7px 7px 0 36px;
-    font-size: 18pt;
-    text-align: center;
-}
-
-    #actual-periodic-table .symbol .icon {
+    #actual-periodic-table .manual-selector {
+        display: block;
+        position: absolute;
+        right: 1px;
+        top: 20px;
+        width: 8px;
+        height: 10px;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 10"><path fill="hsl(240, 60%, 70%)" d="M0,0 8,0 4,10z" /></svg>');
         background-repeat: no-repeat;
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 32px;
-        height: 32px;
+        background-size: contain;
     }
 
-#actual-periodic-table .VeryEasy {
-    background-color: #dfd;
-}
-
-#actual-periodic-table .Easy {
-    background-color: #efd;
-}
-
-#actual-periodic-table .Medium {
-    background-color: #ffd;
-}
-
-#actual-periodic-table .Hard {
-    background-color: #fed;
-}
-
-#actual-periodic-table .VeryHard {
-    background-color: #fdd;
-}
-
-#actual-periodic-table .souvenir {
-    position: absolute;
-    left: 35px;
-    top: -1px;
-    font-size: 8pt;
-    text-align: left;
-}
-
-#actual-periodic-table .tpscore {
-    position: absolute;
-    right: 2px;
-    top: -1px;
-    font-size: 8pt;
-    text-align: right;
-}
-
-#actual-periodic-table .name {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 36px;
-    bottom: 1px;
-    font-family: 'Agency FB';
-    font-size: 9pt;
-    line-height: 1;
-}
-
-    #actual-periodic-table .name .inner {
+    #actual-periodic-table .symbol {
+        font-family: Georgia;
         position: absolute;
-        left: 50%;
-        top: 50%;
-        width: 100%;
-        transform: translate(-50%, -50%);
-        line-height: .9;
+        box-sizing: border-box;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 36px;
+        padding: 7px 7px 0 36px;
+        font-size: 18pt;
+        text-align: center;
     }
+
+        #actual-periodic-table .symbol .icon {
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 32px;
+            height: 32px;
+        }
+
+    #actual-periodic-table .VeryEasy {
+        background-color: #dfd;
+    }
+
+    #actual-periodic-table .Easy {
+        background-color: #efd;
+    }
+
+    #actual-periodic-table .Medium {
+        background-color: #ffd;
+    }
+
+    #actual-periodic-table .Hard {
+        background-color: #fed;
+    }
+
+    #actual-periodic-table .VeryHard {
+        background-color: #fdd;
+    }
+
+    #actual-periodic-table .souvenir {
+        position: absolute;
+        left: 35px;
+        top: -1px;
+        font-size: 8pt;
+        text-align: left;
+    }
+
+    #actual-periodic-table .tpscore {
+        position: absolute;
+        right: 2px;
+        top: -1px;
+        font-size: 8pt;
+        text-align: right;
+    }
+
+    #actual-periodic-table .name {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 36px;
+        bottom: 1px;
+        font-family: 'Agency FB';
+        font-size: 9pt;
+        line-height: 1;
+    }
+
+        #actual-periodic-table .name .inner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 100%;
+            transform: translate(-50%, -50%);
+            line-height: .9;
+        }
 
 #module-ui table td, #module-ui table th {
     border: none;
@@ -940,6 +982,18 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
     #top-controls {
         margin-bottom: 2.5em;
     }
+
+    #main-table th {
+        top: 40px;
+    }
+
+        #main-table th.modlink {
+            border-right: 1px solid black;
+        }
+
+    #main-table td.infos-1 {
+        border-right: 1px solid black;
+    }
 }
 
 /* Mobile interface */
@@ -949,13 +1003,13 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         font-family: 'Trebuchet MS', sans-serif;
         margin-bottom: 1em;
     }
-    
+
     #top-controls {
         border-bottom-color: #ccc;
         margin-bottom: -1px;
         margin-right: 1px;
     }
-    
+
     #main-table-container > #tabs {
         margin-right: 1px;
     }
@@ -1137,6 +1191,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         overflow: auto;
         font-size: 75%;
         width: auto !important;
+        z-index: 100;
     }
 
         div.popup > div.close {
@@ -1275,6 +1330,10 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 
     #filters, #options {
         column-count: initial;
+    }
+
+    #main-table td.infos-2 {
+        border-right: none;
     }
 }
 
