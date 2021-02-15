@@ -57,7 +57,14 @@ textarea {
 /* Top controls */
 #top-controls {
     clear: both;
-    margin: 0 0 .5em;
+    margin: -10px 0;
+    margin-right: 1px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #fff;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
 }
 
     #top-controls .search-container #search-field {
@@ -326,9 +333,12 @@ body.sort-published #main-table th.infos::after {
 }
 
     #main-table-container #tabs {
-        position: absolute;
-        right: 0;
-        bottom: 100%;
+        position: sticky;
+        top: 15px;
+        float: right;
+        z-index: 21;
+        margin-top: -14px;
+        margin-right: 1px;
     }
 
         #main-table-container #tabs > .tab {
@@ -940,6 +950,11 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
     body {
         font-family: 'Trebuchet MS', sans-serif;
         margin-bottom: 1em;
+    }
+    
+    #top-controls {
+        border-bottom-color: #ccc;
+        margin-bottom: -1px;
     }
 
     #page-opt {
