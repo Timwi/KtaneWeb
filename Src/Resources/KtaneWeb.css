@@ -495,6 +495,7 @@ div.popup {
     padding: 2em;
     background: #fafaff;
     box-shadow: 5px 5px 5px rgba(0,0,0,.3);
+    z-index: 100;
 }
 
     div.popup > div.close {
@@ -1191,7 +1192,6 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         overflow: auto;
         font-size: 75%;
         width: auto !important;
-        z-index: 100;
     }
 
         div.popup > div.close {
