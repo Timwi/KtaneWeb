@@ -278,21 +278,13 @@ tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.com
     }
 
     #main-table td {
-        border-bottom: none;
+        border-top: none;
         border-right: none;
     }
 
         #main-table td.infos-2 {
             border-right: 1px solid black;
         }
-
-    #main-table tr:nth-child(2) td {
-        border-top: none;
-    }
-
-    #main-table tr:last-child td {
-        border-bottom: 1px solid black;
-    }
 
     #main-table th {
         border-right: none;
