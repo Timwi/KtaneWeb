@@ -331,6 +331,23 @@ namespace KtaneWeb
                                     new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
                                     new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
                             new DIV { class_ = "option-group" }._(
+                                new H4("Mods per page"),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-pagecount", name = "pagecount", id = "pagecount-10" }.Data("pagecount", "10"), " ",
+                                    new LABEL { for_ = "pagecount-10", accesskey = "1" }._("10".Accel('1'))),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-pagecount", name = "pagecount", id = "pagecount-50" }.Data("pagecount", "50"), " ",
+                                    new LABEL { for_ = "pagecount-50", accesskey = "5" }._("50".Accel('5'))),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-pagecount", name = "pagecount", id = "pagecount-100" }.Data("pagecount", "100"), " ",
+                                    new LABEL { for_ = "pagecount-100", accesskey = "0" }._("100".Accel('0'))),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-pagecount", name = "pagecount", id = "pagecount-500" }.Data("pagecount", "500"), " ",
+                                    new LABEL { for_ = "pagecount-500" }._("500 (not recommended)")),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "set-pagecount", name = "pagecount", id = "pagecount-1000" }.Data("pagecount", "1000"), " ",
+                                    new LABEL { for_ = "pagecount-1000" }._("1000 (not recommended)")),
+                            new DIV { class_ = "option-group" }._(
                                 new H4("Make links go to"),
                                 _selectables.Select(sel => new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
