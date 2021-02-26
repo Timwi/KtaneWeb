@@ -1,4 +1,4 @@
-﻿
+
 body {
     max-width: 66em;
     margin: 0 auto;
@@ -54,6 +54,49 @@ textarea {
     width: 100%;
     height: 50em;
 }
+
+/* Number scroller for the page system, located at both the top and the bottom of the page */
+.page-scroller {
+    clear: both;
+    padding: 20px 0;
+    text-align: center;
+}
+
+    .page-scroller > button {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        font-size: 13pt;
+        font-family: 'Trebuchet MS', sans-serif;
+        border: 1px solid #555;
+        outline: 0;
+        margin: 2px;
+        background-color: #0000;
+        cursor: pointer;
+        border-radius: 2px;
+    }
+
+    .page-scroller > button:disabled {
+        opacity: 0.5;
+    }
+
+    .page-scroller > button:disabled, .page-scroller > button.selected {
+        cursor: default;
+    }
+
+    .page-scroller > button:not(:disabled):hover, .page-scroller > button.selected {
+        background-color: rgba(68, 130, 255, .4);
+    }
+
+    .page-scroller > span {
+        display: inline-block;
+        width: 20px;
+        margin: 2px;
+    }
+
+    .page-scroller > span.double {
+        width: 54px;
+    }
 
 /* Top controls */
 #top-controls {
@@ -995,6 +1038,23 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
     body {
         font-family: 'Trebuchet MS', sans-serif;
         margin-bottom: 1em;
+    }
+
+    .page-scroller > button {
+        width: 24px;
+        height: 24px;
+        font-size: 10pt;
+        margin: 1px;
+    }
+
+    .page-scroller > span {
+        width: 14px;
+        margin: 1px;
+        font-size: 9pt;
+    }
+
+    .page-scroller > span.double {
+        width: 40px;
     }
 
     #top-controls {
