@@ -139,6 +139,8 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "options-link-mobile" }.Data("popup", "options")._(new IMG { class_ = "icon-img", src = "HTML/img/sliders.png" }, new SPAN { class_ = "icon-label" }._("Options"))))),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
+                        
+                        new DIV { class_ = "page-scroller" },
 
                         // SEARCH FIELD (and rule seed display on mobile)
                         new DIV { id = "top-controls" }._(
@@ -172,6 +174,8 @@ namespace KtaneWeb
                             new DIV { id = "main-periodic-table" }._(
                                 new DIV { id = "actual-periodic-table" })),
                         new DIV { id = "module-count" },
+                        
+                        new DIV { class_ = "page-scroller" },
 
                         new DIV { id = "legal" }._(new A { href = "https://legal.timwi.de" }._("Legal stuff · Impressum · Datenschutzerklärung")),
 
