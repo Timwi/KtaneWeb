@@ -61,6 +61,8 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
+var pagecount = lStorage.getItem("pagecount");
+
 function el(tagName, className, ...args)
 {
     const element = document.createElement(tagName);
@@ -84,10 +86,12 @@ function el(tagName, className, ...args)
     return element;
 }
 
-function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5, moduleLoadExceptions)
+function initializePage(moduleData, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5, moduleLoadExceptions)
 {
     for (let exception of moduleLoadExceptions)
         console.error(exception);
+
+    var modules = [];
 
     const languageCodes = {
         "Dansk": "da",
@@ -206,13 +210,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     var selectedIndex = 0;
     function updateSearchHighlight()
     {
-        let visible = modules.filter(mod => mod.IsVisible);
         if (selectedIndex < 0)
             selectedIndex = 0;
-        if (selectedIndex >= visible.length)
-            selectedIndex = visible.length - 1;
-        for (let i = 0; i < visible.length; i++)
-            for (let fnc of visible[i].FncsSetHighlight)
+        if (selectedIndex >= modules.length)
+            selectedIndex = modules.length - 1;
+        for (let i = 0; i < modules.length; i++)
+            for (let fnc of modules[i].FncsSetHighlight)
                 fnc(i === selectedIndex);
     }
 
@@ -238,7 +241,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         updateFilter();
     }
 
-    function setSort(srt, rvrse)
+    function setSort(srt, rvrse, nofilter)
     {
         sort = srt;
         lStorage.setItem('sort', srt);
@@ -263,12 +266,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if (rvrse)
             modules.reverse();
 
-        viewsReady.get(view).Sort();
-
-        $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
-        $(sorts[srt].radioButton).prop('checked', true);
-        if ($("input#search-field").is(':focus'))
-            updateSearchHighlight();
+        if (!nofilter) updateFilter();
+        else {
+            $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
+            $(sorts[srt].radioButton).prop('checked', true);
+            if ($("input#search-field").is(':focus'))
+                updateSearchHighlight();
+        }
     }
 
     function setDisplayOptions(set)
@@ -383,117 +387,128 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             case 'List': {
                 const mainTable = document.getElementById("main-table").getElementsByTagName("tbody")[0];
 
-                for (var i = 0; i < modules.length; i++)
-                {
-                    let mod = modules[i];
-
-                    let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
-                    mod.FncsShowHide.push(sh => { tr.style.display = (sh ? '' : 'none'); });
-                    mod.FncsSetHighlight.push(hgh =>
-                    {
-                        if (hgh)
-                            tr.classList.add('selected');
-                        else
-                            tr.classList.remove('selected');
-                    });
-
-                    for (let ix = 0; ix < initSelectables.length; ix++)
-                    {
-                        let sel = initSelectables[ix];
-                        let td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}`);
-                        tr.appendChild(td);
-                        if (sel.ShowIconFunction(mod, mod.Manuals))
-                        {
-                            let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
-                            let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
-                            td.appendChild(lnkA);
-                            if (sel.PropName === 'manual')
-                                mod.FncsSetManualLink.push(url => { lnkA.href = url; });
-                        }
-                    }
-
-                    let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
-                    let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
-                    setCompatibilityTooltip(modlink, mod);
-                    mod.ViewData.List = { TableRow: tr, SelectableLink: modlink };
-                    let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
-                    tr.appendChild(td1);
-                    mod.FncsSetSelectable.push(url =>
-                    {
-                        if (url === null)
-                            modlink.removeAttribute('href');
-                        else
-                            modlink.href = url;
-                    });
-
-                    let td2 = el("td", "infos-2");
-                    tr.appendChild(td2);
-                    let infos = el("div", "infos",
-                        el("div", "inf-type inf", mod.Type),
-                        el("div", "inf-origin inf inf2", mod.Origin));
-                    if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
-                    {
-                        function readable(difficulty)
-                        {
-                            var result = '';
-                            for (var i = 0; i < difficulty.length; i++)
-                            {
-                                if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
-                                    result += ' ';
-                                result += difficulty[i].toLowerCase();
-                            }
-                            return result;
-                        }
-                        if (mod.DefuserDifficulty === mod.ExpertDifficulty)
-                            infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
-                        else
-                            infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
-                    }
-                    infos.append(makeAuthorElement(mod),
-                        el("div", "inf-published inf inf2", mod.Published));
-                    if (mod.TwitchPlays)
-                    {
-                        if (mod.Type === 'Needy')
-                            mod.TwitchPlaysInfo = `This needy module can be played in “Twitch Plays: KTANE” for a ${mod.TwitchPlays.NeedyScoring === 'Time' ? 'time-based' : 'solve-based'} score of ${mod.TwitchPlays.Score}.`;
-                        else if (mod.TwitchPlays.ScorePerModule)
-                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score ? `${mod.TwitchPlays.Score}, plus ` : ''}${mod.TwitchPlays.ScorePerModule} for each module on the bomb${mod.TwitchPlays.ScorePerModuleCap ? ` up to a maximum of ${mod.TwitchPlays.ScorePerModuleCap}` : ''}.`;
-                        else if (mod.TwitchPlays.ScoreExplanation)
-                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”. ${mod.TwitchPlays.ScoreExplanation}`;
-                        else
-                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score}.`;
-                        infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
-                            mod.TwitchPlays.ScorePerModule || mod.TwitchPlays.ScoreExplanation ? 'S' : mod.TwitchPlays.Score));
-                    }
-                    if (mod.RuleSeedSupport === 'Supported')
-                    {
-                        mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
-                        infos.append(el("div", "inf-rule-seed inf inf2", { title: mod.RuleSeedInfo }));
-                    }
-
-                    var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
-                    var attr = souvenirAttributes[value];
-                    var expl = mod.Souvenir && mod.Souvenir.Explanation;
-                    mod.SouvenirInfo = `${attr.Tooltip}${expl ? "\n" + expl : ""}`;
-                    infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
-                    if (mod.ModuleID)
-                        infos.append(el("div", "inf-id inf", mod.ModuleID));
-                    infos.append(el("div", "inf-description inf", mod.Description));
-                    td1.appendChild(infos);
-                    td2.appendChild(infos.cloneNode(true));
-
-                    var lnk1 = el("a", "manual-selector", { href: "#" });
-                    lnk1.onclick = makeClickHander(lnk1, false, mod);
-                    td1.appendChild(lnk1);
-
-                    var lnk2 = el("a", "mobile-opt", { href: "#" });
-                    lnk2.onclick = makeClickHander(lnk2, true, mod);
-                    tr.appendChild(el("td", "mobile-ui", lnk2));
-                }
-
+                var lastRows = [];
+                
                 viewsReady.set('List', {
+                    Create: function() {
+                        lastRows.forEach(r => $(r).remove());
+                        lastRows = [];
+
+                        for (var i = 0; i < modules.length; i++)
+                        {
+                            let mod = modules[i];
+
+                            let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
+
+                            lastRows.push(tr);
+
+                            mod.FncsSetHighlight.push(hgh =>
+                            {
+                                if (hgh)
+                                    tr.classList.add('selected');
+                                else
+                                    tr.classList.remove('selected');
+                            });
+
+                            for (let ix = 0; ix < initSelectables.length; ix++)
+                            {
+                                let sel = initSelectables[ix];
+                                let td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}`);
+                                tr.appendChild(td);
+                                if (sel.ShowIconFunction(mod, mod.Manuals))
+                                {
+                                    let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
+                                    let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
+                                    td.appendChild(lnkA);
+                                    if (sel.PropName === 'manual')
+                                        mod.FncsSetManualLink.push(url => { lnkA.href = url; });
+                                }
+                            }
+
+                            let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
+                            let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
+                            setCompatibilityTooltip(modlink, mod);
+                            mod.ViewData.List = { SelectableLink: modlink };
+                            let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
+                            tr.appendChild(td1);
+                            mod.FncsSetSelectable.push(url =>
+                            {
+                                if (url === null)
+                                    modlink.removeAttribute('href');
+                                else
+                                    modlink.href = url;
+                            });
+
+                            let td2 = el("td", "infos-2");
+                            tr.appendChild(td2);
+                            let infos = el("div", "infos",
+                                el("div", "inf-type inf", mod.Type),
+                                el("div", "inf-origin inf inf2", mod.Origin));
+                            if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
+                            {
+                                function readable(difficulty)
+                                {
+                                    var result = '';
+                                    for (var i = 0; i < difficulty.length; i++)
+                                    {
+                                        if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
+                                            result += ' ';
+                                        result += difficulty[i].toLowerCase();
+                                    }
+                                    return result;
+                                }
+                                if (mod.DefuserDifficulty === mod.ExpertDifficulty)
+                                    infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
+                                else
+                                    infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
+                            }
+                            infos.append(makeAuthorElement(mod),
+                                el("div", "inf-published inf inf2", mod.Published));
+                            if (mod.TwitchPlays)
+                            {
+                                if (mod.Type === 'Needy')
+                                    mod.TwitchPlaysInfo = `This needy module can be played in “Twitch Plays: KTANE” for a ${mod.TwitchPlays.NeedyScoring === 'Time' ? 'time-based' : 'solve-based'} score of ${mod.TwitchPlays.Score}.`;
+                                else if (mod.TwitchPlays.ScorePerModule)
+                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score ? `${mod.TwitchPlays.Score}, plus ` : ''}${mod.TwitchPlays.ScorePerModule} for each module on the bomb${mod.TwitchPlays.ScorePerModuleCap ? ` up to a maximum of ${mod.TwitchPlays.ScorePerModuleCap}` : ''}.`;
+                                else if (mod.TwitchPlays.ScoreExplanation)
+                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”. ${mod.TwitchPlays.ScoreExplanation}`;
+                                else
+                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score}.`;
+                                infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
+                                    mod.TwitchPlays.ScorePerModule || mod.TwitchPlays.ScoreExplanation ? 'S' : mod.TwitchPlays.Score));
+                            }
+                            if (mod.RuleSeedSupport === 'Supported')
+                            {
+                                mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
+                                infos.append(el("div", "inf-rule-seed inf inf2", { title: mod.RuleSeedInfo }));
+                            }
+
+                            var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
+                            var attr = souvenirAttributes[value];
+                            var expl = mod.Souvenir && mod.Souvenir.Explanation;
+                            mod.SouvenirInfo = `${attr.Tooltip}${expl ? "\n" + expl : ""}`;
+                            infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
+                            if (mod.ModuleID)
+                                infos.append(el("div", "inf-id inf", mod.ModuleID));
+                            infos.append(el("div", "inf-description inf", mod.Description));
+                            td1.appendChild(infos);
+                            td2.appendChild(infos.cloneNode(true));
+
+                            var lnk1 = el("a", "manual-selector", { href: "#" });
+                            lnk1.onclick = makeClickHander(lnk1, false, mod);
+                            td1.appendChild(lnk1);
+
+                            var lnk2 = el("a", "mobile-opt", { href: "#" });
+                            lnk2.onclick = makeClickHander(lnk2, true, mod);
+                            tr.appendChild(el("td", "mobile-ui", lnk2));
+
+                            mainTable.append(tr);
+                        }
+
+                        setLinksAndPreferredManuals();
+                    },
                     Show: function() { document.getElementById("main-table").style.display = 'table'; },
-                    Hide: function() { document.getElementById("main-table").style.display = 'none'; },
-                    Sort: function() { mainTable.append(...modules.map(mod => mod.ViewData.List.TableRow)); }
+                    Hide: function() { document.getElementById("main-table").style.display = 'none'; }
                 });
                 break;
             }
@@ -507,38 +522,48 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     Supported: 'S'
                 };
 
-                for (let i = 0; i < modules.length; i++)
-                {
-                    let mod = modules[i];
-                    let manualSelector = el('a', 'manual-selector', { href: '#' });
-                    let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
-                        el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
-                        el('div', 'name', el('div', 'inner', mod.localName)),
-                        el('div', 'tpscore', mod.TwitchPlays ? mod.TwitchPlays.Score : ''),
-                        el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
-                        manualSelector);
-                    setCompatibilityTooltip(a, mod.Compatibility);
-
-                    $(manualSelector).click(makeClickHander(manualSelector, false, mod));
-
-                    document.getElementById("actual-periodic-table").appendChild(a);
-
-                    mod.ViewData.PeriodicTable = { SelectableLink: a };
-                    mod.FncsShowHide.push(sh => { a.style.display = sh ? 'block' : 'none'; });
-                    mod.FncsSetSelectable.push(url => { a.href = url; });
-                    mod.FncsSetHighlight.push(hgh =>
-                    {
-                        if (hgh)
-                            a.classList.add('highlight');
-                        else
-                            a.classList.remove('highlight');
-                    });
-                }
+                var lastLinks = [];
 
                 viewsReady.set('PeriodicTable', {
+                    Create: function()
+                    {
+                        lastLinks.forEach(r => $(r).remove());
+                        lastLinks = [];
+
+                        for (let i = 0; i < modules.length; i++)
+                        {
+                            let mod = modules[i];
+                            let manualSelector = el('a', 'manual-selector', { href: '#' });
+                            let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
+                                el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
+                                el('div', 'name', el('div', 'inner', mod.localName)),
+                                el('div', 'tpscore', mod.TwitchPlays ? mod.TwitchPlays.Score : ''),
+                                el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
+                                manualSelector);
+                            setCompatibilityTooltip(a, mod.Compatibility);
+
+                            lastLinks.push(a);
+        
+                            $(manualSelector).click(makeClickHander(manualSelector, false, mod));
+        
+                            document.getElementById("actual-periodic-table").appendChild(a);
+        
+                            mod.ViewData.PeriodicTable = { SelectableLink: a };
+                            mod.FncsShowHide.push(sh => { a.style.display = sh ? 'block' : 'none'; });
+                            mod.FncsSetSelectable.push(url => { a.href = url; });
+                            mod.FncsSetHighlight.push(hgh =>
+                            {
+                                if (hgh)
+                                    a.classList.add('highlight');
+                                else
+                                    a.classList.remove('highlight');
+                            });
+
+                            $("actual-periodic-table").append(a);
+                        }
+                    },
                     Show: function() { document.getElementById("main-periodic-table").style.display = 'block'; },
-                    Hide: function() { document.getElementById("main-periodic-table").style.display = 'none'; },
-                    Sort: function() { document.getElementById("actual-periodic-table").append(...modules.map(mod => mod.ViewData.PeriodicTable.SelectableLink)); }
+                    Hide: function() { document.getElementById("main-periodic-table").style.display = 'none'; }
                 });
                 break;
             }
@@ -644,12 +669,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
-        let modCount = 0;
         let showAtTop = [];
         let searchBySymbol = document.getElementById('option-include-symbol').checked;
         let searchBySteamID = document.getElementById('option-include-steam-id').checked;
         let searchByModuleID = document.getElementById('option-include-module-id').checked;
-        modules.forEach(function(mod)
+        modules = moduleData;
+        setSort(sort, reverse, true);
+        modules = modules.filter(function(mod)
         {
             let filteredIn = true;
             for (let i = 0; i < initFilters.length; i++)
@@ -691,17 +717,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 searchWhat += ' ' + mod.localName.toLocaleLowerCase();
 
             let sh = filteredIn && searchKeywords.every(x => x.test(searchWhat));
-            if (sh)
-                modCount++;
-            for (let fnc of mod.FncsShowHide)
-                fnc(sh);
             if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, ''))
                 showAtTop.unshift(mod);
             else if (mod.Symbol && searchRaw === mod.Symbol.toLowerCase())
                 showAtTop.push(mod);
+            return sh;
         });
 
-        $('#module-count').text(modCount);
         lStorage.setItem('filters', JSON.stringify(filter));
         if ($("input#search-field").is(':focus'))
             updateSearchHighlight();
@@ -709,8 +731,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if (showAtTop !== showAtTopOfResults)
         {
             showAtTopOfResults = showAtTop;
-            setSort(sort, reverse);
         }
+
+        updatePage();
     }
 
     // Sets the module links to the current selectable and the manual icon link to the preferred manuals
@@ -943,9 +966,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
 
     // ** PROCESS ALL THE MODULES ** //
-    for (var i = 0; i < modules.length; i++)
+    for (var i = 0; i < moduleData.length; i++)
     {
-        let mod = modules[i];
+        let mod = moduleData[i];
         mod.SelectableLinkUrl = null;
         mod.IsVisible = true;
 
@@ -1071,6 +1094,101 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         setLanguages(preferredLanguages);
     });
 
+    function updatePageCount(count, dontFilter)
+    {
+        pagecount = count == null || isNaN(count) ? 50 : parseInt(count);
+        lStorage.setItem("pagecount", pagecount);
+        $('#pagecount-' + pagecount).prop('checked', true);
+        if (!dontFilter) updateFilter();
+    }
+
+    var currentPage = 0;
+
+    var leftPageFnc = null, rightPageFnc = null;
+
+    function updatePage(modulesOverride)
+    {
+        const modulesToUse = modulesOverride || modules;
+        const numPages = Math.ceil(modulesToUse.length / pagecount);
+
+        if (currentPage >= numPages) currentPage = numPages - 1;
+        if (currentPage < 0) currentPage = 0;
+        
+        modules = modulesToUse.slice(pagecount * currentPage, pagecount * (currentPage + 1));
+        $('#module-count').text(modules.length);
+        viewsReady.get(view).Create();
+
+        $('.page-scroller').each(function()
+        {
+            var scroller = $(this).empty();
+
+            if (numPages < 2) return;
+
+            function addButton(label, disabled, event, selected)
+            {
+                var button = $("<button/>").text(label).attr({ disabled }).click(event);
+                if (selected) button.addClass("selected");
+                scroller.append(button);
+            }
+
+            function addBreak(nodouble)
+            {
+                var span = $("<span/>").appendTo(scroller);
+                if (nodouble) span.text("\u2026");
+                else span.addClass("double");
+            }
+
+            leftPageFnc = function()
+            {
+                if (currentPage) {
+                    currentPage--;
+                    updatePage(modulesToUse);
+                }
+            };
+
+            addButton("<", !currentPage, leftPageFnc);
+            function addPageButton(i)
+            {
+                addButton(i + 1, false, function()
+                {
+                    if (currentPage != i) {
+                        currentPage = i;
+                        updatePage(modulesToUse);
+                    }
+                }, currentPage == i);
+            }
+            var start = Math.max(0, currentPage - 3);
+            if (numPages > 4 && numPages - currentPage < 4) start -= 4 - (numPages - currentPage);
+            if (start) addPageButton(0);
+            addBreak(start);
+            var end = Math.min(numPages - 1, currentPage + 3);
+            if (numPages > 4 && currentPage + 1 < 4) {
+                end += 4 - (currentPage + 1);
+            }
+            for (var i = start; i <= end; i++) addPageButton(i);
+            addBreak(numPages - end > 1);
+            if (numPages - end > 1) addPageButton(numPages - 1);
+
+            rightPageFnc = function()
+            {
+                if (currentPage + 1 < numPages) {
+                    currentPage++;
+                    updatePage(modulesToUse);
+                }
+            };
+            addButton(">", currentPage + 1 == numPages, rightPageFnc);
+        });
+    }
+
+    // Using keyup instead of keydown to prevent holding
+    $(document).keyup(function(e)
+    {
+        if (searchFocused) return;
+        if (e.keyCode === 37 && leftPageFnc) leftPageFnc();
+        else if (e.keyCode === 39 && rightPageFnc) rightPageFnc();
+    });
+
+    updatePageCount(pagecount, true);
     updateRuleseed();
     setView(view);
     setLanguages(preferredLanguages);
@@ -1086,6 +1204,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
+    $("input.set-pagecount").click(function() { updatePageCount($(this).data('pagecount')); });
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
     $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
@@ -1180,9 +1299,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('.popup').click(function() { preventDisappear++; });
     $('.popup>.close').click(disappear);
 
+    var searchFocused = false;
     $("#search-field")
-        .focus(updateSearchHighlight)
-        .blur(function() { modules.forEach(mod => mod.FncsSetHighlight.forEach(fnc => fnc(false))); })
+        .focus(function() { searchFocused = true; updateSearchHighlight(); })
+        .blur(function() { searchFocused = false; modules.forEach(mod => mod.FncsSetHighlight.forEach(fnc => fnc(false))); })
         .keyup(function(e)
         {
             if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode == 13)   // up/down arrows, enter
@@ -1192,19 +1312,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         })
         .keydown(function(e)
         {
-            var visible = modules.filter(mod => mod.IsVisible);
             if (e.keyCode === 38 && selectedIndex > 0)   // up arrow
                 selectedIndex--;
-            else if (e.keyCode === 40 && selectedIndex < visible.length - 1)      // down arrow
+            else if (e.keyCode === 40 && selectedIndex < modules.length - 1)      // down arrow
                 selectedIndex++;
-            else if (e.keyCode === 13 && visible[selectedIndex].SelectableLinkUrl !== null)
+            else if (e.keyCode === 13 && modules[selectedIndex].SelectableLinkUrl !== null)
             {
                 if (!e.originalEvent.ctrlKey && !e.originalEvent.shiftKey && !e.originalEvent.altKey)  // enter
-                    window.location.href = visible[selectedIndex].SelectableLinkUrl;
+                    window.location.href = modules[selectedIndex].SelectableLinkUrl;
                 else    // enter with a modifier (Ctrl, Alt, Shift)
                 {
                     // This seems to work in Firefox (it dispatches the keypress to the link), but not in Chrome. Adding .trigger(e) also doesn’t work
-                    visible[selectedIndex].ViewData[view].SelectableLink.focus();
+                    modules[selectedIndex].ViewData[view].SelectableLink.focus();
                     setTimeout(function()
                     {
                         let inp = document.getElementById('search-field');
