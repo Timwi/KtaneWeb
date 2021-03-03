@@ -193,7 +193,7 @@ namespace KtaneWeb
                             var filters = _filters.Select(f => f.ToJson()).ToJsonList();
                             var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
                             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
-                            moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},'{moduleInfoCache.IconSpriteMd5}',{moduleLoadExceptions});";
+                            moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},'{moduleInfoCache.IconSpriteMd5}',{moduleLoadExceptions},{File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json"))});";
                             _moduleInfoCache = moduleInfoCache;
                         }
                 mic = _moduleInfoCache;

@@ -160,7 +160,7 @@ div.infos .inf-author, div.infos .inf-published {
 
     div.infos .inf-author span.contributors {
         text-decoration: underline dotted;
-        cursor: help;
+        cursor: pointer;
     }
 
 div.infos .inf-published {

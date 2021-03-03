@@ -373,6 +373,13 @@ namespace KtaneWeb
                                     new P("This is not legal advice."));
                             })),
 
+                        // CONTACT INFO
+                        new DIV { id = "contact-info", class_ = "popup disappear stay" }._(
+                            new DIV { class_ = "close" },
+                            new DIV { class_ = "option-group" }._(
+                                new H4("Contact Information"),
+                                new UL())),
+
                         // Module info editing UI
                         new DIV { id = "module-ui", class_ = "popup disappear stay" }._(new FORM { action = "generate-json", method = method.post }._(new Func<object>(() =>
                         {

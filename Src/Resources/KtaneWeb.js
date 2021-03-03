@@ -84,7 +84,7 @@ function el(tagName, className, ...args)
     return element;
 }
 
-function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5, moduleLoadExceptions)
+function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5, moduleLoadExceptions, contactInfo)
 {
     for (let exception of moduleLoadExceptions)
         console.error(exception);
@@ -369,13 +369,56 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 element.setAttribute('title', title);
         }
 
+        const services = {
+            "Facebook": "facebook.com/",
+            "GitHub": "github.com/",
+            "Reddit": "reddit.com/u/",
+            "Steam": "steamcommunity.com/",
+            "Twitch": "twitch.tv/",
+            "Twitter": "twitter.com/",
+            "YouTube": "youtube.com/channel/",
+        };
+
         function makeAuthorElement(mod)
         {
-            if (mod.Contributors === undefined)
-                return el("div", "inf-author inf", mod.Author);
+            const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
+            return el('div', 'inf-author inf', el('span', 'contributors', mod.Author), { title: title });
+        }
 
-            const title = Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(", ")}`).join("\n");
-            return el("div", "inf-author inf", el("span", "contributors", mod.Author), { title: title });
+        function addAuthorClick(element, mod)
+        {
+            element.addEventListener('click', event => {
+                const contactPopup = document.getElementById('contact-info');
+                const list = contactPopup.querySelector("div > ul");
+                list.innerHTML = '';
+
+                for (const author of mod.Author.split(', ')) {
+                    const item = el('li', null, author + ":");
+                    list.appendChild(item);
+                    const info = contactInfo[author];
+                    if (info !== undefined) {
+                        const sublist = el('ul');
+                        for (const [service, username] of Object.entries(info)) {
+                            const contactItem = el('li');
+                            if (services[service] === undefined) {
+                                contactItem.textContent = username;
+                            } else {
+                                contactItem.appendChild(el('a', null, service, { href: "https://" + services[service] + username }));
+                            }
+
+                            sublist.appendChild(contactItem);
+                        }
+
+                        list.appendChild(sublist);
+                    } else {
+                        item.textContent += " None available."
+                    }
+                }
+
+                popup($(element), $(contactPopup));
+                event.preventDefault();
+                event.stopPropagation();
+            });
         }
 
         switch (newView)
@@ -480,6 +523,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     infos.append(el("div", "inf-description inf", mod.Description));
                     td1.appendChild(infos);
                     td2.appendChild(infos.cloneNode(true));
+
+                    addAuthorClick(td1.querySelector(".inf-author"), mod);
+                    addAuthorClick(td2.querySelector(".inf-author"), mod);
 
                     var lnk1 = el("a", "manual-selector", { href: "#" });
                     lnk1.onclick = makeClickHander(lnk1, false, mod);
