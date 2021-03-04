@@ -263,7 +263,7 @@ namespace KtaneWeb
                                 "Rule seed: ",
                                 new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }),
                             new P { class_ = "explain" }._("Varies the rules/manuals for supported modules."),
-                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=1224413364" }._("Rule Seed Modifier"), " mod."),
+                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=2037350348" }._("Rule Seed Modifier"), " mod."),
                             new P { class_ = "explain" }._("Set to 1 to revert to default rules.")),
 
                         // FILTERS (tab popup)
@@ -358,9 +358,9 @@ namespace KtaneWeb
                                         "hold the author liable.",
                                     } },
                                     { "You must:", new List<string>() {
-                                            "include the copyright notice in all copies or substantial uses of the work.",
-                                            "include the license notice in all copies or substantial uses of the work.",
-                                            "use the work to create mods for KTANE.",
+                                        "include the copyright notice in all copies or substantial uses of the work.",
+                                        "include the license notice in all copies or substantial uses of the work.",
+                                        "use the work to create mods for KTANE.",
                                     } }
                                 };
 

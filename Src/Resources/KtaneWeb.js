@@ -376,7 +376,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             "Steam": "steamcommunity.com/",
             "Twitch": "twitch.tv/",
             "Twitter": "twitter.com/",
-            "YouTube": "youtube.com/channel/",
+            "YouTube": "youtube.com/",
         };
 
         function makeAuthorElement(mod)
