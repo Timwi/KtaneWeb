@@ -144,7 +144,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     function updateRuleseed()
     {
         setLinksAndPreferredManuals();
-        var seed = +document.getElementById('rule-seed-input').value || 1;
+        let seed = document.getElementById('rule-seed-input').value;
+        if (seed === null || seed === '' || (seed | 0) < 0)
+            seed = 1;
+        else
+            seed = (seed | 0);
+        document.getElementById('rule-seed-input').value = seed;
         lStorage.setItem('ruleseed', `${seed}`);
         if (seed === 1)
         {
