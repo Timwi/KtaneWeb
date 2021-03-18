@@ -787,7 +787,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
             if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, ''))
                 showAtTop.unshift(mod);
-            else if (mod.Symbol && searchRaw === mod.Symbol.toLowerCase())
+            else if (searchBySymbol && mod.Symbol && searchRaw === mod.Symbol.toLowerCase())
                 showAtTop.push(mod);
         });
 
