@@ -796,7 +796,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if ($("input#search-field").is(':focus'))
             updateSearchHighlight();
 
-        if (showAtTop !== showAtTopOfResults)
+        if (showAtTop.length !== showAtTopOfResults.length || !showAtTop.every(mod => showAtTopOfResults.includes(mod)))
         {
             showAtTopOfResults = showAtTop;
             setSort(sort, reverse);
