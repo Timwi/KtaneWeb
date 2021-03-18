@@ -178,6 +178,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     var displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
+    var resultsMode = lStorage.getItem('resultsMode') || 'hide';
+
     var validSearchOptions = ['names', 'authors', 'descriptions'];
     var defaultSearchOptions = ['names'];
     var searchOptions = defaultSearchOptions;
@@ -211,9 +213,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             selectedIndex = 0;
         if (selectedIndex >= visible.length)
             selectedIndex = visible.length - 1;
-        for (let i = 0; i < visible.length; i++)
-            for (let fnc of visible[i].FncsSetHighlight)
-                fnc(i === selectedIndex);
+
+        if (resultsMode == 'scroll')
+        {
+            for (let mod of modules)
+                for (let fnc of mod.FncsSetHighlight)
+                    fnc(false);
+
+            for (let fnc of visible[selectedIndex].FncsSetHighlight)
+                fnc(true);
+        }
+        else if (resultsMode == 'hide')
+        {
+            for (let i = 0; i < visible.length; i++)
+                for (let fnc of visible[i].FncsSetHighlight)
+                    fnc(i === selectedIndex);
+        }
     }
 
     function setSelectable(sel)
@@ -293,6 +308,21 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         lStorage.setItem('option-include-symbol', document.getElementById('option-include-symbol').checked ? '1' : '0');
         lStorage.setItem('option-include-steam-id', document.getElementById('option-include-steam-id').checked ? '1' : '0');
         lStorage.setItem('option-include-module-id', document.getElementById('option-include-module-id').checked ? '1' : '0');
+    }
+
+    function setResultsMode(mode)
+    {
+        // Show all modules again to undo any effects of the previous results mode.
+        for (const mod of modules)
+            for (const fnc of mod.FncsShowHide)
+                fnc(true);
+
+        lStorage.setItem('resultsMode', mode);
+        $('#results-' + mode).prop('checked', true);
+        resultsMode = mode;
+
+        // Update each module's show/hide state so that it's correct for the new mode.
+        updateFilter();
     }
 
     function setTheme(theme)
@@ -435,7 +465,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     mod.FncsSetHighlight.push(hgh =>
                     {
                         if (hgh)
+                        {
                             tr.classList.add('selected');
+
+                            if (resultsMode == 'scroll')
+                                requestAnimationFrame(() => tr.scrollIntoView({ block: 'center' }));
+                        }
                         else
                             tr.classList.remove('selected');
                     });
@@ -739,8 +774,17 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             let sh = filteredIn && searchKeywords.every(x => x.test(searchWhat));
             if (sh)
                 modCount++;
-            for (let fnc of mod.FncsShowHide)
-                fnc(sh);
+
+            if (resultsMode == 'hide')
+            {
+                for (let fnc of mod.FncsShowHide)
+                    fnc(sh);
+            }
+            else
+            {
+                mod.IsVisible = sh;
+            }
+
             if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, ''))
                 showAtTop.unshift(mod);
             else if (mod.Symbol && searchRaw === mod.Symbol.toLowerCase())
@@ -1122,6 +1166,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     setLanguages(preferredLanguages);
     setLinksAndPreferredManuals();
     setSort(sort, reverse);
+    setResultsMode(resultsMode);
     setTheme(theme);
     setDisplayOptions(displayOptions);
     setSearchOptions(searchOptions);
@@ -1131,6 +1176,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
+    $("input.results-mode").click(function() { setResultsMode(this.value); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });

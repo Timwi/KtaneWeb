@@ -323,6 +323,14 @@ namespace KtaneWeb
                                     new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-module-id" }, " ",
                                     new LABEL { for_ = "option-include-module-id" }._("Search by Module ID"))),
                             new DIV { class_ = "option-group" }._(
+                                new H4("Display results by"),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "results-mode", id = "results-hide", name = "results-mode", value = "hide" }, " ",
+                                    new LABEL { for_ = "results-hide" }._("Hiding mods that don't match")),
+                                new DIV(
+                                    new INPUT { type = itype.radio, class_ = "results-mode", id = "results-scroll", name = "results-mode", value = "scroll" }, " ",
+                                    new LABEL { for_ = "results-scroll" }._("Scroll matching mod into view"))),
+                            new DIV { class_ = "option-group" }._(
                                 new H4("Site theme"),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
