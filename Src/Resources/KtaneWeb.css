@@ -483,7 +483,7 @@ body.sort-published #main-table th.infos::after {
 div.popup {
     display: none;
     position: absolute;
-    border: 2px solid black;
+    border: 1px solid black;
     padding: 2em;
     background: #fafaff;
     box-shadow: 5px 5px 5px rgba(0,0,0,.3);
