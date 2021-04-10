@@ -428,15 +428,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 list.innerHTML = '';
 
                 for (const author of mod.Author.split(', ')) {
-                    const item = el('li', null, author + ":");
+                    const roles = mod.Contributors === undefined ? '' : ` (${Object.entries(mod.Contributors).filter(([_, names]) => names.includes(author)).map(([role, _]) => role).join(", ")})`;
+                    const item = el('li', null, `${author}:${roles}`);
                     list.appendChild(item);
                     const info = contactInfo[author];
+                    const sublist = el('ul');
                     if (info !== undefined) {
-                        const sublist = el('ul');
                         for (const [service, username] of Object.entries(info)) {
                             const contactItem = el('li');
                             if (services[service] === undefined) {
-                                contactItem.textContent = username;
+                                contactItem.textContent = `${service}: ${username}`;
                             } else {
                                 contactItem.appendChild(el('a', null, service, { href: "https://" + services[service] + username }));
                             }
@@ -444,10 +445,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             sublist.appendChild(contactItem);
                         }
 
-                        list.appendChild(sublist);
                     } else {
-                        item.textContent += " None available."
+                        sublist.appendChild(el('li', null, 'None available.'));
                     }
+                    list.appendChild(sublist);
                 }
 
                 popup($(element), $(contactPopup));
