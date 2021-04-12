@@ -411,6 +411,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             "Steam": "steamcommunity.com/",
             "Twitch": "twitch.tv/",
             "Twitter": "twitter.com/",
+            "Website": "",
             "YouTube": "youtube.com/",
         };
 
