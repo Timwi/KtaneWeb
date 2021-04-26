@@ -449,7 +449,8 @@ namespace KtaneWeb
                                 foreach (var field in typeToBeEdited.GetFields())
                                 {
                                     var attr = field.GetCustomAttribute<EditableFieldAttribute>();
-                                    if (attr != null && attr.ReadableName == null)
+                                    // The hidden TwitchPlays field is never serialized, so don't add a hidden input for it.
+                                    if (attr != null && attr.ReadableName == null && field.Name != "TwitchPlays")
                                         yield return new INPUT { type = itype.hidden, name = field.Name };
                                 }
                             }
