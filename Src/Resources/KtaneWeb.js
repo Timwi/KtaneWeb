@@ -439,10 +439,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         for (const [service, username] of Object.entries(info))
                         {
                             const contactItem = el('li');
-                            if (services[service] === undefined)
+                            const correctedService = Object.keys(services).find(value => value.toLowerCase() == service.toLowerCase());
+                            if (services[correctedService] === undefined)
                                 contactItem.textContent = `${service}: ${username}`;
                             else
-                                contactItem.appendChild(el('a', null, service, { href: "https://" + services[service] + username }));
+                                contactItem.appendChild(el('a', null, correctedService, { href: "https://" + services[correctedService] + username }));
 
                             sublist.appendChild(contactItem);
                         }
