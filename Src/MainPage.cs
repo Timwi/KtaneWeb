@@ -116,6 +116,7 @@ namespace KtaneWeb
             var resp = HttpResponse.Html(new HTML(
                 new HEAD(
                     new TITLE("Repository of Manual Pages"),
+                    new META { name = "description", content = "Manuals for Keep Talking and Nobody Explodes — vanilla, modded, optimized/embellished, logfile analyzer, profile editor and more" },
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = UniquifiedUrl(req.Url.WithParent("css")), rel = "stylesheet", type = "text/css" },
                     new LINK { href = req.Url.WithParent("HTML/css/dark-theme.css").ToHref(), id = "theme-css", rel = "stylesheet", type = "text/css" },
