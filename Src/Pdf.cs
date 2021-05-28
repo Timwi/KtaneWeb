@@ -168,6 +168,11 @@ namespace KtaneWeb
                 // Filter
                 var matchingModules = getModuleInfoCache().Modules.Where(m =>
                 {
+                    // TEMPORARY: Currently there is no easy way to find the correct filename for the manual of a translated module, so we’re excluding those from the merged PDF entirely.
+                    // A desirable fix would be to discover the correct PDF filename for the translated manual and include it.
+                    if (m.TranslationOf != null)
+                        return false;
+
                     if (profileVetoList != null && !(profileVetoList.Contains(m.ModuleID) ? filterVetoedByProfile : filterEnabledByProfile))
                         return false;
 

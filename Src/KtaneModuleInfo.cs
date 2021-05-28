@@ -120,6 +120,7 @@ namespace KtaneWeb
 
         public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Description, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideoUrl, TwitchPlays, Type);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
+        public override string ToString() => Name;
 
         int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);
 

@@ -380,7 +380,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     function getCompatibilityText(mod)
     {
         const compatiblities = {
-            Unplayable: 'This module has a programming bug that prevents it from being played reliably.',
+            Unplayable: 'This module has a problem that prevents it from being played reliably.',
             Untested: 'The compatibility of this module has not yet been determined.',
             Problematic: 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.',
         };
