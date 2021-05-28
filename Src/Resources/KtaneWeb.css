@@ -612,6 +612,14 @@ div.popup {
             margin-bottom: 1.5em;
         }
 
+        div.popup .option-group .sub-option {
+            margin-left: 2em;
+        }
+
+        div.popup .option-group #results-limit {
+            width: 4em;
+        }
+
     div.popup.manual-select {
         padding: 1em;
     }

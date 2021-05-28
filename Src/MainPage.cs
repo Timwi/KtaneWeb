@@ -327,10 +327,13 @@ namespace KtaneWeb
                                 new H4("When using the Find bar"),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "results-mode", id = "results-hide", name = "results-mode", value = "hide" }, " ",
-                                    new LABEL { for_ = "results-hide" }._("Hide mods that don’t match")),
+                                    new LABEL { for_ = "results-hide" }._("Show matches only"),
+                                    new DIV { class_ = "sub-option" }._(
+                                        new LABEL { for_ = "results-limit" }._("Limit: "),
+                                        new INPUT { type = itype.number, id = "results-limit", name = "results-limit", value = "20", step = "1" })),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "results-mode", id = "results-scroll", name = "results-mode", value = "scroll" }, " ",
-                                    new LABEL { for_ = "results-scroll" }._("Scroll matching mod into view"))),
+                                    new LABEL { for_ = "results-scroll" }._("Scroll first match into view"))),
                             new DIV { class_ = "option-group" }._(
                                 new H4("Site theme"),
                                 new DIV(

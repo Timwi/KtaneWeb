@@ -184,6 +184,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
     var resultsMode = lStorage.getItem('resultsMode') || 'hide';
+    var resultsLimit = lStorage.getItem('resultsLimit') || 20;
 
     var validSearchOptions = ['names', 'authors', 'descriptions'];
     var defaultSearchOptions = ['names'];
@@ -269,21 +270,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         modules.sort(function(a, b)
         {
             if (showAtTopOfResults.includes(a))
-            {
-                if (showAtTopOfResults.includes(b) && showAtTopOfResults.indexOf(a) > showAtTopOfResults.indexOf(b))
-                    return rvrse ? -1 : 1;
-                else
-                    return rvrse ? 1 : -1;
-            }
+                return (showAtTopOfResults.includes(b) && showAtTopOfResults.indexOf(a) > showAtTopOfResults.indexOf(b)) ? 1 : -1;
             if (showAtTopOfResults.includes(b))
-                return rvrse ? -1 : 1;
-            var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse);
-            return (c === 0) ? compare(a.SortKey, b.SortKey, false) : c;
+                return 1;
+            var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse ^ rvrse);
+            return (c === 0) ? compare(a.SortKey, b.SortKey, rvrse) : c;
         });
-        if (rvrse)
-            modules.reverse();
 
         viewsReady.get(view).Sort();
+        updateFilter();
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
@@ -315,7 +310,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         lStorage.setItem('option-include-module-id', document.getElementById('option-include-module-id').checked ? '1' : '0');
     }
 
-    function setResultsMode(mode)
+    function setResultsMode(mode, limit)
     {
         // Show all modules again to undo any effects of the previous results mode.
         for (const mod of modules)
@@ -323,8 +318,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 fnc(true);
 
         lStorage.setItem('resultsMode', mode);
+        lStorage.setItem('resultsLimit', limit);
         $('#results-' + mode).prop('checked', true);
+        $('#results-limit')[0].value = limit;
         resultsMode = mode;
+        resultsLimit = limit;
 
         // Update each module's show/hide state so that it's correct for the new mode.
         updateFilter();
@@ -423,32 +421,34 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         function addAuthorClick(element, mod)
         {
-            element.addEventListener('click', event => {
+            element.addEventListener('click', event =>
+            {
                 const contactPopup = document.getElementById('contact-info');
                 const list = contactPopup.querySelector("div > ul");
                 list.innerHTML = '';
 
-                for (const author of mod.Author.split(', ')) {
+                for (const author of mod.Author.split(', '))
+                {
                     const roles = mod.Contributors === undefined ? '' : ` (${Object.entries(mod.Contributors).filter(([_, names]) => names.includes(author)).map(([role, _]) => role).join(", ")})`;
                     const item = el('li', null, `${author}:${roles}`);
                     list.appendChild(item);
                     const info = contactInfo[author];
                     const sublist = el('ul');
-                    if (info !== undefined) {
-                        for (const [service, username] of Object.entries(info)) {
+                    if (info !== undefined)
+                    {
+                        for (const [service, username] of Object.entries(info))
+                        {
                             const contactItem = el('li');
-                            if (services[service] === undefined) {
+                            if (services[service] === undefined)
                                 contactItem.textContent = `${service}: ${username}`;
-                            } else {
+                            else
                                 contactItem.appendChild(el('a', null, service, { href: "https://" + services[service] + username }));
-                            }
 
                             sublist.appendChild(contactItem);
                         }
-
-                    } else {
-                        sublist.appendChild(el('li', null, 'None available.'));
                     }
+                    else
+                        sublist.appendChild(el('li', null, 'None available.'));
                     list.appendChild(sublist);
                 }
 
@@ -466,122 +466,132 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 for (var i = 0; i < modules.length; i++)
                 {
                     let mod = modules[i];
+                    mod.ViewData.List = { Created: false };
 
-                    let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
-                    mod.FncsShowHide.push(sh => { tr.style.display = (sh ? '' : 'none'); });
-                    mod.FncsSetHighlight.push(hgh =>
+                    mod.FncsShowHide.push(sh =>
                     {
-                        if (hgh)
+                        if (!mod.ViewData.List.Created)
                         {
-                            tr.classList.add('selected');
-
-                            if (resultsMode == 'scroll')
-                                requestAnimationFrame(() => tr.scrollIntoView({ block: 'center' }));
-                        }
-                        else
-                            tr.classList.remove('selected');
-                    });
-
-                    for (let ix = 0; ix < initSelectables.length; ix++)
-                    {
-                        let sel = initSelectables[ix];
-                        let td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}`);
-                        tr.appendChild(td);
-                        if (sel.ShowIconFunction(mod, mod.Manuals))
-                        {
-                            let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
-                            let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
-                            td.appendChild(lnkA);
-                            if (sel.PropName === 'manual')
-                                mod.FncsSetManualLink.push(url => { lnkA.href = url; });
-                        }
-                    }
-
-                    let icon = el("div", "mod-icon", { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
-                    let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
-                    setCompatibilityTooltip(modlink, mod);
-                    mod.ViewData.List = { TableRow: tr, SelectableLink: modlink };
-                    let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
-                    tr.appendChild(td1);
-                    mod.FncsSetSelectable.push(url =>
-                    {
-                        if (url === null)
-                            modlink.removeAttribute('href');
-                        else
-                            modlink.href = url;
-                    });
-
-                    let td2 = el("td", "infos-2");
-                    tr.appendChild(td2);
-                    let infos = el("div", "infos",
-                        el("div", "inf-type inf", mod.Type),
-                        el("div", "inf-origin inf inf2", mod.Origin));
-                    if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
-                    {
-                        function readable(difficulty)
-                        {
-                            var result = '';
-                            for (var i = 0; i < difficulty.length; i++)
+                            let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
+                            mod.ViewData.List.TableRow = tr;
+                            mod.FncsSetHighlight.push(hgh =>
                             {
-                                if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
-                                    result += ' ';
-                                result += difficulty[i].toLowerCase();
+                                if (hgh)
+                                {
+                                    tr.classList.add('selected');
+
+                                    if (resultsMode == 'scroll')
+                                        requestAnimationFrame(() => tr.scrollIntoView({ block: 'center' }));
+                                }
+                                else
+                                    tr.classList.remove('selected');
+                            });
+
+                            for (let ix = 0; ix < initSelectables.length; ix++)
+                            {
+                                let sel = initSelectables[ix];
+                                let td = el("td", `selectable${(ix == initSelectables.length - 1 ? " last" : "")}`);
+                                tr.appendChild(td);
+                                if (sel.ShowIconFunction(mod, mod.Manuals))
+                                {
+                                    let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
+                                    let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
+                                    td.appendChild(lnkA);
+                                    if (sel.PropName === 'manual')
+                                        mod.FncsSetManualLink.push(url => { lnkA.href = url; });
+                                }
                             }
-                            return result;
+
+                            let icon = el("div", "mod-icon", { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
+                            let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
+                            setCompatibilityTooltip(modlink, mod);
+                            mod.ViewData.List.SelectableLink = modlink;
+                            let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
+                            tr.appendChild(td1);
+                            mod.FncsSetSelectable.push(url =>
+                            {
+                                if (url === null)
+                                    modlink.removeAttribute('href');
+                                else
+                                    modlink.href = url;
+                            });
+
+                            let td2 = el("td", "infos-2");
+                            tr.appendChild(td2);
+                            let infos = el("div", "infos",
+                                el("div", "inf-type inf", mod.Type),
+                                el("div", "inf-origin inf inf2", mod.Origin));
+                            if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
+                            {
+                                function readable(difficulty)
+                                {
+                                    var result = '';
+                                    for (var i = 0; i < difficulty.length; i++)
+                                    {
+                                        if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
+                                            result += ' ';
+                                        result += difficulty[i].toLowerCase();
+                                    }
+                                    return result;
+                                }
+                                if (mod.DefuserDifficulty === mod.ExpertDifficulty)
+                                    infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
+                                else
+                                    infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
+                            }
+                            infos.append(makeAuthorElement(mod),
+                                el("div", "inf-published inf inf2", mod.Published));
+                            if (mod.TwitchPlays)
+                            {
+                                if (mod.Type === 'Needy')
+                                    mod.TwitchPlaysInfo = `This needy module can be played in “Twitch Plays: KTANE” for a ${mod.TwitchPlays.NeedyScoring === 'Time' ? 'time-based' : 'solve-based'} score of ${mod.TwitchPlays.Score}.`;
+                                else if (mod.TwitchPlays.ScorePerModule)
+                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score ? `${mod.TwitchPlays.Score}, plus ` : ''}${mod.TwitchPlays.ScorePerModule} for each module on the bomb${mod.TwitchPlays.ScorePerModuleCap ? ` up to a maximum of ${mod.TwitchPlays.ScorePerModuleCap}` : ''}.`;
+                                else if (mod.TwitchPlays.ScoreExplanation)
+                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”. ${mod.TwitchPlays.ScoreExplanation}`;
+                                else
+                                    mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score}.`;
+                                infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
+                                    mod.TwitchPlays.ScorePerModule || mod.TwitchPlays.ScoreExplanation ? 'S' : mod.TwitchPlays.Score));
+                            }
+                            if (mod.RuleSeedSupport === 'Supported')
+                            {
+                                mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
+                                infos.append(el("div", "inf-rule-seed inf inf2", { title: mod.RuleSeedInfo }));
+                            }
+
+                            var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
+                            var attr = souvenirAttributes[value];
+                            var expl = mod.Souvenir && mod.Souvenir.Explanation;
+                            mod.SouvenirInfo = `${attr.Tooltip}${expl ? "\n" + expl : ""}`;
+                            infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
+                            if (mod.ModuleID)
+                                infos.append(el("div", "inf-id inf", mod.ModuleID));
+                            infos.append(el("div", "inf-description inf", mod.Description));
+                            td1.appendChild(infos);
+                            td2.appendChild(infos.cloneNode(true));
+
+                            addAuthorClick(td1.querySelector(".inf-author"), mod);
+                            addAuthorClick(td2.querySelector(".inf-author"), mod);
+
+                            var lnk1 = el("a", "manual-selector", { href: "#" });
+                            lnk1.onclick = makeClickHander(lnk1, false, mod);
+                            td1.appendChild(lnk1);
+
+                            var lnk2 = el("a", "mobile-opt", { href: "#" });
+                            lnk2.onclick = makeClickHander(lnk2, true, mod);
+                            tr.appendChild(el("td", "mobile-ui", lnk2));
+
+                            mod.ViewData.List.Created = true;
                         }
-                        if (mod.DefuserDifficulty === mod.ExpertDifficulty)
-                            infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
-                        else
-                            infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
-                    }
-                    infos.append(makeAuthorElement(mod),
-                        el("div", "inf-published inf inf2", mod.Published));
-                    if (mod.TwitchPlays)
-                    {
-                        if (mod.Type === 'Needy')
-                            mod.TwitchPlaysInfo = `This needy module can be played in “Twitch Plays: KTANE” for a ${mod.TwitchPlays.NeedyScoring === 'Time' ? 'time-based' : 'solve-based'} score of ${mod.TwitchPlays.Score}.`;
-                        else if (mod.TwitchPlays.ScorePerModule)
-                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score ? `${mod.TwitchPlays.Score}, plus ` : ''}${mod.TwitchPlays.ScorePerModule} for each module on the bomb${mod.TwitchPlays.ScorePerModuleCap ? ` up to a maximum of ${mod.TwitchPlays.ScorePerModuleCap}` : ''}.`;
-                        else if (mod.TwitchPlays.ScoreExplanation)
-                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE”. ${mod.TwitchPlays.ScoreExplanation}`;
-                        else
-                            mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for a score of ${mod.TwitchPlays.Score}.`;
-                        infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
-                            mod.TwitchPlays.ScorePerModule || mod.TwitchPlays.ScoreExplanation ? 'S' : mod.TwitchPlays.Score));
-                    }
-                    if (mod.RuleSeedSupport === 'Supported')
-                    {
-                        mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
-                        infos.append(el("div", "inf-rule-seed inf inf2", { title: mod.RuleSeedInfo }));
-                    }
-
-                    var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
-                    var attr = souvenirAttributes[value];
-                    var expl = mod.Souvenir && mod.Souvenir.Explanation;
-                    mod.SouvenirInfo = `${attr.Tooltip}${expl ? "\n" + expl : ""}`;
-                    infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
-                    if (mod.ModuleID)
-                        infos.append(el("div", "inf-id inf", mod.ModuleID));
-                    infos.append(el("div", "inf-description inf", mod.Description));
-                    td1.appendChild(infos);
-                    td2.appendChild(infos.cloneNode(true));
-
-                    addAuthorClick(td1.querySelector(".inf-author"), mod);
-                    addAuthorClick(td2.querySelector(".inf-author"), mod);
-
-                    var lnk1 = el("a", "manual-selector", { href: "#" });
-                    lnk1.onclick = makeClickHander(lnk1, false, mod);
-                    td1.appendChild(lnk1);
-
-                    var lnk2 = el("a", "mobile-opt", { href: "#" });
-                    lnk2.onclick = makeClickHander(lnk2, true, mod);
-                    tr.appendChild(el("td", "mobile-ui", lnk2));
+                        mod.ViewData.List.TableRow.style.display = (sh ? '' : 'none');
+                    });
                 }
 
                 viewsReady.set('List', {
                     Show: function() { document.getElementById("main-table").style.display = 'table'; },
                     Hide: function() { document.getElementById("main-table").style.display = 'none'; },
-                    Sort: function() { mainTable.append(...modules.map(mod => mod.ViewData.List.TableRow)); }
+                    Sort: function() { mainTable.append(...modules.filter(mod => mod.ViewData.List.Created).map(mod => mod.ViewData.List.TableRow)); }
                 });
                 break;
             }
@@ -656,6 +666,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             view = newView;
             lStorage.setItem('view', newView);
             setSort(sort, reverse);
+            setLinksAndPreferredManuals();
         }
     }
 
@@ -764,6 +775,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
             if (profileVetoList !== null)
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
+
             let searchWhat = searchBySteamID ? (mod.SteamID || '') : '';
             if (searchByModuleID)
                 searchWhat += ' ' + mod.ModuleID.toLowerCase();
@@ -778,19 +790,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (pageLang)
                 searchWhat += ' ' + mod.localName.toLocaleLowerCase();
 
-            let sh = filteredIn && searchKeywords.every(x => x.test(searchWhat));
-            if (sh)
-                modCount++;
+            mod.MatchesFilter = filteredIn;
+            mod.MatchesSearch = searchKeywords.every(x => x.test(searchWhat));
 
-            if (resultsMode == 'hide')
-            {
-                for (let fnc of mod.FncsShowHide)
-                    fnc(sh);
-            }
-            else
-            {
-                mod.IsVisible = sh;
-            }
+            if ((resultsMode === 'scroll') ? mod.MatchesFilter : (mod.MatchesFilter && mod.MatchesSearch))
+                modCount++;
 
             if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, ''))
                 showAtTop.unshift(mod);
@@ -808,6 +812,17 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             showAtTopOfResults = showAtTop;
             setSort(sort, reverse);
         }
+
+        let n = 0;
+        for (let mod of modules)
+        {
+            for (let fnc of mod.FncsShowHide)
+                fnc(mod.MatchesFilter && (resultsMode === 'scroll' || (n < resultsLimit && mod.MatchesSearch)));
+            if (mod.IsVisible)
+                n++;
+        }
+        if (resultsMode === 'scroll')
+            selectedIndex = modules.filter(m => m.IsVisible).findIndex(m => m.MatchesSearch);
     }
 
     // Sets the module links to the current selectable and the manual icon link to the preferred manuals
@@ -1045,6 +1060,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let mod = modules[i];
         mod.SelectableLinkUrl = null;
         mod.IsVisible = true;
+        mod.MatchesFilter = false;
 
         // (bool sh) => shows (sh) or hides (!sh) the module
         mod.FncsShowHide = [sh => { mod.IsVisible = sh; }];
@@ -1173,7 +1189,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     setLanguages(preferredLanguages);
     setLinksAndPreferredManuals();
     setSort(sort, reverse);
-    setResultsMode(resultsMode);
+    setResultsMode(resultsMode, resultsLimit);
     setTheme(theme);
     setDisplayOptions(displayOptions);
     setSearchOptions(searchOptions);
@@ -1183,7 +1199,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
     $('input.filter').click(function() { updateFilter(); });
-    $("input.results-mode").click(function() { setResultsMode(this.value); });
+    $("input.results-mode").click(function() { setResultsMode(this.value, resultsLimit); });
+    $("input#results-limit").change(function() { setResultsMode(resultsMode, this.value | 0); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
