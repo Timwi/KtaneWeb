@@ -174,9 +174,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         'twitchscore': { fnc: function(mod) { return mod.TwitchPlays ? mod.TwitchPlays.Score : 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
         'published': { fnc: function(mod) { return mod.Published; }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
-    var sort = lStorage.getItem('sort') || 'name';
+    var sort = lStorage.getItem('sort') || 'published';
     if (!(sort in sorts))
-        sort = 'name';
+        sort = 'published';
     var reverse = lStorage.getItem('sort-reverse') == "true" || false;
 
     var defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published', 'twitch', 'souvenir', 'rule-seed'];
@@ -200,7 +200,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     var version = JSON.parse(lStorage.getItem('version')) || 0;
     if (version < 2)
     {
-        sort = 'name';
+        sort = 'published';
         selectable = 'manual';
         displayOptions = defaultDisplayOptions;
         filter = {};
