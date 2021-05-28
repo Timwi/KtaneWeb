@@ -84,7 +84,7 @@ function el(tagName, className, ...args)
     return element;
 }
 
-function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, iconSpriteMd5, moduleLoadExceptions, contactInfo)
+function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, contactInfo)
 {
     for (let exception of moduleLoadExceptions)
         console.error(exception);
@@ -497,7 +497,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         }
                     }
 
-                    let icon = el("div", "mod-icon", { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
+                    let icon = el("div", "mod-icon", { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
                     let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
                     setCompatibilityTooltip(modlink, mod);
                     mod.ViewData.List = { TableRow: tr, SelectableLink: modlink };
@@ -600,7 +600,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let mod = modules[i];
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
-                        el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'icon', { style: `background-image:url(iconsprite/${iconSpriteMd5});background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
+                        el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'mod-icon', { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
                         el('div', 'name', el('div', 'inner', mod.localName)),
                         el('div', 'tpscore', mod.TwitchPlays ? mod.TwitchPlays.Score : ''),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),

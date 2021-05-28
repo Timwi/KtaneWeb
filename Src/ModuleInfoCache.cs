@@ -21,7 +21,7 @@ namespace KtaneWeb
             public KtaneModuleInfo[] Modules;
             public JsonDict ModulesJson;
             public byte[] IconSpritePng;
-            public string IconSpriteMd5;
+            public string IconSpriteCss;
             public string ModuleInfoJs;
             public DateTime LastModifiedUtc;
 
@@ -40,7 +40,7 @@ namespace KtaneWeb
                     lock (this)
                         if (_moduleInfoCache == null)
                         {
-                            const int cols = 20;   // number of icons per row
+                            const int cols = 40;   // number of icons per row
                             const int w = 32;   // width of an icon in pixels
                             const int h = 32;   // height of an icon in pixels
 
@@ -63,7 +63,7 @@ namespace KtaneWeb
 
                             // This needs to be a separate variable (don’t use _moduleInfoCache itself) because that field needs to stay null until it is fully initialized
                             var moduleInfoCache = new ModuleInfoCache { IconSpritePng = mem.ToArray() };
-                            moduleInfoCache.IconSpriteMd5 = MD5.Create().ComputeHash(moduleInfoCache.IconSpritePng).ToHex();
+                            moduleInfoCache.IconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(moduleInfoCache.IconSpritePng)})}}";
 
                             // Load TP data from the spreadsheet
                             JsonList entries;
@@ -193,7 +193,7 @@ namespace KtaneWeb
                             var filters = _filters.Select(f => f.ToJson()).ToJsonList();
                             var selectables = _selectables.Select(sel => sel.ToJson()).ToJsonList();
                             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
-                            moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},'{moduleInfoCache.IconSpriteMd5}',{moduleLoadExceptions},{File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json"))});";
+                            moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},{moduleLoadExceptions},{File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json"))});";
                             _moduleInfoCache = moduleInfoCache;
                         }
                 mic = _moduleInfoCache;

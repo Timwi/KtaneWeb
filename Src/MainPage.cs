@@ -472,9 +472,14 @@ namespace KtaneWeb
                                 iterateHiddenFields(typeof(KtaneModuleInfo)),
                                 new TABLE { class_ = "nested" }._(iterateNestedFields(typeof(KtaneModuleInfo))),
                                 new DIV { class_ = "submit" }._(new BUTTON { id = "generate-json", type = btype.submit, accesskey = "j" }._("Generate JSON".Accel('J'))));
-                        }))),
-
-                        new Func<object>(() => new SCRIPTLiteral(getModuleInfoCache().ModuleInfoJs))))));
+                        })))),
+                    new Func<object>(() =>
+                    {
+                        var moduleInfoCache = getModuleInfoCache();
+                        return Ut.NewArray<object>(
+                            new SCRIPTLiteral(moduleInfoCache.ModuleInfoJs),
+                            new STYLELiteral(moduleInfoCache.IconSpriteCss));
+                    }))));
             resp.UseGzip = UseGzipOption.AlwaysUseGzip;
             return resp;
         }
