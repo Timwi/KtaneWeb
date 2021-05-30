@@ -27,6 +27,7 @@ namespace KtaneWeb
         public static KtaneFilter Slider<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum?> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsSlider(propName, readableName, typeof(TEnum), mod => getValue(mod), fncPropValue);
         public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
         public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum?> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
+        public static KtaneFilter BooleanSet(string readableName, string propName, KtaneFilterOption[] options, Func<KtaneModuleInfo, string> getValue, string fncPropValue) => new KtaneFilterBooleanSet(readableName, propName, fncPropValue, options, mod => getValue(mod));
     }
 
     abstract class KtaneFilterOptions : KtaneFilter
@@ -112,5 +113,38 @@ namespace KtaneWeb
         public string ReadableName;
         public char? Accel;
         public int Value;
+    }
+
+    sealed class KtaneFilterBooleanSet : KtaneFilter
+    {
+        public Func<KtaneModuleInfo, object> GetValue { get; private set; }
+        public KtaneFilterOption[] Options { get; private set; }
+
+        public KtaneFilterBooleanSet(string readableName, string propName, string fncPropValue, KtaneFilterOption[] options, Func<KtaneModuleInfo, object> getValue) : base(readableName, propName, fncPropValue) {
+            GetValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
+            Options = options ?? throw new ArgumentNullException(nameof(options));
+        }
+        public override JsonDict ToJson() => new JsonDict {
+            { "id", PropName },
+            { "fnc", new JsonRaw(FncPropValue) },
+            { "values", Options.Select(val => val.Name).ToJsonList() },
+            { "type", "booleanset" }
+        };
+        public override object ToHtml() => Ut.NewArray<object>(
+            new DIV { class_ = "option-group" }._(
+                new H4(ReadableName),
+                Options.Select(opt => $"filter-{PropName}-{opt.Name}".Apply(id => new DIV(
+                    new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
+                    new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value)))))));
+
+        public override bool Matches(KtaneModuleInfo module, JsonDict json)
+        {
+            var val = GetValue(module);
+            if (val == null)
+                return true;
+            var str = val.ToString();
+            var dic = json.GetDict();
+            return (dic.ContainsKey(str) && dic[str].GetBool()) || dic.All(v => !v.Value.GetBool());
+        }
     }
 }
