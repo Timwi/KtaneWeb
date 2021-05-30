@@ -803,7 +803,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 showAtTop.push(mod);
         });
 
-        $('#module-count').text(modCount);
+        $('#module-count').text(resultsMode === 'scroll' || resultsLimit >= modCount ? `${modCount} items` : `${modCount} items; showing first ${resultsLimit}`);
         lStorage.setItem('filters', JSON.stringify(filter));
         if ($("input#search-field").is(':focus'))
             updateSearchHighlight();
