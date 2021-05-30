@@ -774,7 +774,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (mod.Manuals.length > 0)
                 filteredIn = filteredIn && mod.Manuals.some(manual => preferredLanguages[manual.Language] !== false);
 
-            if (profileVetoList !== null)
+            if (profileVetoList !== null && mod.Origin !== 'Vanilla')
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
 
             let searchWhat = searchBySteamID ? (mod.SteamID || '') : '';
