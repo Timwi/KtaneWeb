@@ -67,12 +67,8 @@ namespace KtaneWeb
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
-            var val = GetValue(module);
-            if (val == null)
-                return true;
-            var str = val.ToString();
-            var dic = json.GetDict();
-            return (dic.ContainsKey(str) && dic[str].GetBool()) || dic.All(v => !v.Value.GetBool());
+            var str = GetValue(module)?.ToString();
+            return str == null || (json.ContainsKey(str) && json[str].GetBool()) || json.All(v => !v.Value.GetBool());
         }
     }
 
@@ -120,7 +116,8 @@ namespace KtaneWeb
         public Func<KtaneModuleInfo, object> GetValue { get; private set; }
         public KtaneFilterOption[] Options { get; private set; }
 
-        public KtaneFilterBooleanSet(string readableName, string propName, string fncPropValue, KtaneFilterOption[] options, Func<KtaneModuleInfo, object> getValue) : base(readableName, propName, fncPropValue) {
+        public KtaneFilterBooleanSet(string readableName, string propName, string fncPropValue, KtaneFilterOption[] options, Func<KtaneModuleInfo, object> getValue) : base(readableName, propName, fncPropValue)
+        {
             GetValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
             Options = options ?? throw new ArgumentNullException(nameof(options));
         }
@@ -139,12 +136,8 @@ namespace KtaneWeb
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
-            var val = GetValue(module);
-            if (val == null)
-                return true;
-            var str = val.ToString();
-            var dic = json.GetDict();
-            return (dic.ContainsKey(str) && dic[str].GetBool()) || dic.All(v => !v.Value.GetBool());
+            var str = GetValue(module)?.ToString();
+            return str == null || (json.ContainsKey(str) && json[str].GetBool()) || json.All(v => !v.Value.GetBool());
         }
     }
 }
