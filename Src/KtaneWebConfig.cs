@@ -52,7 +52,7 @@ namespace KtaneWeb
                     if (!notModuleNames.Any(inf.File.Name.StartsWith))
                     {
                         list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
-                        if (ext == "html")
+                        if (ext == "html" && !inf.File.Name.Contains("interactive"))
                             list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon + 2}");
                     }
             }
