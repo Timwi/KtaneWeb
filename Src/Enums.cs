@@ -111,4 +111,16 @@
         [KtaneFilterOption("The module may not be republished and any work may not be reused.")]
         Restricted,
     }
+
+    public enum KtaneTimeModeOrigin
+    {
+        [KtaneFilterOption("This module does not have any assigned Time Mode score.")]
+        Unassigned,
+        [KtaneFilterOption("This module uses its Twitch Plays score as its Time Mode score.")]
+        TwitchPlays,
+        [KtaneFilterOption("This module has a community-assigned Time Mode score.")]
+        Community,
+        [KtaneFilterOption("This module has an assigned Time Mode score.")]
+        Assigned
+    }
 }

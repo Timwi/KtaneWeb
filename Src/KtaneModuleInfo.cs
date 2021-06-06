@@ -91,6 +91,10 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField(null)]
         public KtaneTwitchPlaysInfo TwitchPlays = null;
 
+        // This information is imported from a spreadsheet, so not serialized in JSON.
+        [ClassifyIgnoreIfDefault, EditableField(null)]
+        public KtaneTimeModeInfo TimeMode = null;
+
         public object Icon(KtaneWebConfig config) => Path.Combine(config.BaseDir, "Icons", Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.BaseDir, "Icons", "blank.png")))}" });
 
@@ -115,6 +119,7 @@ namespace KtaneWeb
                 other.Symbol == Symbol &&
                 other.TutorialVideoUrl == TutorialVideoUrl &&
                 Equals(other.TwitchPlays, TwitchPlays) &&
+                Equals(other.TimeMode, TimeMode) &&
                 other.Type == Type;
         }
 
@@ -235,6 +240,20 @@ namespace KtaneWeb
             other.Score == Score && other.ScorePerModule == ScorePerModule && other.ScorePerModuleCap == ScorePerModuleCap &&
             other.ScoreExplanation == ScoreExplanation && other.TagPosition == TagPosition && other.NeedyScoring == NeedyScoring && other.AutoPin == AutoPin;
         public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, ScorePerModuleCap, ScoreExplanation, TagPosition, NeedyScoring, AutoPin);
+    }
+
+    sealed class KtaneTimeModeInfo : IEquatable<KtaneTimeModeInfo>
+    {
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score", "For regular modules, the score for solving it. For needy modules, depends on the scoring method.")]
+        public decimal? Score;
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score per module", "For boss modules, a score value that is multiplied by the total number of modules on the bomb.")]
+        public decimal? ScorePerModule;          // for boss modules like FMN
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score Origin", "The origin of this module's Time Mode score.")]
+        public KtaneTimeModeOrigin? Origin;
+
+        public override bool Equals(object obj) => obj != null && obj is KtaneTimeModeInfo && Equals((KtaneTimeModeInfo)obj);
+        public bool Equals(KtaneTimeModeInfo other) => other != null && other.Score == Score && other.ScorePerModule == ScorePerModule && other.Origin == Origin;
+        public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, Origin);
     }
 
     sealed class ContributorInfo : IEquatable<ContributorInfo>

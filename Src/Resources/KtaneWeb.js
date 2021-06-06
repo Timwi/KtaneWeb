@@ -121,6 +121,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         "Frysk": "fy"
     };
 
+    const TimeModeNames = {
+        "Unassigned": "default",
+        "Assigned": "assigned",
+        "TwitchPlays": "Twitch Plays",
+        "Community": "community"
+    };
+
     var pageLang = window.location.search.match(/lang=([^?&]+)/);
     if (!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1)
         pageLang = null;
@@ -179,7 +186,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         sort = 'published';
     var reverse = lStorage.getItem('sort-reverse') == "true" || false;
 
-    var defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published', 'twitch', 'souvenir', 'rule-seed'];
+    var defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published', 'twitch', 'time-mode', 'souvenir', 'rule-seed'];
     var displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
@@ -555,6 +562,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo },
                                     mod.TwitchPlays.ScorePerModule || mod.TwitchPlays.ScoreExplanation ? 'S' : mod.TwitchPlays.Score));
                             }
+                            if (mod.TimeMode)
+                            {
+                                if (mod.TimeMode.ScorePerModule)
+                                    mod.TimeModeInfo = `This module can be played in Time Mode for a score of ${mod.TimeMode.Score ? `${mod.TimeMode.Score}, plus ` : ''}${mod.TimeMode.ScorePerModule} for each module on the bomb${mod.TimeMode.Origin ? ` (${TimeModeNames[mod.TimeMode.Origin || 'Unassigned']} score)` : ''}.`;
+                                else
+                                    mod.TimeModeInfo = `This module can be played in Time Mode for a score of ${mod.TimeMode.Score}${mod.TimeMode.Origin ? ` (${TimeModeNames[mod.TimeMode.Origin || 'Unassigned']} score)` : ''}.`
+                                infos.append(el("div", `inf-time-mode inf-time-mode-${mod.TimeMode.Origin || 'Unassigned'} inf inf2`, { title: mod.TimeModeInfo },
+                                    mod.TimeMode.ScorePerModule ? 'S' : mod.TimeMode.Score));
+                            }
                             if (mod.RuleSeedSupport === 'Supported')
                             {
                                 mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
@@ -927,6 +943,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     menuDiv.appendChild(el('div', 'module-further-info', mod.SouvenirInfo));
                 if ($('#display-twitch').prop('checked') && 'TwitchPlaysInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.TwitchPlaysInfo));
+                if ($('#display-time-mode').prop('checked') && 'TimeModeInfo' in mod)
+                    menuDiv.appendChild(el('div', 'module-further-info', mod.TimeModeInfo));
                 if ($('#display-rule-seed').prop('checked') && 'RuleSeedInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.RuleSeedInfo));
                 var title = getCompatibilityText(mod);

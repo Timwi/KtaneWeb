@@ -97,6 +97,7 @@ namespace KtaneWeb
             (readable: "Difficulty", id: "difficulty"),
             (readable: "Origin", id: "origin"),
             (readable: "Twitch support", id: "twitch"),
+            (readable: "Time Mode score", id: "time-mode"),
             (readable: "Souvenir support", id: "souvenir"),
             (readable: "Rule seed support", id: "rule-seed"),
             (readable: "Date published", id: "published"),

@@ -66,15 +66,27 @@ namespace KtaneWeb
                             moduleInfoCache.IconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(moduleInfoCache.IconSpritePng)})}}";
 
                             // Load TP data from the spreadsheet
-                            JsonList entries;
+                            JsonList tpEntries;
                             try
                             {
-                                entries = new HClient().Get("https://spreadsheets.google.com/feeds/list/1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+                                tpEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
                             }
                             catch (Exception e)
                             {
                                 Log.Exception(e);
-                                entries = new JsonList();
+                                tpEntries = new JsonList();
+                            }
+
+                            // Load Time Mode data from the spreadsheet
+                            JsonList timeModeEntries;
+                            try
+                            {
+                                timeModeEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Exception(e);
+                                timeModeEntries = new JsonList();
                             }
 
                             var moduleLoadExceptions = new JsonList();
@@ -98,16 +110,29 @@ namespace KtaneWeb
 
                                         // Merge in TP data
                                         static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
-                                        var entry = entries.FirstOrDefault(entry =>
+                                        var tpEntry = tpEntries.FirstOrDefault(entry =>
                                         {
                                             string entryName = Regex.Replace(entry["gsx$modulename"]["$t"].GetString(), @" \((Solve|Time)\)", "");
                                             return normalize(entryName) == normalize(mod.DisplayName ?? mod.Name);
                                         });
 
-                                        if (entry != null)
+                                        if (tpEntry != null)
                                         {
-                                            mergeTPData(mod, entry);
+                                            mergeTPData(mod, tpEntry);
                                             modJson = (JsonDict) ClassifyJson.Serialize(mod);
+                                        }
+
+                                        // Merge in Time Mode data
+                                        var timeModeEntry = timeModeEntries.FirstOrDefault(entry =>
+                                        {
+                                            string entryName = entry["gsx$modulename"]["$t"].GetString();
+                                            return normalize(entryName) == normalize(mod.DisplayName ?? mod.Name);
+                                        });
+
+                                        if (timeModeEntry != null)
+                                        {
+                                            mergeTimeModeData(mod, timeModeEntry);
+                                            modJson = (JsonDict)ClassifyJson.Serialize(mod);
                                         }
 
                                         // Some module names contain characters that can’t be used in filenames (e.g. “?”)
@@ -255,6 +280,51 @@ namespace KtaneWeb
 
             if (decimal.TryParse(scoreString, out decimal score))
                 tp.Score ??= score;
+        }
+
+        private void mergeTimeModeData(KtaneModuleInfo mod, JsonValue entry)
+        {
+            // Get score strings
+            string scoreString = entry["gsx$resolvedscore"]["$t"].GetString().Trim();
+            if (string.IsNullOrEmpty(scoreString))
+            {
+                scoreString = "10";
+            }
+            string scorePerModuleString = entry["gsx$resolvedbosspointspermodule"]["$t"].GetString() ?? "";
+
+            if (mod.TimeMode == null)
+                mod.TimeMode = new KtaneTimeModeInfo();
+
+            var timeMode = mod.TimeMode;
+
+            // Determine the score orign
+            if (!string.IsNullOrEmpty(entry["gsx$assignedscore"]["$t"].GetString()))
+            {
+                timeMode.Origin = KtaneTimeModeOrigin.Assigned;
+            }
+            else if (!string.IsNullOrEmpty(entry["gsx$communityscore"]["$t"].GetString()))
+            {
+                timeMode.Origin = KtaneTimeModeOrigin.Community;
+            }
+            else if (!string.IsNullOrEmpty(entry["gsx$tpscore"]["$t"].GetString().Trim()))
+            {
+                timeMode.Origin = KtaneTimeModeOrigin.TwitchPlays;
+            } 
+            else
+            {
+                timeMode.Origin = KtaneTimeModeOrigin.Unassigned;
+            }
+
+            // Parse scores
+            if (decimal.TryParse(scoreString, out decimal score))
+            {
+                timeMode.Score ??= score;
+            }
+
+            if (decimal.TryParse(scorePerModuleString, out decimal scorePerModule))
+            {
+                timeMode.ScorePerModule ??= scorePerModule;
+            }
         }
     }
 }

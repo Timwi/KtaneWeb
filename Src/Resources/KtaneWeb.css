@@ -143,6 +143,39 @@ div.infos .inf-twitch {
         padding-right: 12px;
     }
 
+
+
+div.infos .inf-time-mode {
+    font-size: 10pt;
+}
+
+    div.infos .inf-time-mode::before, div.infos .inf-time-mode::before {
+        background-size: 12px 12px;
+        background-repeat: no-repeat;
+    }
+
+    div.infos .inf-time-mode::before {
+        background-position: right 4px;
+        background-position: calc(100% - 2px) 3px;
+        padding-right: 12px;
+    }
+
+    div.infos .inf-time-mode.inf-time-mode-Unassigned::before {
+        background-image: url(HTML/img/time-mode-Unassigned.svg);
+    }
+
+    div.infos .inf-time-mode.inf-time-mode-Assigned::before {
+        background-image: url(HTML/img/time-mode-Assigned.svg);
+    }
+
+    div.infos .inf-time-mode.inf-time-mode-Community::before {
+        background-image: url(HTML/img/time-mode-Community.svg);
+    }
+
+    div.infos .inf-time-mode.inf-time-mode-TwitchPlays::before {
+        background-image: url(HTML/img/time-mode-TwitchPlays.svg);
+    }
+
 div.infos .inf-rule-seed::before {
     background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path style="fill:%23026" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
     background-position: right 4px;
@@ -205,6 +238,7 @@ td.infos-1 div.infos > .inf-description {
 body:not(.display-difficulty) div.infos .inf-difficulty,
 body:not(.display-origin) div.infos .inf-origin,
 body:not(.display-twitch) div.infos .inf-twitch,
+body:not(.display-time-mode) div.infos .inf-time-mode,
 body:not(.display-rule-seed) div.infos .inf-rule-seed,
 body:not(.display-souvenir) div.infos .inf-souvenir,
 body:not(.display-id) div.infos .inf-id,
@@ -930,6 +964,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
             body.display-origin td.infos-1 div.infos > div.inf-origin,
             body.display-published td.infos-1 div.infos > div.inf-published,
             body.display-twitch td.infos-1 div.infos > div.inf-twitch,
+            body.display-twitch td.infos-1 div.infos > div.inf-time-mode,
             body.display-souvenir td.infos-1 div.infos > div.inf-souvenir,
             body.display-rule-seed td.infos-1 div.infos > div.inf-rule-seed {
                 display: inline;
@@ -1115,6 +1150,17 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
             }
 
                 #main-table td.infos-2 .inf-twitch::before {
+                    background-size: 7px 7px;
+                    background-position: 10px 3px;
+                    background-position: calc(100% - 2px) 3px;
+                    padding-right: 9px;
+                }
+
+            #main-table td.infos-2 .inf-time-mode {
+                font-size: inherit;
+            }
+
+                #main-table td.infos-2 .inf-time-mode::before {
                     background-size: 7px 7px;
                     background-position: 10px 3px;
                     background-position: calc(100% - 2px) 3px;
