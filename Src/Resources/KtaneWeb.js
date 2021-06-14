@@ -1231,7 +1231,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('.search-field-clear').click(function() { disappear(); var inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
-    let switcherData = { missions: {} };
+    let switcherData = { missionSheetsLoaded: false, missions: {} };
     $('#search-switcher').click(function()
     {
         let uis = Array.from(document.getElementsByClassName('search-container'));
@@ -1246,45 +1246,58 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 break;
 
             case 1:     // Missions drop-down
-                if (!switcherData.sheets)
+                if (!switcherData.missionSheetsLoaded)
                 {
+                    switcherData.missionSheetsLoaded = true;
+
+                    const spreadsheets = [
+                        { pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2 },     // Solved challenge bombs (maintained by Espik/Burniel)
+                        { pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1 }       // Unsolved challenge bombs (maintained by Espik/Burniel)
+                    ];
+
                     const sel = document.getElementById('search-field-bomb');
                     sel.innerHTML = '<option value="">Loading...</option>';
-                    $.get('https://spreadsheets.google.com/feeds/worksheets/1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow/public/full?alt=json', result =>
-                    {
-                        switcherData.sheets = result.feed.entry.slice(2).map(obj => ({ id: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t }));
-                        sel.innerHTML = '<option value=""></option>' + switcherData.sheets.map(sh => `<option value="${sh.id}"></option>`).join('');
-                        Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : switcherData.sheets[ix - 1].title; });
+                    let sheets = [];
 
-                        sel.onchange = function()
+                    for (let spreadsheet of spreadsheets)
+                    {
+                        $.get(`https://spreadsheets.google.com/feeds/worksheets/${spreadsheet.pid}/public/full?alt=json`, result =>
                         {
-                            let val = sel.value;
-                            if (val in switcherData.missions)
+                            sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets).map(obj => ({ pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t })));
+                            sheets.sort((a, b) => a.title.localeCompare(b.title));
+                            sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option value="${sh.pid}/${sh.cid}"></option>`).join('');
+                            Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
+                        }, 'json');
+                    }
+
+                    sel.onchange = function()
+                    {
+                        let val = sel.value;
+                        if (val in switcherData.missions)
+                        {
+                            missionList = switcherData.missions[val];
+                            updateFilter();
+                        }
+                        else if (val !== '')
+                        {
+                            $.get(`https://spreadsheets.google.com/feeds/cells/${val}/public/full?alt=json`, result =>
                             {
-                                missionList = switcherData.missions[val];
+                                missionList = new Set();
+                                let m;
+                                for (let obj of result.feed.entry)
+                                    if ((obj.gs$cell.col | 0) === 12 && (obj.gs$cell.row | 0) >= 3 && (m = /^\[(.*)\] Count: \d+$/.exec(obj.content.$t)) !== null)
+                                        for (let modId of m[1].split(','))
+                                            missionList.add(modId.trim());
+                                switcherData.missions[val] = missionList;
                                 updateFilter();
-                            }
-                            else if (val !== '')
-                            {
-                                $.get(`https://spreadsheets.google.com/feeds/cells/1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow/${val}/public/full?alt=json`, result =>
-                                {
-                                    missionList = new Set();
-                                    let m;
-                                    for (let obj of result.feed.entry)
-                                        if ((obj.gs$cell.col | 0) === 12 && (obj.gs$cell.row | 0) >= 3 && (m = /^\[(.*)\] Count: \d+$/.exec(obj.content.$t)) !== null)
-                                            for (let modId of m[1].split(','))
-                                                missionList.add(modId.trim());
-                                    switcherData.missions[val] = missionList;
-                                    updateFilter();
-                                }, 'json');
-                            }
-                            else if (missionList !== null)
-                            {
-                                missionList = null;
-                                updateFilter();
-                            }
-                        };
-                    }, 'json');
+                            }, 'json');
+                        }
+                        else if (missionList !== null)
+                        {
+                            missionList = null;
+                            updateFilter();
+                        }
+                    };
                 }
                 break;
         }
