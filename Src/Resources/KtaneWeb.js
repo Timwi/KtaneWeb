@@ -1251,11 +1251,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     switcherData.missionSheetsLoaded = true;
 
                     const spreadsheets = [
-                        { pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2 },     // Solved challenge bombs (maintained by Espik/Burniel)
-                        { pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1 }       // Unsolved challenge bombs (maintained by Espik/Burniel)
+                        { pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge bombs (maintained by Espik/Burniel)
+                        { pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' }       // Unsolved challenge bombs (maintained by Espik/Burniel)
                     ];
 
-                    const sel = document.getElementById('search-field-bomb');
+                    const sel = document.getElementById('search-field-mission');
                     sel.innerHTML = '<option value="">Loading...</option>';
                     let sheets = [];
 
@@ -1263,9 +1263,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     {
                         $.get(`https://spreadsheets.google.com/feeds/worksheets/${spreadsheet.pid}/public/full?alt=json`, result =>
                         {
-                            sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets).map(obj => ({ pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t })));
+                            sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets).map(obj => ({ pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t, css: spreadsheet.css })));
                             sheets.sort((a, b) => a.title.localeCompare(b.title));
-                            sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option value="${sh.pid}/${sh.cid}"></option>`).join('');
+                            sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}"></option>`).join('');
                             Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
                         }, 'json');
                     }

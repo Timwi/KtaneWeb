@@ -104,6 +104,14 @@ textarea {
                 padding-left: .5em;
             }
 
+        #top-controls .search-container #search-field-mission option.solved {
+            background-color: #dfd;
+        }
+
+        #top-controls .search-container #search-field-mission option.unsolved {
+            background-color: #fdd;
+        }
+
 
 div.modlink-wrap {
     line-height: 1;
