@@ -23,7 +23,7 @@ namespace KtaneWeb
             byte[] generateProfile(int operation, Func<KtaneModuleInfo, bool> filter)
             {
                 var jsonList = getModuleInfoCache().Modules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy) && filter(k)).Select(k => k.ModuleID).ToJsonList();
-                return new JsonDict { { "DisabledList", jsonList }, { "Operation", operation } }.ToString().ToUtf8();
+                return new JsonDict { { operation == 0 ? "EnabledList" : "DisabledList", jsonList }, { "Operation", operation } }.ToString().ToUtf8();
             }
 
             return new UrlResolver(
@@ -36,8 +36,10 @@ namespace KtaneWeb
                         foreach (var difficulty in EnumStrong.GetValues<KtaneModuleDifficulty>())
                         {
                             zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.DefuserDifficulty == difficulty)), @"Veto defuser {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
-                            zipFile.Add(new InMemoryDataSource(generateProfile(0, k => k.ExpertDifficulty != difficulty)), @"+ Expert {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
+                            zipFile.Add(new InMemoryDataSource(generateProfile(0, k => k.ExpertDifficulty == difficulty)), @"+ Expert {0}.json".Fmt(difficulty.ToReadable()), CompressionMethod.Deflated, true);
                         }
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsFullBoss)), @"Veto full boss modules.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsSemiBoss)), @"Veto semi-boss modules.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.RuleSeedSupport != KtaneSupport.Supported)), @"Only rule-seeded.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Souvenir == null || k.Souvenir.Status != KtaneModuleSouvenir.Supported)), @"Only Souvenir supported.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Compatibility != KtaneModuleCompatibility.Compatible)), @"Veto incompatible.json", CompressionMethod.Deflated, true);
