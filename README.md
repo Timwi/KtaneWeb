@@ -1,38 +1,15 @@
 # Set up the solution for KtaneWeb
 
-You need several other git repos for KtaneWeb to function. Execute the following script to put everything in the right place relative to each other:
+KtaneWeb depends on a number of Nuget packages. Visual Studio handles this automatically when you try to compile the project; otherwise you may need to run a “Nuget restore” first.
 
-```bash
-mkdir Ktane
-git clone https://github.com/Timwi/KtaneWeb Ktane/KtaneWeb
-git clone https://github.com/Timwi/Propeller Propeller
-git clone https://github.com/RT-Projects/RT.Util RT.Util
-git clone https://github.com/RT-Projects/RT.SelfService RT.SelfService
-git clone https://github.com/RT-Projects/RT.Servers RT.Servers
-git clone https://github.com/RT-Projects/RT.TagSoup RT.TagSoup
-```
+Here are some links to the individual repos. You do not need to clone these unless your contributions requires a change to any of those.
 
-This will generate a directory tree as follows:
-
-```tree
-.
-├── Ktane
-| └── KtaneWeb
-├── Propeller
-├── RT.SelfService
-├── RT.Servers
-├── RT.TagSoup
-└── RT.Util
-```
-
-Links to the individual repos:
-
-- KtaneWeb -- <https://github.com/Timwi/KtaneWeb>
-- Propeller -- <https://github.com/Timwi/Propeller>
-- RT.SelfService -- <https://github.com/RT-Projects/RT.SelfService>
-- RT.Servers -- <https://github.com/RT-Projects/RT.Servers>
-- RT.TagSoup -- <https://github.com/RT-Projects/RT.TagSoup>
-- RT.Util -- <https://github.com/RT-Projects/RT.Util>
+- KtaneWeb -- <https://github.com/Timwi/KtaneWeb> (that’s this project)
+- Propeller -- <https://github.com/Timwi/Propeller> (contains PropellerApi)
+- RT.Servers -- <https://github.com/RT-Projects/RT.Servers> (contains HttpServer)
+- RT.TagSoup -- <https://github.com/RT-Projects/RT.TagSoup> (an HTML library)
+- RT.Util -- <https://github.com/RT-Projects/RT.Util> (lots of utilities, including extension methods)
+- PdfSharp -- <https://github.com/empira/PDFsharp> (used only by the “Generate merged PDF” feature)
 
 # Set up KtaneWeb locally
 
