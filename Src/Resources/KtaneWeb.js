@@ -1252,10 +1252,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     sel.innerHTML = '<option value="">Loading...</option>';
                     $.get('https://spreadsheets.google.com/feeds/worksheets/1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow/public/full?alt=json', result =>
                     {
-                        let sheets = result.feed.entry.slice(2).map(obj => ({ id: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t }));
-                        console.log(sheets);
-                        sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option value="${sh.id}"></option>`).join('');
-                        Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
+                        switcherData.sheets = result.feed.entry.slice(2).map(obj => ({ id: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t }));
+                        sel.innerHTML = '<option value=""></option>' + switcherData.sheets.map(sh => `<option value="${sh.id}"></option>`).join('');
+                        Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : switcherData.sheets[ix - 1].title; });
 
                         sel.onchange = function()
                         {
