@@ -66,26 +66,44 @@ textarea {
     padding: 10px 0;
 }
 
-    #top-controls .search-container #search-field {
-        width: 15em;
-    }
-
-    #top-controls .search-container #search-field-clear {
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
-        width: 1.25em;
-        height: 1.25em;
+    #top-controls #search-switcher {
         display: inline-block;
-        vertical-align: middle;
+        width: .4cm;
+        height: .4cm;
+        margin-right: .1cm;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M1 1 9 5 1 9z" /></svg>');
+        background-repeat: no-repeat;
     }
 
-    #top-controls .search-container .search-options {
-        display: inline-block;
-        vertical-align: middle;
+    #top-controls .search-container {
+        display: none;
     }
 
-        #top-controls .search-container .search-options .search-option {
-            padding-left: .5em;
+        #top-controls .search-container.visible {
+            display: inline;
         }
+
+        #top-controls .search-container #search-field {
+            width: 15em;
+        }
+
+        #top-controls .search-container .search-field-clear {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
+            width: 1.25em;
+            height: 1.25em;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #top-controls .search-container .search-options {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+            #top-controls .search-container .search-options .search-option {
+                padding-left: .5em;
+            }
+
 
 div.modlink-wrap {
     line-height: 1;

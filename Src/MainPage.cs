@@ -145,15 +145,19 @@ namespace KtaneWeb
 
                         // SEARCH FIELD (and rule seed display on mobile)
                         new DIV { id = "top-controls" }._(
-                            new DIV { class_ = "search-container" }._(
+                            new A { id = "search-switcher", href = "#" },
+                            new DIV { class_ = "search-container visible" }._(
                                 new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
                                 new INPUT { type = itype.text, id = "search-field", accesskey = "f" }, " ",
                                 new SCRIPTLiteral("document.getElementById('search-field').focus();"),
-                                new A { href = "#", id = "search-field-clear" },
+                                new A { href = "#", class_ = "search-field-clear" },
                                 new DIV { class_ = "search-options" }._(
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._("Names")),
                                     new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._("Authors")),
                                     new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
+                            new DIV { class_ = "search-container" }._(
+                                new LABEL { for_ = "search-field-bomb" }._("Mission: "),
+                                new SELECT { id = "search-field-bomb", accesskey = "," }),
                             new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
 
                         new DIV { id = "main-table-container" }._(

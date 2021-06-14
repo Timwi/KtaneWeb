@@ -204,6 +204,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         view = 'List';
 
     let profileVetoList = null;
+    let missionList = null;
+
     var version = JSON.parse(lStorage.getItem('version')) || 0;
     if (version < 2)
     {
@@ -768,7 +770,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let searchByModuleID = document.getElementById('option-include-module-id').checked;
         modules.forEach(function(mod)
         {
-            let filteredIn = true;
+            let filteredIn = missionList === null || missionList.has(mod.ModuleID);
             for (let i = 0; i < initFilters.length; i++)
             {
                 if (typeof initFilters[i].fnc(mod) !== 'undefined')
@@ -1226,8 +1228,70 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
-    $('#search-field-clear').click(function() { disappear(); $('input#search-field').val(''); updateFilter(); return false; });
+    $('.search-field-clear').click(function() { disappear(); var inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
+
+    let switcherData = { missions: {} };
+    $('#search-switcher').click(function()
+    {
+        let uis = Array.from(document.getElementsByClassName('search-container'));
+        let cur = uis.findIndex(elem => elem.classList.contains('visible'));
+        cur = (cur + 1) % uis.length;
+        uis.forEach(elem => { elem.classList.remove('visible'); });
+        uis[cur].classList.add('visible');
+
+        switch (cur)
+        {
+            case 0:     // Find textbox
+                break;
+
+            case 1:     // Missions drop-down
+                if (!switcherData.sheets)
+                {
+                    const sel = document.getElementById('search-field-bomb');
+                    sel.innerHTML = '<option value="">Loading...</option>';
+                    $.get('https://spreadsheets.google.com/feeds/worksheets/1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow/public/full?alt=json', result =>
+                    {
+                        let sheets = result.feed.entry.slice(2).map(obj => ({ id: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t }));
+                        console.log(sheets);
+                        sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option value="${sh.id}"></option>`).join('');
+                        Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
+
+                        sel.onchange = function()
+                        {
+                            let val = sel.value;
+                            if (val in switcherData.missions)
+                            {
+                                missionList = switcherData.missions[val];
+                                updateFilter();
+                            }
+                            else if (val !== '')
+                            {
+                                $.get(`https://spreadsheets.google.com/feeds/cells/1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow/${val}/public/full?alt=json`, result =>
+                                {
+                                    missionList = new Set();
+                                    let m;
+                                    for (let obj of result.feed.entry)
+                                        if ((obj.gs$cell.col | 0) === 12 && (obj.gs$cell.row | 0) >= 3 && (m = /^\[(.*)\] Count: \d+$/.exec(obj.content.$t)) !== null)
+                                            for (let modId of m[1].split(','))
+                                                missionList.add(modId.trim());
+                                    switcherData.missions[val] = missionList;
+                                    updateFilter();
+                                }, 'json');
+                            }
+                            else if (missionList !== null)
+                            {
+                                missionList = null;
+                                updateFilter();
+                            }
+                        };
+                    }, 'json');
+                }
+                break;
+        }
+
+        return false;
+    });
 
     // Page options pop-up (mobile only)
     $('#page-opt').click(function()
