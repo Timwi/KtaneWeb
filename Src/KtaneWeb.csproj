@@ -54,8 +54,14 @@
     <Reference Include="RT.Serialization, Version=2.0.1690.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RT.Serialization.2.0.1690\lib\netstandard2.0\RT.Serialization.dll</HintPath>
     </Reference>
+    <Reference Include="RT.Serialization.Binary, Version=2.0.1690.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RT.Serialization.Binary.2.0.1690\lib\netstandard2.0\RT.Serialization.Binary.dll</HintPath>
+    </Reference>
     <Reference Include="RT.Serialization.Json, Version=2.0.1690.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RT.Serialization.Json.2.0.1690\lib\netstandard2.0\RT.Serialization.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RT.Serialization.Xml, Version=2.0.1690.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RT.Serialization.Xml.2.0.1690\lib\netstandard2.0\RT.Serialization.Xml.dll</HintPath>
     </Reference>
     <Reference Include="RT.Servers, Version=1.0.1665.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RT.Servers.1.0.1665\lib\net472\RT.Servers.dll</HintPath>
@@ -75,6 +81,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
