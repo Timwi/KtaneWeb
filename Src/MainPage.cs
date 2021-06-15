@@ -157,7 +157,8 @@ namespace KtaneWeb
                                     new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
                             new DIV { class_ = "search-container" }._(
                                 new LABEL { for_ = "search-field-mission" }._("Mission: "),
-                                new SELECT { id = "search-field-mission", accesskey = "," }),
+                                new SELECT { id = "search-field-mission", accesskey = "," }, " ",
+                                new A { id = "search-field-mission-link" }._("open")),
                             new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
 
                         new DIV { id = "main-table-container" }._(

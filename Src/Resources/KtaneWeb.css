@@ -112,6 +112,18 @@ textarea {
             background-color: #fdd;
         }
 
+        #top-controls .search-container #search-field-mission option.tp {
+            background-color: #ddf;
+        }
+
+        #top-controls .search-container #search-field-mission-link {
+            display: none;
+        }
+
+            #top-controls .search-container #search-field-mission-link[href] {
+                display: inline;
+            }
+
 
 div.modlink-wrap {
     line-height: 1;

@@ -1251,8 +1251,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     switcherData.missionSheetsLoaded = true;
 
                     const spreadsheets = [
-                        { pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge bombs (maintained by Espik/Burniel)
-                        { pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' }       // Unsolved challenge bombs (maintained by Espik/Burniel)
+                        { pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
+                        { pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' },    // Unsolved challenge missions (maintained by Espik/Burniel)
+                        { pid: '1pzoatn2mX1gtKurxt1OBejbutTrKq0kqO9dNohnu33Q', skipSheets: 1, css: 'tp' }                   // Twitch Plays challenge missions (maintained by Espik/Burniel)
                     ];
 
                     const sel = document.getElementById('search-field-mission');
@@ -1263,9 +1264,17 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     {
                         $.get(`https://spreadsheets.google.com/feeds/worksheets/${spreadsheet.pid}/public/full?alt=json`, result =>
                         {
-                            sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets).map(obj => ({ pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t, css: spreadsheet.css })));
+                            sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets)
+                                .map(obj =>
+                                {
+                                    let urltag = null, m;
+                                    for (let lnk of obj.link)
+                                        if ((m = /\?gid=(\d+)&/.exec(lnk.href)) !== null)
+                                            urltag = m[1];
+                                    return { pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t, css: spreadsheet.css, urltag: urltag };
+                                }));
                             sheets.sort((a, b) => a.title.localeCompare(b.title));
-                            sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}"></option>`).join('');
+                            sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}/${sh.urltag}"></option>`).join('');
                             Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
                         }, 'json');
                     }
@@ -1273,6 +1282,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     sel.onchange = function()
                     {
                         let val = sel.value;
+
+                        let [pid, cid, urltag] = val.split('/');
+                        if (val !== '')
+                            document.getElementById('search-field-mission-link').setAttribute('href', `https://docs.google.com/spreadsheets/d/${pid}/edit#gid=${urltag}`);
+                        else
+                            document.getElementById('search-field-mission-link').removeAttribute('href');
+
                         if (val in switcherData.missions)
                         {
                             missionList = switcherData.missions[val];
@@ -1280,7 +1296,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         }
                         else if (val !== '')
                         {
-                            $.get(`https://spreadsheets.google.com/feeds/cells/${val}/public/full?alt=json`, result =>
+                            $.get(`https://spreadsheets.google.com/feeds/cells/${pid}/${cid}/public/full?alt=json`, result =>
                             {
                                 missionList = new Set();
                                 let m;
