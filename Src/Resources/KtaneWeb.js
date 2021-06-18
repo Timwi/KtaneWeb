@@ -1293,7 +1293,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 missionList = new Set();
                                 let m;
                                 for (let obj of result.feed.entry)
-                                    if ((obj.gs$cell.col | 0) === 12 && (obj.gs$cell.row | 0) >= 3 && (m = /^\[(.*)\] Count: \d+$/.exec(obj.content.$t.replace(/\n/g, ''))) !== null)
+                                    if ((obj.gs$cell.col | 0) === 12 && (obj.gs$cell.row | 0) >= 3 && (m = /^\[(.*)\] Count: \d+$/s.exec(obj.content.$t)) !== null)
                                         for (let modId of m[1].split(','))
                                             missionList.add(modId.trim());
                                 switcherData.missions[val] = missionList;
