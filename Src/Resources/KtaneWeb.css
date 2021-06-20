@@ -64,6 +64,7 @@ textarea {
     z-index: 2;
     background-color: #fff;
     padding: 10px 0;
+    min-height: .6cm;
 }
 
     #top-controls #search-switcher {
