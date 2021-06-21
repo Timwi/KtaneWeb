@@ -294,6 +294,9 @@ namespace KtaneWeb
                                         new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
                                     new DIV(
+                                        new INPUT { id = "sort-time-mode-score", name = "sort", value = "timemodescore", class_ = "sort", type = itype.radio },
+                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "b" }._("\u00a0Sort by score in Time Mode".Accel('b'))),
+                                    new DIV(
                                         new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d'))),
                                     new DIV(

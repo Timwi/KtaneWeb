@@ -383,6 +383,10 @@ body.sort-twitch-score #main-table th.infos::after {
     content: '   • sorted by TP:KTANE score';
 }
 
+body.sort-time-mode-score #main-table th.infos::after {
+    content: '   • sorted by Time Mode score';
+}
+
 body.sort-published #main-table th.infos::after {
     content: '   • sorted by publication date';
 }
@@ -1038,6 +1042,10 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
     }
 
     body.sort-twitch-score th.modlink::after {
+        content: '   • sorted by TP:KTANE score';
+    }
+
+    body.sort-time-mode-score th.modlink::after {
         content: '   • sorted by TP:KTANE score';
     }
 
