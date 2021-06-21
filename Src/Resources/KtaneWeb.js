@@ -1227,6 +1227,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     let switcherData = { missionSheetsLoaded: false, missions: {} };
     $('#search-switcher').click(function()
     {
+        disappear();
         let uis = Array.from(document.getElementsByClassName('search-container'));
         let cur = uis.findIndex(elem => elem.classList.contains('visible'));
         cur = (cur + 1) % uis.length;
@@ -1310,6 +1311,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 }
                 break;
         }
+        uis[cur].querySelector('.sw-focus').focus();
 
         return false;
     });

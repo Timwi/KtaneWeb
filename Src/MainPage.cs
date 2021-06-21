@@ -38,6 +38,7 @@ namespace KtaneWeb
         // X
         // Y    include/exclude needy modules
         // Z
+        // ,    Switch between Find box and Missions drop-down
         // .    Filters
         // /    Options
 
@@ -65,7 +66,7 @@ namespace KtaneWeb
             new Selectable
             {
                 HumanReadable = "Steam Workshop",
-                Accel = 'o',
+                Accel = 'W',
                 Icon = "HTML/img/steam-workshop-item.png",
                 PropName = "steam",
                 UrlFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
@@ -145,10 +146,10 @@ namespace KtaneWeb
 
                         // SEARCH FIELD (and rule seed display on mobile)
                         new DIV { id = "top-controls" }._(
-                            new A { id = "search-switcher", href = "#" },
+                            new A { id = "search-switcher", href = "#", accesskey = "," },
                             new DIV { class_ = "search-container visible" }._(
                                 new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
-                                new INPUT { type = itype.text, id = "search-field", accesskey = "f" }, " ",
+                                new INPUT { type = itype.text, id = "search-field", class_ = "sw-focus", accesskey = "f" }, " ",
                                 new SCRIPTLiteral("document.getElementById('search-field').focus();"),
                                 new A { href = "#", class_ = "search-field-clear" },
                                 new DIV { class_ = "search-options" }._(
@@ -157,8 +158,8 @@ namespace KtaneWeb
                                     new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
                             new DIV { class_ = "search-container" }._(
                                 new LABEL { for_ = "search-field-mission" }._("Mission: "),
-                                new SELECT { id = "search-field-mission", accesskey = "," }, " ",
-                                new A { id = "search-field-mission-link" }._("open")),
+                                new SELECT { id = "search-field-mission", class_ = "sw-focus" }, " ",
+                                new A { id = "search-field-mission-link", accesskey = "]" }._("open")),
                             new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
 
                         new DIV { id = "main-table-container" }._(
@@ -295,7 +296,7 @@ namespace KtaneWeb
                                         new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
                                     new DIV(
                                         new INPUT { id = "sort-time-mode-score", name = "sort", value = "timemodescore", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "b" }._("\u00a0Sort by score in Time Mode".Accel('o'))),
+                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "o" }._("\u00a0Sort by score in Time Mode".Accel('o'))),
                                     new DIV(
                                         new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d'))),
