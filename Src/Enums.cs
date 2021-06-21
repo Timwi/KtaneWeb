@@ -6,9 +6,9 @@
         Regular,
         [KtaneFilterOption("Needy module", 'y')]
         Needy,
-        [KtaneFilterOption("Holdable", 'H')]
+        [KtaneFilterOption("Holdable")]
         Holdable,
-        [KtaneFilterOption("Widget", 'W')]
+        [KtaneFilterOption("Widget")]
         Widget
     }
 

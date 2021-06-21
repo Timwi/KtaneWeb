@@ -19,14 +19,14 @@ namespace KtaneWeb
         // E    Reverse sort
         // F    Find
         // G    Glossary
-        // H    include/exclude holdables
+        // H
         // I    toggle views
         // J    Generate JSON button (module edit UI)
         // K    Dark Theme
         // L    Light Theme
         // M    include/exclude mods
         // N    sort by name
-        // O    link to Steam Workshop item
+        // O    sort by Time Mode score
         // P    Profile Editor
         // Q    
         // R    include/exclude regular modules
@@ -34,7 +34,7 @@ namespace KtaneWeb
         // T    link to Tutorial video
         // U    link to Manual
         // V    include/exclude vanilla
-        // W    include/exclude widgets
+        // W    link to Steam Workshop item
         // X
         // Y    include/exclude needy modules
         // Z
@@ -295,7 +295,7 @@ namespace KtaneWeb
                                         new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
                                     new DIV(
                                         new INPUT { id = "sort-time-mode-score", name = "sort", value = "timemodescore", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "b" }._("\u00a0Sort by score in Time Mode".Accel('b'))),
+                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "b" }._("\u00a0Sort by score in Time Mode".Accel('o'))),
                                     new DIV(
                                         new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
                                         new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d'))),
