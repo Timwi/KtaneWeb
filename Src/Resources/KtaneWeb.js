@@ -178,8 +178,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         'name': { fnc: function(mod) { return mod.SortKey.toLowerCase(); }, reverse: false, bodyCss: 'sort-name', radioButton: '#sort-name' },
         'defdiff': { fnc: function(mod) { return defdiffFilterValues.indexOf(mod.DefuserDifficulty); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
         'expdiff': { fnc: function(mod) { return expdiffFilterValues.indexOf(mod.ExpertDifficulty); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
-        'twitchscore': { fnc: function (mod) { return mod.TwitchPlays ? mod.TwitchPlays.Score : 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
-        'timemodescore': { fnc: function (mod) { return mod.TimeMode ? mod.TimeMode.Score : 0; }, reverse: false, bodyCss: 'sort-time-mode-score', radioButton: '#sort-time-mode-score' },
+        'twitchscore': { fnc: function(mod) { return mod.TwitchPlays ? mod.TwitchPlays.Score : 0; }, reverse: false, bodyCss: 'sort-twitch-score', radioButton: '#sort-twitch-score' },
+        'timemodescore': { fnc: function(mod) { return mod.TimeMode ? mod.TimeMode.Score : 0; }, reverse: false, bodyCss: 'sort-time-mode-score', radioButton: '#sort-time-mode-score' },
         'published': { fnc: function(mod) { return mod.Published; }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
     var sort = lStorage.getItem('sort') || 'published';
@@ -1258,6 +1258,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     {
                         $.get(`https://spreadsheets.google.com/feeds/worksheets/${spreadsheet.pid}/public/full?alt=json`, result =>
                         {
+                            let prevValue = sel.value;
                             sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets)
                                 .map(obj =>
                                 {
@@ -1270,6 +1271,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             sheets.sort((a, b) => a.title.localeCompare(b.title));
                             sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}/${sh.urltag}"></option>`).join('');
                             Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
+                            sel.value = prevValue;
                         }, 'json');
                     }
 
@@ -1292,14 +1294,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         {
                             $.get(`https://spreadsheets.google.com/feeds/cells/${pid}/${cid}/public/full?alt=json`, result =>
                             {
-                                missionList = new Set();
+                                let newMissionList = new Set();
                                 let m;
                                 for (let obj of result.feed.entry)
                                     if ((obj.gs$cell.col | 0) === 12 && (obj.gs$cell.row | 0) >= 3 && (m = /^\[(.*)\] Count: \d+$/s.exec(obj.content.$t)) !== null)
                                         for (let modId of m[1].split(','))
-                                            missionList.add(modId.trim());
-                                switcherData.missions[val] = missionList;
-                                updateFilter();
+                                            newMissionList.add(modId.trim());
+                                switcherData.missions[val] = newMissionList;
+                                if (sel.value === val)
+                                {
+                                    missionList = newMissionList;
+                                    updateFilter();
+                                }
                             }, 'json');
                         }
                         else if (missionList !== null)
