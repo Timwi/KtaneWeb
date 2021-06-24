@@ -15,7 +15,7 @@ namespace KtaneWeb
             if (Path.GetInvalidPathChars().Any(ch => filename.Contains(ch)))
                 return HttpResponse.PlainText($"“{filename}” contains a character not allowed in file names.", HttpStatusCode._400_BadRequest);
 
-            var moduleInfoCache = getModuleInfoCache();
+            var moduleInfoCache = _moduleInfoCache;
 
             lock (moduleInfoCache.ManualsLastModified)
             {

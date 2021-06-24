@@ -20,9 +20,10 @@ namespace KtaneWeb
 
         private HttpResponse generateProfileZip(HttpRequest req)
         {
+            var moduleInfoCache = _moduleInfoCache;
             byte[] generateProfile(int operation, Func<KtaneModuleInfo, bool> filter)
             {
-                var jsonList = getModuleInfoCache().Modules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy) && filter(k)).Select(k => k.ModuleID).ToJsonList();
+                var jsonList = moduleInfoCache.Modules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy) && filter(k)).Select(k => k.ModuleID).ToJsonList();
                 return new JsonDict { { operation == 0 ? "EnabledList" : "DisabledList", jsonList }, { "Operation", operation } }.ToString().ToUtf8();
             }
 

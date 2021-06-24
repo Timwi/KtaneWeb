@@ -13,6 +13,7 @@ namespace KtaneWeb
     {
         private HttpResponse sitemapXml(HttpRequest req)
         {
+            var moduleInfoCache = _moduleInfoCache;
             XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
@@ -26,7 +27,7 @@ namespace KtaneWeb
                         // Main page
                         new XElement(ns + "url",
                             new XElement(ns + "loc", req.Url.WithPathParent().WithPathOnly($"/").ToFull()),
-                            new XElement(ns + "lastmod", d(getModuleInfoCache().LastModifiedUtc)),
+                            new XElement(ns + "lastmod", d(moduleInfoCache.LastModifiedUtc)),
                             new XElement(ns + "priority", "1")),
 
                         // HTML and PDF folders

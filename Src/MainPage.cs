@@ -489,7 +489,7 @@ namespace KtaneWeb
                         })))),
                     new Func<object>(() =>
                     {
-                        var moduleInfoCache = getModuleInfoCache();
+                        var moduleInfoCache = _moduleInfoCache;
                         return Ut.NewArray<object>(
                             new SCRIPTLiteral(moduleInfoCache.ModuleInfoJs),
                             new STYLELiteral(moduleInfoCache.IconSpriteCss));

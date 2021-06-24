@@ -38,7 +38,7 @@ namespace KtaneWeb
                     {
                         if (req.Url.Path != "/raw")
                             return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON/" + req.Url.Path));
-                        return HttpResponse.Json(getModuleInfoCache().ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
+                        return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                     }),
                     new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/ManualLastUpdated", handler: ManualLastUpdated),
@@ -48,7 +48,7 @@ namespace KtaneWeb
                     new UrlMapping(path: "/upload-log", handler: uploadLogfile),
                     new UrlMapping(path: "/find-log", handler: findLogfile),
                     new UrlMapping(path: "/generate-json", handler: generateJson),
-                    new UrlMapping(path: "/iconsprite", handler: req => HttpResponse.Create(getModuleInfoCache().IconSpritePng, "image/png")),
+                    new UrlMapping(path: "/iconsprite", handler: req => HttpResponse.Create(_moduleInfoCache.IconSpritePng, "image/png")),
                     new UrlMapping(path: "/sitemap", specificPath: true, handler: sitemapXml),
 
                     new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
@@ -243,6 +243,8 @@ namespace KtaneWeb
             var rewrite = serializeConfig();
             if (rewrite != original)
                 File.WriteAllText(Settings.ConfigFile, rewrite);
+
+            generateModuleInfoCache();
         }
 
         private void saveConfig()
