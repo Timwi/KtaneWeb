@@ -437,7 +437,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 const list = contactPopup.querySelector("div > ul");
                 list.innerHTML = '';
 
-                for (const author of mod.Author.split(', '))
+                let contributors = new Set();
+                if (mod.Contributors)
+                    for (let key of Object.keys(mod.Contributors))
+                        for (let contributor of mod.Contributors[key])
+                            contributors.add(contributor);
+                if (mod.Author)
+                    for (let author of mod.Author.split(', '))
+                        contributors.add(author);
+
+                for (const author of contributors)
                 {
                     const roles = mod.Contributors === undefined ? '' : ` (${Object.entries(mod.Contributors).filter(([_, names]) => names.includes(author)).map(([role, _]) => role).join(", ")})`;
                     const item = el('li', null, `${author}:${roles}`);
