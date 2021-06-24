@@ -241,7 +241,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score Origin", "The origin of this module's Time Mode score.")]
         public KtaneTimeModeOrigin? Origin;
 
-        public override bool Equals(object obj) => obj != null && obj is KtaneTimeModeInfo && Equals((KtaneTimeModeInfo)obj);
+        public override bool Equals(object obj) => obj != null && obj is KtaneTimeModeInfo && Equals((KtaneTimeModeInfo) obj);
         public bool Equals(KtaneTimeModeInfo other) => other != null && other.Score == Score && other.ScorePerModule == ScorePerModule && other.Origin == Origin;
         public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, Origin);
     }
@@ -250,6 +250,8 @@ namespace KtaneWeb
     {
         [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual.")]
         public string[] Manual;
+        [ClassifyIgnoreIfDefault, ClassifyName("Manual graphics"), EditableField("Manual graphics", "People who contributed graphics for the manual.")]
+        public string[] ManualGraphics;
         [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed the module or widget.")]
         public string[] Developer;
         [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the module or widget.")]
@@ -257,7 +259,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support.")]
         public string[] TwitchPlays;
 
-        public string ToAuthorString() => new[] { Developer, Manual }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
+        public string ToAuthorString() => new[] { Developer, Manual, ManualGraphics, TwitchPlays, Maintainer }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
 
         public override bool Equals(object obj) => obj != null && obj is ContributorInfo info && Equals(info);
         private static bool sameArray(string[] one, string[] two) => (one == null && two == null) || (one != null && two != null && one.SequenceEqual(two));
