@@ -88,11 +88,11 @@ namespace KtaneWeb
         public KtaneMysteryModuleCompatibility MysteryModule = KtaneMysteryModuleCompatibility.NoConflict;
 
         // This information is imported from a spreadsheet, so not serialized in JSON.
-        [ClassifyIgnoreIfDefault, EditableField(null)]
-        public KtaneTwitchPlaysInfo TwitchPlays = null;
+        [ClassifyIgnore]
+        public float? TwitchPlaysScore = null;
 
         // This information is imported from a spreadsheet, so not serialized in JSON.
-        [ClassifyIgnoreIfDefault, EditableField(null)]
+        [ClassifyIgnore]
         public KtaneTimeModeInfo TimeMode = null;
 
         public object Icon(KtaneWebConfig config) => Path.Combine(config.BaseDir, "Icons", Name + ".png")
@@ -118,12 +118,10 @@ namespace KtaneWeb
                 other.SteamID == SteamID &&
                 other.Symbol == Symbol &&
                 other.TutorialVideoUrl == TutorialVideoUrl &&
-                Equals(other.TwitchPlays, TwitchPlays) &&
-                Equals(other.TimeMode, TimeMode) &&
                 other.Type == Type;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Description, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideoUrl, TwitchPlays, Type);
+        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Description, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideoUrl, Type);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
         public override string ToString() => Name;
 
@@ -143,7 +141,6 @@ namespace KtaneWeb
             {
                 DefuserDifficulty = null;
                 ExpertDifficulty = null;
-                TwitchPlays = null;
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
@@ -202,34 +199,9 @@ namespace KtaneWeb
             }._(attr.Char);
         }
 
-        public override bool Equals(object obj) => obj != null && obj is KtaneSouvenirInfo && Equals((KtaneSouvenirInfo) obj);
+        public override bool Equals(object obj) => obj != null && obj is KtaneSouvenirInfo info && Equals(info);
         public bool Equals(KtaneSouvenirInfo other) => other != null && other.Status == Status && other.Explanation == Explanation;
         public override int GetHashCode() => Ut.ArrayHash(Status, Explanation);
-    }
-
-    sealed class KtaneTwitchPlaysInfo : IEquatable<KtaneTwitchPlaysInfo>
-    {
-        [ClassifyIgnoreIfDefault, EditableField("Score String", "Defines how the module awards points.")]
-        public string ScoreString;
-
-        // Human-readable explanation for special scoring (e.g. Souvenir)
-        [ClassifyIgnoreIfDefault, EditableField("Special scoring", "Explain in words if the module’s scoring is special (e.g. Souvenir).")]
-        public string ScoreExplanation;
-
-        [ClassifyIgnoreIfDefault, EditableField("Tag position", "Overrides the position of the tag with the module code and claimant name. “Automatic” will usually place it where the status light is.")]
-        public KtaneTwitchPlaysTagPosition TagPosition = KtaneTwitchPlaysTagPosition.Automatic;
-
-        // Specifies whether the module can be pinned in TP by a normal user. (Moderators can always pin any module.)
-        [ClassifyIgnoreIfDefault, EditableField("Auto-pin", "Tick if this module should be automatically pinned at the start of a game. This will also allow regular users to re-pin the module, and it will cause the module to be announced in the chat.")]
-        public bool AutoPin = false;
-
-        [ClassifyIgnoreIfDefault, EditableField("Help text", "ONLY if the module doesn’t already provide an adequate help message detailing its commands, provide a help message here.")]
-        public string HelpText = null;
-
-        public override bool Equals(object obj) => obj != null && obj is KtaneTwitchPlaysInfo && Equals((KtaneTwitchPlaysInfo) obj);
-        public bool Equals(KtaneTwitchPlaysInfo other) => other != null &&
-            other.ScoreString == ScoreString && other.ScoreExplanation == ScoreExplanation && other.TagPosition == TagPosition && other.AutoPin == AutoPin;
-        public override int GetHashCode() => Ut.ArrayHash(ScoreString, ScoreExplanation, TagPosition, AutoPin);
     }
 
     sealed class KtaneTimeModeInfo : IEquatable<KtaneTimeModeInfo>
@@ -238,26 +210,32 @@ namespace KtaneWeb
         public decimal? Score;
         [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score per module", "For boss modules, a score value that is multiplied by the total number of modules on the bomb.")]
         public decimal? ScorePerModule;          // for boss modules like FMN
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score Origin", "The origin of this module's Time Mode score.")]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(KtaneModuleInfo.Type), KtaneModuleType.Regular), EditableField("Score origin", "The origin of this module's Time Mode score.")]
         public KtaneTimeModeOrigin? Origin;
 
-        public override bool Equals(object obj) => obj != null && obj is KtaneTimeModeInfo && Equals((KtaneTimeModeInfo) obj);
+        public override bool Equals(object obj) => obj != null && obj is KtaneTimeModeInfo info && Equals(info);
         public bool Equals(KtaneTimeModeInfo other) => other != null && other.Score == Score && other.ScorePerModule == ScorePerModule && other.Origin == Origin;
         public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, Origin);
     }
 
     sealed class ContributorInfo : IEquatable<ContributorInfo>
     {
-        [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual.")]
-        public string[] Manual;
-        [ClassifyIgnoreIfDefault, ClassifyName("Manual graphics"), EditableField("Manual graphics", "People who contributed graphics for the manual.")]
-        public string[] ManualGraphics;
-        [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed the module or widget.")]
+        [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed (programmed) the mod.")]
         public string[] Developer;
-        [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the module or widget.")]
-        public string[] Maintainer;
-        [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support.")]
+        [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual. (Include only if different from Developer.)")]
+        public string[] Manual;
+        [ClassifyIgnoreIfDefault, ClassifyName("Manual graphics"), EditableField("Manual graphics", "People who contributed graphics for the manual. (Include only if different from Manual contributors.)")]
+        public string[] ManualGraphics;
+        [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support. (Include only if different from Developer.)")]
         public string[] TwitchPlays;
+        [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the mod. (Include only if different from Developer.)")]
+        public string[] Maintainer;
+        [ClassifyIgnoreIfDefault, EditableField("Audio", "People who contributed audio for the mod. (Include only if different from Developer.)")]
+        public string[] Audio;
+        [ClassifyIgnoreIfDefault, EditableField("Modeling", "People who contributed 3D models for the mod. (Include only if different from Developer.)")]
+        public string[] Modeling;
+        [ClassifyIgnoreIfDefault, EditableField("Idea", "People who contributed the original idea for the mod. (Include only if different from both Developer and Manual.)")]
+        public string[] Idea;
 
         public string ToAuthorString() => new[] { Developer, Manual }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
 

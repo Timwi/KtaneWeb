@@ -101,41 +101,16 @@ namespace KtaneWeb
                         modJson = newJson;
 #endif
 
-                        // Merge in Time Mode data
-                        var timeModeEntry = timeModeEntries.FirstOrDefault(entry =>
-        {
-            string entryName = entry["gsx$modulename"]["$t"].GetString();
-            return normalize(entryName) == normalize(mod.DisplayName ?? mod.Name);
-        });
-
-                        if (timeModeEntry != null)
-                        {
-                            mergeTimeModeData(mod, timeModeEntry);
-                            modJson = (JsonDict) ClassifyJson.Serialize(mod);
-                        }
-
-                        // Merge in TP data
                         static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
-                        var tpEntry = tpEntries.FirstOrDefault(entry =>
-                        {
-                            string entryName = entry["gsx$modulename"]["$t"].GetString();
-                            return normalize(entryName) == normalize(mod.DisplayName ?? mod.Name);
-                        });
 
+                        // Merge in Time Mode and TP data
+                        var timeModeEntry = timeModeEntries.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
+                        if (timeModeEntry != null)
+                            mergeTimeModeData(mod, modJson, timeModeEntry);
+
+                        var tpEntry = tpEntries.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
                         if (tpEntry != null)
-                        {
-                            string scoreString = tpEntry["gsx$tpscore"]["$t"].GetString();
-                            if (!string.IsNullOrEmpty(scoreString))
-                            {
-                                if (mod.TwitchPlays == null)
-                                    mod.TwitchPlays = new KtaneTwitchPlaysInfo();
-
-                                mod.TwitchPlays.ScoreString = scoreString;
-                            }
-
-                            modJson = (JsonDict) ClassifyJson.Serialize(mod);
-                            mergeTPData(modJson, mod);
-                        }
+                            mergeTPData(mod, modJson, tpEntry["gsx$tpscore"]["$t"].GetString());
 
                         // Some module names contain characters that can’t be used in filenames (e.g. “?”)
                         mod.FileName = Path.GetFileNameWithoutExtension(file.Name);
@@ -224,10 +199,12 @@ namespace KtaneWeb
             _moduleInfoCache = moduleInfoCache;
         }
 
-        private void mergeTPData(JsonDict modJson, KtaneModuleInfo mod)
+        private void mergeTPData(KtaneModuleInfo mod, JsonDict modJson, string scoreString)
         {
             // UN and T is for unchanged and temporary score which are read normally.
-            string scoreString = Regex.Replace(mod.TwitchPlays.ScoreString, @"(UN|(?<=\d)T)", "");
+            scoreString = Regex.Replace(scoreString, @"(UN|(?<=\d)T)", "");
+
+            modJson["TwitchPlays"] = new JsonDict();
 
             var parts = new List<string>();
             foreach (var factor in scoreString.SplitNoEmpty("+"))
@@ -237,23 +214,21 @@ namespace KtaneWeb
 
                 var split = factor.SplitNoEmpty(" ");
                 if (!split.Length.IsBetween(1, 2))
-                {
                     continue;
-                }
 
                 var numberString = split[split.Length - 1];
                 if (numberString.EndsWith("x")) // To parse "5x" we need to remove the x.
                     numberString = numberString.Substring(0, numberString.Length - 1);
 
                 if (!float.TryParse(numberString, out float number))
-                {
                     continue;
-                }
 
                 switch (split.Length)
                 {
                     case 1:
                         parts.Add(number.Pluralize("base point"));
+                        mod.TwitchPlaysScore = number;
+                        modJson["TwitchPlays"]["Score"] = number;
                         break;
 
                     case 2 when split[0] == "T":
@@ -280,14 +255,12 @@ namespace KtaneWeb
             modJson["TwitchPlays"]["ScoreStringDescription"] = parts.JoinString(" + ");
         }
 
-        private void mergeTimeModeData(KtaneModuleInfo mod, JsonValue entry)
+        private void mergeTimeModeData(KtaneModuleInfo mod, JsonValue modJson, JsonValue entry)
         {
             // Get score strings
             string scoreString = entry["gsx$resolvedscore"]["$t"].GetString().Trim();
             if (string.IsNullOrEmpty(scoreString))
-            {
                 scoreString = "10";
-            }
             string scorePerModuleString = entry["gsx$resolvedbosspointspermodule"]["$t"].GetString() ?? "";
 
             if (mod.TimeMode == null)
@@ -297,32 +270,22 @@ namespace KtaneWeb
 
             // Determine the score orign
             if (!string.IsNullOrEmpty(entry["gsx$assignedscore"]["$t"].GetString()))
-            {
                 timeMode.Origin = KtaneTimeModeOrigin.Assigned;
-            }
             else if (!string.IsNullOrEmpty(entry["gsx$communityscore"]["$t"].GetString()))
-            {
                 timeMode.Origin = KtaneTimeModeOrigin.Community;
-            }
             else if (!string.IsNullOrEmpty(entry["gsx$tpscore"]["$t"].GetString().Trim()))
-            {
                 timeMode.Origin = KtaneTimeModeOrigin.TwitchPlays;
-            }
             else
-            {
                 timeMode.Origin = KtaneTimeModeOrigin.Unassigned;
-            }
 
             // Parse scores
             if (decimal.TryParse(scoreString, out decimal score))
-            {
                 timeMode.Score ??= score;
-            }
 
             if (decimal.TryParse(scorePerModuleString, out decimal scorePerModule))
-            {
                 timeMode.ScorePerModule ??= scorePerModule;
-            }
+
+            modJson["TimeMode"] = ClassifyJson.Serialize(mod.TimeMode);
         }
     }
 }

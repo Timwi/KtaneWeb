@@ -204,6 +204,8 @@ namespace KtaneWeb
                     case "name": matchingModules = matchingModules.OrderBy(m => m.SortKey); break;
                     case "defdiff": matchingModules = matchingModules.OrderBy(m => m.DefuserDifficulty); break;
                     case "expdiff": matchingModules = matchingModules.OrderBy(m => m.ExpertDifficulty); break;
+                    case "twitchscore": matchingModules = matchingModules.OrderBy(m => m.TwitchPlaysScore ?? 0); break;
+                    case "timemodescore": matchingModules = matchingModules.OrderBy(m => m.TimeMode?.Score ?? 0); break;
                     case "published": matchingModules = matchingModules.OrderByDescending(m => m.Published); break;
                 }
 

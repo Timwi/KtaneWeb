@@ -20,7 +20,7 @@ namespace KtaneWeb
                 foreach (var f in type.GetFields())
                 {
                     var attr = f.GetCustomAttribute<EditableFieldAttribute>();
-                    if (attr == null)
+                    if (attr == null || attr.ReadableName == null)
                         continue;
 
                     var fType = f.FieldType;

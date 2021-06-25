@@ -21,7 +21,7 @@ namespace KtaneWeb
         // G    Glossary
         // H
         // I    toggle views
-        // J    Generate JSON button (module edit UI)
+        // J    Generate JSON submit button (module edit UI)
         // K    Dark Theme
         // L    Light Theme
         // M    include/exclude mods
@@ -47,7 +47,7 @@ namespace KtaneWeb
             KtaneFilter.Slider("Expert difficulty", "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
             KtaneFilter.Checkboxes("Type", "type", mod => mod.Type, @"mod=>mod.Type"),
             KtaneFilter.Checkboxes("Origin", "origin", mod => mod.Origin, @"mod=>mod.Origin"),
-            KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlays == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
+            KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlaysScore == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
             KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
             KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
             KtaneFilter.Checkboxes("Mystery Module", "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
