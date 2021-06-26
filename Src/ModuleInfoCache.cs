@@ -206,6 +206,8 @@ namespace KtaneWeb
 
             modJson["TwitchPlays"] = new JsonDict();
 
+            float score = 0;
+
             var parts = new List<string>();
             foreach (var factor in scoreString.SplitNoEmpty("+"))
             {
@@ -223,34 +225,41 @@ namespace KtaneWeb
                 if (!float.TryParse(numberString, out float number))
                     continue;
 
+                // We assume a bomb with 10 modules, 20 minutes, 65 seconds between activations and 10 actions to calculate scores.
                 switch (split.Length)
                 {
                     case 1:
                         parts.Add(number.Pluralize("base point"));
-                        mod.TwitchPlaysScore = number;
-                        modJson["TwitchPlays"]["Score"] = number;
+                        score += number;
                         break;
 
                     case 2 when split[0] == "T":
                         parts.Add(number.Pluralize("point") + " per second");
+                        score += 20 * 60 * number;
                         break;
 
                     // D is for needy deactivations.
                     case 2 when split[0] == "D":
                         parts.Add(number.Pluralize("point") + " per deactivation");
+                        score += 20 * 60 / 65 * number;
                         break;
 
                     // PPA is for point per action modules which can be parsed in some cases.
                     case 2 when split[0] == "PPA":
                         parts.Add(number.Pluralize("point") + " per action");
+                        score += 10 * number;
                         break;
 
                     // S is for special modules which we parse out the multiplier and put it into a dictionary and use later.
                     case 2 when split[0] == "S":
                         parts.Add(number.Pluralize("point") + " per module");
+                        score += 10 * number;
                         break;
                 }
             }
+
+            mod.TwitchPlaysScore = score;
+            modJson["TwitchPlays"]["Score"] = score;
 
             modJson["TwitchPlays"]["ScoreStringDescription"] = parts.JoinString(" + ");
         }
