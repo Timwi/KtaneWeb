@@ -629,11 +629,19 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 for (let i = 0; i < modules.length; i++)
                 {
                     let mod = modules[i];
+                    const tpScore = mod.TwitchPlays ? mod.TwitchPlays.ScoreStringDescription
+                        .replace(/( base)? points?/g, "")
+                        .replace("per", "P")
+                        .replace(" deactivation", "D")
+                        .replace(" action", "A")
+                        .replace(" second", "S")
+                        .replace(" module", "M") : '';
+
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'mod-icon', { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
                         el('div', 'name', el('div', 'inner', mod.localName)),
-                        el('div', 'tpscore', mod.TwitchPlays ? mod.TwitchPlays.Score : ''),
+                        el('div', 'tpscore', tpScore),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
                     setCompatibilityTooltip(a, mod.Compatibility);
