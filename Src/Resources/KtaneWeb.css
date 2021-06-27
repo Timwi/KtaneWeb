@@ -831,19 +831,24 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         right: 0;
         top: 0;
         height: 36px;
-        padding: 7px 7px 0 36px;
+        padding: 7px 7px 0 34px;
         font-size: 18pt;
         text-align: center;
     }
 
-        #actual-periodic-table .symbol .mod-icon {
-            background-repeat: no-repeat;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 32px;
-            height: 32px;
+        #actual-periodic-table .symbol > .inner {
+            display: inline-block;
+            transform-origin: left center;
         }
+
+    #actual-periodic-table .mod-icon {
+        background-repeat: no-repeat;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 32px;
+        height: 32px;
+    }
 
     #actual-periodic-table .VeryEasy {
         background-color: #dfd;

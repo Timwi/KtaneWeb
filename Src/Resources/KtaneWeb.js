@@ -640,19 +640,31 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
-                        el('div', `symbol ${mod.DefuserDifficulty}`, mod.Symbol || '??', el('div', 'mod-icon', { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px` })),
+                        el('div', `symbol ${mod.DefuserDifficulty}`, el('span', 'inner', mod.Symbol || '??')),
+                        el('div', 'mod-icon', { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px` }),
                         el('div', 'name', el('div', 'inner', mod.localName)),
                         el('div', 'tpscore', tpScore),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
                     setCompatibilityTooltip(a, mod.Compatibility);
 
-                    $(manualSelector).click(makeClickHander(manualSelector, false, mod));
+                    manualSelector.onclick = makeClickHander(manualSelector, false, mod);
 
                     document.getElementById("actual-periodic-table").appendChild(a);
 
                     mod.ViewData.PeriodicTable = { SelectableLink: a };
-                    mod.FncsShowHide.push(sh => { a.style.display = sh ? 'block' : 'none'; });
+                    mod.FncsShowHide.push(sh =>
+                    {
+                        a.style.display = sh ? 'block' : 'none';
+                        if (sh)
+                        {
+                            let symText = a.querySelector('.symbol>.inner');
+                            symText.style.transform = '';
+                            let w = symText.offsetWidth;
+                            if (w > 47)
+                                symText.style.transform = `scaleX(${47 / w})`;
+                        }
+                    });
                     mod.FncsSetSelectable.push(url => { a.href = url; });
                     mod.FncsSetHighlight.push(hgh =>
                     {
