@@ -630,12 +630,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 {
                     let mod = modules[i];
                     const tpScore = mod.TwitchPlays ? mod.TwitchPlays.ScoreStringDescription
-                        .replace(/( base)? points?/g, "")
-                        .replace("per", "P")
-                        .replace(" deactivation", "D")
-                        .replace(" action", "A")
-                        .replace(" second", "S")
-                        .replace(" module", "M") : '';
+                        .replace(/( base)? points?/g, '')
+                        .replace(/ per/g, '')
+                        .replace(' deactivation', 'D')
+                        .replace(' action', 'A')
+                        .replace(' second', 'S')
+                        .replace(' module', 'M')
+                        .replace(/ \+ /g, '+') : '';
 
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
