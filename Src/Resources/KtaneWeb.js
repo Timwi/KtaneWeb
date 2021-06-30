@@ -739,7 +739,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    function updateFilter()
+    function updateFilter(showAll)
     {
         var noneSelected = {};
         for (var i = 0; i < initFilters.length; i++)
@@ -846,7 +846,20 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 showAtTop.push(mod);
         });
 
-        $('#module-count').text(resultsMode === 'scroll' || resultsLimit >= modCount ? `${modCount} items` : `${modCount} items; showing first ${resultsLimit}`);
+        let moduleCount = document.getElementById('module-count');
+        if (resultsMode === 'scroll' || resultsLimit >= modCount || showAll)
+            moduleCount.innerText = `${modCount} items`;
+        else
+        {
+            moduleCount.innerHTML = `${modCount} items; showing first ${resultsLimit}. <a href='#'>Show all</a>`;
+            let a = moduleCount.querySelector('a');
+            a.onclick = function()
+            {
+                updateFilter(true);
+                return false;
+            };
+        }
+
         lStorage.setItem('filters', JSON.stringify(filter));
         if ($("input#search-field").is(':focus'))
             updateSearchHighlight();
@@ -861,7 +874,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         for (let mod of modules)
         {
             for (let fnc of mod.FncsShowHide)
-                fnc(mod.MatchesFilter && (resultsMode === 'scroll' || (n < resultsLimit && mod.MatchesSearch)));
+                fnc(mod.MatchesFilter && (resultsMode === 'scroll' || (n < resultsLimit && mod.MatchesSearch) || showAll));
             if (mod.IsVisible)
                 n++;
         }
