@@ -874,7 +874,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         for (let mod of modules)
         {
             for (let fnc of mod.FncsShowHide)
-                fnc(mod.MatchesFilter && (resultsMode === 'scroll' || (n < resultsLimit && mod.MatchesSearch) || showAll));
+                fnc(mod.MatchesFilter && (resultsMode === 'scroll' || ((n < resultsLimit || showAll) && mod.MatchesSearch)));
             if (mod.IsVisible)
                 n++;
         }
