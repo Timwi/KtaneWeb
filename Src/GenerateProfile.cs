@@ -41,6 +41,10 @@ namespace KtaneWeb
                         }
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsFullBoss)), @"Veto full boss modules.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsSemiBoss)), @"Veto semi-boss modules.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsPseudoNeedy)), @"Veto pseudo-needy modules.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsTimeSensitive)), @"Veto heavily time-dependent modules.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsSolveOrderSensitive)), @"Veto solve-order-sensitive modules.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.IsTypicallyIgnored)), @"Veto typically ignored modules.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.RuleSeedSupport != KtaneSupport.Supported)), @"Only rule-seeded.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Souvenir == null || k.Souvenir.Status != KtaneModuleSouvenir.Supported)), @"Only Souvenir supported.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Compatibility != KtaneModuleCompatibility.Compatible)), @"Veto incompatible.json", CompressionMethod.Deflated, true);

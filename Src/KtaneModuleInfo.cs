@@ -76,10 +76,14 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Pseudo-needy module", "A regular module which poses a recurring hazard in a similar fashion to a needy before it can be solved. These modules are usually ignored by boss modules and modules that use the Boss Module Manager.")]
         public bool IsPseudoNeedy = false;
         [ClassifyIgnoreIfDefault, EditableField("Heavily time-dependent", "A regular module which has very precise timing requiments or can only be solved at an exact time.")]
-        public bool IsHeavyTimeDepend = false;
-
+        public bool IsTimeSensitive = false;
+        [ClassifyIgnoreIfDefault, EditableField("Solve-order-sensitive", "A regular module which use Boss Module Manager, requires other modules to be solved in a specific order, and doesn't fit into the category of Pseudo-needy or Heavily time-dependent.")]
+        public bool IsSolveOrderSensitive = false;
+        [ClassifyIgnoreIfDefault, EditableField("Should be ignored", "A regular module which Module should by ignored by any module that ignores full boss modules")]
+        public bool IsTypicallyIgnored = false;
+        
         // Specifies which modules this module should ignore. Applies to boss and semi-boss modules such as Forget Me Not, Alchemy, Hogwarts, etc.
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+FullBoss” or “+SemiBoss” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+FullBoss”, “+SemiBoss”, “+PseudoNeedy”, “+TimeSensitive”, “+SolveOrdersensitive”, or “+TypicallyIgnored” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
         public string[] Ignore = null;
 
         [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]

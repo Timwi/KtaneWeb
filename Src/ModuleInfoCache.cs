@@ -149,6 +149,14 @@ namespace KtaneWeb
                             processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsFullBoss).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str == "+SemiBoss")
                             processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsSemiBoss).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+PseudoNeedy")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsPseudoNeedy).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+TimeSensitive")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsTimeSensitive).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+SolveOrderSensitive")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsSolveOrderSensitive).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+TypicallyIgnored")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsTypicallyIgnored).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str.StartsWith("-"))
                             processedIgnoreList.Remove(str.Substring(1));
                         else if (!str.StartsWith("+"))
