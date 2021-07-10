@@ -51,8 +51,34 @@ namespace KtaneWeb
             KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
             KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
             KtaneFilter.Checkboxes("Mystery Module", "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
-            KtaneFilter.BooleanSet("Boss Status", "bossstatus", new[] { new KtaneFilterOption { Name = "NotABoss", ReadableName = "Not a boss" }, new KtaneFilterOption { Name = "IsSemiBoss", ReadableName = "Semi-boss" }, new KtaneFilterOption { Name = "IsFullBoss", ReadableName = "Full boss" } }, mod => mod.IsFullBoss ? "IsFullBoss" : mod.IsSemiBoss ? "IsSemiBoss" : "NotABoss", $@"mod=>mod.IsFullBoss?""IsFullBoss"":mod.IsSemiBoss?""IsSemiBoss"":""NotABoss"""),
-            KtaneFilter.BooleanSet("Pseudo-Needy Status", "pseudoneedystatus", new[] { new KtaneFilterOption { Name = "NotPseudoNeedy", ReadableName = "Not Pseudo-Needy" }, new KtaneFilterOption { Name = "IsPseudoNeedy", ReadableName = "Pseudo-Needy" }, new KtaneFilterOption { Name = "IsTimeSensitive", ReadableName = "Heavily time-dependent" }, new KtaneFilterOption { Name = "IsSolveOrderSensitive", ReadableName = "Solve-order-sensitive" } }, mod => mod.IsPseudoNeedy ? "IsPseudoNeedy" : mod.IsTimeSensitive ? "IsTimeSensitive" : mod.IsSolveOrderSensitive ? "IsSolveOrderSensitive" : "NotPseudoNeedy", $@"mod=>mod.IsPseudoNeedy?""IsPseudoNeedy"":mod.IsTimeSensitive?""IsTimeSensitive"":mod.IsSolveOrderSensitive?""IsSolveOrderSensitive"":""NotPseudoNeedy"""));
+            KtaneFilter.BooleanSet("Boss Status", "bossstatus", new[] {
+                new KtaneFilterOption { Name = "IsFullBoss", ReadableName = "Full boss" },
+                new KtaneFilterOption { Name = "IsSemiBoss", ReadableName = "Semi-boss" },
+                new KtaneFilterOption { Name = "NotABoss", ReadableName = "Not a boss" }},
+                mod => mod.IsFullBoss ? "IsFullBoss" : mod.IsSemiBoss ? "IsSemiBoss" : "NotABoss",
+                $@"mod=>mod.IsFullBoss?""IsFullBoss"":mod.IsSemiBoss?""IsSemiBoss"":""NotABoss"""),
+            KtaneFilter.BooleanSet("Solve-order-sensitive", "solveorderstatus", new[] {
+                new KtaneFilterOption { Name = "IsSolveOrderSensitive", ReadableName = "Solve-order-sensitive" },
+                new KtaneFilterOption { Name = "NotSolveOrderSensitive", ReadableName = "N/A" }},
+                mod => mod.IsSolveOrderSensitive ? "IsSolveOrderSensitive" : "NotSolveOrderSensitive",
+                $@"mod=>mod.IsSolveOrderSensitive?""IsSolveOrderSensitive"":""NotSolveOrderSensitive"""),
+            KtaneFilter.BooleanSet("Solves Later", "solveslater", new[] {
+                new KtaneFilterOption { Name = "SolvesAtEnd", ReadableName = "Solves at end" },
+                new KtaneFilterOption { Name = "NeedsOtherSolves", ReadableName = "Needs other solves" },
+                new KtaneFilterOption { Name = "NotSolvesLater", ReadableName = "N/A" }},
+                mod => mod.SolvesAtEnd ? "SolvesAtEnd" : mod.NeedsOtherSolves ? "NeedsOtherSolves" : "NotSolvesLater",
+                $@"mod=>mod.SolvesAtEnd?""SolvesAtEnd"":mod.NeedsOtherSolves?""NeedsOtherSolves"":""NotSolvesLater"""),
+            KtaneFilter.BooleanSet("Solves Before", "solvebeforestatus", new[] {
+                new KtaneFilterOption { Name = "SolvesBeforeSome", ReadableName = "Must solve before some" },
+                new KtaneFilterOption { Name = "NotSolvesBeforeSome", ReadableName = "N/A" }},
+                mod => mod.SolvesBeforeSome ? "SolvesBeforeSome" : "NotSolvesBeforeSome",
+                $@"mod=>mod.SolvesBeforeSome?""SolvesBeforeSome"":""NotSolvesBeforeSome"""),
+            KtaneFilter.BooleanSet("Pseudo-Needy and Time", "pseudoneedytimestatus", new[] {
+                new KtaneFilterOption { Name = "IsPseudoNeedy", ReadableName = "Pseudo-needy" },
+                new KtaneFilterOption { Name = "IsTimeSensitive", ReadableName = "Heavily time-dependent" },
+                new KtaneFilterOption { Name = "NotPseudoNeedyOrTime", ReadableName = "N/A" }},
+                mod => mod.IsPseudoNeedy ? "IsPseudoNeedy" : mod.IsTimeSensitive ? "IsTimeSensitive" : "NotPseudoNeedyOrTime",
+                $@"mod=>mod.IsPseudoNeedy?""IsPseudoNeedy"":mod.IsTimeSensitive?""IsTimeSensitive"":""NotPseudoNeedyOrTime"""));
 
         static readonly Selectable[] _selectables = Ut.NewArray(
             new Selectable

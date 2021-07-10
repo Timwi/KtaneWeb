@@ -145,18 +145,16 @@ namespace KtaneWeb
                     var processedIgnoreList = new List<string>();
                     foreach (var str in mod.Ignore)
                     {
-                        if (str == "+FullBoss")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsFullBoss).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+SemiBoss")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsSemiBoss).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        if (str == "+SolvesAtEnd")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesAtEnd).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+NeedsOtherSolves")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.NeedsOtherSolves).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+SolvesBeforeSome")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesBeforeSome).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str == "+PseudoNeedy")
                             processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsPseudoNeedy).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str == "+TimeSensitive")
                             processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsTimeSensitive).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+SolveOrderSensitive")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsSolveOrderSensitive).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+TypicallyIgnored")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsTypicallyIgnored).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str.StartsWith("-"))
                             processedIgnoreList.Remove(str.Substring(1));
                         else if (!str.StartsWith("+"))

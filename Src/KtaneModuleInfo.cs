@@ -68,21 +68,29 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Rule-seed", "Does the module vary its rules and manual under the Rule Seed Modifier?")]
         public KtaneSupport RuleSeedSupport = KtaneSupport.NotSupported;
 
-        [ClassifyIgnoreIfDefault, EditableField("Full boss module", "Specifies that the module requires all non-boss modules to be solved before it can be solved. This affects the ignore lists for modules that use the Boss Module Manager. In general, full boss modules should ignore other full boss modules.")]
+        //IsFullBoss and IsSemiBoss are mutually exclusive
+        [ClassifyIgnoreIfDefault, EditableField("Full boss module", "Specifies that the module has some interaction or new information given after every solve of a non-ignored regular module (solvable only at the end of the bomb.")]
         public bool IsFullBoss = false;
-        [ClassifyIgnoreIfDefault, EditableField("Semi-boss module", "Specifies that the module requires some regular modules to be solved before it can be solved. This affects the ignore lists for modules that use the Boss Module Manager. In general, semi-boss modules should ignore both semi-boss and full boss modules.")]
+        [ClassifyIgnoreIfDefault, EditableField("Semi-boss module", "Specifies that the module has some interaction or new information given after every solve of a non-ignored regular module, but does not require all such modules to be solved.")]
         public bool IsSemiBoss = false;
-        [ClassifyIgnoreIfDefault, EditableField("Pseudo-needy module", "Specifies that the module poses a recurring hazard in a similar fashion to a needy before it can be solved. These modules are usually ignored by boss modules and modules that use the Boss Module Manager.")]
+
+        [ClassifyIgnoreIfDefault, EditableField("Solve-order-sensitive", "Specifies that the module requires other modules to be solved in a specific order, but doesn’t fit into the category of “Pseudo-needy” or “Heavily time-dependent”.")]
+        public bool IsSolveOrderSensitive = false;
+
+        //Ignore tags (not mutually exclusive)
+        [ClassifyIgnoreIfDefault, EditableField("Solves at end of bomb", "Specifies that the module is only solvable after all non-ignored modules are solved (at the end of the bomb). In general, bosses have this tag and all bosses should ignore modules with this tag.")]
+        public bool SolvesAtEnd = false;
+        [ClassifyIgnoreIfDefault, EditableField("Needs other module solves", "Specifies that the module cannot be solved until some, but not necessarily all, other non-ignored regular modules are solved first. In general, semi-bosses ignore modules with this tag and often have this tag.")]
+        public bool NeedsOtherSolves = false;
+        [ClassifyIgnoreIfDefault, EditableField("Solves before other modules", "Specifies that the module must be solved before some other non-ignored modules. In general, all modules with this tag should ignore each other.")]
+        public bool SolvesBeforeSome = false;
+        [ClassifyIgnoreIfDefault, EditableField("Pseudo-needy module", "Specifies that the module poses a recurring hazard in a similar fashion to a needy before it can be solved.")]
         public bool IsPseudoNeedy = false;
         [ClassifyIgnoreIfDefault, EditableField("Heavily time-dependent", "Specifies that the module has very precise timing requirements or can only be solved at an exact time.")]
         public bool IsTimeSensitive = false;
-        [ClassifyIgnoreIfDefault, EditableField("Solve-order-sensitive", "Specifies that the module requires other modules to be solved in a specific order, but doesn’t fit into the category of “Pseudo-needy” or “Heavily time-dependent”.")]
-        public bool IsSolveOrderSensitive = false;
-        [ClassifyIgnoreIfDefault, EditableField("Should be ignored", "Specifies that the module should be ignored by any module that ignores full boss modules.")]
-        public bool IsTypicallyIgnored = false;
 
         // Specifies which modules this module should ignore. Applies to boss and semi-boss modules such as Forget Me Not, Encryption Bingo, Hogwarts, etc.
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+FullBoss”, “+SemiBoss”, “+PseudoNeedy”, “+TimeSensitive”, “+SolveOrderSensitive”, or “+TypicallyIgnored” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+SolvesAtEnd”, “+NeedsOtherSolves”, “+TimeSensitive”, “+SolvesBeforeSome”, to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
         public string[] Ignore = null;
 
         [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
