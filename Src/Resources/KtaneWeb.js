@@ -292,6 +292,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
+        $('input#sort-reverse').prop('checked', rvrse);
         if ($("input#search-field").is(':focus'))
             updateSearchHighlight();
     }
