@@ -217,7 +217,7 @@ namespace KtaneWeb
 
             modJson["TwitchPlays"] = new JsonDict();
 
-            float score = 0;
+            decimal score = 0;
 
             var parts = new List<string>();
             foreach (var factor in scoreString.SplitNoEmpty("+"))
@@ -233,7 +233,7 @@ namespace KtaneWeb
                 if (numberString.EndsWith("x")) // To parse "5x" we need to remove the x.
                     numberString = numberString.Substring(0, numberString.Length - 1);
 
-                if (!float.TryParse(numberString, out float number))
+                if (!decimal.TryParse(numberString, out var number))
                     continue;
 
                 // We assume a bomb with 10 modules, 20 minutes, 65 seconds between activations and 10 actions to calculate scores.

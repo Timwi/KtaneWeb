@@ -30,6 +30,6 @@ namespace KtaneWeb
             return infos.Aggregate(tag, (prev, next) => prev.Data(dataName(next), dataValue(next)));
         }
 
-        public static string Pluralize(this float number, string singular) => $"{number} {(number == 1 ? singular : singular + "s")}";
+        public static string Pluralize(this decimal number, string singular) => $"{number} {(number == 1 ? singular : singular + "s")}";
     }
 }

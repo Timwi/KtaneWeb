@@ -105,7 +105,7 @@ namespace KtaneWeb
 
         // This information is imported from a spreadsheet, so not serialized in JSON.
         [ClassifyIgnore]
-        public float? TwitchPlaysScore = null;
+        public decimal? TwitchPlaysScore = null;
 
         // This information is imported from a spreadsheet, so not serialized in JSON.
         [ClassifyIgnore]
