@@ -1012,7 +1012,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
             body.display-origin td.infos-1 div.infos > div.inf-origin,
             body.display-published td.infos-1 div.infos > div.inf-published,
             body.display-twitch td.infos-1 div.infos > div.inf-twitch,
-            body.display-twitch td.infos-1 div.infos > div.inf-time-mode,
+            body.display-time-mode td.infos-1 div.infos > div.inf-time-mode,
             body.display-souvenir td.infos-1 div.infos > div.inf-souvenir,
             body.display-rule-seed td.infos-1 div.infos > div.inf-rule-seed {
                 display: inline;

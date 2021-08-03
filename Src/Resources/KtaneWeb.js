@@ -1053,7 +1053,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         let manualName = mod.Manuals[i].Url.substr(5);
                         if (manualName in manualsLastUpdated)
                             lastupdatedElem.innerText = manualsLastUpdated[manualName];
-                        else 
+                        else
                         {
                             lastupdatedElem.innerText = 'Loading...';
                             $.ajax({
