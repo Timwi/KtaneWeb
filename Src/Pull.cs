@@ -30,6 +30,7 @@ namespace KtaneWeb
                     cmd.StderrText += str => output.Append(str);
                     cmd.StartAndWait();
                 }
+                generateTranslationCache();
                 generateModuleInfoCache();
                 return HttpResponse.PlainText(runGitPull ? output.ToString() : "Module info refreshed.");
             }
