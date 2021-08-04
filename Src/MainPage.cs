@@ -53,8 +53,8 @@ namespace KtaneWeb
 
         private HttpResponse mainPage(HttpRequest req)
         {
-            var lang = req.Url.HasQuery ? req.Url.QueryValues("lang").ToArray()[0] : "en";
-            var translation = _translationCache.Get(lang, _defaultTranslation);
+            var lang = req.Url["lang"] ?? "en";
+            var translation = _translationCache.Get(lang, TranslationInfo.Default);
             var resp = HttpResponse.Html(new HTML { lang = translation.langCode }._(
                 new HEAD(
                     new TITLE(translation.title),
@@ -112,7 +112,7 @@ namespace KtaneWeb
                             // MAIN TABLE
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
-                                    new TH { colspan = translation._selectables.Length }._(translation.columnLinks),
+                                    new TH { colspan = translation.Selectables.Length }._(translation.columnLinks),
                                     new TH { class_ = "modlink" }
                                         .Data("sort-name", "   • " + translation.sortOrderName)
                                         ._(new A { href = "#", class_ = "sort-header" }._(translation.columnName)),
@@ -228,7 +228,7 @@ namespace KtaneWeb
                         new DIV { id = "filters", class_ = "popup disappear stay no-profile-selected" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "filters" }._(
-                                translation._filters.Select(filter => filter.ToHtml()),
+                                translation.Filters.Select(filter => filter.ToHtml()),
                                 new DIV { class_ = "option-group" }._(
                                     new H4(translation.sortOrderHeader),
                                     new DIV(
@@ -269,7 +269,7 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new DIV { class_ = "option-group" }._(
                                 new H4(translation.displayOption),
-                                translation._displays.Select(dspl => new DIV(
+                                translation.Displays.Select(dspl => new DIV(
                                     new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
                                     new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
                             new DIV { class_ = "option-group" }._(
@@ -304,7 +304,7 @@ namespace KtaneWeb
                                     new LABEL { for_ = "theme-dark", accesskey = "k" }._(translation.themeDark.Accel('k')))),
                             new DIV { class_ = "option-group" }._(
                                 new H4(translation.linkOption),
-                                translation._selectables.Select(sel => new DIV(
+                                translation.Selectables.Select(sel => new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
                                     new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel))))),
                             new DIV { class_ = "option-group" }._(new H4(translation.languagesOption), new DIV { id = "languages-option" }),
@@ -440,7 +440,7 @@ namespace KtaneWeb
                     {
                         var moduleInfoCache = _moduleInfoCache;
                         return Ut.NewArray<object>(
-                            new SCRIPTLiteral($"var translation = {translation._json};" +  moduleInfoCache.ModuleInfoJs),
+                            new SCRIPTLiteral($"var translation = {translation.Json};" +  moduleInfoCache.ModuleInfoJs),
                             new STYLELiteral(moduleInfoCache.IconSpriteCss));
                     }))));
             resp.UseGzip = UseGzipOption.AlwaysUseGzip;

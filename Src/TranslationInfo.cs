@@ -1,14 +1,21 @@
-﻿using RT.Json;
+﻿using System.Linq;
 using RT.Serialization;
 using RT.Util;
-using System.Collections.Generic;
+using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb
 {
-#pragma warning disable 0649 // Field is never assigned to, and will always have its default value
-
-    sealed class TranslationInfo : IClassifyObjectProcessor, IClassifyJsonObjectProcessor
+    sealed class TranslationInfo
     {
+        private static TranslationInfo _default;
+        public static TranslationInfo Default => _default ??= makeDefault();
+
+        private static TranslationInfo makeDefault()
+        {
+            var ti = new TranslationInfo();
+            ti.Json = ClassifyJson.Serialize(ti).ToString();
+            return ti;
+        }
 
         public string langCode = "en";
 
@@ -55,11 +62,11 @@ namespace KtaneWeb
         public string puzzleAnchor = "PUZZLE";
         public string controlHeader = "Controls to highlight elements in HTML manuals";
         public string[][] controls = {
-            new string[]{ "Highlight a table column", "Ctrl+Click (Windows)", "Command+Click (Mac)" },
-            new string[]{ "Highlight a table row", "Shift+Click" },
-            new string[]{ "Highlight a table cell or an item in a list", "Alt+Click (Windows)", "Ctrl+Shift+Click (Windows)", "Command+Shift+Click (Mac)" },
-            new string[]{ "Change highlighter color", "Alt+0 through Alt+9 (digits)" },
-            new string[]{ "Additional options", "Alt+O (letter)" }
+            new string[] { "Highlight a table column", "Ctrl+Click (Windows)", "Command+Click (Mac)" },
+            new string[] { "Highlight a table row", "Shift+Click" },
+            new string[] { "Highlight a table cell or an item in a list", "Alt+Click (Windows)", "Ctrl+Shift+Click (Windows)", "Command+Shift+Click (Mac)" },
+            new string[] { "Change highlighter color", "Alt+0 through Alt+9 (digits)" },
+            new string[] { "Additional options", "Alt+O (letter)" }
         };
         public string fileLocationHeader = "Default file locations";
         public string fileLocationGame = "Game";
@@ -160,121 +167,92 @@ namespace KtaneWeb
         public string languagesToggle = "Toggle All Languages";
 
         [ClassifyIgnore]
-        public KtaneFilter[] _filters;
-        [ClassifyIgnore]
-        public Selectable[] _selectables;
-        [ClassifyIgnore]
-        public (string readable, string id)[] _displays;
+        private KtaneFilter[] _filtersCache;
+        public KtaneFilter[] Filters => _filtersCache ??= Ut.NewArray(
+            KtaneFilter.Slider(filterDefuserDifficulty, "defdiff", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
+            KtaneFilter.Slider(filterExpertDifficulty, "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
+            KtaneFilter.Checkboxes(filterType, "type", mod => mod.Type, @"mod=>mod.Type"),
+            KtaneFilter.Checkboxes(filterOrigin, "origin", mod => mod.Origin, @"mod=>mod.Origin"),
+            KtaneFilter.Checkboxes(filterTP, "twitchplays", mod => mod.TwitchPlaysScore == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
+            KtaneFilter.Checkboxes(filterRuleSeed, "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
+            KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
+            KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
+            KtaneFilter.BooleanSet(filterBossStatus, "bossstatus", new[] {
+                new KtaneFilterOption { Name = "IsFullBoss", ReadableName = bossStatusFullBoss },
+                new KtaneFilterOption { Name = "IsSemiBoss", ReadableName = bossStatusSemiBoss },
+                new KtaneFilterOption { Name = "NotABoss", ReadableName = bossStatusNotBoss }},
+                mod => mod.IsFullBoss ? "IsFullBoss" : mod.IsSemiBoss ? "IsSemiBoss" : "NotABoss",
+                $@"mod=>mod.IsFullBoss?""IsFullBoss"":mod.IsSemiBoss?""IsSemiBoss"":""NotABoss"""),
+            KtaneFilter.BooleanSet(filterSolvesStatus, "solveslater", new[] {
+                new KtaneFilterOption { Name = "SolvesAtEnd", ReadableName = solvesStatusLater },
+                new KtaneFilterOption { Name = "NeedsOtherSolves", ReadableName = solvesStatusNeed },
+                new KtaneFilterOption { Name = "SolvesBeforeSome", ReadableName = solvesStatusBefore },
+                new KtaneFilterOption { Name = "NotSolvesLater", ReadableName = solvesStatusNA }},
+                mod => mod.SolvesAtEnd ? "SolvesAtEnd" : mod.NeedsOtherSolves ? "NeedsOtherSolves" : "NotSolvesLater",
+                $@"mod=>mod.SolvesAtEnd?""SolvesAtEnd"":mod.NeedsOtherSolves?""NeedsOtherSolves"":""NotSolvesLater"""),
+            KtaneFilter.BooleanSet(filterPNeedyStatus, "pseudoneedytimestatus", new[] {
+                new KtaneFilterOption { Name = "IsPseudoNeedy", ReadableName = pNeedyStatusPNeedy },
+                new KtaneFilterOption { Name = "IsTimeSensitive", ReadableName = pNeedyStatusTime },
+                new KtaneFilterOption { Name = "NotPseudoNeedyOrTime", ReadableName = solvesStatusNA }},
+                mod => mod.IsPseudoNeedy ? "IsPseudoNeedy" : mod.IsTimeSensitive ? "IsTimeSensitive" : "NotPseudoNeedyOrTime",
+                $@"mod=>mod.IsPseudoNeedy?""IsPseudoNeedy"":mod.IsTimeSensitive?""IsTimeSensitive"":""NotPseudoNeedyOrTime"""));
 
         [ClassifyIgnore]
-        public string _json;
-
-        void IClassifyObjectProcessor.AfterDeserialize() {
-            SetValues();
-        }
-
-        public void SetValues()
-        {
-            _filters = Ut.NewArray(
-                KtaneFilter.Slider(filterDefuserDifficulty, "defdiff", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
-                KtaneFilter.Slider(filterExpertDifficulty, "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
-                KtaneFilter.Checkboxes(filterType, "type", mod => mod.Type, @"mod=>mod.Type"),
-                KtaneFilter.Checkboxes(filterOrigin, "origin", mod => mod.Origin, @"mod=>mod.Origin"),
-                KtaneFilter.Checkboxes(filterTP, "twitchplays", mod => mod.TwitchPlaysScore == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
-                KtaneFilter.Checkboxes(filterRuleSeed, "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
-                KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
-                KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
-                KtaneFilter.BooleanSet(filterBossStatus, "bossstatus", new[] {
-                    new KtaneFilterOption { Name = "IsFullBoss", ReadableName = bossStatusFullBoss },
-                    new KtaneFilterOption { Name = "IsSemiBoss", ReadableName = bossStatusSemiBoss },
-                    new KtaneFilterOption { Name = "NotABoss", ReadableName = bossStatusNotBoss }},
-                    mod => mod.IsFullBoss ? "IsFullBoss" : mod.IsSemiBoss ? "IsSemiBoss" : "NotABoss",
-                    $@"mod=>mod.IsFullBoss?""IsFullBoss"":mod.IsSemiBoss?""IsSemiBoss"":""NotABoss"""),
-                KtaneFilter.BooleanSet(filterSolvesStatus, "solveslater", new[] {
-                    new KtaneFilterOption { Name = "SolvesAtEnd", ReadableName = solvesStatusLater },
-                    new KtaneFilterOption { Name = "NeedsOtherSolves", ReadableName = solvesStatusNeed },
-                    new KtaneFilterOption { Name = "SolvesBeforeSome", ReadableName = solvesStatusBefore },
-                    new KtaneFilterOption { Name = "NotSolvesLater", ReadableName = solvesStatusNA }},
-                    mod => mod.SolvesAtEnd ? "SolvesAtEnd" : mod.NeedsOtherSolves ? "NeedsOtherSolves" : "NotSolvesLater",
-                    $@"mod=>mod.SolvesAtEnd?""SolvesAtEnd"":mod.NeedsOtherSolves?""NeedsOtherSolves"":""NotSolvesLater"""),
-                KtaneFilter.BooleanSet(filterPNeedyStatus, "pseudoneedytimestatus", new[] {
-                    new KtaneFilterOption { Name = "IsPseudoNeedy", ReadableName = pNeedyStatusPNeedy },
-                    new KtaneFilterOption { Name = "IsTimeSensitive", ReadableName = pNeedyStatusTime },
-                    new KtaneFilterOption { Name = "NotPseudoNeedyOrTime", ReadableName = solvesStatusNA }},
-                    mod => mod.IsPseudoNeedy ? "IsPseudoNeedy" : mod.IsTimeSensitive ? "IsTimeSensitive" : "NotPseudoNeedyOrTime",
-                    $@"mod=>mod.IsPseudoNeedy?""IsPseudoNeedy"":mod.IsTimeSensitive?""IsTimeSensitive"":""NotPseudoNeedyOrTime"""));
-
-            _selectables = Ut.NewArray(
-                new Selectable
-                {
-                    HumanReadable = selectableManual,
-                    Accel = 'u',
-                    Icon = "HTML/img/manual.png",
-                    PropName = "manual",
-                    UrlFunction = @"mod=>null",
-                    ShowIconFunction = @"(_,s)=>s.length>0"
-                },
-                new Selectable
-                {
-                    HumanReadable = selectableSteam,
-                    Accel = 'W',
-                    Icon = "HTML/img/steam-workshop-item.png",
-                    PropName = "steam",
-                    UrlFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
-                    ShowIconFunction = @"mod=>!!mod.SteamID",
-                },
-                new Selectable
-                {
-                    HumanReadable = selectableSource,
-                    Accel = 'c',
-                    Icon = "HTML/img/unity.png",
-                    PropName = "source",
-                    UrlFunction = @"mod=>mod.SourceUrl",
-                    ShowIconFunction = @"mod=>!!mod.SourceUrl",
-                },
-                new Selectable
-                {
-                    HumanReadable = selectableTutorial,
-                    Accel = 'T',
-                    Icon = "HTML/img/video.png",
-                    PropName = "video",
-                    UrlFunction = @"mod=>mod.TutorialVideoUrl",
-                    ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl",
-                });
-
-            List<(string readable, string id)> displaysList;
-
-            if (langCode != "en")
+        private Selectable[] _selectablesCache;
+        public Selectable[] Selectables => _selectablesCache ??= Ut.NewArray(
+            new Selectable
             {
-                displaysList = new List<(string readable, string id)>() { (readable: displayOriginalName, id: "name") };
-
-            }
-            else
+                HumanReadable = selectableManual,
+                Accel = 'u',
+                Icon = "HTML/img/manual.png",
+                PropName = "manual",
+                UrlFunction = @"mod=>null",
+                ShowIconFunction = @"(_,s)=>s.length>0"
+            },
+            new Selectable
             {
-                displaysList = new List<(string readable, string id)>();
-            }
+                HumanReadable = selectableSteam,
+                Accel = 'W',
+                Icon = "HTML/img/steam-workshop-item.png",
+                PropName = "steam",
+                UrlFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
+                ShowIconFunction = @"mod=>!!mod.SteamID",
+            },
+            new Selectable
+            {
+                HumanReadable = selectableSource,
+                Accel = 'c',
+                Icon = "HTML/img/unity.png",
+                PropName = "source",
+                UrlFunction = @"mod=>mod.SourceUrl",
+                ShowIconFunction = @"mod=>!!mod.SourceUrl",
+            },
+            new Selectable
+            {
+                HumanReadable = selectableTutorial,
+                Accel = 'T',
+                Icon = "HTML/img/video.png",
+                PropName = "video",
+                UrlFunction = @"mod=>mod.TutorialVideoUrl",
+                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl",
+            });
 
-            displaysList.AddRange(Ut.NewArray(
-                (readable: displayDescription, id: "description"),
-                //(readable: "Author", id: "author"),
-                //(readable: "Type", id: "type"),
-                (readable: displayDifficulty, id: "difficulty"),
-                (readable: displayOrigin, id: "origin"),
-                (readable: displayTwitch, id: "twitch"),
-                (readable: displayTimeMode, id: "time-mode"),
-                (readable: displaySouvenir, id: "souvenir"),
-                (readable: displayRuleSeed, id: "rule-seed"),
-                (readable: displayDate, id: "published"),
-                (readable: displayID, id: "id"),
-                (readable: displayUpdated, id: "last-updated")));
-            _displays = displaysList.ToArray();
+        [ClassifyIgnore]
+        private (string readable, string id)[] _displaysCache;
+        public (string readable, string id)[] Displays => _displaysCache ??= Ut.NewArray<(string readable, string id)?>(
+            langCode == "en" ? null : (readable: displayOriginalName, id: "name"),
+            (readable: displayDescription, id: "description"),
+            (readable: displayDifficulty, id: "difficulty"),
+            (readable: displayOrigin, id: "origin"),
+            (readable: displayTwitch, id: "twitch"),
+            (readable: displayTimeMode, id: "time-mode"),
+            (readable: displaySouvenir, id: "souvenir"),
+            (readable: displayRuleSeed, id: "rule-seed"),
+            (readable: displayDate, id: "published"),
+            (readable: displayID, id: "id"),
+            (readable: displayUpdated, id: "last-updated")).WhereNotNull().ToArray();
 
-        }
-
-        void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element){ }
-        void IClassifyObjectProcessor.BeforeSerialize() { }
-        void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
-        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
-        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
+        [ClassifyIgnore]
+        public string Json;
     }
 }

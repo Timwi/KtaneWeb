@@ -197,9 +197,9 @@ namespace KtaneWeb
             }
 
             var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
-            var disps = _defaultTranslation._displays.Select(d => d.id).ToJsonList();
-            var filters =_defaultTranslation. _filters.Select(f => f.ToJson()).ToJsonList();
-            var selectables = _defaultTranslation._selectables.Select(sel => sel.ToJson()).ToJsonList();
+            var disps = TranslationInfo.Default.Displays.Select(d => d.id).ToJsonList();
+            var filters = TranslationInfo.Default.Filters.Select(f => f.ToJson()).ToJsonList();
+            var selectables = TranslationInfo.Default.Selectables.Select(sel => sel.ToJson()).ToJsonList();
             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
 
             JsonValue contactInfoJson = new JsonDict();
