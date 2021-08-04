@@ -100,6 +100,8 @@
     <Compile Include="Puzzles\PuzzleGroup.cs" />
     <Compile Include="Puzzles\PuzzleInfo.cs" />
     <Compile Include="Puzzles\Puzzles.cs" />
+    <Compile Include="TranslationCache.cs" />
+    <Compile Include="TranslationInfo.cs" />
     <Compile Include="Unfinished.cs" />
     <Compile Include="Proxy.cs" />
     <Compile Include="Pull.cs" />

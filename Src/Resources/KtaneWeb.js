@@ -368,8 +368,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (profile.DisabledList)
                 {
                     profileVetoList = profile.DisabledList;
-                    $(".filter-profile-enabled-text").text('\u00a0Enabled by ' + file.name);
-                    $(".filter-profile-disabled-text").text('\u00a0Vetoed by ' + file.name);
+                    $(".filter-profile-enabled-text").text('\u00a0' + translation.filterProfileEnabled[0] + file.name + translation.filterProfileEnabled[1]);
+                    $(".filter-profile-disabled-text").text('\u00a0' + translation.filterProfileVetoed[0] + file.name + translation.filterProfileVetoed[1]);
                     $("#filters").removeClass("no-profile-selected");
                     $('#filter-profile-enabled').prop('checked', true);
                     $('#filter-profile-disabled').prop('checked', false);
@@ -539,13 +539,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                             let td2 = el("td", "infos-2");
                             tr.appendChild(td2);
-                            let infos = el("div", "infos",
-                                el("div", "inf-type inf", mod.Type),
-                                el("div", "inf-origin inf inf2", mod.Origin));
+                            let infos = el("div", "infos", 
+                                el("div", "inf-type inf", translation["moduleType" + mod.Type + "S"] || translation["moduleType" + mod.Type] ||mod.Type),
+                                el("div", "inf-origin inf inf2", translation["origin" + mod.Origin] || mod.Origin));
                             if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
                             {
                                 function readable(difficulty)
                                 {
+                                    if(translation["moduleDiff" + difficulty]) return translation["moduleDiff" + difficulty];
                                     var result = '';
                                     for (var i = 0; i < difficulty.length; i++)
                                     {
@@ -753,7 +754,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         min: $('div#filter-' + initFilters[i].id).slider('values', 0),
                         max: $('div#filter-' + initFilters[i].id).slider('values', 1)
                     };
-                    var x = function(str) { return str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim(); };
+                    var x = function(str) {
+                        return translation["moduleDiff" + str] || str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim(); 
+                        
+                    };
                     var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
                     $('div#filter-label-' + initFilters[i].id).text(y(initFilters[i].values[filter[initFilters[i].id].min], initFilters[i].values[filter[initFilters[i].id].max]));
                     none = false;

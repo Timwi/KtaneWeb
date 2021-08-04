@@ -16,6 +16,7 @@ namespace KtaneWeb
         public override string Name => "Repository of Manual Pages for Keep Talking and Nobody Explodes";
 
         private KtaneWebConfig _config;
+        private TranslationInfo _defaultTranslation;
 
         public override HttpResponse Handle(HttpRequest request)
         {
@@ -244,6 +245,11 @@ namespace KtaneWeb
             if (rewrite != original)
                 File.WriteAllText(Settings.ConfigFile, rewrite);
 
+            _defaultTranslation = new TranslationInfo();
+            _defaultTranslation.SetValues();
+            _defaultTranslation._json = ClassifyJson.Serialize(_defaultTranslation).ToString();
+
+            generateTranslationCache();
             generateModuleInfoCache();
         }
 

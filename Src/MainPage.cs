@@ -42,96 +42,6 @@ namespace KtaneWeb
         // .    Filters
         // /    Options
 
-        static readonly KtaneFilter[] _filters = Ut.NewArray(
-            KtaneFilter.Slider("Defuser difficulty", "defdiff", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
-            KtaneFilter.Slider("Expert difficulty", "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
-            KtaneFilter.Checkboxes("Type", "type", mod => mod.Type, @"mod=>mod.Type"),
-            KtaneFilter.Checkboxes("Origin", "origin", mod => mod.Origin, @"mod=>mod.Origin"),
-            KtaneFilter.Checkboxes("Twitch Plays", "twitchplays", mod => mod.TwitchPlaysScore == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
-            KtaneFilter.Checkboxes("Rule seed", "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
-            KtaneFilter.Checkboxes("Souvenir", "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
-            KtaneFilter.Checkboxes("Mystery Module", "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
-            KtaneFilter.BooleanSet("Boss Status", "bossstatus", new[] {
-                new KtaneFilterOption { Name = "IsFullBoss", ReadableName = "Full boss" },
-                new KtaneFilterOption { Name = "IsSemiBoss", ReadableName = "Semi-boss" },
-                new KtaneFilterOption { Name = "NotABoss", ReadableName = "Not a boss" }},
-                mod => mod.IsFullBoss ? "IsFullBoss" : mod.IsSemiBoss ? "IsSemiBoss" : "NotABoss",
-                $@"mod=>mod.IsFullBoss?""IsFullBoss"":mod.IsSemiBoss?""IsSemiBoss"":""NotABoss"""),
-            KtaneFilter.BooleanSet("Solve-order-sensitive", "solveorderstatus", new[] {
-                new KtaneFilterOption { Name = "IsSolveOrderSensitive", ReadableName = "Solve-order-sensitive" },
-                new KtaneFilterOption { Name = "NotSolveOrderSensitive", ReadableName = "N/A" }},
-                mod => mod.IsSolveOrderSensitive ? "IsSolveOrderSensitive" : "NotSolveOrderSensitive",
-                $@"mod=>mod.IsSolveOrderSensitive?""IsSolveOrderSensitive"":""NotSolveOrderSensitive"""),
-            KtaneFilter.BooleanSet("Solves Later", "solveslater", new[] {
-                new KtaneFilterOption { Name = "SolvesAtEnd", ReadableName = "Solves at end" },
-                new KtaneFilterOption { Name = "NeedsOtherSolves", ReadableName = "Needs other solves" },
-                new KtaneFilterOption { Name = "NotSolvesLater", ReadableName = "N/A" }},
-                mod => mod.SolvesAtEnd ? "SolvesAtEnd" : mod.NeedsOtherSolves ? "NeedsOtherSolves" : "NotSolvesLater",
-                $@"mod=>mod.SolvesAtEnd?""SolvesAtEnd"":mod.NeedsOtherSolves?""NeedsOtherSolves"":""NotSolvesLater"""),
-            KtaneFilter.BooleanSet("Solves Before", "solvebeforestatus", new[] {
-                new KtaneFilterOption { Name = "SolvesBeforeSome", ReadableName = "Must solve before some" },
-                new KtaneFilterOption { Name = "NotSolvesBeforeSome", ReadableName = "N/A" }},
-                mod => mod.SolvesBeforeSome ? "SolvesBeforeSome" : "NotSolvesBeforeSome",
-                $@"mod=>mod.SolvesBeforeSome?""SolvesBeforeSome"":""NotSolvesBeforeSome"""),
-            KtaneFilter.BooleanSet("Pseudo-Needy and Time", "pseudoneedytimestatus", new[] {
-                new KtaneFilterOption { Name = "IsPseudoNeedy", ReadableName = "Pseudo-needy" },
-                new KtaneFilterOption { Name = "IsTimeSensitive", ReadableName = "Heavily time-dependent" },
-                new KtaneFilterOption { Name = "NotPseudoNeedyOrTime", ReadableName = "N/A" }},
-                mod => mod.IsPseudoNeedy ? "IsPseudoNeedy" : mod.IsTimeSensitive ? "IsTimeSensitive" : "NotPseudoNeedyOrTime",
-                $@"mod=>mod.IsPseudoNeedy?""IsPseudoNeedy"":mod.IsTimeSensitive?""IsTimeSensitive"":""NotPseudoNeedyOrTime"""));
-
-        static readonly Selectable[] _selectables = Ut.NewArray(
-            new Selectable
-            {
-                HumanReadable = "Manual",
-                Accel = 'u',
-                Icon = "HTML/img/manual.png",
-                PropName = "manual",
-                UrlFunction = @"mod=>null",
-                ShowIconFunction = @"(_,s)=>s.length>0"
-            },
-            new Selectable
-            {
-                HumanReadable = "Steam Workshop",
-                Accel = 'W',
-                Icon = "HTML/img/steam-workshop-item.png",
-                PropName = "steam",
-                UrlFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
-                ShowIconFunction = @"mod=>!!mod.SteamID",
-            },
-            new Selectable
-            {
-                HumanReadable = "Source code",
-                Accel = 'c',
-                Icon = "HTML/img/unity.png",
-                PropName = "source",
-                UrlFunction = @"mod=>mod.SourceUrl",
-                ShowIconFunction = @"mod=>!!mod.SourceUrl",
-            },
-            new Selectable
-            {
-                HumanReadable = "Tutorial video",
-                Accel = 'T',
-                Icon = "HTML/img/video.png",
-                PropName = "video",
-                UrlFunction = @"mod=>mod.TutorialVideoUrl",
-                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl",
-            });
-
-        static readonly (string readable, string id)[] _displays = Ut.NewArray(
-            (readable: "Description", id: "description"),
-            //(readable: "Author", id: "author"),
-            //(readable: "Type", id: "type"),
-            (readable: "Difficulty", id: "difficulty"),
-            (readable: "Origin", id: "origin"),
-            (readable: "Twitch support", id: "twitch"),
-            (readable: "Time Mode score", id: "time-mode"),
-            (readable: "Souvenir support", id: "souvenir"),
-            (readable: "Rule seed support", id: "rule-seed"),
-            (readable: "Date published", id: "published"),
-            (readable: "Module ID", id: "id"),
-            (readable: "Last updated", id: "last-updated"));
-
         private static string UniquifiedUrl(IHttpUrl url)
         {
 #if DEBUG
@@ -143,9 +53,11 @@ namespace KtaneWeb
 
         private HttpResponse mainPage(HttpRequest req)
         {
-            var resp = HttpResponse.Html(new HTML(
+            var lang = req.Url.HasQuery ? req.Url.QueryValues("lang").ToArray()[0] : "en";
+            var translation = _translationCache.Get(lang, _defaultTranslation);
+            var resp = HttpResponse.Html(new HTML { lang = translation.langCode }._(
                 new HEAD(
-                    new TITLE("Repository of Manual Pages"),
+                    new TITLE(translation.title),
                     new META { name = "description", content = "Manuals for Keep Talking and Nobody Explodes — vanilla, modded, optimized/embellished, logfile analyzer, profile editor and more" },
                     new LINK { href = req.Url.WithParent("HTML/css/font.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new LINK { href = UniquifiedUrl(req.Url.WithParent("css")), rel = "stylesheet", type = "text/css" },
@@ -158,16 +70,16 @@ namespace KtaneWeb
                     new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
-                        new DIV { id = "logo" }._(new IMG { src = "HTML/img/repo-logo.svg" }),
+                        new DIV { id = "logo" }._(new IMG { src = translation.titleImg }),
                         new DIV { id = "icons", class_ = "icons" }._(
                             new DIV { class_ = "icon-page shown" }._(
-                                new DIV { class_ = "icon", id = "links-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "links")._(new IMG { class_ = "icon-img", src = "HTML/img/links-icon.png" }, new SPAN { class_ = "icon-label" }._("Links"))),
-                                new DIV { class_ = "icon", id = "tools-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "tools")._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Tools"))),
-                                new DIV { class_ = "icon", id = "view-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "view")._(new IMG { class_ = "icon-img", src = "HTML/img/view-icon.png" }, new SPAN { class_ = "icon-label" }._("View"))),
-                                new DIV { class_ = "icon", id = "more-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._("More"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/spanner.png" }, new SPAN { class_ = "icon-label" }._("Rule seed"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/filter-icon.png" }, new SPAN { class_ = "icon-label" }._("Filters"))),
-                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "options-link-mobile" }.Data("popup", "options")._(new IMG { class_ = "icon-img", src = "HTML/img/sliders.png" }, new SPAN { class_ = "icon-label" }._("Options"))))),
+                                new DIV { class_ = "icon", id = "links-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "links")._(new IMG { class_ = "icon-img", src = "HTML/img/links-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.popupLinks))),
+                                new DIV { class_ = "icon", id = "tools-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "tools")._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._(translation.popupTools))),
+                                new DIV { class_ = "icon", id = "view-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "view")._(new IMG { class_ = "icon-img", src = "HTML/img/view-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.popupView))),
+                                new DIV { class_ = "icon", id = "more-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._(translation.popupMore))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "rule-seed-link-mobile" }.Data("popup", "rule-seed")._(new IMG { class_ = "icon-img", src = "HTML/img/spanner.png" }, new SPAN { class_ = "icon-label" }._(translation.tabRuleSeed))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "filters-link-mobile" }.Data("popup", "filters")._(new IMG { class_ = "icon-img", src = "HTML/img/filter-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.tabFilters))),
+                                new DIV { class_ = "icon mobile-only" }._(new A { class_ = "icon-link popup-link", href = "#", id = "options-link-mobile" }.Data("popup", "options")._(new IMG { class_ = "icon-img", src = "HTML/img/sliders.png" }, new SPAN { class_ = "icon-label" }._(translation.tabOptions))))),
 
                         new A { href = "#", class_ = "mobile-opt", id = "page-opt" },
 
@@ -175,16 +87,16 @@ namespace KtaneWeb
                         new DIV { id = "top-controls" }._(
                             new A { id = "search-switcher", href = "#", accesskey = "," },
                             new DIV { class_ = "search-container visible" }._(
-                                new LABEL { for_ = "search-field" }._("Find: ".Accel('F')),
+                                new LABEL { for_ = "search-field" }._((translation.searchFind + " ").Accel('F')),
                                 new INPUT { type = itype.text, id = "search-field", class_ = "sw-focus", accesskey = "f" }, " ",
                                 new SCRIPTLiteral("document.getElementById('search-field').focus();"),
                                 new A { href = "#", class_ = "search-field-clear" },
                                 new DIV { class_ = "search-options" }._(
-                                    new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._("Names")),
-                                    new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._("Authors")),
-                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._("Descriptions")))),
+                                    new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._(translation.searchNames)),
+                                    new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._(translation.searchAuthors)),
+                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._(translation.searchDescriptions)))),
                             new DIV { class_ = "search-container" }._(
-                                new LABEL { for_ = "search-field-mission" }._("Mission: "),
+                                new LABEL { for_ = "search-field-mission" }._(translation.searchMission + " "),
                                 new SELECT { id = "search-field-mission", class_ = "sw-focus" }, " ",
                                 new A { id = "search-field-mission-link", accesskey = "]" }._("open")),
                             new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
@@ -193,16 +105,24 @@ namespace KtaneWeb
 
                             // TABS
                             new DIV { id = "tabs" }._(
-                                new A { href = "#", class_ = "tab popup-link", id = "rule-seed-link", accesskey = "s" }.Data("popup", "rule-seed")._("Rule seed".Accel('s'), new SPAN { id = "rule-seed-number" }),
-                                new A { href = "#", class_ = "tab popup-link", id = "filters-link", accesskey = "." }.Data("popup", "filters")._("Filters"),
-                                new A { href = "#", class_ = "tab popup-link", id = "options-link", accesskey = "/" }.Data("popup", "options")._("Options")),
+                                new A { href = "#", class_ = "tab popup-link", id = "rule-seed-link", accesskey = "s" }.Data("popup", "rule-seed")._(translation.tabRuleSeed.Accel('s'), new SPAN { id = "rule-seed-number" }),
+                                new A { href = "#", class_ = "tab popup-link", id = "filters-link", accesskey = "." }.Data("popup", "filters")._(translation.tabFilters),
+                                new A { href = "#", class_ = "tab popup-link", id = "options-link", accesskey = "/" }.Data("popup", "options")._(translation.tabOptions)),
 
                             // MAIN TABLE
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
-                                    new TH { colspan = _selectables.Length }._("Links"),
-                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._("Name")),
-                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._("Information")))),
+                                    new TH { colspan = translation._selectables.Length }._(translation.columnLinks),
+                                    new TH { class_ = "modlink" }
+                                        .Data("sort-name", "   • " + translation.sortOrderName)
+                                        ._(new A { href = "#", class_ = "sort-header" }._(translation.columnName)),
+                                    new TH { class_ = "infos" }
+                                        .Data("sort-published", "   • " + translation.sortOrderDate)
+                                        .Data("sort-defdiff", "   • " + translation.sortOrderDefDifficulty)
+                                        .Data("sort-expdiff", "   • " + translation.sortOrderExpDifficulty)
+                                        .Data("sort-twitch", "   • " + translation.sortOrderTP)
+                                        .Data("sort-time-mode-score", "   • " + translation.sortOrderTime)
+                                        ._(new A { href = "#", class_ = "sort-header" }._(translation.columnInformation)))),
 
                             // PERIODIC TABLE
                             new DIV { id = "main-periodic-table" }._(
@@ -215,81 +135,82 @@ namespace KtaneWeb
                         new DIV { id = "links", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/ktane" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._("Join us on Discord"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/FAQs.html", accesskey = "g" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._("Glossary".Accel('G')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://docs.google.com/document/d/1K2la3yW_l6WHXSIaK-b6WKJAsgL9TuGjx8ZhAZeHQko" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Playing with Mods"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Making%20a%20Great%20Module.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._("Intro to Making Mods"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://www.youtube.com/playlist?list=PL-1P5EmkkFxrAXBhqvyUAXH-ErGjh7Zrx" }._(new IMG { class_ = "icon-img", src = "HTML/img/video-playlist.png" }, new SPAN { class_ = "icon-label" }._("Tutorial videos playlist")))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/ktane" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._(translation.joinDiscordAnchor))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = translation.faqURL, accesskey = "g" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._(translation.faqAnchor.Accel('G')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = translation.tutorialURL }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.tutorialAnchor))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Making%20a%20Great%20Module.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.makingModsAnchor))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://www.youtube.com/playlist?list=PL-1P5EmkkFxrAXBhqvyUAXH-ErGjh7Zrx" }._(new IMG { class_ = "icon-img", src = "HTML/img/video-playlist.png" }, new SPAN { class_ = "icon-label" }._(translation.playlistAnchor)))),
                             new UL { class_ = "below-icons" }._(
-                                new LI(new A { href = "More/Repository%20Symbols%20Guide.html" }._("Repository Symbols Guide")),
-                                new LI(new A { href = "https://ktane.onpointcoding.net/ideas/" }._("Mod ideas website")),
-                                new LI(new A { href = "https://docs.google.com/spreadsheets/d/10Z7Ivc784QaFrQCaGwIPUYrS6NNXiLJPi8nADiFR_0s" }._("Mod ideas: spreadsheet of past ideas")),
-                                new LI(new A { href = "https://www.reddit.com/r/ktanemod/" }._("Mod ideas: subreddit")),
-                                new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._("KtaneContent github repository"), new DIV { class_ = "link-extra" }._("(contains the manuals, Profile Editor, Logfile Analyzer and other static files)")),
-                                new LI(new A { href = "https://github.com/Timwi/KtaneWeb" }._("KtaneWeb github repository"), new DIV { class_ = "link-extra" }._("(contains this website’s server code)")))),
+                                new LI(new A { href = "More/Repository%20Symbols%20Guide.html" }._(translation.symbolGuideAnchor)),
+                                new LI(new A { href = "https://ktane.onpointcoding.net/ideas/" }._(translation.modIdeaAnchor)),
+                                new LI(new A { href = "https://docs.google.com/spreadsheets/d/10Z7Ivc784QaFrQCaGwIPUYrS6NNXiLJPi8nADiFR_0s" }._(translation.modIdeaPastAnchor)),
+                                new LI(new A { href = "https://www.reddit.com/r/ktanemod/" }._(translation.modIdeaSubredditAnchor)),
+                                new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._(translation.contentGithubAnchor), new DIV { class_ = "link-extra" }._(translation.contentGithubDesc)),
+                                new LI(new A { href = "https://github.com/Timwi/KtaneWeb" }._(translation.webGithubAnchor), new DIV { class_ = "link-extra" }._(translation.webGithubDesc)))),
 
                         // TOOLS (icon popup)
                         new DIV { id = "tools", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._("Logfile Analyzer".Accel('A')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Profile Editor"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "profile/zip" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Download pre-made profiles".Accel('p')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._("Mode Settings Editor"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "module-json-new" }._(new IMG { class_ = "icon-img", src = "HTML/img/edit-icon.png" }, new SPAN { class_ = "icon-label" }._("Create new module")))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._(translation.lfaAnchor.Accel('A')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._(translation.profileEditorAnchor))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "profile/zip" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._(translation.downloadProfileAnchor.Accel('p')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._(translation.modeEditorAnchor))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "module-json-new" }._(new IMG { class_ = "icon-img", src = "HTML/img/edit-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.newModuleAnchor)))),
                             new DIV { class_ = "pdf-merge" }._(
                                 new FORM { action = "merge-pdf", method = method.post }._(
                                 new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
-                                new BUTTON { id = "generate-pdf", type = btype.submit }._("Download merged PDF for current filter"))),
+                                new BUTTON { id = "generate-pdf", type = btype.submit }._(translation.downloadPDF))),
                             new UL { class_ = "below-icons" }._(
-                                new LI(new A { href = "More/Ignore%20Table.html" }._("Table of ignored modules")),
-                                new LI(new A { href = "https://files.timwi.de/Tools/Calculator.html" }._("Text Field Calculator")))),
+                                new LI(new A { href = "More/Ignore%20Table.html" }._(translation.ignoredTableAnchor)),
+                                new LI(new A { href = "https://files.timwi.de/Tools/Calculator.html" }._(translation.tfcAnchor)))),
 
                         // VIEW (icon popup)
                         new DIV { id = "view", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "List")._(new IMG { class_ = "icon-img", src = "HTML/img/list-icon.png" }, new SPAN { class_ = "icon-label" }._("List"))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "PeriodicTable")._(new IMG { class_ = "icon-img", src = "HTML/img/grid-icon.png" }, new SPAN { class_ = "icon-label" }._("Periodic Table"))))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "List")._(new IMG { class_ = "icon-img", src = "HTML/img/list-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.displayMethodList))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link view-link", href = "#" }.Data("view", "PeriodicTable")._(new IMG { class_ = "icon-img", src = "HTML/img/grid-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.displayMethodPeriodic))))),
 
                         // MORE (icon popup)
                         new DIV { id = "more", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new UL { class_ = "below-icons first" }._(
-                                new LI(new A { href = "puzzles", class_ = "important" }._("PUZZLES")),
-                                new LI(new A { href = "More/Experting%20Template.png" }._("Experting template"), new DIV { class_ = "link-extra" }._("(printable page with boxes to fill in while experting)")),
-                                new LI(new A { href = "More/Template%20Manual.zip" }._("Template manual"), new DIV { class_ = "link-extra" }._("(for modders wishing to create a manual page for a new module)"))),
+                                new LI(new A { href = "puzzles", class_ = "important" }._(translation.puzzleAnchor)),
+                                new LI(new A { href = "More/Experting%20Template.png" }._(translation.expertTemplateAnchor), new DIV { class_ = "link-extra" }._(translation.expertTemplateDesc)),
+                                new LI(new A { href = "More/Template%20Manual.zip" }._(translation.templateManualAnchor), new DIV { class_ = "link-extra" }._(translation.templateManualDesc))),
                             new DIV { class_ = "highlighting-controls" }._(
-                                new H3("Controls to highlight elements in HTML manuals"),
+                                new H3(translation.controlHeader),
                                 new TABLE { class_ = "highlighting-controls" }._(
-                                    new TR(new TH("Highlight a table column"), new TD("Ctrl+Click (Windows)", new BR(), "Command+Click (Mac)")),
-                                    new TR(new TH("Highlight a table row"), new TD("Shift+Click")),
-                                    new TR(new TH("Highlight a table cell or an item in a list"), new TD("Alt+Click (Windows)", new BR(), "Ctrl+Shift+Click (Windows)", new BR(), "Command+Shift+Click (Mac)")),
-                                    new TR(new TH("Change highlighter color"), new TD("Alt+0 through Alt+9 (digits)")),
-                                    new TR(new TH("Additional options"), new TD("Alt+O (letter)")))),
-                            new H3("Default file locations"),
+                                    translation.controls.Select(c1 => new TR()._(
+                                        new TH(c1.Length > 0 ? c1[0] : null),
+                                        new TD()._(c1.Skip(1).SelectMany(c2 => new List<object>() { c2, new BR() }).SkipLast(1))
+                                    ))
+                                )
+                            ),
+                            new H3(translation.fileLocationHeader),
                             new H4("Windows"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes" })),
-                                new TR(new TH("Logfile (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\output_log.txt" })),
-                                new TR(new TH("Logfile (Oculus):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Oculus\Software\steel-crate-games-keep-talking-and-nobody-explodes\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\ModProfiles" })),
-                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\Modsettings" })),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Steam\userdata\<some number>\760\remote\341800\screenshots" }))),
+                                new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody Explodes" })),
+                                new TR(new TH(translation.fileLocationLogfile + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\output_log.txt" })),
+                                new TR(new TH(translation.fileLocationLogfile + " (Oculus):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Oculus\Software\steel-crate-games-keep-talking-and-nobody-explodes\Keep Talking and Nobody Explodes\ktane_Data\output_log.txt" })),
+                                new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\ModProfiles" })),
+                                new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"%APPDATA%\..\LocalLow\Steel Crate Games\Keep Talking and Nobody Explodes\Modsettings" })),
+                                new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"C:\Program Files (x86)\Steam\userdata\<some number>\760\remote\341800\screenshots" }))),
                             new H4("Mac"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
-                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Logs/Unity/Player.log" })),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/ModProfiles" })),
-                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings" })),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots" }))),
+                                new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH(translation.fileLocationLogfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Logs/Unity/Player.log" })),
+                                new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/ModProfiles" })),
+                                new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/com.steelcrategames.keeptalkingandnobodyexplodes/Modsettings" })),
+                                new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/Library/Application Support/Steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new H4("Linux"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH("Game:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/steam/steamapps/common/Keep Talking and Nobody Explodes" })),
-                                new TR(new TH("Logfile:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log" })),
-                                new TR(new TH("Mod Selector Profiles:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
-                                new TR(new TH("Mod Settings:"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
-                                new TR(new TH("Screenshots (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
+                                new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH(translation.fileLocationLogfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log" })),
+                                new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
+                                new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
+                                new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new DIV { class_ = "small-links" }._(_config.DocumentDirs.Select(d => new A { href = d }._(d)).InsertBetween<object>(" • ")),
                             new DIV { class_ = "hidden-shortcuts" }._(new A { href = "#", accesskey = "i", id = "toggle-view" })),
 
@@ -307,32 +228,32 @@ namespace KtaneWeb
                         new DIV { id = "filters", class_ = "popup disappear stay no-profile-selected" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "filters" }._(
-                                _filters.Select(filter => filter.ToHtml()),
+                                translation._filters.Select(filter => filter.ToHtml()),
                                 new DIV { class_ = "option-group" }._(
-                                    new H4("Sort order"),
+                                    new H4(translation.sortOrderHeader),
                                     new DIV(
                                         new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0Sort by name".Accel('n'))),
+                                        new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0", translation.sortOrderName.Accel('n'))),
                                     new DIV(
                                         new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-defuser-difficulty" }._("\u00a0Sort by defuser difficulty")),
+                                        new LABEL { for_ = "sort-defuser-difficulty" }._("\u00a0", translation.sortOrderDefDifficulty)),
                                     new DIV(
                                         new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-expert-difficulty" }._("\u00a0Sort by expert difficulty")),
+                                        new LABEL { for_ = "sort-expert-difficulty" }._("\u00a0", translation.sortOrderExpDifficulty)),
                                     new DIV(
                                         new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0Sort by score on TP:KTANE".Accel('b'))),
+                                        new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0", translation.sortOrderTP.Accel('b'))),
                                     new DIV(
                                         new INPUT { id = "sort-time-mode-score", name = "sort", value = "timemodescore", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "o" }._("\u00a0Sort by score in Time Mode".Accel('o'))),
+                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "o" }._("\u00a0", translation.sortOrderTime.Accel('o'))),
                                     new DIV(
                                         new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0Sort by date published".Accel('d'))),
+                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0", translation.sortOrderDate.Accel('d'))),
                                     new DIV(
                                         new INPUT { id = "sort-reverse", name = "sort", class_ = "sort-reverse", type = itype.checkbox },
-                                        new LABEL { for_ = "sort-reverse", accesskey = "e" }._("\u00a0Reverse".Accel('e')))),
+                                        new LABEL { for_ = "sort-reverse", accesskey = "e" }._("\u00a0", translation.sortOrderReverse.Accel('e')))),
                                 new DIV { class_ = "option-group" }._(
-                                    new H4("Profile"),
+                                    new H4(translation.filterProfile),
                                     new DIV { class_ = "filter-profile" }._(
                                         new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
                                         new LABEL { for_ = "filter-profile-enabled", class_ = "filter-profile-enabled-text" }),
@@ -341,53 +262,53 @@ namespace KtaneWeb
                                         new LABEL { for_ = "filter-profile-disabled", class_ = "filter-profile-disabled-text" }),
                                     new DIV { class_ = "filter-profile upload" }._(
                                         new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
-                                        new LABEL { for_ = "profile-file" }._("Filter by a profile"))))),
+                                        new LABEL { for_ = "profile-file" }._(translation.filterProfileOpen))))),
 
                         // OPTIONS (tab popup)
                         new DIV { id = "options", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "option-group" }._(
-                                new H4("Display"),
-                                _displays.Select(dspl => new DIV(
+                                new H4(translation.displayOption),
+                                translation._displays.Select(dspl => new DIV(
                                     new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
                                     new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
                             new DIV { class_ = "option-group" }._(
-                                new H4("Search options"),
+                                new H4(translation.searchOption),
                                 new DIV(
                                     new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-steam-id" }, " ",
-                                    new LABEL { for_ = "option-include-steam-id" }._("Search by Steam ID")),
+                                    new LABEL { for_ = "option-include-steam-id" }._(translation.searchSteamID)),
                                 new DIV(
                                     new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-symbol" }, " ",
-                                    new LABEL { for_ = "option-include-symbol" }._("Search by Symbol")),
+                                    new LABEL { for_ = "option-include-symbol" }._(translation.searchSymbol)),
                                 new DIV(
                                     new INPUT { type = itype.checkbox, class_ = "search-option-checkbox", id = "option-include-module-id" }, " ",
-                                    new LABEL { for_ = "option-include-module-id" }._("Search by Module ID"))),
+                                    new LABEL { for_ = "option-include-module-id" }._(translation.searchModuleID))),
                             new DIV { class_ = "option-group" }._(
-                                new H4("When using the Find bar"),
+                                new H4(translation.findBarOption),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "results-mode", id = "results-hide", name = "results-mode", value = "hide" }, " ",
-                                    new LABEL { for_ = "results-hide" }._("Show matches only"),
+                                    new LABEL { for_ = "results-hide" }._(translation.findBarMatch),
                                     new DIV { class_ = "sub-option" }._(
-                                        new LABEL { for_ = "results-limit" }._("Limit: "),
+                                        new LABEL { for_ = "results-limit" }._(translation.findBarMatchLimit, "\u00a0"),
                                         new INPUT { type = itype.number, id = "results-limit", name = "results-limit", value = "20", step = "1" })),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "results-mode", id = "results-scroll", name = "results-mode", value = "scroll" }, " ",
-                                    new LABEL { for_ = "results-scroll" }._("Scroll first match into view"))),
+                                    new LABEL { for_ = "results-scroll" }._(translation.findBarScroll))),
                             new DIV { class_ = "option-group" }._(
-                                new H4("Site theme"),
+                                new H4(translation.themeOption),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-default" }.Data("theme", "null"), " ",
-                                    new LABEL { for_ = "theme-default", accesskey = "l" }._("Light".Accel('L'))),
+                                    new LABEL { for_ = "theme-default", accesskey = "l" }._(translation.themeLight.Accel('L'))),
                                 new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-theme", name = "theme", id = "theme-dark" }.Data("theme", "dark"), " ",
-                                    new LABEL { for_ = "theme-dark", accesskey = "k" }._("Dark".Accel('k')))),
+                                    new LABEL { for_ = "theme-dark", accesskey = "k" }._(translation.themeDark.Accel('k')))),
                             new DIV { class_ = "option-group" }._(
-                                new H4("Make links go to"),
-                                _selectables.Select(sel => new DIV(
+                                new H4(translation.linkOption),
+                                translation._selectables.Select(sel => new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
                                     new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel))))),
-                            new DIV { class_ = "option-group" }._(new H4("Languages"), new DIV { id = "languages-option" }),
-                            new BUTTON { class_ = "toggle-all-languages" }._("Toggle All Languages")),
+                            new DIV { class_ = "option-group" }._(new H4(translation.languagesOption), new DIV { id = "languages-option" }),
+                            new BUTTON { class_ = "toggle-all-languages" }._(translation.languagesToggle)),
 
                         new DIV { id = "page-opt-popup", class_ = "popup disappear stay" }._(new DIV { class_ = "close" }),
 
@@ -519,7 +440,7 @@ namespace KtaneWeb
                     {
                         var moduleInfoCache = _moduleInfoCache;
                         return Ut.NewArray<object>(
-                            new SCRIPTLiteral(moduleInfoCache.ModuleInfoJs),
+                            new SCRIPTLiteral($"var translation = {translation._json};" +  moduleInfoCache.ModuleInfoJs),
                             new STYLELiteral(moduleInfoCache.IconSpriteCss));
                     }))));
             resp.UseGzip = UseGzipOption.AlwaysUseGzip;
