@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using RT.Json;
 using RT.Serialization;
 using RT.Servers;
@@ -33,56 +34,31 @@ namespace KtaneWeb
         // This method is called in Init() (when the server is initialized) and in pull() (when the repo is updated due to a new git commit).
         private void generateModuleInfoCache()
         {
-            const int cols = 40;   // number of icons per row
-            const int w = 32;   // width of an icon in pixels
-            const int h = 32;   // height of an icon in pixels
+            var moduleInfoCache = new ModuleInfoCache();
+            JsonList tpEntries = null, timeModeEntries = null;
+            Dictionary<string, (int x, int y)> coords = null;
+            var exceptions = new JsonList();
+            JsonValue contactInfoJson = null;
 
-            var iconFiles = new DirectoryInfo(Path.Combine(_config.BaseDir, "Icons")).EnumerateFiles("*.png", SearchOption.TopDirectoryOnly).OrderBy(file => file.Name != "blank.png").ToArray();
-            var rows = (iconFiles.Length + cols - 1) / cols;
-            var coords = new Dictionary<string, (int x, int y)>();
+            var tasks = Ut.NewArray<(string name, Action action)>(
+                ("Generate icon sprite", () => (moduleInfoCache.IconSpritePng, moduleInfoCache.IconSpriteCss, coords) = GenerateIconSprite()),
+                ("Retrieve TP data from Google Sheets", () => tpEntries = LoadTpDataFromGoogleSheets()),
+                ("Retrieve Time Mode data from Google Sheets", () => timeModeEntries = LoadTimeModeDataFromGoogleSheets()),
+                ("Load contact info", () => contactInfoJson = JsonValue.Parse(File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json")))));
 
-            using var bmp = new Bitmap(w * cols, h * rows);
-            using (var g = Graphics.FromImage(bmp))
+            tasks.ParallelForEach(tup =>
             {
-                for (int i = 0; i < iconFiles.Length; i++)
+                try { tup.action(); }
+                catch (Exception e)
                 {
-                    using (var icon = new Bitmap(iconFiles[i].FullName))
-                        g.DrawImage(icon, w * (i % cols), h * (i / cols));
-                    coords.Add(Path.GetFileNameWithoutExtension(iconFiles[i].Name), (i % cols, i / cols));
+                    lock (exceptions)
+                    {
+                        Log.Exception(e);
+                        exceptions.Add($"{tup.name} ERROR: {e.Message} ({e.GetType().FullName})");
+                    }
                 }
-            }
-            using var mem = new MemoryStream();
-            bmp.Save(mem, ImageFormat.Png);
+            });
 
-            // This needs to be a separate variable (don’t use _moduleInfoCache itself) because that field needs to stay null until it is fully initialized
-            var moduleInfoCache = new ModuleInfoCache { IconSpritePng = mem.ToArray() };
-            moduleInfoCache.IconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(moduleInfoCache.IconSpritePng)})}}";
-
-            // Load TP data from the spreadsheet
-            JsonList tpEntries;
-            try
-            {
-                tpEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e);
-                tpEntries = new JsonList();
-            }
-
-            // Load Time Mode data from the spreadsheet
-            JsonList timeModeEntries;
-            try
-            {
-                timeModeEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
-            }
-            catch (Exception e)
-            {
-                Log.Exception(e);
-                timeModeEntries = new JsonList();
-            }
-
-            var moduleLoadExceptions = new JsonList();
             var modules = new DirectoryInfo(Path.Combine(_config.BaseDir, "JSON"))
                 .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
                 .ParallelSelect(Environment.ProcessorCount, file =>
@@ -100,17 +76,6 @@ namespace KtaneWeb
                             File.WriteAllText(file.FullName, newJsonStr);
                         modJson = newJson;
 #endif
-
-                        static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
-
-                        // Merge in Time Mode and TP data
-                        var timeModeEntry = timeModeEntries.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
-                        if (timeModeEntry != null)
-                            mergeTimeModeData(mod, modJson, timeModeEntry);
-
-                        var tpEntry = tpEntries.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
-                        if (tpEntry != null)
-                            mergeTPData(mod, modJson, tpEntry["gsx$tpscore"]["$t"].GetString());
 
                         // Some module names contain characters that can’t be used in filenames (e.g. “?”)
                         mod.FileName = Path.GetFileNameWithoutExtension(file.Name);
@@ -131,15 +96,18 @@ namespace KtaneWeb
                         Console.WriteLine(e.StackTrace);
 #endif
                         Log.Exception(e);
-                        moduleLoadExceptions.Add($"{file.Name} error: {e.Message}");
+                        exceptions.Add($"{file.Name} error: {e.Message}");
                         return null;
                     }
                 })
                 .WhereNotNull()
                 .ToArray();
 
-            // Process ignore lists that contain special operators
-            foreach (var (modJson, mod, LastWriteTimeUtc) in modules)
+            static string getFileName(JsonDict modJson, KtaneModuleInfo mod) => modJson.ContainsKey("FileName") ? modJson["FileName"].GetString() : mod.Name;
+
+            foreach (var (modJson, mod, _) in modules)
+            {
+                // Process ignore lists that contain special operators
                 if (mod.Ignore != null && mod.Ignore.Any(str => str.StartsWith("+")))
                 {
                     var processedIgnoreList = new List<string>();
@@ -163,38 +131,36 @@ namespace KtaneWeb
                     modJson["IgnoreProcessed"] = processedIgnoreList.ToJsonList();
                 }
 
-            moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
-            moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
-            moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
+                static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
 
-            static string getFileName((JsonDict modJson, KtaneModuleInfo mod, DateTime _) tup) => tup.modJson.ContainsKey("FileName") ? tup.modJson["FileName"].GetString() : tup.mod.Name;
+                // Merge in Time Mode data
+                var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
+                if (timeModeEntry != null)
+                    mergeTimeModeData(mod, modJson, timeModeEntry);
 
-            var modJsons = modules.Where(tup => tup.mod.TranslationOf == null).Select(tup =>
-            {
-                var (modJson, mod, _) = tup;
-                var fileName = getFileName(tup);
-                modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
+                // Merge in TP data
+                var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
+                if (tpEntry != null)
+                    mergeTPData(mod, modJson, tpEntry["gsx$tpscore"]["$t"].GetString());
+
+                // Sheets and iconsprite coordinates
+                var fileName = getFileName(modJson, mod);
+                if (mod.TranslationOf == null)
+                    modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
+                else if (!coords.ContainsKey(fileName))
+                {
+                    var origModule = modules.FirstOrNull(module => module.mod.ModuleID == mod.TranslationOf);
+                    if (origModule != null)
+                        fileName = getFileName(origModule.Value.modJson, origModule.Value.mod);
+                }
                 var (x, y) = coords.Get(fileName, (x: 0, y: 0));
                 modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
                 modJson["Y"] = y;
-                return modJson;
-            }).ToJsonList();
-
-            // Allow translated modules to have an icon
-            foreach (var tup in modules.Where(tup => tup.mod.TranslationOf != null))
-            {
-                var (modJson, mod, _) = tup;
-                var origModule = modules.FirstOrNull(module => module.mod.ModuleID == mod.TranslationOf);
-                if (origModule == null)
-                    continue;
-                var fileName = getFileName(tup);
-                if (!coords.ContainsKey(fileName))
-                    fileName = getFileName(origModule.Value);
-
-                var (x, y) = coords.Get(fileName, (x: 0, y: 0));
-                modJson["X"] = x;
-                modJson["Y"] = y;
             }
+
+            moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
+            moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
+            moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
 
             var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
             var disps = TranslationInfo.Default.Displays.Select(d => d.id).ToJsonList();
@@ -202,12 +168,79 @@ namespace KtaneWeb
             var selectables = TranslationInfo.Default.Selectables.Select(sel => sel.ToJson()).ToJsonList();
             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
 
-            JsonValue contactInfoJson = new JsonDict();
-            try { contactInfoJson = JsonValue.Parse(File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json"))); }
-            catch (Exception e) { moduleLoadExceptions.Add("ContactInfo.json error: " + e.Message); }
-
-            moduleInfoCache.ModuleInfoJs = $@"initializePage({modJsons},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},{moduleLoadExceptions},{contactInfoJson});";
+            moduleInfoCache.ModuleInfoJs = $@"initializePage({modules.Where(m => m.mod.TranslationOf == null).Select(m => m.modJson).ToJsonList()},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},{exceptions},{contactInfoJson ?? new JsonDict()});";
             _moduleInfoCache = moduleInfoCache;
+        }
+
+        private JsonList LoadTimeModeDataFromGoogleSheets()
+        {
+            retry:
+            var attempts = 5;
+            JsonList timeModeEntries;
+            try
+            {
+                timeModeEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+            }
+            catch
+            {
+                if (attempts-- > 0)
+                {
+                    Thread.Sleep(700);
+                    goto retry;
+                }
+                throw;
+            }
+
+            return timeModeEntries;
+        }
+
+        private JsonList LoadTpDataFromGoogleSheets()
+        {
+            retry:
+            var attempts = 5;
+            JsonList tpEntries;
+            try
+            {
+                tpEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+            }
+            catch
+            {
+                if (attempts-- > 0)
+                {
+                    Thread.Sleep(700);
+                    goto retry;
+                }
+                throw;
+            }
+
+            return tpEntries;
+        }
+
+        private (byte[] iconSpritePng, string iconSpriteCss, Dictionary<string, (int x, int y)> coords) GenerateIconSprite()
+        {
+            const int cols = 40;   // number of icons per row
+            const int w = 32;   // width of an icon in pixels
+            const int h = 32;   // height of an icon in pixels
+
+            var iconFiles = new DirectoryInfo(Path.Combine(_config.BaseDir, "Icons")).EnumerateFiles("*.png", SearchOption.TopDirectoryOnly).OrderBy(file => file.Name != "blank.png").ToArray();
+            var rows = (iconFiles.Length + cols - 1) / cols;
+            var coords = new Dictionary<string, (int x, int y)>();
+            using var bmp = new Bitmap(w * cols, h * rows);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                for (int i = 0; i < iconFiles.Length; i++)
+                {
+                    using (var icon = new Bitmap(iconFiles[i].FullName))
+                        g.DrawImage(icon, w * (i % cols), h * (i / cols));
+                    coords.Add(Path.GetFileNameWithoutExtension(iconFiles[i].Name), (i % cols, i / cols));
+                }
+            }
+            using var mem = new MemoryStream();
+            bmp.Save(mem, ImageFormat.Png);
+
+            var iconSpritePng = mem.ToArray();
+            var iconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(iconSpritePng)})}}";
+            return (iconSpritePng, iconSpriteCss, coords);
         }
 
         private void mergeTPData(KtaneModuleInfo mod, JsonDict modJson, string scoreString)
