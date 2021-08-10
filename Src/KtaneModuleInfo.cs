@@ -50,6 +50,9 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;
 
+        [EditableField("Obsolete Steam IDs", "Numerical IDs of Steam Workshop items containing old versions of this mod that have since been reuploaded.", AllowedSeparators = new[] { ';', ',' })]
+        public string[] ObsoleteSteamIDs;
+
         [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes, even if rare.")]
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
         [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Compatibility setting above."), EditableIf(nameof(Compatibility), KtaneModuleCompatibility.Problematic, KtaneModuleCompatibility.Unplayable)]

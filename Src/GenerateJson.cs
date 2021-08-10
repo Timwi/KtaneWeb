@@ -54,7 +54,7 @@ namespace KtaneWeb
                         else if (fType == typeof(DateTime))
                             f.SetValue(obj, DateTime.ParseExact(val, "yyyy-MM-dd", null));
                         else if (fType == typeof(string[]))
-                            f.SetValue(obj, val.Split(';').Select(str => str.Trim()).ToArray().Apply(list => list.Length == 0 || (list.Length == 1 && string.IsNullOrWhiteSpace(list[0])) ? null : list));
+                            f.SetValue(obj, val.Split(attr.AllowedSeparators).Select(str => str.Trim()).ToArray().Apply(list => list.Length == 0 || (list.Length == 1 && string.IsNullOrWhiteSpace(list[0])) ? null : list));
                         else if (fType == typeof(int))
                             f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0 : int.Parse(val));
                         else if (fType == typeof(decimal))
