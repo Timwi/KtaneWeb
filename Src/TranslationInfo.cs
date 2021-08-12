@@ -144,7 +144,7 @@ namespace KtaneWeb
         public string displayDescription = "Description";
         public string displayDifficulty = "Difficulty";
         public string displayOrigin = "Origin";
-        public string displayTwitch = "Twitch support";
+        public string displayTwitch = "Twitch Plays score";
         public string displayTimeMode = "Time Mode score";
         public string displaySouvenir = "Souvenir support";
         public string displayRuleSeed = "Rule seed support";

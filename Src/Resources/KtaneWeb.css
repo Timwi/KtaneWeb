@@ -380,7 +380,7 @@ body.sort-expdiff #main-table th.infos::after {
 }
 
 body.sort-twitch-score #main-table th.infos::after {
-    content: '   • sorted by TP:KTANE score';
+    content: '   • sorted by Twitch Plays score';
 }
 
 body.sort-time-mode-score #main-table th.infos::after {
