@@ -61,6 +61,40 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
+const languageCodes = {
+    "Dansk": "da",
+    "Deutsch": "de",
+    "Eesti": "et",
+    "English": "en",
+    "Español": "es",
+    "Esperanto": "eo",
+    "Français": "fr",
+    "Italiano": "it",
+    "Magyar": "hu",
+    "Nederlands": "nl",
+    "Norsk": "no",
+    "Polski": "pl",
+    "Português": "pt-PT",
+    "Português do Brasil": "pt-BR",
+    "Suomi": "fi",
+    "Svenska": "sv",
+    "Türkçe": "tr",
+    "Čeština": "cs",
+    "Български": "bg",
+    "Русский": "ru",
+    "Українске": "uk",
+    "עברית": "he",
+    "العربية": "ar",
+    "ภาษาไทย": "th",
+    "日本語": "ja",
+    "简体中文": "zh-CN",
+    "繁體中文": "zh-TW",
+    "한국어": "ko",
+    "Frysk": "fy"
+};
+
+const languageCodesReverse = Object.fromEntries(Object.entries(languageCodes).map(([k, v]) => ([v, k])));
+
 function el(tagName, className, ...args)
 {
     const element = document.createElement(tagName);
@@ -88,38 +122,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 {
     for (let exception of moduleLoadExceptions)
         console.error(exception);
-
-    const languageCodes = {
-        "Dansk": "da",
-        "Deutsch": "de",
-        "Eesti": "et",
-        "English": "en",
-        "Español": "es",
-        "Esperanto": "eo",
-        "Français": "fr",
-        "Italiano": "it",
-        "Magyar": "hu",
-        "Nederlands": "nl",
-        "Norsk": "no",
-        "Polski": "pl",
-        "Português": "pt-PT",
-        "Português do Brasil": "pt-BR",
-        "Suomi": "fi",
-        "Svenska": "sv",
-        "Türkçe": "tr",
-        "Čeština": "cs",
-        "Български": "bg",
-        "Русский": "ru",
-        "Українске": "uk",
-        "עברית": "he",
-        "العربية": "ar",
-        "ภาษาไทย": "th",
-        "日本語": "ja",
-        "简体中文": "zh-CN",
-        "繁體中文": "zh-TW",
-        "한국어": "ko",
-        "Frysk": "fy"
-    };
 
     const TimeModeNames = {
         "Unassigned": "default",
@@ -516,10 +518,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 if (sel.ShowIconFunction(mod, mod.Manuals))
                                 {
                                     let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
-                                    let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
-                                    td.appendChild(lnkA);
-                                    if (sel.PropName === 'manual')
-                                        mod.FncsSetManualLink.push(url => { lnkA.href = url; });
+                                    if(sel.PropName === 'video') {
+                                        let lnkDiv = el("div", "dropdown", iconImg);
+                                        lnkDiv.addEventListener("click", makeTutorialPopupHandler(lnkDiv, sel.UrlFunction(mod)));
+                                        td.appendChild(lnkDiv);
+                                    } else {
+                                        let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
+                                        td.appendChild(lnkA);
+                                        if (sel.PropName === 'manual')
+                                            mod.FncsSetManualLink.push(url => { lnkA.href = url; });
+                                    }
                                 }
                             }
 
@@ -973,7 +981,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 for (let ix = 0; ix < initSelectables.length; ix++)
                 {
                     let sel = initSelectables[ix];
-                    if (sel.PropName === 'manual' || !sel.ShowIconFunction(mod, mod.Manuals))
+                    if (['manual', 'video'].includes(sel.PropName) || !sel.ShowIconFunction(mod, mod.Manuals))
                         continue;
                     var iconDiv = el('div', 'icon',
                         el('a', 'icon-link', { href: sel.UrlFunction(mod, mod.Manuals) },
@@ -1101,6 +1109,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].Name)
                     elem.classList.add('checked');
             }
+
+            if (isMobileOpt && mod.TutorialVideoUrl)
+            {
+                setTutorialList(menuDiv, mod.TutorialVideoUrl);
+            }
+
             menuDiv.appendChild(el('div', 'bottom-links',
                 el('div', null, el('a', null, { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')),
                 el('div', null, el('a', null, { href: '#', onclick: function() { setEditUi(mod); popup($(lnk), $('#module-ui')); return false; } }, `Edit this ${mod.Type === 'Widget' ? 'widget' : mod.Type === 'Holdable' ? 'holdable' : 'module'}`))));
@@ -1110,6 +1124,62 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             event.stopPropagation();
             return false;
         };
+    }
+
+    function makeTutorialPopupHandler(lnk, urls) {
+        return event => {
+            const numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p['data-lnk'] === lnk).length;
+            disappear();
+            if (numAlready)
+                return false;
+            const menuDiv = el('div', 'popup disappear tutorial-select', { 'style': 'display: block', onclick: function() { preventDisappear++; } });
+            menuDiv['data-lnk'] = lnk;
+            document.body.appendChild(menuDiv);
+            setTutorialList(menuDiv, urls)
+            $(menuDiv).position({ my: 'left top', at: 'left bottom', of: lnk, collision: 'fit none' });
+            event.stopPropagation();
+            return false;
+        }
+    }
+
+    function setTutorialList(menuDiv, urls) {
+
+        menuDiv.appendChild(el('h4', null, translation.selectableTutorial));
+        const tutorialMenu = el('div', 'tutorial-select');
+        const tutorialOrder = Object.keys(urls);
+        const langName = languageCodesReverse[translation.langCode];
+        tutorialOrder.sort((t1, t2) => {
+            const tt1 = t1 === "default" ? "English" : (t1.includes("-") || languageCodes[t1]) ? t1 : "English-" + t1;
+            const tt2 = t2 === "default" ? "English" : (t2.includes("-") || languageCodes[t2]) ? t2 : "English-" + t2;
+            if((tt1.startsWith(langName) && !tt2.startsWith(langName))) return -1;
+            if((tt2.startsWith(langName) && !tt1.startsWith(langName))) return 1;
+            return tt1.localeCompare(tt2);
+        });
+        for(let tutorialType of tutorialOrder) {
+            const tutorialTypeSplit = tutorialType.split("-");
+            const tutorialLang = tutorialTypeSplit.length > 1 || languageCodes.hasOwnProperty(tutorialType) ? tutorialTypeSplit[0] : "English";
+            let tutorialName = languageCodes.hasOwnProperty(tutorialType) || tutorialType === "default" ?
+                "":
+                tutorialTypeSplit.length > 1 ? tutorialTypeSplit[1] : tutorialTypeSplit[0];
+            if(tutorialName.length > 1) tutorialName = tutorialName[0].toUpperCase() + tutorialName.slice(1);
+
+            tutorialMenu.appendChild(
+                el('a', null, 
+                    {
+                        href: urls[tutorialType],
+                        target: "_blank",
+                        rel: "noreferrer noopener"
+                    },
+                    el('div', null, tutorialLang),
+                    el('div', null, tutorialName),
+                    el('div', null,
+                        el('img', 'icon', { title: "Tutorial video", alt: "Tutorial video", src: "HTML/img/video.png"})
+                    )
+                )
+            )
+        }
+        menuDiv.appendChild(tutorialMenu);
+
     }
 
     let languages = [];
@@ -1545,7 +1615,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     function setEditUi(mod)
     {
         let ui = document.getElementById('module-ui');
-        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,TutorialVideoUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,MysteryModule'.split(','))
+        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,MysteryModule'.split(','))
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
         if (document.getElementById('nested-Souvenir').checked = mod.Souvenir != undefined)
@@ -1553,6 +1623,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 ui.querySelector(`[name="${key}"]`).value = (mod.Souvenir[key] || '');
 
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
+        ui.querySelector(`[name="TutorialVideoUrl"]`).value = mod.TutorialVideoUrl ? Object.entries(mod.TutorialVideoUrl).map(([k, v]) => `${k}, ${v}`).join(';') : '';
         UpdateEditUiElements();
     }
     function UpdateEditUiElements()
@@ -1591,7 +1662,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         popup($('#tools-rel'), $('#module-ui'));
         return false;
     };
-    document.getElementById('generate-json').onclick = function()
+    document.getElementById('generate-json').onclick = function(e)
     {
         var form = document.getElementById('generate-json').form;
         if (form.Name.value === "")
@@ -1613,6 +1684,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         {
             alert("You must read and agree to the modkit license.");
             return false;
+        }
+        for(let el of document.querySelectorAll(".use-dict-editor"))
+        {
+            if(!el.value
+                .split(new RegExp(`(${el.dataset["allowedseparators"]})`))
+                .filter(str => !el.dataset["allowedseparators"].includes(str))
+                .every(str => new RegExp(`^[^${el.dataset["alloweddictseparators"]}]+(${el.dataset["alloweddictseparators"]})[^${el.dataset["alloweddictseparators"]}]+$`).test(str))
+            ) 
+            {
+                alert(`Invalid dict value for field ${el.getAttribute("name")}`);
+                return false;
+            }
         }
     };
     document.getElementById('show-license').onclick = function()

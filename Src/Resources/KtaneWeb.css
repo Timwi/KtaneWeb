@@ -417,6 +417,14 @@ body.sort-published #main-table th.infos::after {
     white-space: nowrap;
     width: 1px;
 }
+    #main-table td.selectable div.dropdown {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 12"><path fill="%233D3D3D" d="M0,0 8,0 4,8z" /></svg>');
+        background-repeat: no-repeat;
+        padding-right: 12px;
+        background-size: 12px 12px;
+        background-position: 30px center;
+        cursor: pointer;
+    }
 
     #main-table td.selectable.last {
         padding-right: .7em;
@@ -672,6 +680,35 @@ div.popup {
         div.popup div.manual-select div.last-updated {
             font-size: smaller;
         }
+
+        div.popup div.tutorial-select {
+            display: table;
+        }
+    
+            div.popup div.tutorial-select > a {
+                display: table-row;
+                text-decoration: none;
+                color: black;
+            }
+    
+                div.popup div.tutorial-select > a:hover {
+                    background: #ccf;
+                }
+    
+                div.popup div.tutorial-select > a > div {
+                    display: table-cell;
+                    vertical-align: middle;
+                    padding: .2em 1.2em;
+                }
+    
+                div.popup div.tutorial-select > a > div:nth-child(2) {
+                    font-size: small;
+                }
+    
+                div.popup div.tutorial-select > a > div > img.icon {
+                    width: 24px;
+                    height: 24px;
+                }
 
     div.popup h3, div.popup h4 {
         border-bottom: 1px solid #ccc;

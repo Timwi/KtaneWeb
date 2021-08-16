@@ -39,11 +39,15 @@ namespace KtaneWeb
         public string Explanation { get; private set; }
         public bool Multiline { get; set; }
         public char[] AllowedSeparators { get; set; }
+        public char[] AllowedDictSeparators { get; set; }
+        public string DefaultKey { get; set; }
         public EditableFieldAttribute(string readable, string explanation = null)
         {
             ReadableName = readable;
             Explanation = explanation;
             AllowedSeparators ??= new[] { ';' };
+            AllowedDictSeparators ??= new[] { ':' };
+            DefaultKey ??= "default";
         }
     }
 

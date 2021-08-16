@@ -165,6 +165,7 @@ namespace KtaneWeb
         public string linkOption = "Make links go to";
         public string languagesOption = "Languages";
         public string languagesToggle = "Toggle All Languages";
+        public string listTutorialVideos = "Tutorial Videos";
 
         [ClassifyIgnore]
         private KtaneFilter[] _filtersCache;
@@ -234,7 +235,7 @@ namespace KtaneWeb
                 Icon = "HTML/img/video.png",
                 PropName = "video",
                 UrlFunction = @"mod=>mod.TutorialVideoUrl",
-                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl",
+                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl && Object.keys(mod.TutorialVideoUrl).length > 0",
             });
 
         [ClassifyIgnore]
