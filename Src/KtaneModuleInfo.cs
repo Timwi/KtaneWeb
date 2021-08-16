@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -45,8 +46,8 @@ namespace KtaneWeb
         public string SourceUrl;
         [ClassifyIgnoreIf(KtaneModuleLicense.Restricted), EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
         public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
-        [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube).")]
-        public string TutorialVideoUrl;
+        [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube). If multiple, write pair of tutorial types and URL in the form of <type>,<URL> and list them separated with semi-colons.", AllowedSeparators = new[] { ';' }, AllowedDictSeparators = new[] { ',' })]
+        public Dictionary<string, string> TutorialVideoUrl;
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;
 
@@ -163,7 +164,7 @@ namespace KtaneWeb
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
-            if (TutorialVideoUrl == "")
+            if (TutorialVideoUrl != null && TutorialVideoUrl.Count == 0)
                 TutorialVideoUrl = null;
 
             if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Unexamined)
@@ -196,7 +197,17 @@ namespace KtaneWeb
         }
 
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
-        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
+        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) 
+        { 
+            if(element.ContainsKey("TutorialVideoUrl"))
+            {
+                var tutorialStr = element["TutorialVideoUrl"].GetStringSafe();
+                if(tutorialStr != null)
+                {
+                    element["TutorialVideoUrl"] = new JsonDict{ { "default", tutorialStr } };
+                }
+            }
+        }
         void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
     }
 

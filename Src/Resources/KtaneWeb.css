@@ -673,6 +673,35 @@ div.popup {
             font-size: smaller;
         }
 
+        div.popup div.tutorial-select {
+            display: table;
+        }
+    
+            div.popup div.tutorial-select > a {
+                display: table-row;
+                text-decoration: none;
+                color: black;
+            }
+    
+                div.popup div.tutorial-select > a:hover {
+                    background: #ccf;
+                }
+    
+                div.popup div.tutorial-select > a > div {
+                    display: table-cell;
+                    vertical-align: middle;
+                    padding: .2em 1.2em;
+                }
+    
+                div.popup div.tutorial-select > a > div:nth-child(2) {
+                    font-size: small;
+                }
+    
+                div.popup div.tutorial-select > a > div > img.icon {
+                    width: 24px;
+                    height: 24px;
+                }
+
     div.popup h3, div.popup h4 {
         border-bottom: 1px solid #ccc;
     }

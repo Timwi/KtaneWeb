@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using RT.Serialization;
@@ -55,6 +56,13 @@ namespace KtaneWeb
                             f.SetValue(obj, DateTime.ParseExact(val, "yyyy-MM-dd", null));
                         else if (fType == typeof(string[]))
                             f.SetValue(obj, val.Split(attr.AllowedSeparators).Select(str => str.Trim()).ToArray().Apply(list => list.Length == 0 || (list.Length == 1 && string.IsNullOrWhiteSpace(list[0])) ? null : list));
+                        else if (fType == typeof(Dictionary<string, string>))
+                        {
+                            if (!attr.AllowedDictSeparators.Any(sep => val.Contains(sep)))
+                                f.SetValue(obj, new Dictionary<string, string>() { { attr.DefaultKey, string.IsNullOrWhiteSpace(val) ? null : val.Trim() } });
+                            else
+                                f.SetValue(obj, val.Split(attr.AllowedSeparators).Select(str => str.Split(attr.AllowedDictSeparators)).ToDictionary(x => x[0].Trim(), x => x[1].Trim()));
+                        }
                         else if (fType == typeof(int))
                             f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0 : int.Parse(val));
                         else if (fType == typeof(decimal))

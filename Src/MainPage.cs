@@ -376,6 +376,10 @@ namespace KtaneWeb
                                     yield return new INPUT { type = itype.number, step = "1", value = "0", name = field.Name };
                                 else if (type == typeof(decimal))
                                     yield return new INPUT { type = itype.number, step = "0.01", value = "0", name = field.Name };
+                                else if (type == typeof(Dictionary<string, string>))
+                                    yield return new INPUT { type = itype.text, name = field.Name, class_ = "use-dict-editor" }
+                                        .Data("AllowedSeparators", new string(attr.AllowedSeparators))
+                                        .Data("AllowedDictSeparators", new string(attr.AllowedDictSeparators));
                                 else if (type == typeof(bool))
                                 {
                                     yield return new INPUT { type = itype.checkbox, name = field.Name, id = $"input-{field.Name}" };
