@@ -165,7 +165,7 @@ namespace KtaneWeb
         public string linkOption = "Make links go to";
         public string languagesOption = "Languages";
         public string languagesToggle = "Toggle All Languages";
-        public string listTutorialVideos = "TutorialVideos";
+        public string listTutorialVideos = "Tutorial Videos";
 
         [ClassifyIgnore]
         private KtaneFilter[] _filtersCache;
