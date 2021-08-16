@@ -539,14 +539,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                             let td2 = el("td", "infos-2");
                             tr.appendChild(td2);
-                            let infos = el("div", "infos", 
-                                el("div", "inf-type inf", translation["moduleType" + mod.Type + "S"] || translation["moduleType" + mod.Type] ||mod.Type),
+                            let infos = el("div", "infos",
+                                el("div", "inf-type inf", translation["moduleType" + mod.Type + "S"] || translation["moduleType" + mod.Type] || mod.Type),
                                 el("div", "inf-origin inf inf2", translation["origin" + mod.Origin] || mod.Origin));
                             if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
                             {
                                 function readable(difficulty)
                                 {
-                                    if(translation["moduleDiff" + difficulty]) return translation["moduleDiff" + difficulty];
+                                    if (translation["moduleDiff" + difficulty]) return translation["moduleDiff" + difficulty];
                                     var result = '';
                                     for (var i = 0; i < difficulty.length; i++)
                                     {
@@ -754,9 +754,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         min: $('div#filter-' + initFilters[i].id).slider('values', 0),
                         max: $('div#filter-' + initFilters[i].id).slider('values', 1)
                     };
-                    var x = function(str) {
-                        return translation["moduleDiff" + str] || str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim(); 
-                        
+                    var x = function(str)
+                    {
+                        return translation["moduleDiff" + str] || str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim();
+
                     };
                     var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
                     $('div#filter-label-' + initFilters[i].id).text(y(initFilters[i].values[filter[initFilters[i].id].min], initFilters[i].values[filter[initFilters[i].id].max]));
@@ -1293,34 +1294,56 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     switcherData.missionSheetsLoaded = true;
 
                     const spreadsheets = [
-                        { pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
-                        { pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' },    // Unsolved challenge missions (maintained by Espik/Burniel)
-                        { pid: '1pzoatn2mX1gtKurxt1OBejbutTrKq0kqO9dNohnu33Q', skipSheets: 1, css: 'tp' }                   // Twitch Plays challenge missions (maintained by Espik/Burniel)
+                        { name: 'solved', pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
+                        { name: 'unsolved', pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' },    // Unsolved challenge missions (maintained by Espik/Burniel)
+                        { name: 'TP', pid: '1pzoatn2mX1gtKurxt1OBejbutTrKq0kqO9dNohnu33Q', skipSheets: 1, css: 'tp' }                   // Twitch Plays challenge missions (maintained by Espik/Burniel)
                     ];
 
                     const sel = document.getElementById('search-field-mission');
                     sel.innerHTML = '<option value="">Loading...</option>';
                     let sheets = [];
 
+                    let delay = 1;
                     for (let spreadsheet of spreadsheets)
                     {
-                        $.get(`https://spreadsheets.google.com/feeds/worksheets/${spreadsheet.pid}/public/full?alt=json`, result =>
+                        let attempts = 5;
+                        let attemptLoadSheet = function()
                         {
-                            let prevValue = sel.value;
-                            sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets)
-                                .map(obj =>
+                            console.log(`Loading ${spreadsheet.name} sheet (${attempts} attempts)...`);
+                            $.get(`https://spreadsheets.google.com/feeds/worksheets/${spreadsheet.pid}/public/full?alt=json`, result =>
+                            {
+                                console.log(`Loading ${spreadsheet.name} sheet: success`);
+                                let prevValue = sel.value;
+                                sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets)
+                                    .map(obj =>
+                                    {
+                                        let urltag = null, m;
+                                        for (let lnk of obj.link)
+                                            if ((m = /\?gid=(\d+)&/.exec(lnk.href)) !== null)
+                                                urltag = m[1];
+                                        return { pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t, css: spreadsheet.css, urltag: urltag };
+                                    }));
+                                sheets.sort((a, b) => a.title.localeCompare(b.title));
+                                sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}/${sh.urltag}"></option>`).join('');
+                                Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
+                                sel.value = prevValue;
+                            }, 'json')
+                                .fail(function()
                                 {
-                                    let urltag = null, m;
-                                    for (let lnk of obj.link)
-                                        if ((m = /\?gid=(\d+)&/.exec(lnk.href)) !== null)
-                                            urltag = m[1];
-                                    return { pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t, css: spreadsheet.css, urltag: urltag };
-                                }));
-                            sheets.sort((a, b) => a.title.localeCompare(b.title));
-                            sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}/${sh.urltag}"></option>`).join('');
-                            Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
-                            sel.value = prevValue;
-                        }, 'json');
+                                    if (attempts-- > 0)
+                                    {
+                                        console.log(`Loading ${spreadsheet.name} sheet: failure, retrying`);
+                                        setTimeout(attemptLoadSheet, 700);
+                                    }
+                                    else
+                                    {
+                                        console.log(`Loading ${spreadsheet.name} sheet: failure, giving up`);
+                                        alert(`Google Sheets is not letting me load the ${spreadsheet.name} missions sheet.`);
+                                    }
+                                });
+                        };
+                        setTimeout(attemptLoadSheet, delay);
+                        delay += 700;
                     }
 
                     sel.onchange = function()

@@ -239,21 +239,21 @@ namespace KtaneWeb
 
     sealed class ContributorInfo : IEquatable<ContributorInfo>
     {
-        [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed (programmed) the mod.")]
+        [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed (programmed) the mod.", AllowedSeparators = new[] { ',', ';' })]
         public string[] Developer;
-        [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual. (Include only if different from Developer.)")]
+        [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] Manual;
-        [ClassifyIgnoreIfDefault, ClassifyName("Manual graphics"), EditableField("Manual graphics", "People who contributed graphics for the manual. (Include only if different from Manual contributors.)")]
+        [ClassifyIgnoreIfDefault, ClassifyName("Manual graphics"), EditableField("Manual graphics", "People who contributed graphics for the manual. (Include only if different from Manual contributors.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] ManualGraphics;
-        [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support. (Include only if different from Developer.)")]
+        [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] TwitchPlays;
-        [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the mod. (Include only if different from Developer.)")]
+        [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] Maintainer;
-        [ClassifyIgnoreIfDefault, EditableField("Audio", "People who contributed audio for the mod. (Include only if different from Developer.)")]
+        [ClassifyIgnoreIfDefault, EditableField("Audio", "People who contributed audio for the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] Audio;
-        [ClassifyIgnoreIfDefault, EditableField("Modeling", "People who contributed 3D models for the mod. (Include only if different from Developer.)")]
+        [ClassifyIgnoreIfDefault, EditableField("Modeling", "People who contributed 3D models for the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] Modeling;
-        [ClassifyIgnoreIfDefault, EditableField("Idea", "People who contributed the original idea for the mod. (Include only if different from both Developer and Manual.)")]
+        [ClassifyIgnoreIfDefault, EditableField("Idea", "People who contributed the original idea for the mod. (Include only if different from both Developer and Manual.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] Idea;
 
         public string ToAuthorString() => new[] { Developer, Manual }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
