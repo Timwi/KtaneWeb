@@ -417,6 +417,14 @@ body.sort-published #main-table th.infos::after {
     white-space: nowrap;
     width: 1px;
 }
+    #main-table td.selectable div.dropdown {
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 12"><path fill="%233D3D3D" d="M0,0 8,0 4,8z" /></svg>');
+        background-repeat: no-repeat;
+        padding-right: 12px;
+        background-size: 12px 12px;
+        background-position: 30px center;
+        cursor: pointer;
+    }
 
     #main-table td.selectable.last {
         padding-right: .7em;
