@@ -173,6 +173,14 @@ namespace KtaneWeb
             _moduleInfoCache = moduleInfoCache;
         }
 
+        private JsonList getJsonFromSheets(string sheetId)
+        {
+            var response = new HClient().Get($"https://docs.google.com/spreadsheets/d/{sheetId}/gviz/tq?tqx=out:json").DataString;
+            var match = Regex.Match(response, @"google.visualization.Query.setResponse\((.+)\)").Groups[1].Value;
+            var json = JsonValue.Parse(match);
+            return json["feed"]["entry"].GetList();
+        }
+
         private JsonList LoadTimeModeDataFromGoogleSheets()
         {
             var attempts = 4;
@@ -181,7 +189,7 @@ namespace KtaneWeb
             try
             {
                 Log.Info($"Loading Time Mode spreadsheet (attempt {5 - attempts}/5)");
-                timeModeEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+                timeModeEntries = getJsonFromSheets("16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM");
                 Log.Info($"Loading Time Mode spreadsheet: SUCCESS");
             }
             catch
@@ -205,7 +213,7 @@ namespace KtaneWeb
             try
             {
                 Log.Info($"Loading TP spreadsheet (attempt {5 - attempts}/5)");
-                tpEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+                tpEntries = getJsonFromSheets("1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA");
                 Log.Info($"Loading TP spreadsheet: SUCCESS");
             }
             catch
