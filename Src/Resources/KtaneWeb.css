@@ -2,7 +2,7 @@
 body {
     max-width: 66em;
     margin: 0 auto;
-    font-family: 'Trebuchet MS', sans-serif;
+    font-family: 'Lato', sans-serif;
     font-size: 13pt;
 }
 
@@ -1088,7 +1088,6 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 @media screen and (max-width: 650px) {
 
     body {
-        font-family: 'Trebuchet MS', sans-serif;
         margin-bottom: 1em;
     }
 
