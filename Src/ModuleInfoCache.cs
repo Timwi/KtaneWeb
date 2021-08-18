@@ -41,10 +41,10 @@ namespace KtaneWeb
             JsonValue contactInfoJson = null;
 
             var tasks = Ut.NewArray<(string name, Action action)>(
-                ("Generate icon sprite", () => (moduleInfoCache.IconSpritePng, moduleInfoCache.IconSpriteCss, coords) = GenerateIconSprite()),
-                ("Retrieve TP data from Google Sheets", () => tpEntries = LoadTpDataFromGoogleSheets()),
-                ("Retrieve Time Mode data from Google Sheets", () => timeModeEntries = LoadTimeModeDataFromGoogleSheets()),
-                ("Load contact info", () => contactInfoJson = JsonValue.Parse(File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json")))));
+                ("Generating icon sprite", () => (moduleInfoCache.IconSpritePng, moduleInfoCache.IconSpriteCss, coords) = GenerateIconSprite()),
+                ("Retrieving TP data from Google Sheets", () => tpEntries = LoadTpDataFromGoogleSheets()),
+                ("Retrieving Time Mode data from Google Sheets", () => timeModeEntries = LoadTimeModeDataFromGoogleSheets()),
+                ("Loading contact info", () => contactInfoJson = JsonValue.Parse(File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json")))));
 
             tasks.ParallelForEach(tup =>
             {
@@ -53,6 +53,7 @@ namespace KtaneWeb
                 {
                     lock (exceptions)
                     {
+                        Log.Error($"{tup.name} ERROR:");
                         Log.Exception(e);
                         exceptions.Add($"{tup.name} ERROR: {e.Message} ({e.GetType().FullName})");
                     }
@@ -174,12 +175,14 @@ namespace KtaneWeb
 
         private JsonList LoadTimeModeDataFromGoogleSheets()
         {
+            var attempts = 4;
             retry:
-            var attempts = 5;
             JsonList timeModeEntries;
             try
             {
+                Log.Info($"Loading Time Mode spreadsheet (attempt {5 - attempts}/5)");
                 timeModeEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+                Log.Info($"Loading Time Mode spreadsheet: SUCCESS");
             }
             catch
             {
@@ -196,12 +199,14 @@ namespace KtaneWeb
 
         private JsonList LoadTpDataFromGoogleSheets()
         {
+            var attempts = 4;
             retry:
-            var attempts = 5;
             JsonList tpEntries;
             try
             {
+                Log.Info($"Loading TP spreadsheet (attempt {5 - attempts}/5)");
                 tpEntries = new HClient().Get("https://spreadsheets.google.com/feeds/list/1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA/1/public/values?alt=json").DataJson["feed"]["entry"].GetList();
+                Log.Info($"Loading TP spreadsheet: SUCCESS");
             }
             catch
             {
