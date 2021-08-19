@@ -417,6 +417,7 @@ body.sort-published #main-table th.infos::after {
     white-space: nowrap;
     width: 1px;
 }
+
     #main-table td.selectable div.dropdown {
         background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 12"><path fill="%233D3D3D" d="M0,0 8,0 4,8z" /></svg>');
         background-repeat: no-repeat;
@@ -681,30 +682,34 @@ div.popup {
             font-size: smaller;
         }
 
-        div.popup div.tutorial-select {
-            display: table;
+    div.popup.tutorial-select {
+        padding: 1em;
+    }
+
+    div.popup div.tutorial-select {
+        display: table;
+    }
+
+        div.popup div.tutorial-select > a {
+            display: table-row;
+            text-decoration: none;
+            color: black;
         }
-    
-            div.popup div.tutorial-select > a {
-                display: table-row;
-                text-decoration: none;
-                color: black;
+
+            div.popup div.tutorial-select > a:hover {
+                background: #ccf;
             }
-    
-                div.popup div.tutorial-select > a:hover {
-                    background: #ccf;
-                }
-    
-                div.popup div.tutorial-select > a > div {
-                    display: table-cell;
-                    vertical-align: middle;
-                    padding: .2em 1.2em;
-                }
-    
+
+            div.popup div.tutorial-select > a > div {
+                display: table-cell;
+                vertical-align: middle;
+                padding: .2em 1.2em;
+            }
+
                 div.popup div.tutorial-select > a > div:nth-child(2) {
                     font-size: small;
                 }
-    
+
                 div.popup div.tutorial-select > a > div > img.icon {
                     width: 24px;
                     height: 24px;
@@ -1410,6 +1415,10 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         div.popup div.module-further-info + div.module-further-info {
             border-top: none;
         }
+
+    div.popup div.tutorial-videos {
+        border-top: 1px solid #ccc;
+    }
 
     #more div.highlighting-controls {
         display: none;

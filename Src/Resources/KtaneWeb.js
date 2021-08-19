@@ -518,11 +518,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 if (sel.ShowIconFunction(mod, mod.Manuals))
                                 {
                                     let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
-                                    if(sel.PropName === 'video') {
+                                    if (sel.PropName === 'video' && Object.keys(mod.TutorialVideoUrl).length > 1)
+                                    {
                                         let lnkDiv = el("div", "dropdown", iconImg);
-                                        lnkDiv.addEventListener("click", makeTutorialPopupHandler(lnkDiv, sel.UrlFunction(mod)));
+                                        lnkDiv.addEventListener("click", makeTutorialPopupHandler(lnkDiv, mod.TutorialVideoUrl));
                                         td.appendChild(lnkDiv);
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         let lnkA = el("a", sel.CssClass, { href: sel.UrlFunction(mod, mod.Manuals) }, iconImg);
                                         td.appendChild(lnkA);
                                         if (sel.PropName === 'manual')
@@ -1112,7 +1115,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
             if (isMobileOpt && mod.TutorialVideoUrl)
             {
-                setTutorialList(menuDiv, mod.TutorialVideoUrl);
+                let vidDiv = el('div', 'tutorial-videos');
+                menuDiv.appendChild(vidDiv);
+                setTutorialList(vidDiv, mod.TutorialVideoUrl);
             }
 
             menuDiv.appendChild(el('div', 'bottom-links',
@@ -1126,8 +1131,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         };
     }
 
-    function makeTutorialPopupHandler(lnk, urls) {
-        return event => {
+    function makeTutorialPopupHandler(lnk, urls)
+    {
+        return event =>
+        {
             const numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p['data-lnk'] === lnk).length;
             disappear();
             if (numAlready)
@@ -1142,41 +1149,36 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         }
     }
 
-    function setTutorialList(menuDiv, urls) {
-
-        menuDiv.appendChild(el('h4', null, translation.selectableTutorial));
+    function setTutorialList(menuDiv, urls)
+    {
+        menuDiv.appendChild(el('h5', null, translation.selectableTutorial));
         const tutorialMenu = el('div', 'tutorial-select');
         const tutorialOrder = Object.keys(urls);
         const langName = languageCodesReverse[translation.langCode];
-        tutorialOrder.sort((t1, t2) => {
+        tutorialOrder.sort((t1, t2) =>
+        {
             const tt1 = t1 === "default" ? "English" : (t1.includes("-") || languageCodes[t1]) ? t1 : "English-" + t1;
             const tt2 = t2 === "default" ? "English" : (t2.includes("-") || languageCodes[t2]) ? t2 : "English-" + t2;
-            if((tt1.startsWith(langName) && !tt2.startsWith(langName))) return -1;
-            if((tt2.startsWith(langName) && !tt1.startsWith(langName))) return 1;
+            if ((tt1.startsWith(langName) && !tt2.startsWith(langName))) return -1;
+            if ((tt2.startsWith(langName) && !tt1.startsWith(langName))) return 1;
             return tt1.localeCompare(tt2);
         });
-        for(let tutorialType of tutorialOrder) {
+        for (let tutorialType of tutorialOrder)
+        {
             const tutorialTypeSplit = tutorialType.split("-");
             const tutorialLang = tutorialTypeSplit.length > 1 || languageCodes.hasOwnProperty(tutorialType) ? tutorialTypeSplit[0] : "English";
-            let tutorialName = languageCodes.hasOwnProperty(tutorialType) || tutorialType === "default" ?
-                "":
-                tutorialTypeSplit.length > 1 ? tutorialTypeSplit[1] : tutorialTypeSplit[0];
-            if(tutorialName.length > 1) tutorialName = tutorialName[0].toUpperCase() + tutorialName.slice(1);
+            let tutorialName =
+                languageCodes.hasOwnProperty(tutorialType) || tutorialType === "default" ? "" :
+                    tutorialTypeSplit.length > 1 ? tutorialTypeSplit[1] : tutorialTypeSplit[0];
+            if (tutorialName.length > 1)
+                tutorialName = tutorialName[0].toUpperCase() + tutorialName.slice(1);
 
             tutorialMenu.appendChild(
-                el('a', null, 
-                    {
-                        href: urls[tutorialType],
-                        target: "_blank",
-                        rel: "noreferrer noopener"
-                    },
+                el('a', null,
+                    { href: urls[tutorialType] },
                     el('div', null, tutorialLang),
                     el('div', null, tutorialName),
-                    el('div', null,
-                        el('img', 'icon', { title: "Tutorial video", alt: "Tutorial video", src: "HTML/img/video.png"})
-                    )
-                )
-            )
+                    el('div', null, el('img', 'icon', { title: "Tutorial video", alt: "Tutorial video", src: "HTML/img/video.png" }))));
         }
         menuDiv.appendChild(tutorialMenu);
 
@@ -1685,9 +1687,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             alert("You must read and agree to the modkit license.");
             return false;
         }
-        for(let el of document.querySelectorAll(".use-dict-editor"))
+        for (let el of document.querySelectorAll(".use-dict-editor"))
         {
-            if(!el.value
+            if (!el.value
                 .split(new RegExp(`(${el.dataset["allowedseparators"]})`))
                 .filter(str => !el.dataset["allowedseparators"].includes(str))
                 .every(str => new RegExp(`^[^${el.dataset["alloweddictseparators"]}]+(${el.dataset["alloweddictseparators"]})[^${el.dataset["alloweddictseparators"]}]+$`).test(str))

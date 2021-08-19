@@ -138,7 +138,7 @@ namespace KtaneWeb
         public string selectableManual = "Manual";
         public string selectableSteam = "Steam Workshop";
         public string selectableSource = "Source code";
-        public string selectableTutorial = "Tutorial video";
+        public string selectableTutorial = "Tutorial videos";
         public string displayOption = "Display";
         public string displayOriginalName = "Original Name";
         public string displayDescription = "Description";
@@ -234,7 +234,7 @@ namespace KtaneWeb
                 Accel = 'T',
                 Icon = "HTML/img/video.png",
                 PropName = "video",
-                UrlFunction = @"mod=>mod.TutorialVideoUrl",
+                UrlFunction = @"mod=>mod.TutorialVideoUrl[Object.keys(mod.TutorialVideoUrl)[0]]",
                 ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl && Object.keys(mod.TutorialVideoUrl).length > 0",
             });
 
