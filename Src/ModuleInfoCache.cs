@@ -35,7 +35,7 @@ namespace KtaneWeb
         private void generateModuleInfoCache()
         {
             var moduleInfoCache = new ModuleInfoCache();
-            JsonList tpEntries = null, timeModeEntries = null;
+            Dictionary<string, string>[] tpEntries = null, timeModeEntries = null;
             Dictionary<string, (int x, int y)> coords = null;
             var exceptions = new JsonList();
             JsonValue contactInfoJson = null;
@@ -135,14 +135,14 @@ namespace KtaneWeb
                 static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
 
                 // Merge in Time Mode data
-                var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
+                var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
                 if (timeModeEntry != null)
                     mergeTimeModeData(mod, modJson, timeModeEntry);
 
                 // Merge in TP data
-                var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["gsx$modulename"]["$t"].GetString()) == normalize(mod.DisplayName ?? mod.Name));
+                var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
                 if (tpEntry != null)
-                    mergeTPData(mod, modJson, tpEntry["gsx$tpscore"]["$t"].GetString());
+                    mergeTPData(mod, modJson, tpEntry["tpscore"]);
 
                 // Sheets and iconsprite coordinates
                 var fileName = getFileName(modJson, mod);
@@ -173,23 +173,66 @@ namespace KtaneWeb
             _moduleInfoCache = moduleInfoCache;
         }
 
-        private JsonList getJsonFromSheets(string sheetId)
+#pragma warning disable CS0649
+        private class SheetResponse
+        {
+            public Table table;
+
+            public class Table
+            {
+                public Column[] cols;
+                public Row[] rows;
+                public class Column
+                {
+                    public string label;
+                }
+
+                public class Row
+                {
+                    public Value[] c;
+
+                    public class Value
+                    {
+                        public string v;
+                    }
+                }
+            }
+	    }
+#pragma warning restore CS0649
+
+        private IEnumerable<Dictionary<string, string>> getJsonFromSheets(string sheetId)
         {
             var response = new HClient().Get($"https://docs.google.com/spreadsheets/d/{sheetId}/gviz/tq?tqx=out:json").DataString;
             var match = Regex.Match(response, @"google.visualization.Query.setResponse\((.+)\)").Groups[1].Value;
-            var json = JsonValue.Parse(match);
-            return json["feed"]["entry"].GetList();
+
+            var sheetResponse = ClassifyJson.Deserialize<SheetResponse>(match);
+            if (sheetResponse == null)
+                yield break;
+
+            var table = sheetResponse.table;
+            var columns = table.cols.Select(column => Regex.Replace(column.label.ToLowerInvariant(), "[^a-z]", "")).ToArray();
+
+            foreach (var row in table.rows)
+            {
+                var dictionary = new Dictionary<string, string>();
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    dictionary[columns[i]] = row.c[i]?.v ?? "";
+                }
+
+                yield return dictionary;
+            }
         }
 
-        private JsonList LoadTimeModeDataFromGoogleSheets()
+        private Dictionary<string, string>[] LoadTimeModeDataFromGoogleSheets()
         {
             var attempts = 4;
             retry:
-            JsonList timeModeEntries;
+            Dictionary<string, string>[] timeModeEntries;
             try
             {
                 Log.Info($"Loading Time Mode spreadsheet (attempt {5 - attempts}/5)");
-                timeModeEntries = getJsonFromSheets("16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM");
+                timeModeEntries = getJsonFromSheets("16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM").ToArray();
                 Log.Info($"Loading Time Mode spreadsheet: SUCCESS");
             }
             catch
@@ -205,15 +248,15 @@ namespace KtaneWeb
             return timeModeEntries;
         }
 
-        private JsonList LoadTpDataFromGoogleSheets()
+        private Dictionary<string, string>[] LoadTpDataFromGoogleSheets()
         {
             var attempts = 4;
             retry:
-            JsonList tpEntries;
+            Dictionary<string, string>[] tpEntries;
             try
             {
                 Log.Info($"Loading TP spreadsheet (attempt {5 - attempts}/5)");
-                tpEntries = getJsonFromSheets("1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA");
+                tpEntries = getJsonFromSheets("1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA").ToArray();
                 Log.Info($"Loading TP spreadsheet: SUCCESS");
             }
             catch
@@ -321,13 +364,13 @@ namespace KtaneWeb
             modJson["TwitchPlays"]["ScoreStringDescription"] = parts.JoinString(" + ");
         }
 
-        private void mergeTimeModeData(KtaneModuleInfo mod, JsonValue modJson, JsonValue entry)
+        private void mergeTimeModeData(KtaneModuleInfo mod, JsonValue modJson, Dictionary<string, string> entry)
         {
             // Get score strings
-            string scoreString = entry["gsx$resolvedscore"]["$t"].GetString().Trim();
+            string scoreString = entry["resolvedscore"].Trim();
             if (string.IsNullOrEmpty(scoreString))
                 scoreString = "10";
-            string scorePerModuleString = entry["gsx$resolvedbosspointspermodule"]["$t"].GetString() ?? "";
+            string scorePerModuleString = entry["resolvedbosspointspermodule"] ?? "";
 
             if (mod.TimeMode == null)
                 mod.TimeMode = new KtaneTimeModeInfo();
@@ -335,11 +378,11 @@ namespace KtaneWeb
             var timeMode = mod.TimeMode;
 
             // Determine the score orign
-            if (!string.IsNullOrEmpty(entry["gsx$assignedscore"]["$t"].GetString()))
+            if (!string.IsNullOrEmpty(entry["assignedscore"]))
                 timeMode.Origin = KtaneTimeModeOrigin.Assigned;
-            else if (!string.IsNullOrEmpty(entry["gsx$communityscore"]["$t"].GetString()))
+            else if (!string.IsNullOrEmpty(entry["communityscore"]))
                 timeMode.Origin = KtaneTimeModeOrigin.Community;
-            else if (!string.IsNullOrEmpty(entry["gsx$tpscore"]["$t"].GetString().Trim()))
+            else if (!string.IsNullOrEmpty(entry["tpscore"].Trim()))
                 timeMode.Origin = KtaneTimeModeOrigin.TwitchPlays;
             else
                 timeMode.Origin = KtaneTimeModeOrigin.Unassigned;
