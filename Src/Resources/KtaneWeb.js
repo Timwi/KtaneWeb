@@ -1,3 +1,5 @@
+const SHEETS_KEY = "AIzaSyA7OsUUdO1ZfOolQ1P_dHb8T8EJqUeyowk";
+
 // Handle access to localStorage
 var lStorage = localStorage;
 
@@ -1366,10 +1368,20 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     switcherData.missionSheetsLoaded = true;
 
                     const spreadsheets = [
-                        { name: 'solved', pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
+                        { name: 'solved', pid: '1psNffrGOnWh1LN3RrpoRh6PI-F_2EB9lwRAiFkOwhsk', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
                         { name: 'unsolved', pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' },    // Unsolved challenge missions (maintained by Espik/Burniel)
                         { name: 'TP', pid: '1pzoatn2mX1gtKurxt1OBejbutTrKq0kqO9dNohnu33Q', skipSheets: 1, css: 'tp' }                   // Twitch Plays challenge missions (maintained by Espik/Burniel)
                     ];
+
+                    function getSheetRange(props) {
+                        const raw = `'${props.title.replaceAll("'", "''")}'!R3C12:R${props.gridProperties.rowCount}C12`;
+
+                        return raw
+                            .replaceAll('"', '%22')
+                            .replaceAll('+', '%2B')
+                            .replaceAll('/', '%2F')
+                            .replaceAll('?', '%3F')
+                    }
 
                     const sel = document.getElementById('search-field-mission');
                     sel.innerHTML = '<option value="">Loading...</option>';
@@ -1382,18 +1394,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         let attemptLoadSheet = function()
                         {
                             console.log(`Loading ${spreadsheet.name} sheet (${attempts} attempts)...`);
-                            $.get(`https://spreadsheets.google.com/feeds/worksheets/${spreadsheet.pid}/public/full?alt=json`, result =>
+                            $.get(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet.pid}?includeGridData=false&key=${SHEETS_KEY}`, result =>
                             {
                                 console.log(`Loading ${spreadsheet.name} sheet: success`);
                                 let prevValue = sel.value;
-                                sheets.push(...result.feed.entry.slice(spreadsheet.skipSheets)
+                                sheets.push(...result.sheets.slice(spreadsheet.skipSheets)
                                     .map(obj =>
                                     {
-                                        let urltag = null, m;
-                                        for (let lnk of obj.link)
-                                            if ((m = /\?gid=(\d+)&/.exec(lnk.href)) !== null)
-                                                urltag = m[1];
-                                        return { pid: spreadsheet.pid, cid: obj.id.$t.substr(obj.id.$t.lastIndexOf('/') + 1), title: obj.title.$t, css: spreadsheet.css, urltag: urltag };
+                                        const props = obj.properties;
+                                        const urltag = props.sheetId;
+                                        return { pid: spreadsheet.pid, cid: getSheetRange(props), title: props.title, css: spreadsheet.css, urltag: urltag };
                                     }));
                                 sheets.sort((a, b) => a.title.localeCompare(b.title));
                                 sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}/${sh.urltag}"></option>`).join('');
@@ -1435,12 +1445,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         }
                         else if (val !== '')
                         {
-                            $.get(`https://spreadsheets.google.com/feeds/cells/${pid}/${cid}/public/full?alt=json`, result =>
+                            $.get(`https://sheets.googleapis.com/v4/spreadsheets/${pid}/values/${cid}?key=${SHEETS_KEY}`, result =>
                             {
+                                console.log(result);
                                 let newMissionList = new Set();
                                 let m;
-                                for (let obj of result.feed.entry)
-                                    if ((obj.gs$cell.col | 0) === 12 && (obj.gs$cell.row | 0) >= 3 && (m = /^\[(.*)\] Count: \d+$/s.exec(obj.content.$t)) !== null)
+                                for (let obj of result.values)
+                                    if ((m = /^\[(.*)\] Count: \d+$/s.exec(obj.length > 0 ? obj[0] : '')) !== null)
                                         for (let modId of m[1].split(','))
                                             newMissionList.add(modId.trim());
                                 switcherData.missions[val] = newMissionList;
