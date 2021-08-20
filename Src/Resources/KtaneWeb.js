@@ -1368,7 +1368,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     switcherData.missionSheetsLoaded = true;
 
                     const spreadsheets = [
-                        { name: 'solved', pid: '1psNffrGOnWh1LN3RrpoRh6PI-F_2EB9lwRAiFkOwhsk', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
+                        { name: 'solved', pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
                         { name: 'unsolved', pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' },    // Unsolved challenge missions (maintained by Espik/Burniel)
                         { name: 'TP', pid: '1pzoatn2mX1gtKurxt1OBejbutTrKq0kqO9dNohnu33Q', skipSheets: 1, css: 'tp' }                   // Twitch Plays challenge missions (maintained by Espik/Burniel)
                     ];
@@ -1447,7 +1447,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         {
                             $.get(`https://sheets.googleapis.com/v4/spreadsheets/${pid}/values/${cid}?key=${SHEETS_KEY}`, result =>
                             {
-                                console.log(result);
                                 let newMissionList = new Set();
                                 let m;
                                 for (let obj of result.values)
