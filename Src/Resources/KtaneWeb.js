@@ -1373,7 +1373,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         { name: 'TP', pid: '1pzoatn2mX1gtKurxt1OBejbutTrKq0kqO9dNohnu33Q', skipSheets: 1, css: 'tp' }                   // Twitch Plays challenge missions (maintained by Espik/Burniel)
                     ];
 
-                    function getSheetRange(props) {
+                    function getSheetRange(props)
+                    {
                         const raw = `'${props.title.replaceAll("'", "''")}'!R3C12:R${props.gridProperties.rowCount}C12`;
 
                         return raw

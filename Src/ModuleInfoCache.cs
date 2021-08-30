@@ -134,16 +134,6 @@ namespace KtaneWeb
 
                 static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
 
-                // Merge in Time Mode data
-                var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
-                if (timeModeEntry != null)
-                    mergeTimeModeData(mod, modJson, timeModeEntry);
-
-                // Merge in TP data
-                var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
-                if (tpEntry != null)
-                    mergeTPData(mod, modJson, tpEntry["tpscore"]);
-
                 // Sheets and iconsprite coordinates
                 var fileName = getFileName(modJson, mod);
                 if (mod.TranslationOf == null)
@@ -157,6 +147,44 @@ namespace KtaneWeb
                 var (x, y) = coords.Get(fileName, (x: 0, y: 0));
                 modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
                 modJson["Y"] = y;
+
+                try
+                {
+                    // Merge in Time Mode data
+                    var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
+                    if (timeModeEntry != null)
+                        mergeTimeModeData(mod, modJson, timeModeEntry);
+                }
+                catch (Exception e)
+                {
+#if DEBUG
+                    Console.WriteLine(mod.FileName);
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+#endif
+                    Log.Exception(e);
+                    exceptions.Add($"{mod.FileName} error reading Time Mode data: {e.Message}");
+                }
+
+                try
+                {
+                    // Merge in TP data
+                    var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
+                    if (tpEntry != null)
+                        mergeTPData(mod, modJson, tpEntry["tpscore"]);
+                }
+                catch (Exception e)
+                {
+#if DEBUG
+                    Console.WriteLine(mod.FileName);
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.GetType().FullName);
+                    Console.WriteLine(e.StackTrace);
+#endif
+                    Log.Exception(e);
+                    exceptions.Add($"{mod.FileName} error reading TP score data: {e.Message}");
+                }
             }
 
             moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
@@ -197,7 +225,7 @@ namespace KtaneWeb
                     }
                 }
             }
-	    }
+        }
 #pragma warning restore CS0649
 
         private IEnumerable<Dictionary<string, string>> getJsonFromSheets(string sheetId)
