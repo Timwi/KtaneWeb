@@ -520,7 +520,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 if (sel.ShowIconFunction(mod, mod.Manuals))
                                 {
                                     let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
-                                    if (sel.PropName === 'video' && Object.keys(mod.TutorialVideoUrl).length > 1)
+                                    if (sel.PropName === 'video' && (Object.keys(mod.TutorialVideoUrl).filter(key => key !== "default").length > 0))
                                     {
                                         let lnkDiv = el("div", "dropdown", iconImg);
                                         lnkDiv.addEventListener("click", makeTutorialPopupHandler(lnkDiv, mod.TutorialVideoUrl));
