@@ -58,7 +58,8 @@ namespace KtaneWeb
                             f.SetValue(obj, val.Split(attr.AllowedSeparators).Select(str => str.Trim()).ToArray().Apply(list => list.Length == 0 || (list.Length == 1 && string.IsNullOrWhiteSpace(list[0])) ? null : list));
                         else if (fType == typeof(Dictionary<string, string>))
                         {
-                            if (!attr.AllowedDictSeparators.Any(sep => val.Contains(sep)))
+                            if (val.Trim() == "") continue;
+                            else if (!attr.AllowedDictSeparators.Any(sep => val.Contains(sep)))
                                 f.SetValue(obj, new Dictionary<string, string>() { { attr.DefaultKey, string.IsNullOrWhiteSpace(val) ? null : val.Trim() } });
                             else
                                 f.SetValue(obj, val.Split(attr.AllowedSeparators).Select(str => str.Split(attr.AllowedDictSeparators)).ToDictionary(x => x[0].Trim(), x => x[1].Trim()));
