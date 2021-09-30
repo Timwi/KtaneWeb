@@ -468,7 +468,7 @@ body.sort-published #main-table th.infos::after {
             border-top-right-radius: .5em;
             text-decoration: none;
             color: #024;
-            padding: .18em .5em .15em 28px;
+            padding: 0 .5em .115em 28px;
             margin-left: .2em;
             vertical-align: bottom;
             background-size: 20px 20px;

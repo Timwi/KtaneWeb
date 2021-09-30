@@ -60,6 +60,7 @@ namespace KtaneWeb
         public string ignoredTableAnchor = "Table of ignored modules";
         public string tfcAnchor = "Text Field Calculator";
         public string puzzleAnchor = "PUZZLE";
+        public string quizAnchor = "QUIZZES";
         public string controlHeader = "Controls to highlight elements in HTML manuals";
         public string[][] controls = {
             new string[] { "Highlight a table column", "Ctrl+Click (Windows)", "Command+Click (Mac)" },
