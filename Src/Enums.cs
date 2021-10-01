@@ -44,14 +44,12 @@
 
     public enum KtaneModuleCompatibility
     {
-        [KtaneFilterOption("Untested")]
-        Untested,
-        [KtaneFilterOption("Unplayable")]
-        Unplayable,
-        [KtaneFilterOption("Problematic")]
-        Problematic,
         [KtaneFilterOption("Compatible")]
         Compatible,
+        [KtaneFilterOption("Problematic")]
+        Problematic,
+        [KtaneFilterOption("Unplayable")]
+        Unplayable
     }
 
     public enum KtaneModuleSouvenir

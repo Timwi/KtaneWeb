@@ -54,8 +54,8 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Obsolete Steam IDs", "Numerical IDs of Steam Workshop items containing old versions of this mod that have since been reuploaded.", AllowedSeparators = new[] { ';', ',' })]
         public string[] ObsoleteSteamIDs;
 
-        [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes, even if rare.")]
-        public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Untested;
+        [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes or softlocked games, even if rare.")]
+        public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Compatible;
         [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Compatibility setting above."), EditableIf(nameof(Compatibility), KtaneModuleCompatibility.Problematic, KtaneModuleCompatibility.Unplayable)]
         public string CompatibilityExplanation = null;
         [EditableField("Published", "The date of publication.")]
@@ -164,6 +164,9 @@ namespace KtaneWeb
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
+            if (Type != KtaneModuleType.Regular)
+                Souvenir = new KtaneSouvenirInfo { Status = KtaneModuleSouvenir.NotACandidate };
+
             if (TutorialVideoUrl != null && TutorialVideoUrl.Count == 0)
                 TutorialVideoUrl = null;
 
@@ -197,14 +200,14 @@ namespace KtaneWeb
         }
 
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
-        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) 
-        { 
-            if(element.ContainsKey("TutorialVideoUrl"))
+        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element)
+        {
+            if (element.ContainsKey("TutorialVideoUrl"))
             {
                 var tutorialStr = element["TutorialVideoUrl"].GetStringSafe();
-                if(tutorialStr != null)
+                if (tutorialStr != null)
                 {
-                    element["TutorialVideoUrl"] = new JsonDict{ { "default", tutorialStr } };
+                    element["TutorialVideoUrl"] = new JsonDict { { "default", tutorialStr } };
                 }
             }
         }
