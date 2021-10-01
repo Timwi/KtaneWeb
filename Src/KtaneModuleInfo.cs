@@ -164,13 +164,12 @@ namespace KtaneWeb
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
-            if (Souvenir != null && Type != KtaneModuleType.Regular)
-                Souvenir = new KtaneSouvenirInfo { Status = KtaneModuleSouvenir.NotACandidate };
-
             if (TutorialVideoUrl != null && TutorialVideoUrl.Count == 0)
                 TutorialVideoUrl = null;
 
-            if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Unexamined)
+            if (Type != KtaneModuleType.Regular)
+                Souvenir = new KtaneSouvenirInfo { Status = KtaneModuleSouvenir.NotACandidate };
+            else if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Unexamined)
                 Souvenir = null;
             else if (Souvenir != null && Souvenir.Status != KtaneModuleSouvenir.Considered)
                 Souvenir.Explanation = null;
@@ -189,6 +188,8 @@ namespace KtaneWeb
         {
             if (element is JsonDict && element.ContainsKey("Published") && element["Published"].GetStringSafe()?.EndsWith("Z") == true)
                 element["Published"] = element["Published"].GetString().Apply(s => s.Remove(s.Length - 1));
+            if (Type != KtaneModuleType.Regular && element is JsonDict && element.ContainsKey("Souvenir"))
+                element.Remove("Souvenir");
         }
 
         void IClassifyObjectProcessor.BeforeSerialize()
