@@ -229,7 +229,7 @@ namespace KtaneWeb
                         new DIV { id = "filters", class_ = "popup disappear stay no-profile-selected" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "filters" }._(
-                                translation.Filters.Select(filter => filter.ToHtml()),
+                                translation.Filters.Select(filter => filter.ToHtml(translation)),
                                 new DIV { class_ = "option-group" }._(
                                     new H4(translation.sortOrderHeader),
                                     new DIV(
@@ -356,7 +356,7 @@ namespace KtaneWeb
                         // Module info editing UI
                         new DIV { id = "module-ui", class_ = "popup disappear stay" }._(new FORM { action = "generate-json", method = method.post }._(new Func<object>(() =>
                         {
-                            static IEnumerable<object> createTableCellContent(FieldInfo field, EditableFieldAttribute attr)
+                            IEnumerable<object> createTableCellContent(FieldInfo field, EditableFieldAttribute attr)
                             {
                                 var type = field.FieldType;
                                 if (field.FieldType.TryGetGenericParameters(typeof(Nullable<>), out var types))
@@ -364,7 +364,7 @@ namespace KtaneWeb
 
                                 yield return new DIV { class_ = "explain" }._(attr.Explanation);
                                 if (type.IsEnum)
-                                    yield return new SELECT { name = field.Name }._(Enum.GetValues(type).Cast<Enum>().Select(val => new OPTION { value = val.ToString() }._(val.GetCustomAttribute<KtaneFilterOptionAttribute>()?.ReadableName ?? val.ToString())));
+                                    yield return new SELECT { name = field.Name }._(Enum.GetValues(type).Cast<Enum>().Select(val => new OPTION { value = val.ToString() }._(val.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? val.ToString())));
                                 else if (type == typeof(string) && attr.Multiline)
                                     yield return new TEXTAREA { name = field.Name };
                                 else if (type == typeof(string))
@@ -399,7 +399,7 @@ namespace KtaneWeb
                                 }
                             }
 
-                            static IEnumerable<object> iterateNormalFields(Type typeToBeEdited)
+                            IEnumerable<object> iterateNormalFields(Type typeToBeEdited)
                             {
                                 foreach (var field in typeToBeEdited.GetFields())
                                 {
@@ -423,7 +423,7 @@ namespace KtaneWeb
                                         yield return new INPUT { type = itype.hidden, name = field.Name };
                                 }
                             }
-                            static IEnumerable<object> iterateNestedFields(Type typeToBeEdited)
+                            IEnumerable<object> iterateNestedFields(Type typeToBeEdited)
                             {
                                 var nestedFields = typeToBeEdited.GetFields()
                                     .Where(f => f.GetCustomAttribute<EditableNestedAttribute>() != null)

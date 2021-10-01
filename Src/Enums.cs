@@ -1,124 +1,133 @@
-﻿namespace KtaneWeb
+﻿using System;
+
+namespace KtaneWeb
 {
     public enum KtaneModuleType
     {
-        [KtaneFilterOption("Regular module", 'R')]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleTypeRegular), 'R')]
         Regular,
-        [KtaneFilterOption("Needy module", 'y')]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleTypeNeedy), 'y')]
         Needy,
-        [KtaneFilterOption("Holdable")]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleTypeHoldable))]
         Holdable,
-        [KtaneFilterOption("Widget")]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleTypeWidget))]
         Widget
     }
 
     public enum KtaneModuleOrigin
     {
-        [KtaneFilterOption("Vanilla", 'V')]
+        [KtaneFilterOption(nameof(TranslationInfo.originVanilla), 'V')]
         Vanilla,
-        [KtaneFilterOption("Mods", 'M')]
+        [KtaneFilterOption(nameof(TranslationInfo.originMods), 'M')]
         Mods
     }
 
     public enum KtaneModuleDifficulty
     {
-        [KtaneFilterOption("Very easy")]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleDiffVeryEasy))]
         VeryEasy,
-        [KtaneFilterOption("Easy")]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleDiffEasy))]
         Easy,
-        [KtaneFilterOption("Medium")]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleDiffMedium))]
         Medium,
-        [KtaneFilterOption("Hard")]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleDiffHard))]
         Hard,
-        [KtaneFilterOption("Very hard")]
+        [KtaneFilterOption(nameof(TranslationInfo.moduleDiffVeryHard))]
         VeryHard
     }
 
     public enum KtaneSupport
     {
-        [KtaneFilterOption("Not supported")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterNotSupported))]
         NotSupported,
-        [KtaneFilterOption("Supported")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterSupported))]
         Supported
     }
 
     public enum KtaneModuleCompatibility
     {
-        [KtaneFilterOption("Compatible")]
+        [KtaneFilterOption(nameof(TranslationInfo.combatibilityCompatible))]
         Compatible,
-        [KtaneFilterOption("Problematic")]
+        [KtaneFilterOption(nameof(TranslationInfo.combatibilityProblematic))]
         Problematic,
-        [KtaneFilterOption("Unplayable")]
+        [KtaneFilterOption(nameof(TranslationInfo.combatibilityUnplayable))]
         Unplayable
     }
 
     public enum KtaneModuleSouvenir
     {
-        [KtaneFilterOption("Unexamined"), KtaneSouvenirInfo('U', "We have not yet decided whether this module is a candidate for inclusion in Souvenir.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterUnexamined)), KtaneSouvenirInfo('U', "We have not yet decided whether this module is a candidate for inclusion in Souvenir.")]
         Unexamined,
-        [KtaneFilterOption("Not a candidate"), KtaneSouvenirInfo('N', "This module is not a candidate for inclusion in Souvenir.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterNotCandidate)), KtaneSouvenirInfo('N', "This module is not a candidate for inclusion in Souvenir.")]
         NotACandidate,
-        [KtaneFilterOption("Considered"), KtaneSouvenirInfo('C', "This module may be a candidate for inclusion in Souvenir.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterConsidered)), KtaneSouvenirInfo('C', "This module may be a candidate for inclusion in Souvenir.")]
         Considered,
-        [KtaneFilterOption("Supported"), KtaneSouvenirInfo('S', "This module is included in Souvenir. Refer to the Souvenir manual for details.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterSupported)), KtaneSouvenirInfo('S', "This module is included in Souvenir. Refer to the Souvenir manual for details.")]
         Supported
-    }
-
-    public enum KtaneTwitchPlaysTagPosition
-    {
-        [KtaneFilterOption("Automatic")]
-        Automatic,
-        [KtaneFilterOption("Top-right")]
-        TopRight,
-        [KtaneFilterOption("Top-left")]
-        TopLeft,
-        [KtaneFilterOption("Bottom-right")]
-        BottomRight,
-        [KtaneFilterOption("Bottom-left")]
-        BottomLeft
-    }
-
-    public enum KtaneTwitchPlaysNeedyScoring
-    {
-        [KtaneFilterOption("Time-based")]
-        Time = 0,
-        [KtaneFilterOption("Solve-based")]
-        Solves = 1
     }
 
     public enum KtaneMysteryModuleCompatibility
     {
-        [KtaneFilterOption("No conflict")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterMMNoConfilct))]
         NoConflict,
-        [KtaneFilterOption("MM must not hide this")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterMMNotHide))]
         MustNotBeHidden,
-        [KtaneFilterOption("MM must not require this")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterMMNotRequire))]
         MustNotBeKey,
-        [KtaneFilterOption("MM must not use this at all")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterMMNotUse))]
         MustNotBeHiddenOrKey,
-        [KtaneFilterOption("MM must auto-solve")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterMMAutoSovle))]
         RequiresAutoSolve,
     }
 
     public enum KtaneModuleLicense
     {
-        [KtaneFilterOption("The module has its source code released and will follow the module’s license.")]
+        [KtaneFilterOption(nameof(TranslationInfo.licenseOpenSource))]
         OpenSource,
-        [KtaneFilterOption("The module may be republished on someone else’s Steam account. Any work may not be reused.")]
+        [KtaneFilterOption(nameof(TranslationInfo.licenseRepublishable))]
         Republishable,
-        [KtaneFilterOption("The module may not be republished and any work may not be reused.")]
+        [KtaneFilterOption(nameof(TranslationInfo.licenseRestricted))]
         Restricted,
     }
 
     public enum KtaneTimeModeOrigin
     {
-        [KtaneFilterOption("This module does not have any assigned Time Mode score.")]
+        [KtaneFilterOption(nameof(TranslationInfo.timeModeUnassigned))]
         Unassigned,
-        [KtaneFilterOption("This module uses its Twitch Plays score as its Time Mode score.")]
+        [KtaneFilterOption(nameof(TranslationInfo.timeModeFromTP))]
         TwitchPlays,
-        [KtaneFilterOption("This module has a community-assigned Time Mode score.")]
+        [KtaneFilterOption(nameof(TranslationInfo.timeModeCommunityScore))]
         Community,
-        [KtaneFilterOption("This module has an assigned Time Mode score.")]
+        [KtaneFilterOption(nameof(TranslationInfo.timeModeAssigned))]
         Assigned
+    }
+
+    public enum KtaneBossStatus
+    {
+        [KtaneFilterOption(nameof(TranslationInfo.bossStatusNotBoss))]
+        NotABoss,
+        [KtaneFilterOption(nameof(TranslationInfo.bossStatusSemiBoss))]
+        SemiBoss,
+        [KtaneFilterOption(nameof(TranslationInfo.bossStatusFullBoss))]
+        FullBoss
+    }
+
+    [Flags]
+    public enum KtaneQuirk
+    {
+        [KtaneFilterOption(nameof(TranslationInfo.quirkSolvesLater)), EditableHelp(nameof(TranslationInfo.quirkSolvesLaterExplain))]
+        SolvesAtEnd = 1 << 1,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkNeedsSolves)), EditableHelp(nameof(TranslationInfo.quirkNeedsSolvesExplain))]
+        NeedsOtherSolves = 1 << 2,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkSolvesBefore)), EditableHelp(nameof(TranslationInfo.quirkSolvesBeforeExplain))]
+        SolvesBeforeSome = 1 << 3,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkSolvesWithOthers)), EditableHelp(nameof(TranslationInfo.quirkSolvesWithOthersExplain))]
+        SolvesWithOthers = 1 << 4,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkPseudoNeedy)), EditableHelp(nameof(TranslationInfo.quirkPseudoNeedyExplain))]
+        PseudoNeedy = 1 << 5,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkTimeSensitive)), EditableHelp(nameof(TranslationInfo.quirkTimeSensitiveExplain))]
+        TimeSensitive = 1 << 6,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkTimeDependent)), EditableHelp(nameof(TranslationInfo.quirkTimeDependentExplain))]
+        TimeDependent = 1 << 7,
     }
 }

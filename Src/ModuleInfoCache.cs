@@ -114,18 +114,8 @@ namespace KtaneWeb
                     var processedIgnoreList = new List<string>();
                     foreach (var str in mod.Ignore)
                     {
-                        if (str == "+SolvesAtEnd")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesAtEnd).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+NeedsOtherSolves")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.NeedsOtherSolves).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+SolvesBeforeSome")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesBeforeSome).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+SolvesAbruptly")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesAbruptly).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+SolvesWithOthers")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesWithOthers).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+TimeSensitive")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsTimeSensitive).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        if (str.StartsWith("+") && EnumStrong.TryParse<KtaneQuirk>(str.Substring(1), out var quirk))
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.Quirks.HasFlag(quirk)).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str.StartsWith("-"))
                             processedIgnoreList.Remove(str.Substring(1));
                         else if (!str.StartsWith("+"))

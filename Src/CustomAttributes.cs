@@ -1,23 +1,26 @@
 ﻿using System;
+using RT.Util;
 
 namespace KtaneWeb
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     internal sealed class KtaneFilterOptionAttribute : Attribute
     {
-        public string ReadableName { get; private set; }
+        public string TranslationString { get; private set; }
         public char? Accel { get; private set; }
 
-        public KtaneFilterOptionAttribute(string readableName)
+        public KtaneFilterOptionAttribute(string translationString)
         {
-            ReadableName = readableName;
+            TranslationString = translationString;
             Accel = null;
         }
-        public KtaneFilterOptionAttribute(string readableName, char accel)
+        public KtaneFilterOptionAttribute(string translationString, char accel)
         {
-            ReadableName = readableName;
+            TranslationString = translationString;
             Accel = accel;
         }
+
+        public string Translate(TranslationInfo translation) => translation.GetFieldValue<string>(TranslationString);
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
@@ -69,5 +72,17 @@ namespace KtaneWeb
         public EditableNestedAttribute()
         {
         }
+    }
+
+    internal sealed class EditableHelpAttribute : Attribute
+    {
+        public string TranslationString { get; private set; }
+
+        public EditableHelpAttribute(string translationString)
+        {
+            TranslationString = translationString;
+        }
+
+        public string Translate(TranslationInfo translation) => translation.GetFieldValue<string>(TranslationString);
     }
 }
