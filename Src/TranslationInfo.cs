@@ -79,6 +79,8 @@ namespace KtaneWeb
         public string expertTemplateDesc = "(printable page with boxes to fill in while experting)";
         public string templateManualAnchor = "Template manual";
         public string templateManualDesc = "(for modders wishing to create a manual page for a new module)";
+        public string originVanilla = "Vanilla";
+        public string originMods = "Mods";
         public string moduleTypeRegularS = "Regular";
         public string moduleTypeNeedyS = "Needy";
         public string moduleTypeRegular = "Regular module";
@@ -90,8 +92,9 @@ namespace KtaneWeb
         public string moduleDiffMedium = "medium";
         public string moduleDiffHard = "hard";
         public string moduleDiffVeryHard = "very hard";
-        public string originVanilla = "Vanilla";
-        public string originMods = "Mods";
+        public string combatibilityCompatible = "Compatible";
+        public string combatibilityProblematic = "Problematic";
+        public string combatibilityUnplayable = "Unplayable";
         public string displayMethodList = "List";
         public string displayMethodPeriodic = "Periodic Table";
         public string filterDefuserDifficulty = "Defuser difficulty";
@@ -113,19 +116,38 @@ namespace KtaneWeb
         public string filterMMNotRequire = "MM must not require this";
         public string filterMMNotUse = "MM must not use this at all";
         public string filterMMAutoSovle = "MM must auto-solve";
+        public string licenseOpenSource = "The module has its source code released and will follow the module’s license.";
+        public string licenseRepublishable = "The module may be republished on someone else’s Steam account. Any work may not be reused.";
+        public string licenseRestricted = "The module may not be republished and any work may not be reused.";
         public string bossStatusFullBoss = "Full Boss";
         public string bossStatusSemiBoss = "Semi-boss";
         public string bossStatusNotBoss = "Not a boss";
-        public string filterSolvesStatus = "Special Solve Order";
-        public string solvesStatusLater = "Solves at end";
-        public string solvesStatusNeed = "Needs other solves";
-        public string solvesStatusBefore = "Must solve before some";
-        public string solvesStatusAbrupt = "Solves abruptly";
-        public string solvesStatusWithOthers = "May solve with others";
-        public string solvesStatusNA = "N/A";
-        public string filterPNeedyStatus = "Pseudo-Needy and Time";
-        public string pNeedyStatusPNeedy = "Pseudo-needy";
-        public string pNeedyStatusTime = "Heavily time-dependent";
+
+        public string filterQuirks = "Quirks";
+        public string quirkNone = "None";
+        public string quirkSolvesLater = "Solves at end";
+        public string quirkSolvesLaterExplain = "The module is only solvable after all non-ignored modules are solved (at the end of the bomb). In general, bosses have this quirk and all bosses should ignore modules with this quirk.";
+        public string quirkNeedsSolves = "Needs other solves";
+        public string quirkNeedsSolvesExplain = "The module cannot be solved until some, but not necessarily all, other non-ignored regular modules are solved first. In general, semi-bosses ignore modules with this quirk and often have this quirk.";
+        public string quirkSolvesBefore = "Must solve before some";
+        public string quirkSolvesBeforeExplain = "The module must be solved before some other non-ignored modules. In general, all modules with this quirk should ignore each other.";
+        public string quirkTimeSensitive = "Time-sensitive";
+        public string quirkTimeSensitiveExplain = "The module restricts the time at which it can be solved.";
+        public string quirkSolvesWithOthers = "May solve with others";
+        public string quirkSolvesWithOthersExplain = "The module may disarm itself immediately in response to another module being solved.";
+        public string quirkPseudoNeedy = "Pseudo-needy";
+        public string quirkPseudoNeedyExplain = "The module poses a recurring hazard in a similar fashion to a needy before it can be solved.";
+        public string quirkTimeDependent = "Heavily time-dependent";
+        public string quirkTimeDependentExplain = "The module has very precise timing requirements or can only be solved at an exact time.";
+
+        public string timeModeUnassigned = "This module does not have any assigned Time Mode score.";
+        public string timeModeFromTP = "This module uses its Twitch Plays score as its Time Mode score.";
+        public string timeModeCommunityScore = "This module has a community-assigned Time Mode score.";
+        public string timeModeAssigned = "This module has an assigned Time Mode score.";
+
+        public string flagYes = "Yes";
+        public string flagNo = "No";
+        public string flagEither = "Either";
         public string sortOrderHeader = "Sort order";
         public string sortOrderName = "Sort by name";
         public string sortOrderDefDifficulty = "Sort by defuser difficulty";
@@ -181,30 +203,8 @@ namespace KtaneWeb
             KtaneFilter.Checkboxes(filterRuleSeed, "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
             KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
             KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
-            KtaneFilter.BooleanSet(filterBossStatus, "bossstatus", new[] {
-                new KtaneFilterOption { Name = "IsFullBoss", ReadableName = bossStatusFullBoss },
-                new KtaneFilterOption { Name = "IsSemiBoss", ReadableName = bossStatusSemiBoss },
-                new KtaneFilterOption { Name = "NotABoss", ReadableName = bossStatusNotBoss }},
-                mod => mod.IsFullBoss ? "IsFullBoss" : mod.IsSemiBoss ? "IsSemiBoss" : "NotABoss",
-                $@"mod=>mod.IsFullBoss?""IsFullBoss"":mod.IsSemiBoss?""IsSemiBoss"":""NotABoss"""),
-            KtaneFilter.BooleanMultipleSet(filterSolvesStatus, "solveslater", new[] {
-                new KtaneFilterOption { Name = "SolvesAtEnd", ReadableName = solvesStatusLater },
-                new KtaneFilterOption { Name = "NeedsOtherSolves", ReadableName = solvesStatusNeed },
-                new KtaneFilterOption { Name = "SolvesBeforeSome", ReadableName = solvesStatusBefore },
-                new KtaneFilterOption { Name = "SolvesWithOthers", ReadableName = solvesStatusWithOthers },
-                new KtaneFilterOption { Name = "NotSolvesLater", ReadableName = solvesStatusNA }},
-                mod => (mod.SolvesAtEnd ? "SolvesAtEnd," : ",") + (mod.NeedsOtherSolves ? "NeedsOtherSolves," : ",") +
-                (mod.SolvesBeforeSome ? "SolvesBeforeSome," : ",") + (mod.SolvesWithOthers ? "SolvesWithOthers" : "") +
-                (!(mod.SolvesAtEnd || mod.NeedsOtherSolves || mod.SolvesBeforeSome || mod.SolvesWithOthers) ? "NotSolvesLater" : ""),
-                $@"mod=>(mod.SolvesAtEnd?""SolvesAtEnd,"":"","")+(mod.NeedsOtherSolves?""NeedsOtherSolves,"":"","")+(mod.SolvesBeforeSome?""SolvesBeforeSome,"":"","")+(mod.SolvesWithOthers?""SolvesWithOthers"":"""")+(!(mod.SolvesAtEnd||mod.NeedsOtherSolves||mod.SolvesBeforeSome||mod.SolvesWithOthers)?""NotSolvesLater"":"""")"),
-            KtaneFilter.BooleanMultipleSet(filterPNeedyStatus, "pseudoneedytimestatus", new[] {
-                new KtaneFilterOption { Name = "IsPseudoNeedy", ReadableName = pNeedyStatusPNeedy },
-                new KtaneFilterOption { Name = "IsTimeSensitive", ReadableName = pNeedyStatusTime },
-                new KtaneFilterOption { Name = "SolvesAbruptly", ReadableName = solvesStatusAbrupt },
-                new KtaneFilterOption { Name = "NotPseudoNeedyOrTime", ReadableName = solvesStatusNA }},
-                mod => (mod.IsPseudoNeedy ? "IsPseudoNeedy," : ",") + (mod.IsTimeSensitive ? "IsTimeSensitive," : ",") + (mod.SolvesAbruptly ? "SolvesAbruptly" : "") +
-                (!(mod.IsPseudoNeedy || mod.IsTimeSensitive || mod.SolvesAbruptly) ? "NotPseudoNeedyOrTime" : ""),
-                $@"mod=>(mod.IsPseudoNeedy?""IsPseudoNeedy,"":"","")+(mod.IsTimeSensitive?""IsTimeSensitive,"":"","")+(mod.SolvesAbruptly?""SolvesAbruptly"":"""")+(!(mod.IsPseudoNeedy||mod.IsTimeSensitive||mod.SolvesAbruptly)?""NotPseudoNeedyOrTime"":"""")"));
+            KtaneFilter.Checkboxes(filterBossStatus, "bossstatus", mod => mod.BossStatus, $@"mod=>mod.BossStatus||'{KtaneBossStatus.NotABoss}'"),
+            KtaneFilter.BooleanMultipleSet(filterQuirks, "quirks", mod => mod.Quirks, $@"mod=>mod.Quirks||''"));
 
         [ClassifyIgnore]
         private Selectable[] _selectablesCache;

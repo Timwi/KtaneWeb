@@ -529,6 +529,17 @@ body.sort-published #main-table th.infos::after {
         cursor: pointer;
     }
 
+    #filters td, #filters th {
+        text-align: left;
+        border: none;
+        padding: 0 .02cm;
+        font-weight: normal;
+    }
+
+    #filters th {
+        padding-right: .2cm;
+    }
+
 #more {
     width: 35em;
     padding: 0 2em 2em;
