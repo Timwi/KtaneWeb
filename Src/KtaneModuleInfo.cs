@@ -85,9 +85,9 @@ namespace KtaneWeb
         public bool NeedsOtherSolves = false;
         [ClassifyIgnoreIfDefault, EditableField("Solves before other modules", "Specifies that the module must be solved before some other non-ignored modules. In general, all modules with this tag should ignore each other.")]
         public bool SolvesBeforeSome = false;
-        [ClassifyIgnoreIfDefault, EditableField("Will solve on its own, uncontrollably", "Specifies that the module must be solved before some other non-ignored modules. In general, all modules with this tag should ignore each other.")]
+        [ClassifyIgnoreIfDefault, EditableField("Will solve on its own, uncontrollably", "Specifies that the module may solve on its own with no ability to prevent it.")]
         public bool SolvesAbruptly = false;
-        [ClassifyIgnoreIfDefault, EditableField("Solves simultaneously with another module(s)", "Specifies that the module must be solved before some other non-ignored modules. In general, all modules with this tag should ignore each other.")]
+        [ClassifyIgnoreIfDefault, EditableField("Solves simultaneously with another module(s)", "Specifies that the module may solve mid-bomb immediately following another module solve.")]
         public bool SolvesWithOthers = false;
         [ClassifyIgnoreIfDefault, EditableField("Pseudo-needy module", "Specifies that the module poses a recurring hazard in a similar fashion to a needy before it can be solved.")]
         public bool IsPseudoNeedy = false;
