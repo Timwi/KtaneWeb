@@ -59,7 +59,7 @@ namespace KtaneWeb
         public string downloadPDF = "Download merged PDF for current filter";
         public string ignoredTableAnchor = "Table of ignored modules";
         public string tfcAnchor = "Text Field Calculator";
-        public string puzzleAnchor = "PUZZLE";
+        public string puzzleAnchor = "PUZZLES";
         public string quizAnchor = "QUIZZES";
         public string controlHeader = "Controls to highlight elements in HTML manuals";
         public string[][] controls = {
