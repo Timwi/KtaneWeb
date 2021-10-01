@@ -116,10 +116,12 @@ namespace KtaneWeb
         public string bossStatusFullBoss = "Full Boss";
         public string bossStatusSemiBoss = "Semi-boss";
         public string bossStatusNotBoss = "Not a boss";
-        public string filterSolvesStatus = "Solves Later";
+        public string filterSolvesStatus = "Special Solve Order";
         public string solvesStatusLater = "Solves at end";
         public string solvesStatusNeed = "Needs other solves";
         public string solvesStatusBefore = "Must solve before some";
+        public string solvesStatusAbrupt = "Solves abruptly";
+        public string solvesStatusWithOthers = "May solve with others";
         public string solvesStatusNA = "N/A";
         public string filterPNeedyStatus = "Pseudo-Needy and Time";
         public string pNeedyStatusPNeedy = "Pseudo-needy";
@@ -185,19 +187,24 @@ namespace KtaneWeb
                 new KtaneFilterOption { Name = "NotABoss", ReadableName = bossStatusNotBoss }},
                 mod => mod.IsFullBoss ? "IsFullBoss" : mod.IsSemiBoss ? "IsSemiBoss" : "NotABoss",
                 $@"mod=>mod.IsFullBoss?""IsFullBoss"":mod.IsSemiBoss?""IsSemiBoss"":""NotABoss"""),
-            KtaneFilter.BooleanSet(filterSolvesStatus, "solveslater", new[] {
+            KtaneFilter.BooleanMultipleSet(filterSolvesStatus, "solveslater", new[] {
                 new KtaneFilterOption { Name = "SolvesAtEnd", ReadableName = solvesStatusLater },
                 new KtaneFilterOption { Name = "NeedsOtherSolves", ReadableName = solvesStatusNeed },
                 new KtaneFilterOption { Name = "SolvesBeforeSome", ReadableName = solvesStatusBefore },
+                new KtaneFilterOption { Name = "SolvesWithOthers", ReadableName = solvesStatusWithOthers },
                 new KtaneFilterOption { Name = "NotSolvesLater", ReadableName = solvesStatusNA }},
-                mod => mod.SolvesAtEnd ? "SolvesAtEnd" : mod.NeedsOtherSolves ? "NeedsOtherSolves" : "NotSolvesLater",
-                $@"mod=>mod.SolvesAtEnd?""SolvesAtEnd"":mod.NeedsOtherSolves?""NeedsOtherSolves"":""NotSolvesLater"""),
-            KtaneFilter.BooleanSet(filterPNeedyStatus, "pseudoneedytimestatus", new[] {
+                mod => (mod.SolvesAtEnd ? "SolvesAtEnd," : ",") + (mod.NeedsOtherSolves ? "NeedsOtherSolves," : ",") +
+                (mod.SolvesBeforeSome ? "SolvesBeforeSome," : ",") + (mod.SolvesWithOthers ? "SolvesWithOthers" : "") +
+                (!(mod.SolvesAtEnd || mod.NeedsOtherSolves || mod.SolvesBeforeSome || mod.SolvesWithOthers) ? "NotSolvesLater" : ""),
+                $@"mod=>(mod.SolvesAtEnd?""SolvesAtEnd,"":"","")+(mod.NeedsOtherSolves?""NeedsOtherSolves,"":"","")+(mod.SolvesBeforeSome?""SolvesBeforeSome,"":"","")+(mod.SolvesWithOthers?""SolvesWithOthers"":"""")+(!(mod.SolvesAtEnd||mod.NeedsOtherSolves||mod.SolvesBeforeSome||mod.SolvesWithOthers)?""NotSolvesLater"":"""")"),
+            KtaneFilter.BooleanMultipleSet(filterPNeedyStatus, "pseudoneedytimestatus", new[] {
                 new KtaneFilterOption { Name = "IsPseudoNeedy", ReadableName = pNeedyStatusPNeedy },
                 new KtaneFilterOption { Name = "IsTimeSensitive", ReadableName = pNeedyStatusTime },
+                new KtaneFilterOption { Name = "SolvesAbruptly", ReadableName = solvesStatusAbrupt },
                 new KtaneFilterOption { Name = "NotPseudoNeedyOrTime", ReadableName = solvesStatusNA }},
-                mod => mod.IsPseudoNeedy ? "IsPseudoNeedy" : mod.IsTimeSensitive ? "IsTimeSensitive" : "NotPseudoNeedyOrTime",
-                $@"mod=>mod.IsPseudoNeedy?""IsPseudoNeedy"":mod.IsTimeSensitive?""IsTimeSensitive"":""NotPseudoNeedyOrTime"""));
+                mod => (mod.IsPseudoNeedy ? "IsPseudoNeedy," : ",") + (mod.IsTimeSensitive ? "IsTimeSensitive," : ",") + (mod.SolvesAbruptly ? "SolvesAbruptly" : "") +
+                (!(mod.IsPseudoNeedy || mod.IsTimeSensitive || mod.SolvesAbruptly) ? "NotPseudoNeedyOrTime" : ""),
+                $@"mod=>(mod.IsPseudoNeedy?""IsPseudoNeedy,"":"","")+(mod.IsTimeSensitive?""IsTimeSensitive,"":"","")+(mod.SolvesAbruptly?""SolvesAbruptly"":"""")+(!(mod.IsPseudoNeedy||mod.IsTimeSensitive||mod.SolvesAbruptly)?""NotPseudoNeedyOrTime"":"""")"));
 
         [ClassifyIgnore]
         private Selectable[] _selectablesCache;
