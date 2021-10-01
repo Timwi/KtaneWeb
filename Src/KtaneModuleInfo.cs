@@ -164,7 +164,7 @@ namespace KtaneWeb
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
-            if (Type != KtaneModuleType.Regular)
+            if (Souvenir != null && Type != KtaneModuleType.Regular)
                 Souvenir = new KtaneSouvenirInfo { Status = KtaneModuleSouvenir.NotACandidate };
 
             if (TutorialVideoUrl != null && TutorialVideoUrl.Count == 0)
