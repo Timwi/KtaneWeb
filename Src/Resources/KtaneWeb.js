@@ -781,6 +781,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                 case "checkboxes":
                 case "booleanset":
+                case "booleanmultset":
                     filter[initFilters[i].id] = {};
                     for (var j = 0; j < initFilters[i].values.length; j++)
                     {
@@ -827,6 +828,17 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         case "checkboxes":
                         case "booleanset":
                             filteredIn = filteredIn && (filter[initFilters[i].id][initFilters[i].fnc(mod)] || noneSelected[initFilters[i].id]);
+                            break;
+                        case "booleanmultset":
+                            let allMatches = initFilters[i].fnc(mod);
+                            let match = false;
+                            for (let key in filter[initFilters[i].id]) {
+                                if (filter[initFilters[i].id][key] && allMatches.includes(key)) {
+                                    match = true;
+                                    break;
+                                }
+                            }
+                            filteredIn = filteredIn && (match || noneSelected[initFilters[i].id]);
                             break;
                         case "boolean":
                             filteredIn = filteredIn && (!filter[initFilters[i].id] || initFilters[i].fnc(mod) === 'True');

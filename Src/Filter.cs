@@ -28,6 +28,7 @@ namespace KtaneWeb
         public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
         public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum?> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
         public static KtaneFilter BooleanSet(string readableName, string propName, KtaneFilterOption[] options, Func<KtaneModuleInfo, string> getValue, string fncPropValue) => new KtaneFilterBooleanSet(readableName, propName, fncPropValue, options, mod => getValue(mod));
+        public static KtaneFilter BooleanMultipleSet(string readableName, string propName, KtaneFilterOption[] options, Func<KtaneModuleInfo, string> getValue, string fncPropValue) => new KtaneFilterBooleanMultipleSet(readableName, propName, fncPropValue, options, mod => getValue(mod));
     }
 
     abstract class KtaneFilterOptions : KtaneFilter
@@ -111,6 +112,7 @@ namespace KtaneWeb
         public int Value;
     }
 
+    //Boolean set filter where a mod may have at most one of the options
     sealed class KtaneFilterBooleanSet : KtaneFilter
     {
         public Func<KtaneModuleInfo, object> GetValue { get; private set; }
@@ -138,6 +140,46 @@ namespace KtaneWeb
         {
             var str = GetValue(module)?.ToString();
             return str == null || (json.ContainsKey(str) && json[str].GetBool()) || json.All(v => !v.Value.GetBool());
+        }
+    }
+
+    //Boolean set filter where a mod may have multiple of the options
+    sealed class KtaneFilterBooleanMultipleSet : KtaneFilter
+    {
+        public Func<KtaneModuleInfo, object> GetValue { get; private set; }
+        public KtaneFilterOption[] Options { get; private set; }
+
+        public KtaneFilterBooleanMultipleSet(string readableName, string propName, string fncPropValue, KtaneFilterOption[] options, Func<KtaneModuleInfo, object> getValue) : base(readableName, propName, fncPropValue)
+        {
+            GetValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
+            Options = options ?? throw new ArgumentNullException(nameof(options));
+        }
+        public override JsonDict ToJson() => new JsonDict {
+            { "id", PropName },
+            { "fnc", new JsonRaw(FncPropValue) },
+            { "values", Options.Select(val => val.Name).ToJsonList() },
+            { "type", "booleanmultset" }
+        };
+        public override object ToHtml() => Ut.NewArray<object>(
+            new DIV { class_ = "option-group" }._(
+                new H4(ReadableName),
+                Options.Select(opt => $"filter-{PropName}-{opt.Name}".Apply(id => new DIV(
+                    new INPUT { type = itype.checkbox, class_ = "filter", id = id }, " ",
+                    new LABEL { for_ = id, accesskey = opt.Accel.NullOr(a => a.ToString().ToLowerInvariant()) }._(opt.Accel == null ? opt.ReadableName : opt.ReadableName.Accel(opt.Accel.Value)))))));
+
+        public override bool Matches(KtaneModuleInfo module, JsonDict json)
+        {
+            var str = GetValue(module)?.ToString();
+            bool match = false;
+            foreach (var key in json)
+			{
+                if (json[key.Key].GetBool() && str.Contains(key.Key))
+                {
+                    match = true;
+                    break;
+                }
+            }
+            return match || json.All(v => !v.Value.GetBool());
         }
     }
 }

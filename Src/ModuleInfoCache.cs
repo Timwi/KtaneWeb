@@ -120,8 +120,10 @@ namespace KtaneWeb
                             processedIgnoreList.AddRange(modules.Where(tup => tup.mod.NeedsOtherSolves).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str == "+SolvesBeforeSome")
                             processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesBeforeSome).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str == "+PseudoNeedy")
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsPseudoNeedy).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+SolvesAbruptly")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesAbruptly).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                        else if (str == "+SolvesWithOthers")
+                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.SolvesWithOthers).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str == "+TimeSensitive")
                             processedIgnoreList.AddRange(modules.Where(tup => tup.mod.IsTimeSensitive).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
                         else if (str.StartsWith("-"))

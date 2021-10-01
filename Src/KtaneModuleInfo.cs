@@ -78,9 +78,6 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Semi-boss module", "Specifies that the module has some interaction or new information given after every solve of a non-ignored regular module, but does not require all such modules to be solved.")]
         public bool IsSemiBoss = false;
 
-        [ClassifyIgnoreIfDefault, EditableField("Solve-order-sensitive", "Specifies that the module requires other modules to be solved in a specific order, but doesn’t fit into the category of “Pseudo-needy” or “Heavily time-dependent”.")]
-        public bool IsSolveOrderSensitive = false;
-
         //Ignore tags (not mutually exclusive)
         [ClassifyIgnoreIfDefault, EditableField("Solves at end of bomb", "Specifies that the module is only solvable after all non-ignored modules are solved (at the end of the bomb). In general, bosses have this tag and all bosses should ignore modules with this tag.")]
         public bool SolvesAtEnd = false;
@@ -88,13 +85,17 @@ namespace KtaneWeb
         public bool NeedsOtherSolves = false;
         [ClassifyIgnoreIfDefault, EditableField("Solves before other modules", "Specifies that the module must be solved before some other non-ignored modules. In general, all modules with this tag should ignore each other.")]
         public bool SolvesBeforeSome = false;
+        [ClassifyIgnoreIfDefault, EditableField("Will solve on its own, uncontrollably", "Specifies that the module must be solved before some other non-ignored modules. In general, all modules with this tag should ignore each other.")]
+        public bool SolvesAbruptly = false;
+        [ClassifyIgnoreIfDefault, EditableField("Solves simultaneously with another module(s)", "Specifies that the module must be solved before some other non-ignored modules. In general, all modules with this tag should ignore each other.")]
+        public bool SolvesWithOthers = false;
         [ClassifyIgnoreIfDefault, EditableField("Pseudo-needy module", "Specifies that the module poses a recurring hazard in a similar fashion to a needy before it can be solved.")]
         public bool IsPseudoNeedy = false;
         [ClassifyIgnoreIfDefault, EditableField("Heavily time-dependent", "Specifies that the module has very precise timing requirements or can only be solved at an exact time.")]
         public bool IsTimeSensitive = false;
 
         // Specifies which modules this module should ignore. Applies to boss and semi-boss modules such as Forget Me Not, Encryption Bingo, Hogwarts, etc.
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+SolvesAtEnd”, “+NeedsOtherSolves”, “+SolvesBeforeSome”, “+PseudoNeedy”, or “+TimeSensitive” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+SolvesAtEnd”, “+NeedsOtherSolves”, “+SolvesBeforeSome”, “+SolvesAbruptly”, “+SolvesWithOthers”, or “+TimeSensitive” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
         public string[] Ignore = null;
 
         [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
