@@ -803,7 +803,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         }
 
         let searchRaw = $("input#search-field").val().toString().toLowerCase();
-        let searchKeywords = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\'')).map(x => new RegExp(escapeRegExp(x).replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y')));
+        let searchKeywords = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\'')).map(x => new RegExp(escapeRegExp(x).replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y').replace(/impost[oe]r/g, 'impost[oe]r')));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
