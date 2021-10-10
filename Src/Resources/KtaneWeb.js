@@ -10,6 +10,7 @@ try
 }
 catch (e)
 {
+    console.log("Local storage not available:", e);
     lStorage = {
         storage: {},
         key: function(index)
@@ -595,7 +596,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
                                 infos.append(el("div", "inf-rule-seed inf inf2", { title: mod.RuleSeedInfo }));
                             }
-                            if (mod.Type === 'Regular') {
+                            if (mod.Type === 'Regular')
+                            {
                                 var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
                                 var attr = souvenirAttributes[value];
                                 var expl = mod.Souvenir && mod.Souvenir.Explanation;
@@ -925,8 +927,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         manual = mod.Manuals[i];
                 if (mod.Name in preferredManuals)
                     for (let i = 0; i < mod.Manuals.length; i++)
+                    {
+                        // localStorage used to contain the full name of the manual, but now we’re running into quota limits, so shorten it by using only the extra part of the filename
                         if (preferredManuals[mod.Name] === mod.Manuals[i].Name)
+                            preferredManuals[mod.Name] = mod.Manuals[i].Name.substr(mod.Name.length + 1);
+                        if (preferredManuals[mod.Name] === '(HTML)')
+                            delete preferredManuals[mod.Name];
+                        if (`${mod.Name} ${preferredManuals[mod.Name]}` === mod.Manuals[i].Name)
                             manual = mod.Manuals[i];
+                    }
                 for (let fnc of mod.FncsSetManualLink)
                     fnc(manual === null ? null : manual.Url + seedHash);
             }
@@ -1031,7 +1040,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         e.stopPropagation();
                         return false;
                     };
-                }(mod.Manuals[i].Name);
+                }(mod.Manuals[i].Name.substr(mod.Name.length + 1));
                 var link = el('a', 'link', { href: mod.Manuals[i].Url + seedHash, onclick: clickHandler }, rx1[2]);
                 if (!already.has(rx1[1]))
                 {
@@ -1113,7 +1122,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     inf.Row.onclick = clickHandler;
                 var elem = rx1[2] === 'HTML' ? inf.Html : inf.Pdf;
                 elem.appendChild(link);
-                if (mod.Name in preferredManuals && preferredManuals[mod.Name] === mod.Manuals[i].Name)
+                if ((mod.Name in preferredManuals && `${mod.Name} ${preferredManuals[mod.Name]}` === mod.Manuals[i].Name) ||
+                    (!(mod.Name in preferredManuals) && mod.Manuals[i].Name === `${mod.Name} (HTML)`))
                     elem.classList.add('checked');
             }
 
