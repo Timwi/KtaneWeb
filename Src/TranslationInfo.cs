@@ -131,8 +131,8 @@ namespace KtaneWeb
         public string quirkNeedsSolvesExplain = "The module cannot be solved until some, but not necessarily all, other non-ignored regular modules are solved first. In general, semi-bosses ignore modules with this quirk and often have this quirk.";
         public string quirkSolvesBefore = "Must solve before some";
         public string quirkSolvesBeforeExplain = "The module must be solved before some other non-ignored modules. In general, all modules with this quirk should ignore each other.";
-        public string quirkTimeSensitive = "Time-sensitive";
-        public string quirkTimeSensitiveExplain = "The module restricts the time at which it can be solved.";
+        public string quirkWillSolveSuddenly = "Will Solve Suddenly";
+        public string quirkWillSolveSuddenlyExplain = "The module will suddenly present a small window of time in which it will solve even if the solution is incorrect or if strikes are generated.";
         public string quirkSolvesWithOthers = "May solve with others";
         public string quirkSolvesWithOthersExplain = "The module may disarm itself immediately in response to another module being solved.";
         public string quirkPseudoNeedy = "Pseudo-needy";
