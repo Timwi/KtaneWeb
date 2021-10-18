@@ -368,11 +368,10 @@ namespace KtaneWeb
 
                                 yield return new DIV { class_ = "explain" }._(attr.Explanation);
                                 if (type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any())
-                                    foreach (var option in Enum.GetValues(type).Cast<Enum>())
-									{
-                                        yield return new INPUT { type = itype.checkbox, name = field.Name, id = $"input-{field.Name}-{option}" };
-                                        yield return "\u00a0";
-                                        yield return new LABEL { for_ = $"input-{field.Name}-{option}" }._(option.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? option.ToString());
+                                    foreach (Enum option in Enum.GetValues(type))
+                                    {
+                                        yield return new INPUT { type = itype.checkbox, name = $"{field.Name}-{option}", id = $"input-{field.Name}-{option}" };
+                                        yield return new LABEL { for_ = $"input-{field.Name}-{option}" }._("\u00a0", option.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? option.ToString());
                                         yield return new BR();
                                     }
                                 else if (type.IsEnum)
@@ -457,7 +456,7 @@ namespace KtaneWeb
                     {
                         var moduleInfoCache = _moduleInfoCache;
                         return Ut.NewArray<object>(
-                            new SCRIPTLiteral($"var translation = {translation.Json};" +  moduleInfoCache.ModuleInfoJs),
+                            new SCRIPTLiteral($"var translation = {translation.Json};" + moduleInfoCache.ModuleInfoJs),
                             new STYLELiteral(moduleInfoCache.IconSpriteCss));
                     }))));
             resp.UseGzip = UseGzipOption.AlwaysUseGzip;

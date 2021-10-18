@@ -1326,7 +1326,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                 for (var j = 0; j < initFilters[i].values.length; j++)
                 {
-                    var op = filter[initFilters[i].id][initFilters[i].values[j]];
+                    var op = filter[initFilters[i].id][initFilters[i].values[j]] || 'e';
                     $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-y`).prop('checked', op == 'y');
                     $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-n`).prop('checked', op == 'n');
                     $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-e`).prop('checked', op == 'e');

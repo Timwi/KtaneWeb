@@ -207,7 +207,7 @@ namespace KtaneWeb
         public KtaneFilter[] Filters2 => _filtersCache2 ??= Ut.NewArray(
             KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
             KtaneFilter.Checkboxes(filterBossStatus, "bossstatus", mod => mod.BossStatus, $@"mod=>mod.BossStatus||'{KtaneBossStatus.NotABoss}'"),
-            KtaneFilter.BooleanMultipleSet(filterQuirks, "quirks", mod => mod.Quirks, $@"mod=>mod.Quirks||''"));
+            KtaneFilter.Flags(filterQuirks, "quirks", mod => mod.Quirks, $@"mod=>mod.Quirks||''"));
 
         [ClassifyIgnore]
         private Selectable[] _selectablesCache;

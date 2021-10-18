@@ -27,7 +27,7 @@ namespace KtaneWeb
         public static KtaneFilter Slider<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum?> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsSlider(propName, readableName, typeof(TEnum), mod => getValue(mod), fncPropValue);
         public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
         public static KtaneFilter Checkboxes<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum?> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterOptionsCheckboxes(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
-        public static KtaneFilter BooleanMultipleSet<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterFlags(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
+        public static KtaneFilter Flags<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterFlags(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
     }
 
     abstract class KtaneFilterOptions : KtaneFilter
@@ -42,10 +42,17 @@ namespace KtaneWeb
             EnumType = enumType ?? throw new ArgumentNullException(nameof(enumType));
             GetValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
 
-            Options = Enum.GetValues(enumType).Cast<object>()
+            Options = Enum.GetValues(enumType).Cast<Enum>()
                 .Select(val => new { Value = val, Attr = ((Enum) val).GetCustomAttribute<KtaneFilterOptionAttribute>() })
                 .Where(val => val.Attr != null)
-                .Select(inf => new KtaneFilterOption { Value = (int) inf.Value, Name = inf.Value.ToString(), TranslationString = inf.Attr.TranslationString, Accel = inf.Attr.Accel })
+                .Select(inf => new KtaneFilterOption
+                {
+                    Value = (int) (object) inf.Value,
+                    Name = inf.Value.ToString(),
+                    TranslationString = inf.Attr.TranslationString,
+                    TranslationStringExplain = inf.Value.GetCustomAttribute<EditableHelpAttribute>()?.TranslationString,
+                    Accel = inf.Attr.Accel
+                })
                 .ToArray();
         }
     }
@@ -112,10 +119,12 @@ namespace KtaneWeb
     {
         public string Name;
         public string TranslationString;
+        public string TranslationStringExplain;
         public char? Accel;
         public int Value;
 
         public string Translate(TranslationInfo translation) => translation.GetFieldValue<string>(TranslationString);
+        public string TranslateExplain(TranslationInfo translation) => TranslationStringExplain == null ? null : translation.GetFieldValue<string>(TranslationStringExplain);
     }
 
     // Filter where a mod may have any number of the available flags
@@ -134,22 +143,22 @@ namespace KtaneWeb
         public override object ToHtml(TranslationInfo translation) => new DIV { class_ = "option-group" }._(
             new H4(ReadableName),
             new TABLE(Options.Select(opt => new TR(
-                new TH(opt.Translate(translation)),
+                new TH { title = opt.TranslateExplain(translation) }._(opt.Translate(translation)),
                 new TD(
-                    new INPUT { type = itype.radio, class_ = "filter", name = $"filter-{PropName}-{opt.Name}", id = $"filter-{PropName}-{opt.Name}-y" }, " ",
-                    new LABEL { for_ = $"filter-{PropName}-{opt.Name}-y" }._(translation.flagYes)),
+                    new INPUT { type = itype.radio, class_ = "filter", name = $"filter-{PropName}-{opt.Name}", id = $"filter-{PropName}-{opt.Name}-y" },
+                    new LABEL { for_ = $"filter-{PropName}-{opt.Name}-y" }._(" ", translation.flagYes)),
                 new TD(
-                    new INPUT { type = itype.radio, class_ = "filter", name = $"filter-{PropName}-{opt.Name}", id = $"filter-{PropName}-{opt.Name}-n" }, " ",
-                    new LABEL { for_ = $"filter-{PropName}-{opt.Name}-n" }._(translation.flagNo)),
+                    new INPUT { type = itype.radio, class_ = "filter", name = $"filter-{PropName}-{opt.Name}", id = $"filter-{PropName}-{opt.Name}-n" },
+                    new LABEL { for_ = $"filter-{PropName}-{opt.Name}-n" }._(" ", translation.flagNo)),
                 new TD(
-                    new INPUT { type = itype.radio, class_ = "filter", name = $"filter-{PropName}-{opt.Name}", id = $"filter-{PropName}-{opt.Name}-e" }, " ",
-                    new LABEL { for_ = $"filter-{PropName}-{opt.Name}-e" }._(translation.flagEither))))));
+                    new INPUT { type = itype.radio, class_ = "filter", name = $"filter-{PropName}-{opt.Name}", id = $"filter-{PropName}-{opt.Name}-e" },
+                    new LABEL { for_ = $"filter-{PropName}-{opt.Name}-e" }._(" ", translation.flagEither))))));
 
         public override bool Matches(KtaneModuleInfo module, JsonDict json)
         {
             var flags = (int) GetValue(module);
             foreach (var opt in Options)
-			{
+            {
                 bool hasFlag = (flags & opt.Value) != 0;
                 if (json.ContainsKey(opt.Name) && ((json[opt.Name].GetString() == "y" && !hasFlag) || (json[opt.Name].GetString() == "n" && hasFlag)))
                     return false;

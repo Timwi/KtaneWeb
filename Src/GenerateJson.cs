@@ -46,6 +46,14 @@ namespace KtaneWeb
 
                         if (fType == typeof(string))
                             f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? null : val.Trim());
+                        else if (fType.IsEnum && fType.GetCustomAttribute<FlagsAttribute>() != null)
+                        {
+                            var intVal = 0;
+                            foreach (var value in Enum.GetValues(fType))
+                                if (req.Post[$"{f.Name}-{value}"].Value != null)
+                                    intVal |= (int) value;
+                            f.SetValue(obj, intVal);
+                        }
                         else if (fType.IsEnum)
                         {
                             var enumVal = val == null ? null : Enum.Parse(fType, val);
