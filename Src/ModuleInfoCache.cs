@@ -185,7 +185,7 @@ namespace KtaneWeb
 
             var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
             var disps = TranslationInfo.Default.Displays.Select(d => d.id).ToJsonList();
-            var filters = TranslationInfo.Default.Filters.Select(f => f.ToJson()).ToJsonList();
+            var filters = TranslationInfo.Default.Filters1.Concat(TranslationInfo.Default.Filters2).Select(f => f.ToJson()).ToJsonList();
             var selectables = TranslationInfo.Default.Selectables.Select(sel => sel.ToJson()).ToJsonList();
             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
 

@@ -1312,7 +1312,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 break;
 
             case "checkboxes":
-            case "booleanset":
                 if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'object')
                     filter[initFilters[i].id] = {};
 
@@ -1324,11 +1323,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 }
                 break;
 
-            case "boolean":
-                if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'boolean')
-                    filter[initFilters[i].id] = false;
+            case "flags":
+                if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'object')
+                    filter[initFilters[i].id] = {};
 
-                $('input#filter-' + initFilters[i].id).prop('checked', filter[initFilters[i].id]);
+                for (var j = 0; j < initFilters[i].values.length; j++) {
+                    var op = filter[initFilters[i].id][initFilters[i].values[j]];
+                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-y').prop('checked', op == 'y');
+                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-n').prop('checked', op == 'n');
+                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-e').prop('checked', op == 'e');
+                }
                 break;
         }
     }

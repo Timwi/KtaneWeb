@@ -150,8 +150,11 @@ namespace KtaneWeb
         {
             var flags = (int) GetValue(module);
             foreach (var opt in Options)
-                if (json.ContainsKey(opt.Name) && json[opt.Name].GetBool() != ((flags & opt.Value) != 0))
+			{
+                bool hasFlag = (flags & opt.Value) != 0;
+                if (json.ContainsKey(opt.Name) && ((json[opt.Name].GetString() == "y" && !hasFlag) || (json[opt.Name].GetString() == "n" && hasFlag)))
                     return false;
+            }
             return true;
         }
     }
