@@ -780,19 +780,27 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     break;
 
                 case "checkboxes":
-                case "booleanset":
-                case "booleanmultset":
                     filter[initFilters[i].id] = {};
-                    for (var j = 0; j < initFilters[i].values.length; j++)
-                    {
+                    for (var j = 0; j < initFilters[i].values.length; j++) {
                         filter[initFilters[i].id][initFilters[i].values[j]] = $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j]).prop('checked');
                         if (filter[initFilters[i].id][initFilters[i].values[j]])
                             none = false;
                     }
                     break;
+                case "flags":
+                    filter[initFilters[i].id] = {};
+                    for (var j = 0; j < initFilters[i].values.length; j++)
+                    {
+                        if ($('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-y').prop('checked'))
+                            filter[initFilters[i].id][initFilters[i].values[j]] = 'y';
+                        else if ($('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-n').prop('checked'))
+                            filter[initFilters[i].id][initFilters[i].values[j]] = 'n';
+                        else
+                            filter[initFilters[i].id][initFilters[i].values[j]] = 'e';
 
-                case "boolean":
-                    filter[initFilters[i].id] = $('input#filter-' + initFilters[i].id).prop('checked');
+                        if (filter[initFilters[i].id][initFilters[i].values[j]] != 'e')
+                            none = false;
+                    }
                     break;
             }
             noneSelected[initFilters[i].id] = none;
@@ -826,22 +834,19 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             filteredIn = filteredIn && initFilters[i].values.indexOf(initFilters[i].fnc(mod)) >= filter[initFilters[i].id].min && initFilters[i].values.indexOf(initFilters[i].fnc(mod)) <= filter[initFilters[i].id].max;
                             break;
                         case "checkboxes":
-                        case "booleanset":
                             filteredIn = filteredIn && (filter[initFilters[i].id][initFilters[i].fnc(mod)] || noneSelected[initFilters[i].id]);
                             break;
-                        case "booleanmultset":
+                        case "flags":
                             let allMatches = initFilters[i].fnc(mod);
-                            let match = false;
+                            let match = true;
                             for (let key in filter[initFilters[i].id]) {
-                                if (filter[initFilters[i].id][key] && allMatches.includes(key)) {
-                                    match = true;
+                                if ((filter[initFilters[i].id][key] == 'y' && !allMatches.includes(key)) ||
+                                    (filter[initFilters[i].id][key] == 'n' && allMatches.includes(key)) ) {
+                                    match = false;
                                     break;
                                 }
                             }
                             filteredIn = filteredIn && (match || noneSelected[initFilters[i].id]);
-                            break;
-                        case "boolean":
-                            filteredIn = filteredIn && (!filter[initFilters[i].id] || initFilters[i].fnc(mod) === 'True');
                             break;
                     }
                 }

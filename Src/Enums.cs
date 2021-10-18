@@ -123,10 +123,10 @@ namespace KtaneWeb
         SolvesBeforeSome = 1 << 3,
         [KtaneFilterOption(nameof(TranslationInfo.quirkSolvesWithOthers)), EditableHelp(nameof(TranslationInfo.quirkSolvesWithOthersExplain))]
         SolvesWithOthers = 1 << 4,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkWillSolveSuddenly)), EditableHelp(nameof(TranslationInfo.quirkWillSolveSuddenlyExplain))]
+        WillSolveSuddenly = 1 << 5,
         [KtaneFilterOption(nameof(TranslationInfo.quirkPseudoNeedy)), EditableHelp(nameof(TranslationInfo.quirkPseudoNeedyExplain))]
-        PseudoNeedy = 1 << 5,
-        [KtaneFilterOption(nameof(TranslationInfo.quirkTimeSensitive)), EditableHelp(nameof(TranslationInfo.quirkTimeSensitiveExplain))]
-        TimeSensitive = 1 << 6,
+        PseudoNeedy = 1 << 6,
         [KtaneFilterOption(nameof(TranslationInfo.quirkTimeDependent)), EditableHelp(nameof(TranslationInfo.quirkTimeDependentExplain))]
         TimeDependent = 1 << 7,
     }
