@@ -131,7 +131,7 @@ namespace KtaneWeb
         public string quirkNeedsSolvesExplain = "The module cannot be solved until some, but not necessarily all, other non-ignored regular modules are solved first. In general, semi-bosses ignore modules with this quirk and often have this quirk.";
         public string quirkSolvesBefore = "Must solve before some";
         public string quirkSolvesBeforeExplain = "The module must be solved before some other non-ignored modules. In general, all modules with this quirk should ignore each other.";
-        public string quirkWillSolveSuddenly = "Will Solve Suddenly";
+        public string quirkWillSolveSuddenly = "Will solve suddenly";
         public string quirkWillSolveSuddenlyExplain = "The module will suddenly present a small window of time in which it will solve even if the solution is incorrect or if strikes are generated.";
         public string quirkSolvesWithOthers = "May solve with others";
         public string quirkSolvesWithOthersExplain = "The module may disarm itself immediately in response to another module being solved.";
@@ -193,15 +193,18 @@ namespace KtaneWeb
         public string listTutorialVideos = "Tutorial Videos";
 
         [ClassifyIgnore]
-        private KtaneFilter[] _filtersCache;
-        public KtaneFilter[] Filters => _filtersCache ??= Ut.NewArray(
+        private KtaneFilter[] _filtersCache1;
+        [ClassifyIgnore]
+        private KtaneFilter[] _filtersCache2;
+        public KtaneFilter[] Filters1 => _filtersCache1 ??= Ut.NewArray(
             KtaneFilter.Slider(filterDefuserDifficulty, "defdiff", mod => mod.DefuserDifficulty, @"mod=>mod.DefuserDifficulty"),
             KtaneFilter.Slider(filterExpertDifficulty, "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
             KtaneFilter.Checkboxes(filterType, "type", mod => mod.Type, @"mod=>mod.Type"),
             KtaneFilter.Checkboxes(filterOrigin, "origin", mod => mod.Origin, @"mod=>mod.Origin"),
             KtaneFilter.Checkboxes(filterTP, "twitchplays", mod => mod.TwitchPlaysScore == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
             KtaneFilter.Checkboxes(filterRuleSeed, "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
-            KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""),
+            KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
+        public KtaneFilter[] Filters2 => _filtersCache2 ??= Ut.NewArray(
             KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
             KtaneFilter.Checkboxes(filterBossStatus, "bossstatus", mod => mod.BossStatus, $@"mod=>mod.BossStatus||'{KtaneBossStatus.NotABoss}'"),
             KtaneFilter.BooleanMultipleSet(filterQuirks, "quirks", mod => mod.Quirks, $@"mod=>mod.Quirks||''"));

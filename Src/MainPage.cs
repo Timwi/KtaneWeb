@@ -228,42 +228,46 @@ namespace KtaneWeb
                         // FILTERS (tab popup)
                         new DIV { id = "filters", class_ = "popup disappear stay no-profile-selected" }._(
                             new DIV { class_ = "close" },
-                            new DIV { class_ = "filters" }._(
-                                translation.Filters.Select(filter => filter.ToHtml(translation)),
-                                new DIV { class_ = "option-group" }._(
-                                    new H4(translation.sortOrderHeader),
-                                    new DIV(
-                                        new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0", translation.sortOrderName.Accel('n'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-defuser-difficulty" }._("\u00a0", translation.sortOrderDefDifficulty)),
-                                    new DIV(
-                                        new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-expert-difficulty" }._("\u00a0", translation.sortOrderExpDifficulty)),
-                                    new DIV(
-                                        new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0", translation.sortOrderTP.Accel('b'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-time-mode-score", name = "sort", value = "timemodescore", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-time-mode-score", accesskey = "o" }._("\u00a0", translation.sortOrderTime.Accel('o'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
-                                        new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0", translation.sortOrderDate.Accel('d'))),
-                                    new DIV(
-                                        new INPUT { id = "sort-reverse", name = "sort", class_ = "sort-reverse", type = itype.checkbox },
-                                        new LABEL { for_ = "sort-reverse", accesskey = "e" }._("\u00a0", translation.sortOrderReverse.Accel('e')))),
-                                new DIV { class_ = "option-group" }._(
-                                    new H4(translation.filterProfile),
-                                    new DIV { class_ = "filter-profile" }._(
-                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
-                                        new LABEL { for_ = "filter-profile-enabled", class_ = "filter-profile-enabled-text" }),
-                                    new DIV { class_ = "filter-profile" }._(
-                                        new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-disabled" },
-                                        new LABEL { for_ = "filter-profile-disabled", class_ = "filter-profile-disabled-text" }),
-                                    new DIV { class_ = "filter-profile upload" }._(
-                                        new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
-                                        new LABEL { for_ = "profile-file" }._(translation.filterProfileOpen))))),
+                            new DIV { class_ = "filters hstack" }._(
+                                new DIV { id = "filters-col1", class_ = "vstack" }._(
+                                    translation.Filters1.Select(filter => filter.ToHtml(translation))),
+                                new DIV { id = "filters-col2", class_ = "vstack" }._(
+                                    translation.Filters2.Select(filter => filter.ToHtml(translation)),
+                                    new DIV { class_ = "option-group" }._(
+                                        new H4(translation.sortOrderHeader),
+                                        new DIV(
+                                            new INPUT { id = "sort-name", name = "sort", value = "name", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-name", accesskey = "n" }._("\u00a0", translation.sortOrderName.Accel('n'))),
+                                        new DIV(
+                                            new INPUT { id = "sort-defuser-difficulty", name = "sort", value = "defdiff", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-defuser-difficulty" }._("\u00a0", translation.sortOrderDefDifficulty)),
+                                        new DIV(
+                                            new INPUT { id = "sort-expert-difficulty", name = "sort", value = "expdiff", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-expert-difficulty" }._("\u00a0", translation.sortOrderExpDifficulty)),
+                                        new DIV(
+                                            new INPUT { id = "sort-twitch-score", name = "sort", value = "twitchscore", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-twitch-score", accesskey = "b" }._("\u00a0", translation.sortOrderTP.Accel('b'))),
+                                        new DIV(
+                                            new INPUT { id = "sort-time-mode-score", name = "sort", value = "timemodescore", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-time-mode-score", accesskey = "o" }._("\u00a0", translation.sortOrderTime.Accel('o'))),
+                                        new DIV(
+                                            new INPUT { id = "sort-published", name = "sort", value = "published", class_ = "sort", type = itype.radio },
+                                            new LABEL { for_ = "sort-published", accesskey = "d" }._("\u00a0", translation.sortOrderDate.Accel('d'))),
+                                        new DIV(
+                                            new INPUT { id = "sort-reverse", name = "sort", class_ = "sort-reverse", type = itype.checkbox },
+                                            new LABEL { for_ = "sort-reverse", accesskey = "e" }._("\u00a0", translation.sortOrderReverse.Accel('e')))),
+                                    new DIV { class_ = "option-group" }._(
+                                        new H4(translation.filterProfile),
+                                        new DIV { class_ = "filter-profile" }._(
+                                            new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-enabled" },
+                                            new LABEL { for_ = "filter-profile-enabled", class_ = "filter-profile-enabled-text" }),
+                                        new DIV { class_ = "filter-profile" }._(
+                                            new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-disabled" },
+                                            new LABEL { for_ = "filter-profile-disabled", class_ = "filter-profile-disabled-text" }),
+                                        new DIV { class_ = "filter-profile upload" }._(
+                                            new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
+                                            new LABEL { for_ = "profile-file" }._(translation.filterProfileOpen))))
+                                )),
 
                         // OPTIONS (tab popup)
                         new DIV { id = "options", class_ = "popup disappear stay" }._(
@@ -363,7 +367,15 @@ namespace KtaneWeb
                                     type = types[0];
 
                                 yield return new DIV { class_ = "explain" }._(attr.Explanation);
-                                if (type.IsEnum)
+                                if (type.IsEnum && type.GetCustomAttributes<FlagsAttribute>().Any())
+                                    foreach (var option in Enum.GetValues(type).Cast<Enum>())
+									{
+                                        yield return new INPUT { type = itype.checkbox, name = field.Name, id = $"input-{field.Name}-{option}" };
+                                        yield return "\u00a0";
+                                        yield return new LABEL { for_ = $"input-{field.Name}-{option}" }._(option.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? option.ToString());
+                                        yield return new BR { };
+                                    }
+                                else if (type.IsEnum)
                                     yield return new SELECT { name = field.Name }._(Enum.GetValues(type).Cast<Enum>().Select(val => new OPTION { value = val.ToString() }._(val.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? val.ToString())));
                                 else if (type == typeof(string) && attr.Multiline)
                                     yield return new TEXTAREA { name = field.Name };

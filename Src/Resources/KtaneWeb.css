@@ -514,7 +514,18 @@ body.sort-published #main-table th.infos::after {
     display: none;
 }
 
-#filters, #options {
+div.vstack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+div.hstack {
+    display: flex;
+    flex-direction: row;
+}
+
+#options {
     column-count: 2;
     column-gap: 3em;
 }
@@ -538,6 +549,10 @@ body.sort-published #main-table th.infos::after {
 
     #filters th {
         padding-right: .2cm;
+    }
+
+    #filters-col1 {
+        margin-right: 2.3em;
     }
 
 #more {

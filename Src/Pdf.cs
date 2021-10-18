@@ -176,7 +176,10 @@ namespace KtaneWeb
                     if (profileVetoList != null && !(profileVetoList.Contains(m.ModuleID) ? filterVetoedByProfile : filterEnabledByProfile))
                         return false;
 
-                    foreach (var filter in TranslationInfo.Default.Filters)
+                    foreach (var filter in TranslationInfo.Default.Filters1)
+                        if (!filter.Matches(m, json["filter"].Safe[filter.PropName].GetDictSafe()))
+                            return false;
+                    foreach (var filter in TranslationInfo.Default.Filters2)
                         if (!filter.Matches(m, json["filter"].Safe[filter.PropName].GetDictSafe()))
                             return false;
 
