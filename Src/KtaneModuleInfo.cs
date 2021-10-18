@@ -79,7 +79,7 @@ namespace KtaneWeb
         public KtaneQuirk Quirks = 0;
 
         // Specifies which modules this module should ignore. Applies to boss and semi-boss modules such as Forget Me Not, Encryption Bingo, Hogwarts, etc.
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+SolvesAtEnd”, “+NeedsOtherSolves”, “+SolvesBeforeSome”, “+SolvesAbruptly”, “+SolvesWithOthers”, or “+TimeSensitive” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignore list", "Use only for boss modules. Specify which other modules this module should ignore (semicolon-separated list). Use “+SolvesAtEnd”, “+NeedsOtherSolves”, “+SolvesBeforeSome”, “+WillSolveSuddenly”, “+SolvesWithOthers”, or “+TimeDependent” to include all modules marked as such. Prepend a module name with a minus (“-”) to exclude it.")]
         public string[] Ignore = null;
 
         [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
