@@ -771,11 +771,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         min: $('div#filter-' + initFilters[i].id).slider('values', 0),
                         max: $('div#filter-' + initFilters[i].id).slider('values', 1)
                     };
-                    var x = function(str)
-                    {
-                        return translation["moduleDiff" + str] || str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim();
-
-                    };
+                    var x = function(str) { return translation["moduleDiff" + str] || str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim(); };
                     var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
                     $('div#filter-label-' + initFilters[i].id).text(y(initFilters[i].values[filter[initFilters[i].id].min], initFilters[i].values[filter[initFilters[i].id].max]));
                     none = false;
@@ -783,7 +779,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                 case "checkboxes":
                     filter[initFilters[i].id] = {};
-                    for (var j = 0; j < initFilters[i].values.length; j++) {
+                    for (var j = 0; j < initFilters[i].values.length; j++)
+                    {
                         filter[initFilters[i].id][initFilters[i].values[j]] = $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j]).prop('checked');
                         if (filter[initFilters[i].id][initFilters[i].values[j]])
                             none = false;
@@ -799,10 +796,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             filter[initFilters[i].id][initFilters[i].values[j]] = 'n';
                         else
                             filter[initFilters[i].id][initFilters[i].values[j]] = 'e';
-
-                        if (filter[initFilters[i].id][initFilters[i].values[j]] != 'e')
-                            none = false;
                     }
+                    none = false;
                     break;
             }
             noneSelected[initFilters[i].id] = none;
@@ -841,14 +836,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         case "flags":
                             let allMatches = initFilters[i].fnc(mod);
                             let match = true;
-                            for (let key in filter[initFilters[i].id]) {
+                            for (let key in filter[initFilters[i].id])
+                            {
                                 if ((filter[initFilters[i].id][key] == 'y' && !allMatches.includes(key)) ||
-                                    (filter[initFilters[i].id][key] == 'n' && allMatches.includes(key)) ) {
+                                    (filter[initFilters[i].id][key] == 'n' && allMatches.includes(key)))
+                                {
                                     match = false;
                                     break;
                                 }
                             }
-                            filteredIn = filteredIn && (match || noneSelected[initFilters[i].id]);
+                            filteredIn = filteredIn && match;
                             break;
                     }
                 }
@@ -1319,7 +1316,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 {
                     if (!(initFilters[i].values[j] in filter[initFilters[i].id]))
                         filter[initFilters[i].id][initFilters[i].values[j]] = true;
-                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j]).prop('checked', filter[initFilters[i].id][initFilters[i].values[j]]);
+                    $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}`).prop('checked', filter[initFilters[i].id][initFilters[i].values[j]]);
                 }
                 break;
 
@@ -1327,11 +1324,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'object')
                     filter[initFilters[i].id] = {};
 
-                for (var j = 0; j < initFilters[i].values.length; j++) {
+                for (var j = 0; j < initFilters[i].values.length; j++)
+                {
                     var op = filter[initFilters[i].id][initFilters[i].values[j]];
-                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-y').prop('checked', op == 'y');
-                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-n').prop('checked', op == 'n');
-                    $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-e').prop('checked', op == 'e');
+                    $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-y`).prop('checked', op == 'y');
+                    $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-n`).prop('checked', op == 'n');
+                    $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-e`).prop('checked', op == 'e');
                 }
                 break;
         }

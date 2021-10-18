@@ -373,7 +373,7 @@ namespace KtaneWeb
                                         yield return new INPUT { type = itype.checkbox, name = field.Name, id = $"input-{field.Name}-{option}" };
                                         yield return "\u00a0";
                                         yield return new LABEL { for_ = $"input-{field.Name}-{option}" }._(option.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? option.ToString());
-                                        yield return new BR { };
+                                        yield return new BR();
                                     }
                                 else if (type.IsEnum)
                                     yield return new SELECT { name = field.Name }._(Enum.GetValues(type).Cast<Enum>().Select(val => new OPTION { value = val.ToString() }._(val.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? val.ToString())));

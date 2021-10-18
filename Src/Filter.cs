@@ -133,8 +133,7 @@ namespace KtaneWeb
 
         public override object ToHtml(TranslationInfo translation) => new DIV { class_ = "option-group" }._(
             new H4(ReadableName),
-            new TABLE(
-            Options.Select(opt => new TR(
+            new TABLE(Options.Select(opt => new TR(
                 new TH(opt.Translate(translation)),
                 new TD(
                     new INPUT { type = itype.radio, class_ = "filter", name = $"filter-{PropName}-{opt.Name}", id = $"filter-{PropName}-{opt.Name}-y" }, " ",
