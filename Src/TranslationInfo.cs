@@ -158,8 +158,8 @@ namespace KtaneWeb
         public string sortOrderReverse = "Reverse";
         public string filterProfile = "Profile";
         public string filterProfileOpen = "Filter by a profile";
-        public string[] filterProfileEnabled = { "Enabled by", "" };
-        public string[] filterProfileVetoed = { "Vetoed by", "" };
+        public string[] filterProfileEnabled = { "Enabled by ", "" };
+        public string[] filterProfileVetoed = { "Vetoed by ", "" };
         public string selectableManual = "Manual";
         public string selectableSteam = "Steam Workshop";
         public string selectableSource = "Source code";
