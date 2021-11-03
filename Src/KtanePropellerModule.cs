@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using RT.Json;
@@ -199,17 +199,17 @@ namespace KtaneWeb
                         goto tryAgain5;
                     }
 
-                    var appPath = PathUtil.AppPathCombine(@"..\..");
-                    config.JavaScriptFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.js");
-                    config.CssFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.css");
+                    var appPath = PathUtil.AppPathCombine("..", "..");
+                    config.JavaScriptFile = Path.Combine(appPath, "Src", "Resources", "KtaneWeb.js");
+                    config.CssFile = Path.Combine(appPath, "Src", "Resources", "KtaneWeb.css");
                     if (!File.Exists(config.JavaScriptFile) || !File.Exists(config.CssFile))
                     {
                         Console.WriteLine();
                         tryAgain6:
                         ConsoleUtil.WriteLine("Finally, please let me know where you placed the KtaneWeb source code (what you’re running right now):".Color(ConsoleColor.Gray));
                         appPath = Console.ReadLine();
-                        config.JavaScriptFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.js");
-                        config.CssFile = Path.Combine(appPath, @"Src\Resources\KtaneWeb.css");
+                        config.JavaScriptFile = Path.Combine(appPath, "Src", "Resources", "KtaneWeb.js");
+                        config.CssFile = Path.Combine(appPath, "Src", "Resources", "KtaneWeb.css");
                         if (!File.Exists(config.JavaScriptFile) || !File.Exists(config.CssFile))
                         {
                             ConsoleUtil.WriteLine($"{"Problem:".Color(ConsoleColor.Magenta)} {"That does not look like the KtaneWeb source code folder.".Color(ConsoleColor.Red)}", null);
