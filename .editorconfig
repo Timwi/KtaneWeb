@@ -1,0 +1,6 @@
+[*.{cs,css,js}]
+indent_size = 4
+indent_style = space
+
+[*.cs]
+csharp_indent_labels = false
