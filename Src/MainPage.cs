@@ -265,7 +265,7 @@ namespace KtaneWeb
                                             new INPUT { type = itype.checkbox, class_ = "filter", id = "filter-profile-disabled" },
                                             new LABEL { for_ = "filter-profile-disabled", class_ = "filter-profile-disabled-text" }),
                                         new DIV { class_ = "filter-profile upload" }._(
-                                            new INPUT { type = itype.file, id = "profile-file", style = "display: none" },
+                                            new INPUT { type = itype.file, accept = "application/json", id = "profile-file", style = "display: none" },
                                             new LABEL { for_ = "profile-file" }._(translation.filterProfileOpen))))
                                 )),
 
