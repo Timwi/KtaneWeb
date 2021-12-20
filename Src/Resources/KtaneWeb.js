@@ -83,7 +83,7 @@ const languageCodes = {
     "Suomi": "fi",
     "Svenska": "sv",
     "Türkçe": "tr",
-    "Valencià": "ca",
+    "Valencià": "ca-va",
     "Čeština": "cs",
     "Български": "bg",
     "Русский": "ru",
