@@ -72,6 +72,7 @@ const languageCodes = {
     "Español": "es",
     "Esperanto": "eo",
     "Français": "fr",
+    "Frysk": "fy",
     "Italiano": "it",
     "Magyar": "hu",
     "Nederlands": "nl",
@@ -82,6 +83,7 @@ const languageCodes = {
     "Suomi": "fi",
     "Svenska": "sv",
     "Türkçe": "tr",
+    "Valencià": "ca-va",
     "Čeština": "cs",
     "Български": "bg",
     "Русский": "ru",
@@ -92,8 +94,7 @@ const languageCodes = {
     "日本語": "ja",
     "简体中文": "zh-CN",
     "繁體中文": "zh-TW",
-    "한국어": "ko",
-    "Frysk": "fy"
+    "한국어": "ko"
 };
 
 const languageCodesReverse = Object.fromEntries(Object.entries(languageCodes).map(([k, v]) => ([v, k])));
