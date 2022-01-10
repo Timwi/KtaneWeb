@@ -430,17 +430,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             "YouTube": "youtube.com/",
         };
 
-        function makeAuthorElement(mod, allContributorsEnabled)
+        function makeAuthorElement(mod)
         {
             const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
-            let namesSet = new Set();
-            if (mod.Contributors)
-                for (let key of Object.keys(mod.Contributors))
-                    for (let contributor of mod.Contributors[key])
-                        namesSet.add(contributor);
-            let names = Array.from(namesSet);
-            const author = allContributorsEnabled ? (mod.Contributors === undefined ? mod.Author : names.join(', ')) : mod.Author;
-            return el('div', 'inf-author inf', el('span', 'contributors', author), { title: title });
+            return el('div', 'inf-author inf', el('span', 'contributors', mod.Author), { title: title });
+        }
+
+        function makeAllAuthorElement(mod) {
+            const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
+            const author = mod.Contributors === undefined ? mod.Author : mod.AllContr;
+            return el('div', 'inf-author all-contributors inf', el('span', 'contributors', author), { title: title });
         }
 
         function addAuthorClick(element, mod)
@@ -583,9 +582,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 else
                                     infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
                             }
-                            var allContributorsEnabled = false;
-                            try { allContributorsEnabled = (JSON.parse(lStorage.getItem('display')) || []).includes('all-contributors') } catch (exc) { }
-                            infos.append(makeAuthorElement(mod, allContributorsEnabled),
+                            infos.append(makeAuthorElement(mod), makeAllAuthorElement(mod),
                                 el("div", "inf-published inf inf2", mod.Published));
                             if (mod.TwitchPlays)
                             {
@@ -623,6 +620,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                             addAuthorClick(td1.querySelector(".inf-author"), mod);
                             addAuthorClick(td2.querySelector(".inf-author"), mod);
+                            addAuthorClick(td1.querySelector(".inf-author.all-contributors"), mod);
+                            addAuthorClick(td2.querySelector(".inf-author.all-contributors"), mod);
 
                             var lnk1 = el("a", "manual-selector", { href: "#" });
                             lnk1.onclick = makeClickHander(lnk1, false, mod);

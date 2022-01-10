@@ -282,7 +282,9 @@ body:not(.display-rule-seed) div.infos .inf-rule-seed,
 body:not(.display-souvenir) div.infos .inf-souvenir,
 body:not(.display-id) div.infos .inf-id,
 body:not(.display-description) div.infos .inf-description,
-body:not(.display-published) div.infos .inf-published {
+body:not(.display-published) div.infos .inf-published,
+body:not(.display-all-contributors) div.infos .inf-author.all-contributors,
+body.display-all-contributors div.infos .inf-author:not(.all-contributors) {
     display: none;
 }
 
