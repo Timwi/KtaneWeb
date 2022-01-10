@@ -176,7 +176,7 @@ namespace KtaneWeb
         public string displayDate = "Date published";
         public string displayID = "Module ID";
         public string displayUpdated = "Last updated";
-        public string displayAllContributors = "All Contributors";
+        public string displayAllContributors = "All contributors";
         public string searchOption = "Search options";
         public string searchSteamID = "Search by Steam ID";
         public string searchSymbol = "Search by Symbol";

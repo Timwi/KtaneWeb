@@ -229,6 +229,10 @@ div.infos .inf-author, div.infos .inf-published {
         content: '\000a by ';
         white-space: pre;
     }
+    div.infos .inf-author::after {
+        content: '\0020 ';
+        white-space: normal;
+    }
 
     div.infos .inf-author span.contributors {
         text-decoration: underline dotted;
