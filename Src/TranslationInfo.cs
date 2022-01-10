@@ -176,6 +176,7 @@ namespace KtaneWeb
         public string displayDate = "Date published";
         public string displayID = "Module ID";
         public string displayUpdated = "Last updated";
+        public string displayAllContributors = "All Contributors";
         public string searchOption = "Search options";
         public string searchSteamID = "Search by Steam ID";
         public string searchSymbol = "Search by Symbol";
@@ -262,7 +263,9 @@ namespace KtaneWeb
             (readable: displayRuleSeed, id: "rule-seed"),
             (readable: displayDate, id: "published"),
             (readable: displayID, id: "id"),
-            (readable: displayUpdated, id: "last-updated")).WhereNotNull().ToArray();
+            (readable: displayUpdated, id: "last-updated"),
+            (readable: displayAllContributors, id: "all-contributors")
+            ).WhereNotNull().ToArray();
 
         [ClassifyIgnore]
         public string Json;

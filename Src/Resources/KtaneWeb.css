@@ -346,7 +346,12 @@ tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.com
         box-sizing: border-box;
     }
 
-    #main-table th, #main-table td.infos-2 {
+    #main-table th,
+    #main-table td.infos-2 .inf-difficulty,
+    #main-table td.infos-2 .inf-published,
+    #main-table td.infos-2 .inf-twitch,
+    #main-table td.infos-2 .inf-time-mode
+    {
         white-space: nowrap;
     }
 

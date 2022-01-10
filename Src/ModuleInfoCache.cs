@@ -85,6 +85,9 @@ namespace KtaneWeb
 
                         if (string.IsNullOrEmpty(mod.Author) && mod.Contributors != null)
                             modJson["Author"] = mod.Contributors.ToAuthorString();
+                        modJson["AllContr"] = modJson["Author"];
+                        if (mod.Contributors != null)
+                            modJson["AllContr"] = mod.Contributors.ToAllAuthorString();
 
                         return (modJson, mod, file.LastWriteTimeUtc).Nullable();
                     }

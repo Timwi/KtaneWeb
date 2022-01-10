@@ -256,6 +256,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Idea", "People who contributed the original idea for the mod. (Include only if different from both Developer and Manual.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] Idea;
 
+        public string ToAllAuthorString() => new[] { Developer, Manual, ManualGraphics, TwitchPlays, Maintainer, Audio, Modeling, Idea }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
         public string ToAuthorString() => new[] { Developer, Manual }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");
 
         public override bool Equals(object obj) => obj != null && obj is ContributorInfo info && Equals(info);

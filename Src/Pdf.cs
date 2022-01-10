@@ -162,6 +162,7 @@ namespace KtaneWeb
                 var searchBySymbol = json["searchBySymbol"].GetBoolSafe() ?? false;
                 var searchBySteamID = json["searchBySteamID"].GetBoolSafe() ?? false;
                 var searchByModuleID = json["searchByModuleID"].GetBoolSafe() ?? false;
+                var displayAllContributors = json["dispAllContr"].GetBoolSafe() ?? false;
 
                 static string unifyString(string str) => Regex.Replace(str.Normalize(NormalizationForm.FormD), @"[\u0300-\u036f]", "").Replace("grey", "gray").Replace("colour", "color");
 
@@ -192,7 +193,10 @@ namespace KtaneWeb
                     if (searchOptions.Contains("names"))
                         searchWhat += " " + m.Name.ToLowerInvariant() + " " + m.SortKey.ToLowerInvariant();
                     if (searchOptions.Contains("authors") && (m.Author != null || m.Contributors != null))
-                        searchWhat += " " + (m.Author ?? m.Contributors.ToAuthorString()).ToLowerInvariant();
+                        if (displayAllContributors)
+                            searchWhat += " " + (m.Author ?? m.Contributors.ToAllAuthorString()).ToLowerInvariant();
+                        else
+                            searchWhat += " " + (m.Author ?? m.Contributors.ToAuthorString()).ToLowerInvariant();
                     if (searchOptions.Contains("descriptions"))
                         searchWhat += " " + m.Description.ToLowerInvariant();
                     if (searchBySymbol && m.Symbol != null)

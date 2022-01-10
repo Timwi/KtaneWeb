@@ -430,10 +430,17 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             "YouTube": "youtube.com/",
         };
 
-        function makeAuthorElement(mod)
+        function makeAuthorElement(mod, allContributorsEnabled)
         {
             const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
-            return el('div', 'inf-author inf', el('span', 'contributors', mod.Author), { title: title });
+            let namesSet = new Set();
+            if (mod.Contributors)
+                for (let key of Object.keys(mod.Contributors))
+                    for (let contributor of mod.Contributors[key])
+                        namesSet.add(contributor);
+            let names = Array.from(namesSet);
+            const author = allContributorsEnabled ? (mod.Contributors === undefined ? mod.Author : names.join(', ')) : mod.Author;
+            return el('div', 'inf-author inf', el('span', 'contributors', author), { title: title });
         }
 
         function addAuthorClick(element, mod)
@@ -576,7 +583,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 else
                                     infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
                             }
-                            infos.append(makeAuthorElement(mod),
+                            var allContributorsEnabled = false;
+                            try { allContributorsEnabled = (JSON.parse(lStorage.getItem('display')) || []).includes('all-contributors') } catch (exc) { }
+                            infos.append(makeAuthorElement(mod, allContributorsEnabled),
                                 el("div", "inf-published inf inf2", mod.Published));
                             if (mod.TwitchPlays)
                             {
@@ -819,6 +828,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let searchBySymbol = document.getElementById('option-include-symbol').checked;
         let searchBySteamID = document.getElementById('option-include-steam-id').checked;
         let searchByModuleID = document.getElementById('option-include-module-id').checked;
+        let displayAllContributors = document.getElementById('display-all-contributors').checked;
         modules.forEach(function(mod)
         {
             let filteredIn = missionList === null || missionList.has(mod.ModuleID);
@@ -864,7 +874,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (searchOptions.indexOf('names') !== -1)
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
-                searchWhat += ' ' + mod.Author.toLowerCase();
+                if (displayAllContributors)
+                    searchWhat += ' ' + mod.AllContr.toLowerCase();
+                else
+                    searchWhat += ' ' + mod.Author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
                 searchWhat += ' ' + mod.Description.toLowerCase();
             if (searchBySymbol && mod.Symbol)
@@ -1650,7 +1663,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             filterVetoedByProfile: $('input#filter-profile-disabled').prop('checked'),
             searchBySymbol: document.getElementById('option-include-symbol').checked,
             searchBySteamID: document.getElementById('option-include-steam-id').checked,
-            searchByModuleID: document.getElementById('option-include-module-id').checked
+            searchByModuleID: document.getElementById('option-include-module-id').checked,
+            dispAllContr: document.getElementById('display-all-contributors').checked
         }));
         return true;
     });
