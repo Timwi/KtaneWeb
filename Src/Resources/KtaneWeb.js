@@ -188,32 +188,32 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         'timemodescore': { fnc: function(mod) { return mod.TimeMode ? mod.TimeMode.Score : 0; }, reverse: false, bodyCss: 'sort-time-mode-score', radioButton: '#sort-time-mode-score' },
         'published': { fnc: function(mod) { return mod.Published; }, reverse: true, bodyCss: 'sort-published', radioButton: '#sort-published' }
     };
-    var sort = lStorage.getItem('sort') || 'published';
+    let sort = lStorage.getItem('sort') || 'published';
     if (!(sort in sorts))
         sort = 'published';
-    var reverse = lStorage.getItem('sort-reverse') == "true" || false;
+    let reverse = lStorage.getItem('sort-reverse') == "true" || false;
 
-    var defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published', 'twitch', 'time-mode', 'souvenir', 'rule-seed'];
-    var displayOptions = defaultDisplayOptions;
+    let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published', 'twitch', 'time-mode', 'souvenir', 'rule-seed'];
+    let displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
-    var resultsMode = lStorage.getItem('resultsMode') || 'hide';
-    var resultsLimit = lStorage.getItem('resultsLimit') || 20;
+    let resultsMode = lStorage.getItem('resultsMode') || 'hide';
+    let resultsLimit = lStorage.getItem('resultsLimit') || 20;
 
-    var validSearchOptions = ['names', 'authors', 'descriptions'];
-    var defaultSearchOptions = ['names'];
-    var searchOptions = defaultSearchOptions;
+    let validSearchOptions = ['names', 'authors', 'descriptions'];
+    let defaultSearchOptions = ['names'];
+    let searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
 
-    var validViews = ['List', 'PeriodicTable'];
-    var view = lStorage.getItem('view');
+    let validViews = ['List', 'PeriodicTable'];
+    let view = lStorage.getItem('view');
     if (validViews.indexOf(view) === -1)
         view = 'List';
 
     let profileVetoList = null;
     let missionList = null;
 
-    var version = JSON.parse(lStorage.getItem('version')) || 0;
+    let version = JSON.parse(lStorage.getItem('version')) || 0;
     if (version < 2)
     {
         sort = 'published';
@@ -227,7 +227,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     // Refers to a module if the “Find” box contains the exact name or Periodic Table symbol for a module
     let showAtTopOfResults = [];
 
-    var selectedIndex = 0;
+    let selectedIndex = 0;
     function updateSearchHighlight()
     {
         let visible = modules.filter(mod => mod.IsVisible);
@@ -390,7 +390,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         }
     }
 
-    var viewsReady = new Map();
+    let viewsReady = new Map();
 
     function getCompatibilityText(mod)
     {
@@ -436,7 +436,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             return el('div', 'inf-author inf', el('span', 'contributors', mod.Author), { title: title });
         }
 
-        function makeAllAuthorElement(mod) {
+        function makeAllAuthorElement(mod)
+        {
             const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
             const author = mod.Contributors === undefined ? mod.Author : mod.AllContr;
             return el('div', 'inf-author all-contributors inf', el('span', 'contributors', author), { title: title });
@@ -972,7 +973,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         lStorage.setItem('preferredManuals', JSON.stringify(preferredManuals));
     }
 
-    var preventDisappear = 0;
+    let preventDisappear = 0;
     function disappear()
     {
         if (preventDisappear === 0)
@@ -1239,6 +1240,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         mod.SelectableLinkUrl = null;
         mod.IsVisible = true;
         mod.MatchesFilter = false;
+
+        let namesSet = new Set();
+        if (mod.Author)
+            namesSet.add(mod.Author);
+        if (mod.Contributors)
+            for (let key of Object.keys(mod.Contributors))
+                for (let contributor of mod.Contributors[key])
+                    namesSet.add(contributor);
+        mod.AllContr = Array.from(namesSet).join(', ');
+
+        if (mod.SortKey === undefined)
+            mod.SortKey = mod.Name.toUpperCase().replace(/^THE /, '').replace(/[^A-Z0-9]/g, '');
 
         // (bool sh) => shows (sh) or hides (!sh) the module
         mod.FncsShowHide = [sh => { mod.IsVisible = sh; }];

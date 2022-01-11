@@ -85,9 +85,10 @@ namespace KtaneWeb
 
                         if (string.IsNullOrEmpty(mod.Author) && mod.Contributors != null)
                             modJson["Author"] = mod.Contributors.ToAuthorString();
-                        modJson["AllContr"] = modJson["Author"];
-                        if (mod.Contributors != null)
-                            modJson["AllContr"] = mod.Contributors.ToAllAuthorString();
+
+                        // Save JSON size by only including the SortKey when it’s not obvious
+                        if (modJson["SortKey"].GetStringSafe() == Regex.Replace(mod.Name.ToUpperInvariant(), "^THE ", "").Where(ch => (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')).JoinString())
+                            modJson.Remove("SortKey");
 
                         return (modJson, mod, file.LastWriteTimeUtc).Nullable();
                     }
