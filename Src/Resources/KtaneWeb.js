@@ -1242,8 +1242,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         mod.MatchesFilter = false;
 
         let namesSet = new Set();
-        if (mod.Author)
-            namesSet.add(mod.Author);
         if (mod.Contributors)
             for (let key of Object.keys(mod.Contributors))
                 for (let contributor of mod.Contributors[key])
