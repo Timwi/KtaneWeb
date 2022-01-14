@@ -1243,10 +1243,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         let namesSet = new Set();
         if (mod.Contributors)
+        {
             for (let key of Object.keys(mod.Contributors))
                 for (let contributor of mod.Contributors[key])
                     namesSet.add(contributor);
-        mod.AllContr = Array.from(namesSet).join(', ');
+            mod.AllContr = Array.from(namesSet).join(', ');
+        }
+        else
+            mod.AllContr = mod.Author;
 
         if (mod.SortKey === undefined)
             mod.SortKey = mod.Name.toUpperCase().replace(/^THE /, '').replace(/[^A-Z0-9]/g, '');
