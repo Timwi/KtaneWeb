@@ -99,16 +99,15 @@ namespace KtaneWeb
                                 new LABEL { for_ = "search-field-mission" }._(translation.searchMission + " "),
                                 new SELECT { id = "search-field-mission", class_ = "sw-focus" }, " ",
                                 new A { id = "search-field-mission-link", accesskey = "]" }._("open")),
-                            new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed")),
-
-                        new DIV { id = "main-table-container" }._(
+                            new DIV { id = "rule-seed-mobile", class_ = "popup-link" }.Data("popup", "rule-seed"),
 
                             // TABS
                             new DIV { id = "tabs" }._(
                                 new A { href = "#", class_ = "tab popup-link", id = "rule-seed-link", accesskey = "s" }.Data("popup", "rule-seed")._(translation.tabRuleSeed.Accel('s'), new SPAN { id = "rule-seed-number" }),
                                 new A { href = "#", class_ = "tab popup-link", id = "filters-link", accesskey = "." }.Data("popup", "filters")._(translation.tabFilters),
-                                new A { href = "#", class_ = "tab popup-link", id = "options-link", accesskey = "/" }.Data("popup", "options")._(translation.tabOptions)),
+                                new A { href = "#", class_ = "tab popup-link", id = "options-link", accesskey = "/" }.Data("popup", "options")._(translation.tabOptions))),
 
+                        new DIV { id = "main-table-container" }._(
                             // MAIN TABLE
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
