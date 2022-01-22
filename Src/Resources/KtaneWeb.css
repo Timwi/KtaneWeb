@@ -125,6 +125,45 @@ textarea {
                 display: inline;
             }
 
+    #top-controls #tabs {
+        position: sticky;
+        top: 15px;
+        float: right;
+        z-index: 21;
+    }
+
+        #top-controls #tabs > .tab {
+            display: inline-block;
+            background-color: #eef;
+            border: 1px solid #eef;
+            border-bottom: none;
+            border-top-color: #ccf;
+            border-right-color: #ccf;
+            border-right-width: 2px;
+            border-top-left-radius: .5em;
+            border-top-right-radius: .5em;
+            text-decoration: none;
+            color: #024;
+            padding: 0 .5em .115em 28px;
+            margin-left: .2em;
+            vertical-align: bottom;
+            background-size: 20px 20px;
+            background-position: 4px center;
+            background-repeat: no-repeat;
+        }
+
+            #top-controls #tabs > .tab#rule-seed-link {
+                background-image: url(HTML/img/spanner.png);
+            }
+
+            #top-controls #tabs > .tab#filters-link {
+                background-image: url(HTML/img/filter-icon.png);
+            }
+
+            #top-controls #tabs > .tab#options-link {
+                background-image: url(HTML/img/sliders.png);
+            }
+
 
 div.modlink-wrap {
     line-height: 1;
@@ -458,46 +497,6 @@ body.sort-published #main-table th.infos::after {
     clear: both;
     position: relative;
 }
-
-    #main-table-container #tabs {
-        position: sticky;
-        top: 15px;
-        float: right;
-        z-index: 21;
-        margin-top: -14px;
-    }
-
-        #main-table-container #tabs > .tab {
-            display: inline-block;
-            background-color: #eef;
-            border: 1px solid #eef;
-            border-bottom: none;
-            border-top-color: #ccf;
-            border-right-color: #ccf;
-            border-right-width: 2px;
-            border-top-left-radius: .5em;
-            border-top-right-radius: .5em;
-            text-decoration: none;
-            color: #024;
-            padding: 0 .5em .115em 28px;
-            margin-left: .2em;
-            vertical-align: bottom;
-            background-size: 20px 20px;
-            background-position: 4px center;
-            background-repeat: no-repeat;
-        }
-
-            #main-table-container #tabs > .tab#rule-seed-link {
-                background-image: url(HTML/img/spanner.png);
-            }
-
-            #main-table-container #tabs > .tab#filters-link {
-                background-image: url(HTML/img/filter-icon.png);
-            }
-
-            #main-table-container #tabs > .tab#options-link {
-                background-image: url(HTML/img/sliders.png);
-            }
 
 #module-count {
     clear: both;
