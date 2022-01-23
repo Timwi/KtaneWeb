@@ -65,10 +65,12 @@ else
     document.getElementById("theme-css").setAttribute('href', '');
 
 const languageCodes = {
+    "Català": "ca-CT",
     "Dansk": "da",
     "Deutsch": "de",
     "Eesti": "et",
     "English": "en",
+    "Euskara": "eu",
     "Español": "es",
     "Esperanto": "eo",
     "Français": "fr",
@@ -83,8 +85,9 @@ const languageCodes = {
     "Suomi": "fi",
     "Svenska": "sv",
     "Türkçe": "tr",
-    "Valencià": "ca-va",
+    "Valencià": "ca-VA",
     "Čeština": "cs",
+    "Ελληνικά": "el",
     "Български": "bg",
     "Русский": "ru",
     "Українске": "uk",
