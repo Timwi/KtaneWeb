@@ -15,17 +15,17 @@
   <ItemGroup>
     <PackageReference Include="ICSharpCode.SharpZipLib" Version="0.85.4.369" />
     <PackageReference Include="PdfSharp" Version="1.50.5147.0" />
-    <PackageReference Include="PropellerApi" Version="1.0.22.0" />
-    <PackageReference Include="RT.Json" Version="2.0.1690.0" />
-    <PackageReference Include="RT.PostBuild" Version="2.0.1690.0" />
-    <PackageReference Include="RT.Serialization" Version="2.0.1690.0" />
-    <PackageReference Include="RT.Serialization.Binary" Version="2.0.1690.0" />
-    <PackageReference Include="RT.Serialization.Json" Version="2.0.1690.0" />
-    <PackageReference Include="RT.Serialization.Xml" Version="2.0.1690.0" />
-    <PackageReference Include="RT.Servers" Version="1.0.1665.0" />
-    <PackageReference Include="RT.TagSoup" Version="1.0.1625.0" />
-    <PackageReference Include="RT.Util" Version="2.0.1690.0" />
-    <PackageReference Include="RT.Util.Core" Version="2.0.1690.0" />
+    <PackageReference Include="PropellerApi" Version="1.0.25" />
+    <PackageReference Include="RT.Json" Version="2.0.1706" />
+    <PackageReference Include="RT.PostBuild" Version="2.0.1706" />
+    <PackageReference Include="RT.Serialization" Version="2.0.1706" />
+    <PackageReference Include="RT.Serialization.Binary" Version="2.0.1706" />
+    <PackageReference Include="RT.Serialization.Json" Version="2.0.1706" />
+    <PackageReference Include="RT.Serialization.Xml" Version="2.0.1706" />
+    <PackageReference Include="RT.Servers" Version="1.0.1676" />
+    <PackageReference Include="RT.TagSoup" Version="1.0.1633" />
+    <PackageReference Include="RT.Util" Version="2.0.1706" />
+    <PackageReference Include="RT.Util.Core" Version="2.0.1706" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
