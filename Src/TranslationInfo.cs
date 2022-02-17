@@ -101,6 +101,7 @@ namespace KtaneWeb
         public string filterExpertDifficulty = "Expert difficulty";
         public string filterType = "Type";
         public string filterOrigin = "Origin";
+        public string filterCompatibility = "Compatibility";
         public string filterTP = "Twitch Plays";
         public string filterRuleSeed = "Rule seed";
         public string filterSouvenir = "Souvenir";
@@ -202,6 +203,7 @@ namespace KtaneWeb
             KtaneFilter.Slider(filterExpertDifficulty, "expdiff", mod => mod.ExpertDifficulty, @"mod=>mod.ExpertDifficulty"),
             KtaneFilter.Checkboxes(filterType, "type", mod => mod.Type, @"mod=>mod.Type"),
             KtaneFilter.Checkboxes(filterOrigin, "origin", mod => mod.Origin, @"mod=>mod.Origin"),
+            KtaneFilter.Checkboxes(filterCompatibility, "compatibility", mod => mod.Compatibility, @"mod=>mod.Compatibility"),
             KtaneFilter.Checkboxes(filterTP, "twitchplays", mod => mod.TwitchPlaysScore == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
             KtaneFilter.Checkboxes(filterRuleSeed, "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
             KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
