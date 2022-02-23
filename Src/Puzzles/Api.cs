@@ -140,7 +140,7 @@ namespace KtaneWeb.Puzzles
             if (!canEdit())
                 return RenderBodyStr("You do not have access to edit puzzles.");
             var newGroup = new PuzzleGroup();
-            var already = _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsNoCase(newGroup.Title));
+            var already = _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsIgnoreCase(newGroup.Title));
             if (already != null)
                 return RenderBodyStr($"There is already a puzzle group titled “{already.Title}”. Please rename that group first.");
 
@@ -155,7 +155,7 @@ namespace KtaneWeb.Puzzles
 
         private string editGroup(string groupname, Action<PuzzleGroup> action)
         {
-            var group = _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsNoCase(groupname));
+            var group = _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsIgnoreCase(groupname));
             if (group != null)
             {
                 if (!canEdit(group))
@@ -170,7 +170,7 @@ namespace KtaneWeb.Puzzles
         [AjaxMethod]
         public string RenameGroup(string groupname, string query)
         {
-            var already = groupname.EqualsNoCase(query) ? null : _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsNoCase(query));
+            var already = groupname.EqualsIgnoreCase(query) ? null : _puzzles.PuzzleGroups.FirstOrDefault(gr => gr.Title.EqualsIgnoreCase(query));
             return already != null
                 ? RenderBodyStr($"There is already a puzzle group titled “{already.Title}”.")
                 : editGroup(groupname, gr => { gr.Title = query; });
@@ -191,7 +191,7 @@ namespace KtaneWeb.Puzzles
         public string AddPuzzle(string groupname) => editGroup(groupname, gr =>
         {
             var newPuzzle = new Puzzle();
-            var already = gr.Puzzles.FirstOrDefault(pz => pz.Title.EqualsNoCase(newPuzzle.Title));
+            var already = gr.Puzzles.FirstOrDefault(pz => pz.Title.EqualsIgnoreCase(newPuzzle.Title));
             if (already != null)
                 throw new Exception($"There is already a puzzle titled “{already.Title}”.");
             gr.Puzzles.Add(newPuzzle);
@@ -199,7 +199,7 @@ namespace KtaneWeb.Puzzles
 
         private string editPuzzle(string groupname, string puzzlename, Action<PuzzleGroup, Puzzle> action) => editGroup(groupname, group =>
         {
-            var puzzle = group.Puzzles.FirstOrDefault(pz => pz.Title.EqualsNoCase(puzzlename));
+            var puzzle = group.Puzzles.FirstOrDefault(pz => pz.Title.EqualsIgnoreCase(puzzlename));
             if (puzzle != null)
             {
                 action(group, puzzle);
@@ -210,12 +210,12 @@ namespace KtaneWeb.Puzzles
         [AjaxMethod]
         public string RenamePuzzle(string groupname, string puzzlename, string query) => editPuzzle(groupname, puzzlename, (group, puzzle) =>
         {
-            var already = puzzlename.EqualsNoCase(query) ? null : group.Puzzles.FirstOrDefault(pz => pz.Title.EqualsNoCase(query));
+            var already = puzzlename.EqualsIgnoreCase(query) ? null : group.Puzzles.FirstOrDefault(pz => pz.Title.EqualsIgnoreCase(query));
             if (already != null)
                 throw new Exception($"There is already a puzzle titled “{already.Title}”.");
             var newFilenameStub = Regex.Replace(query, @"[\*\?<>/#\\&%]", "_").Trim();
             var newFilename = newFilenameStub + ".html";
-            already = group.Puzzles.FirstOrDefault(pz => pz != puzzle && pz.Filename.EqualsNoCase(newFilename));
+            already = group.Puzzles.FirstOrDefault(pz => pz != puzzle && pz.Filename.EqualsIgnoreCase(newFilename));
             if (already != null)
                 throw new Exception($"There is already a puzzle with the filename “{already.Filename}”.");
             puzzle.Title = query;

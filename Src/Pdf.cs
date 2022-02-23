@@ -202,7 +202,7 @@ namespace KtaneWeb
                     if (searchBySymbol && m.Symbol != null)
                         searchWhat += " " + m.Symbol.ToLowerInvariant();
 
-                    return keywords.All(unifyString(searchWhat).ContainsNoCase);
+                    return keywords.All(unifyString(searchWhat).ContainsIgnoreCase);
                 });
 
                 // Sort
