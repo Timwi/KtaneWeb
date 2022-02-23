@@ -25,7 +25,6 @@ table {
 
 #main-table, #main-periodic-table {
     display: none;
-    clear: both;
 }
 
 td, th {
@@ -57,13 +56,11 @@ textarea {
 
 /* Top controls */
 #top-controls {
-    clear: both;
-    margin: -10px 0;
     position: sticky;
     top: 0;
     z-index: 2;
     background-color: #fff;
-    padding: 10px 0 0;
+    padding: 16px 0 0;
     min-height: .6cm;
 }
 
@@ -384,7 +381,7 @@ tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.com
 
     #main-table th {
         position: sticky;
-        top: 42px;
+        top: 42.8px;
         background: white;
         z-index: 10;
         border: 1px solid black;
@@ -441,17 +438,17 @@ body.sort-published #main-table th.infos::after {
     content: '   • sorted by publication date';
 }
 
-#logo {
-    float: left;
+.header {
+    display: flex;
+    justify-content: space-between;
 }
 
-    #logo > img {
-        width: 600px;
-        height: 208px;
-    }
+#logo {
+    width: 600px;
+    height: 208px;
+}
 
 #icons {
-    float: right;
     padding-top: 2.5em;
 }
 
@@ -494,12 +491,10 @@ body.sort-published #main-table th.infos::after {
 }
 
 #main-table-container {
-    clear: both;
     position: relative;
 }
 
 #module-count {
-    clear: both;
     text-align: right;
 }
 
@@ -1044,16 +1039,20 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         max-width: none;
     }
 
+    .header {
+        flex-direction: column;
+        align-items: center;
+        justify-items: center;
+    }
+
     #logo {
-        float: none;
         text-align: center;
     }
 
     #icons {
-        float: none;
         width: 35em;
-        padding-right: 10em;
-        margin: -3.5em auto 2em;
+        margin: 0 auto 2em;
+        padding-top: 0;
         text-align: right;
     }
 
@@ -1145,10 +1144,6 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         background-position: 2.25em 50%;
     }
 
-    #top-controls {
-        margin-bottom: 2.5em;
-    }
-
     #main-table th {
         top: 40px;
     }
@@ -1198,7 +1193,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         padding: 2em 1em;
     }
 
-    #main-content > #icons {
+    #main-content #icons {
         display: none;
     }
 
@@ -1353,7 +1348,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         margin-top: .3em;
     }
 
-    #logo > img {
+    #logo {
         width: 320px;
         height: 111px;
     }
