@@ -24,7 +24,7 @@ namespace KtaneWeb
                 new UrlMapping(path: "/", specificPath: true, handler: rq => puzzlesMainPage(rq, info, session)),
 
                 // Fallback: file system handler
-                new UrlMapping(rq => new FileSystemHandler(Path.Combine(_config.BaseDir, "puzzles"), new FileSystemOptions { MaxAge = null }).Handle(req))
+                new UrlMapping(rq => new FileSystemHandler(Path.Combine(_config.BaseDir, "puzzles")).Handle(req))
             );
             return resolver.Handle(req);
         }

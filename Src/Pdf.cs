@@ -47,7 +47,7 @@ namespace KtaneWeb
             return HttpResponse.File(generatePdf(htmlFile).filename, "application/pdf");
 
             doFileSystem:
-            return new FileSystemHandler(_config.BaseDir, new FileSystemOptions { MaxAge = null }).Handle(req);
+            return new FileSystemHandler(_config.BaseDir).Handle(req);
         }
 
         /// <summary>

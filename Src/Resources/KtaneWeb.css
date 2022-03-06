@@ -265,6 +265,7 @@ div.infos .inf-author, div.infos .inf-published {
         content: '\000a by ';
         white-space: pre;
     }
+
     div.infos .inf-author::after {
         content: '\0020 ';
         white-space: normal;
@@ -392,8 +393,7 @@ tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.com
     #main-table td.infos-2 .inf-difficulty,
     #main-table td.infos-2 .inf-published,
     #main-table td.infos-2 .inf-twitch,
-    #main-table td.infos-2 .inf-time-mode
-    {
+    #main-table td.infos-2 .inf-time-mode {
         white-space: nowrap;
     }
 
@@ -535,30 +535,30 @@ div.hstack {
     column-gap: 3em;
 }
 
-    #filters.no-profile-selected .filter-profile:not(.upload) {
-        display: none;
-    }
+#filters.no-profile-selected .filter-profile:not(.upload) {
+    display: none;
+}
 
-    #filters .upload > label {
-        text-decoration: underline;
-        color: blue;
-        cursor: pointer;
-    }
+#filters .upload > label {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+}
 
-    #filters td, #filters th {
-        text-align: left;
-        border: none;
-        padding: 0 .02cm;
-        font-weight: normal;
-    }
+#filters td, #filters th {
+    text-align: left;
+    border: none;
+    padding: 0 .02cm;
+    font-weight: normal;
+}
 
-    #filters th {
-        padding-right: .2cm;
-    }
+#filters th {
+    padding-right: .2cm;
+}
 
-    #filters-col1 {
-        margin-right: 2.3em;
-    }
+#filters-col1 {
+    margin-right: 2.3em;
+}
 
 #more {
     width: 35em;
@@ -865,6 +865,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 #actual-periodic-table {
     display: flex;
     flex-wrap: wrap;
+    clear: both;
 }
 
     #actual-periodic-table .module {
@@ -1193,7 +1194,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         padding: 2em 1em;
     }
 
-    #main-content #icons {
+    #main-content > .header > #icons {
         display: none;
     }
 
