@@ -30,7 +30,6 @@ namespace KtaneWeb
         [EditableField("Description", "A concise description of what sets this module or widget apart from others. Include tags at the end.")]
         public string Description;
         [EditableField("Module ID", "The ID that mission makers need for this module. This is the same as the ModuleType property on the KMBombModule component.")]
-        [EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy)]
         public string ModuleID;
         [EditableField("Sort key", "The name of the module or widget in all-caps, without spaces, and without initial “The”.")]
         public string SortKey;
