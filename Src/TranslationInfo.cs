@@ -107,6 +107,8 @@ namespace KtaneWeb
         public string filterSouvenir = "Souvenir";
         public string filterMysteryModule = "Mystery Module";
         public string filterBossStatus = "Boss Status";
+        public string filterHasTutorial = "Has Tutorial";
+        public string filterTutorial = "Tutorial";
         public string filterNotSupported = "Not supported";
         public string filterSupported = "Supported";
         public string filterUnexamined = "Unexamined";
@@ -210,6 +212,7 @@ namespace KtaneWeb
         public KtaneFilter[] Filters2 => _filtersCache2 ??= Ut.NewArray(
             KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
             KtaneFilter.Checkboxes(filterBossStatus, "bossstatus", mod => mod.BossStatus, $@"mod=>mod.BossStatus||'{KtaneBossStatus.NotABoss}'"),
+            KtaneFilter.Checkboxes(filterTutorial, "hastutorial", mod => mod.TutorialVideoUrl == null ? KtaneTutorialStatus.NoTutorial : KtaneTutorialStatus.HasTutorial, $@"mod=>mod.TutorialVideoUrl?'HasTutorial':'NoTutorial'"),
             KtaneFilter.Flags(filterQuirks, "quirks", mod => mod.Quirks, $@"mod=>mod.Quirks||''"));
 
         [ClassifyIgnore]

@@ -112,6 +112,14 @@ namespace KtaneWeb
         FullBoss
     }
 
+    public enum KtaneTutorialStatus
+    {
+        [KtaneFilterOption(nameof(TranslationInfo.quirkNone))]
+        NoTutorial,
+        [KtaneFilterOption(nameof(TranslationInfo.filterHasTutorial))]
+        HasTutorial
+    }
+
     [Flags]
     public enum KtaneQuirk
     {
