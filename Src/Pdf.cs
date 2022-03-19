@@ -163,6 +163,8 @@ namespace KtaneWeb
                 var searchBySteamID = json["searchBySteamID"].GetBoolSafe() ?? false;
                 var searchByModuleID = json["searchByModuleID"].GetBoolSafe() ?? false;
                 var displayAllContributors = json["dispAllContr"].GetBoolSafe() ?? false;
+                var displayDesc = json["displayDesc"].GetBoolSafe() ?? false;
+                var displayTags = json["displayTags"].GetBoolSafe() ?? false;
 
                 static string unifyString(string str) => Regex.Replace(str.Normalize(NormalizationForm.FormD), @"[\u0300-\u036f]", "").Replace("grey", "gray").Replace("colour", "color");
 
@@ -198,7 +200,20 @@ namespace KtaneWeb
                         else
                             searchWhat += " " + (m.Author ?? m.Contributors.ToAuthorString()).ToLowerInvariant();
                     if (searchOptions.Contains("descriptions"))
-                        searchWhat += " " + m.Description.ToLowerInvariant();
+                    {
+                        var descSplit = m.Description.Split("Tags:");
+                        var descriptionOnly = descSplit[0];
+                        var descTags = "";
+                        if (descSplit.Length > 1)
+                            descTags = "Tags:" + descSplit[1];
+
+                        if (!displayTags && displayDesc)
+                            searchWhat += ' ' + descriptionOnly.ToLowerInvariant();
+                        else if (displayTags && !displayDesc && descSplit.Length > 1)
+                            searchWhat += ' ' + descTags.ToLowerInvariant();
+                        else
+                            searchWhat += ' ' + m.Description.ToLowerInvariant();
+                    }
                     if (searchBySymbol && m.Symbol != null)
                         searchWhat += " " + m.Symbol.ToLowerInvariant();
 

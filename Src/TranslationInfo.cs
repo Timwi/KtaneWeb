@@ -170,6 +170,7 @@ namespace KtaneWeb
         public string displayOption = "Display";
         public string displayOriginalName = "Original Name";
         public string displayDescription = "Description";
+        public string displayTags = "Tags";
         public string displayDifficulty = "Difficulty";
         public string displayOrigin = "Origin";
         public string displayTwitch = "Twitch Plays score";
@@ -260,6 +261,7 @@ namespace KtaneWeb
         public (string readable, string id)[] Displays => _displaysCache ??= Ut.NewArray<(string readable, string id)?>(
             langCode == "en" ? null : (readable: displayOriginalName, id: "name"),
             (readable: displayDescription, id: "description"),
+            (readable: displayTags, id: "tags"),
             (readable: displayDifficulty, id: "difficulty"),
             (readable: displayOrigin, id: "origin"),
             (readable: displayTwitch, id: "twitch"),

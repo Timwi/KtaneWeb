@@ -196,7 +196,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         sort = 'published';
     let reverse = lStorage.getItem('sort-reverse') == "true" || false;
 
-    let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'published', 'twitch', 'time-mode', 'souvenir', 'rule-seed'];
+    let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'tags', 'published', 'twitch', 'time-mode', 'souvenir', 'rule-seed'];
     let displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
@@ -618,7 +618,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                             if (mod.ModuleID)
                                 infos.append(el("div", "inf-id inf", mod.ModuleID));
-                            infos.append(el("div", "inf-description inf", mod.Description));
+                            let descrip = el("div", "inf-description inf");
+                            descrip.appendChild(el("span", "inf-description-only inf", mod.DescTags ? mod.DescriptionOnly : mod.Description));
+                            descrip.appendChild(el("span", "inf-tags inf", mod.DescTags ? mod.DescTags : ""));
+                            infos.append(descrip);
                             td1.appendChild(infos);
                             td2.appendChild(infos.cloneNode(true));
 
@@ -832,6 +835,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let searchBySteamID = document.getElementById('option-include-steam-id').checked;
         let searchByModuleID = document.getElementById('option-include-module-id').checked;
         let displayAllContributors = document.getElementById('display-all-contributors').checked;
+        let displayDescripton = document.getElementById('display-description').checked;
+        let displayTags = document.getElementById('display-tags').checked;
         modules.forEach(function(mod)
         {
             let filteredIn = missionList === null || missionList.has(mod.ModuleID);
@@ -881,8 +886,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     searchWhat += ' ' + mod.AllContr.toLowerCase();
                 else
                     searchWhat += ' ' + mod.Author.toLowerCase();
-            if (searchOptions.indexOf('descriptions') !== -1)
-                searchWhat += ' ' + mod.Description.toLowerCase();
+            if (searchOptions.indexOf('descriptions') !== -1) {
+                if (!displayTags && displayDescripton)
+                    searchWhat += ' ' + mod.DescriptionOnly.toLowerCase();
+                else if (displayTags && !displayDescripton && mod.DescTags)
+                    searchWhat += ' ' + mod.DescTags.toLowerCase();
+                else
+                    searchWhat += ' ' + mod.Description.toLowerCase();
+            }
             if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
             if (pageLang)
@@ -1257,6 +1268,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         if (mod.SortKey === undefined)
             mod.SortKey = mod.Name.toUpperCase().replace(/^THE /, '').replace(/[^A-Z0-9]/g, '');
+
+        // split Description into Tags and Description by delimiter "Tags:"
+        let descSplit = mod.Description.split("Tags:");
+        mod.DescriptionOnly = descSplit[0];
+        if (descSplit.length > 1)
+            mod.DescTags = `Tags:${descSplit[1]}`;
 
         // (bool sh) => shows (sh) or hides (!sh) the module
         mod.FncsShowHide = [sh => { mod.IsVisible = sh; }];
@@ -1681,7 +1698,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             searchBySymbol: document.getElementById('option-include-symbol').checked,
             searchBySteamID: document.getElementById('option-include-steam-id').checked,
             searchByModuleID: document.getElementById('option-include-module-id').checked,
-            dispAllContr: document.getElementById('display-all-contributors').checked
+            dispAllContr: document.getElementById('display-all-contributors').checked,
+            displayDesc: document.getElementById('display-description').checked,
+            displayTags: document.getElementById('display-tags').checked
         }));
         return true;
     });
