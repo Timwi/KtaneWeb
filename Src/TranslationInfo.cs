@@ -53,7 +53,7 @@ namespace KtaneWeb
         public string webGithubDesc = "(contains this website’s server code)";
         public string lfaAnchor = "Logfile Analyzer";
         public string profileEditorAnchor = "Profile Editor";
-        public string downloadProfileAnchor = "Downlad pre-made profiles";
+        public string downloadProfileAnchor = "Download pre-made profiles";
         public string modeEditorAnchor = "Mode Setting Editor";
         public string newModuleAnchor = "Create new module";
         public string downloadPDF = "Download merged PDF for current filter";
