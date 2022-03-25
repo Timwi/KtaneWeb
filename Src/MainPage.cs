@@ -405,7 +405,7 @@ namespace KtaneWeb
                                         new TABLE { class_ = "tutorial-video-list nested" }._(
                                             new THEAD(new TR(new TH("Language"), new TH("Description"), new TH("URL"))),
                                             new TBODY()),
-                                        new DIV { class_ = "tutorial-video-controls" }._(new BUTTON { id = "tutorial-video-add" }._("+")));
+                                        new DIV { class_ = "tutorial-video-controls" }._(new BUTTON { id = "tutorial-video-add", type = btype.button }._("+")));
                                 else
                                     yield return new DIV { class_ = "oops" }._("Bug. Please let Timwi know.");
 
