@@ -45,7 +45,7 @@ namespace KtaneWeb
         public string SourceUrl;
         [ClassifyIgnoreIf(KtaneModuleLicense.Restricted), EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
         public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
-        [ClassifyIgnoreIfDefault, EditableField("Tutorial videos", "Links to tutorial videos, if available. Sites other than YouTube are of course totally fine.")]
+        [ClassifyIgnoreIfDefault, EditableField("Tutorial videos", "Links to tutorial videos, if available. Sites other than YouTube are of course totally fine. Specify the language in the language itself (e.g. Français instead of French). Description is optional; only fill that in to describe the differences between multiple tutorial videos in the same language.")]
         public TutorialVideoInfo[] TutorialVideos = null;
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;
@@ -228,11 +228,11 @@ namespace KtaneWeb
 
     sealed class TutorialVideoInfo : IEquatable<TutorialVideoInfo>
     {
-        [ClassifyIgnoreIfDefault, EditableField("Language", "Spoken language in the tutorial video.")]
+        [ClassifyIgnoreIfDefault]
         public string Language;
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIf(""), EditableField("Description", "Optional, description of the tutorial, for distinguishing multiple turorials of the same language.")]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIf("")]
         public string Description;
-        [ClassifyIgnoreIfDefault, EditableField("Url", "Link to the video, usually on YouTube.")]
+        [ClassifyIgnoreIfDefault]
         public string Url;
         public override bool Equals(object obj) => obj != null && obj is TutorialVideoInfo info && Equals(info);
 
