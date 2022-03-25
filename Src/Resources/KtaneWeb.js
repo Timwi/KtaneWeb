@@ -1729,7 +1729,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         if (mod.TutorialVideos && mod.TutorialVideos.length > 0)
         {
             tbody.innerHTML = mod.TutorialVideos.map(_ => `<tr><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td></tr>`).join('');
-            let trs = Array.from(tbody.querySelectorAll('tr'));
             let inputs = tbody.querySelectorAll('input[type="text"]');
             let buttons = tbody.querySelectorAll('button[type="button"]');
             for (var i = 0; i < mod.TutorialVideos.length; i++)
@@ -1740,6 +1739,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 buttons[i].onclick = (function(j) { return function() { return removeRow(j); }; })(i);
             }
         }
+        else
+            tbody.innerHTML = '';
         ui.querySelector('#tutorial-video-add').onclick = function()
         {
             let c = tbody.querySelectorAll('tr').length;
@@ -1784,6 +1785,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     document.getElementById('module-json-new').onclick = function()
     {
+        setEditUi({});
         popup($('#tools-rel'), $('#module-ui'));
         return false;
     };
