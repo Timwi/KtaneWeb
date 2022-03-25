@@ -532,10 +532,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 if (sel.ShowIconFunction(mod, mod.Manuals))
                                 {
                                     let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
-                                    if (sel.PropName === 'video' && (mod.TutorialVideoUrl && mod.TutorialVideoUrl.length > 1))
+                                    if (sel.PropName === 'video' && (mod.TutorialVideos && mod.TutorialVideos.length > 1))
                                     {
                                         let lnkDiv = el("div", "dropdown", iconImg);
-                                        lnkDiv.addEventListener("click", makeTutorialPopupHandler(lnkDiv, mod.TutorialVideoUrl));
+                                        lnkDiv.addEventListener("click", makeTutorialPopupHandler(lnkDiv, mod.TutorialVideos));
                                         td.appendChild(lnkDiv);
                                     }
                                     else
@@ -886,7 +886,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     searchWhat += ' ' + mod.AllContr.toLowerCase();
                 else
                     searchWhat += ' ' + mod.Author.toLowerCase();
-            if (searchOptions.indexOf('descriptions') !== -1) {
+            if (searchOptions.indexOf('descriptions') !== -1)
+            {
                 if (!displayTags && displayDescripton)
                     searchWhat += ' ' + mod.DescriptionOnly.toLowerCase();
                 else if (displayTags && !displayDescripton && mod.DescTags)
@@ -1169,11 +1170,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     elem.classList.add('checked');
             }
 
-            if (isMobileOpt && mod.TutorialVideoUrl)
+            if (isMobileOpt && mod.TutorialVideos)
             {
                 let vidDiv = el('div', 'tutorial-videos');
                 menuDiv.appendChild(vidDiv);
-                setTutorialList(vidDiv, mod.TutorialVideoUrl);
+                setTutorialList(vidDiv, mod.TutorialVideos);
             }
 
             menuDiv.appendChild(el('div', 'bottom-links',
@@ -1210,7 +1211,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         menuDiv.appendChild(el('h5', null, translation.selectableTutorial));
         const tutorialMenu = el('div', 'tutorial-select');
         const tutorialOrder = urls.slice();
-        tutorialOrder.sort((t1, t2) => {
+        tutorialOrder.sort((t1, t2) =>
+        {
             if (t1.length > 0 && t1.length > 0)
                 return t1[0].localeCompare(t2[0]);
             else if (t1.length > 0)
@@ -1220,20 +1222,20 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             else
                 return 0;
         });
-        tutorialOrder.forEach(function (tutorialItem) {
-            const tutorialLang = "language" in tutorialItem ? tutorialItem["language"] : "";
-            const tutorialName = "descr" in tutorialItem ? tutorialItem["descr"] : "";
-            const tutorialURL = "url" in tutorialItem ? tutorialItem["url"] : "";
+        tutorialOrder.forEach(function(tutorialItem)
+        {
+            const tutorialLang = "Language" in tutorialItem ? tutorialItem.Language : "";
+            const tutorialName = "Description" in tutorialItem ? tutorialItem.Description : "";
+            const tutorialUrl = "Url" in tutorialItem ? tutorialItem.Url : "";
 
             tutorialMenu.appendChild(
                 el('a', null,
-                    { href: tutorialURL },
+                    { href: tutorialUrl },
                     el('div', null, tutorialLang),
                     el('div', null, tutorialName),
                     el('div', null, el('img', 'icon', { title: "Tutorial video", alt: "Tutorial video", src: "HTML/img/video.png" }))));
         });
         menuDiv.appendChild(tutorialMenu);
-
     }
 
     let languages = [];
@@ -1714,7 +1716,28 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 ui.querySelector(`[name="${key}"]`).value = (mod.Souvenir[key] || '');
 
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
-        ui.querySelector(`[name="TutorialVideoUrl"]`).value = mod.TutorialVideoUrl ? mod.TutorialVideoUrl.map(tut => `${tut["language"]}, ${tut["url"]}`).join(';') : '';
+        let tbody = ui.querySelector(`table.tutorial-video-list>tbody`);
+        if (mod.TutorialVideos && mod.TutorialVideos.length > 0)
+        {
+            tbody.innerHTML = mod.TutorialVideos.map(_ => `<tr><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td></tr>`).join('');
+            let trs = Array.from(tbody.querySelectorAll('tr'));
+            let inputs = tbody.querySelectorAll('input[type="text"]');
+            let buttons = tbody.querySelectorAll('button[type="button"]');
+            for (var i = 0; i < mod.TutorialVideos.length; i++)
+            {
+                inputs[3 * i].value = mod.TutorialVideos[i].Language || '';
+                inputs[3 * i + 1].value = mod.TutorialVideos[i].Description || '';
+                inputs[3 * i + 2].value = mod.TutorialVideos[i].Url || '';
+                buttons[i].onclick = (function(j) { return function() { trs[j].remove(); return false; }; })(i);
+            }
+        }
+        ui.querySelector('#tutorial-video-add').onclick = function()
+        {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `<td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td>`;
+            tbody.appendChild(tr);
+            return false;
+        };
         UpdateEditUiElements();
     }
     function UpdateEditUiElements()
@@ -1788,6 +1811,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 return false;
             }
         }
+        let tutorialVideoInputs = Array.from(form.querySelectorAll('table.tutorial-video-list input[type="text"]'));
+        let tutorialVideos = [];
+        for (let i = 0; i < tutorialVideoInputs.length; i += 3)
+            tutorialVideos.push({ "Language": tutorialVideoInputs[i].value, "Description": tutorialVideoInputs[i + 1].value, "Url": tutorialVideoInputs[i + 2].value });
+        form.TutorialVideos.value = JSON.stringify(tutorialVideos);
     };
     document.getElementById('show-license').onclick = function()
     {

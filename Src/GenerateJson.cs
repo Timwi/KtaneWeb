@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RT.Json;
 using RT.Serialization;
 using RT.Servers;
 using RT.Util;
@@ -78,6 +79,8 @@ namespace KtaneWeb
                             f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0m : decimal.Parse(val));
                         else if (fType == typeof(bool))
                             f.SetValue(obj, val == "on");
+                        else if (fType == typeof(TutorialVideoInfo[]))
+                            f.SetValue(obj, ClassifyJson.Deserialize<TutorialVideoInfo[]>(val));
                         else
                             throw new InvalidOperationException($"Unrecognized field type: {fType.FullName}");
                     }

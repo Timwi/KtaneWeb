@@ -995,11 +995,12 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
     text-align: right;
 }
 
-#module-ui table.nested > tbody > tr > th {
+#module-ui table.nested > * > tr > th {
     text-align: left;
+    font-size: 12pt;
 }
 
-    #module-ui table.nested > tbody > tr > th h2 {
+    #module-ui table.nested > * > tr > th h2 {
         font-size: 20pt;
         border-bottom: 1px solid #888;
         margin: 0;

@@ -45,8 +45,8 @@ namespace KtaneWeb
         public string SourceUrl;
         [ClassifyIgnoreIf(KtaneModuleLicense.Restricted), EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
         public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
-        [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube). Each item in the list is a dictionary of the form { \"language\": value, \"descr\": description, \"url\": link }")]
-        public TutorialVideoInfo[] TutorialVideoUrl = null;
+        [ClassifyIgnoreIfDefault, EditableField("Tutorial videos", @"Links to tutorial videos, if available (usually on YouTube). Each item in the list is a dictionary of the form { ""Language"": value, ""Description"": description, ""Url"": link }.")]
+        public TutorialVideoInfo[] TutorialVideos = null;
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;
 
@@ -121,11 +121,11 @@ namespace KtaneWeb
                 Equals(other.Souvenir, Souvenir) &&
                 other.SteamID == SteamID &&
                 other.Symbol == Symbol &&
-                other.TutorialVideoUrl == TutorialVideoUrl &&
+                (other.TutorialVideos == null || other.TutorialVideos.Length == 0 ? TutorialVideos == null || TutorialVideos.Length == 0 : other.TutorialVideos.SequenceEqual(TutorialVideos)) &&
                 other.Type == Type;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Description, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideoUrl, Type);
+        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Description, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideos, Type);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
         public override string ToString() => Name;
 
@@ -148,8 +148,8 @@ namespace KtaneWeb
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
-            if (TutorialVideoUrl != null && TutorialVideoUrl.Length == 0)
-                TutorialVideoUrl = null;
+            if (TutorialVideos != null && TutorialVideos.Length == 0)
+                TutorialVideos = null;
 
             if (Type != KtaneModuleType.Regular)
                 Souvenir = new KtaneSouvenirInfo { Status = KtaneModuleSouvenir.NotACandidate };
@@ -228,20 +228,20 @@ namespace KtaneWeb
 
     sealed class TutorialVideoInfo : IEquatable<TutorialVideoInfo>
     {
-        [ClassifyIgnoreIfDefault, ClassifyName("language"), EditableField("language", "Spoken language in the tutorial video.")]
+        [ClassifyIgnoreIfDefault, EditableField("Language", "Spoken language in the tutorial video.")]
         public string Language;
-        [ClassifyIgnoreIfDefault, ClassifyName("descr"), EditableField("descr", "Optional, description of the tutorial, for distinguishing multiple turorials of the same language.")]
+        [ClassifyIgnoreIfDefault, EditableField("Description", "Optional, description of the tutorial, for distinguishing multiple turorials of the same language.")]
         public string Description;
-        [ClassifyIgnoreIfDefault, ClassifyName("url"), EditableField("url", "Link to the video, usually on YouTube.")]
-        public string URL;
+        [ClassifyIgnoreIfDefault, EditableField("Url", "Link to the video, usually on YouTube.")]
+        public string Url;
         public override bool Equals(object obj) => obj != null && obj is TutorialVideoInfo info && Equals(info);
 
         public bool Equals(TutorialVideoInfo other)
         {
-            return Language == other.Language && Description == other.Description && URL == other.URL;
+            return other != null && Language == other.Language && Description == other.Description && Url == other.Url;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(Language, Description, URL);
+        public override int GetHashCode() => Ut.ArrayHash(Language, Description, Url);
     }
 
     sealed class ContributorInfo : IEquatable<ContributorInfo>

@@ -213,7 +213,7 @@ namespace KtaneWeb
         public KtaneFilter[] Filters2 => _filtersCache2 ??= Ut.NewArray(
             KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
             KtaneFilter.Checkboxes(filterBossStatus, "bossstatus", mod => mod.BossStatus, $@"mod=>mod.BossStatus||'{KtaneBossStatus.NotABoss}'"),
-            KtaneFilter.Checkboxes(filterTutorial, "hastutorial", mod => mod.TutorialVideoUrl == null ? KtaneTutorialStatus.NoTutorial : KtaneTutorialStatus.HasTutorial, $@"mod=>mod.TutorialVideoUrl?'HasTutorial':'NoTutorial'"),
+            KtaneFilter.Checkboxes(filterTutorial, "hastutorial", mod => mod.TutorialVideos == null ? KtaneTutorialStatus.NoTutorial : KtaneTutorialStatus.HasTutorial, $@"mod=>mod.TutorialVideos?'HasTutorial':'NoTutorial'"),
             KtaneFilter.Flags(filterQuirks, "quirks", mod => mod.Quirks, $@"mod=>mod.Quirks||''"));
 
         [ClassifyIgnore]
@@ -252,8 +252,8 @@ namespace KtaneWeb
                 Accel = 'T',
                 Icon = "HTML/img/video.png",
                 PropName = "video",
-                UrlFunction = @"mod=>mod.TutorialVideoUrl&&mod.TutorialVideoUrl[0].url",
-                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl && mod.TutorialVideoUrl.length > 0",
+                UrlFunction = @"mod=>mod.TutorialVideos&&mod.TutorialVideos[0].Url",
+                ShowIconFunction = @"mod=>!!mod.TutorialVideos&&mod.TutorialVideos.length>0",
             });
 
         [ClassifyIgnore]

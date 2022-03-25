@@ -70,7 +70,7 @@ namespace KtaneWeb
                     new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
                 new BODY(
                     new DIV { id = "main-content" }._(
-                        new DIV { class_ = "header"}._(
+                        new DIV { class_ = "header" }._(
                             new IMG { id = "logo", src = translation.titleImg },
                             new DIV { id = "icons", class_ = "icons" }._(
                                 new DIV { class_ = "icon-page shown" }._(
@@ -399,6 +399,13 @@ namespace KtaneWeb
                                     yield return "\u00a0";
                                     yield return new LABEL { for_ = $"input-{field.Name}" }._(attr.ReadableName);
                                 }
+                                else if (type == typeof(TutorialVideoInfo[]))
+                                    yield return new DIV { class_ = "tutorial-videos" }._(
+                                        new INPUT { type = itype.hidden, name = "TutorialVideos", value = "" },
+                                        new TABLE { class_ = "tutorial-video-list nested" }._(
+                                            new THEAD(new TR(new TH("Language"), new TH("Description"), new TH("URL"))),
+                                            new TBODY()),
+                                        new DIV { class_ = "tutorial-video-controls" }._(new BUTTON { id = "tutorial-video-add" }._("+")));
                                 else
                                     yield return new DIV { class_ = "oops" }._("Bug. Please let Timwi know.");
 
