@@ -252,8 +252,8 @@ namespace KtaneWeb
                 Accel = 'T',
                 Icon = "HTML/img/video.png",
                 PropName = "video",
-                UrlFunction = @"mod=>mod.TutorialVideoUrl&&mod.TutorialVideoUrl[Object.keys(mod.TutorialVideoUrl)[0]]",
-                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl && Object.keys(mod.TutorialVideoUrl).length > 0",
+                UrlFunction = @"mod=>mod.TutorialVideoUrl&&mod.TutorialVideoUrl[0].url",
+                ShowIconFunction = @"mod=>!!mod.TutorialVideoUrl && mod.TutorialVideoUrl.length > 0",
             });
 
         [ClassifyIgnore]

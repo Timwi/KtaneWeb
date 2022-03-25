@@ -45,8 +45,8 @@ namespace KtaneWeb
         public string SourceUrl;
         [ClassifyIgnoreIf(KtaneModuleLicense.Restricted), EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
         public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
-        [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube). If multiple, write pair of tutorial types and URL in the form of <type>,<URL> and list them separated with semi-colons.", AllowedSeparators = new[] { ';' }, AllowedDictSeparators = new[] { ',' })]
-        public Dictionary<string, string> TutorialVideoUrl;
+        [ClassifyIgnoreIfDefault, EditableField("Tutorial video", "A link to a tutorial video, if available (usually on YouTube). Each item in the list is a dictionary of the form { \"language\": value, \"descr\": description, \"url\": link }")]
+        public TutorialVideoInfo[] TutorialVideoUrl = null;
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;
 
@@ -148,7 +148,7 @@ namespace KtaneWeb
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 
-            if (TutorialVideoUrl != null && TutorialVideoUrl.Count == 0)
+            if (TutorialVideoUrl != null && TutorialVideoUrl.Length == 0)
                 TutorialVideoUrl = null;
 
             if (Type != KtaneModuleType.Regular)
@@ -185,17 +185,7 @@ namespace KtaneWeb
         }
 
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
-        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element)
-        {
-            if (element.ContainsKey("TutorialVideoUrl"))
-            {
-                var tutorialStr = element["TutorialVideoUrl"].GetStringSafe();
-                if (tutorialStr != null)
-                {
-                    element["TutorialVideoUrl"] = new JsonDict { { "default", tutorialStr } };
-                }
-            }
-        }
+        void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
         void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
     }
 
@@ -234,6 +224,24 @@ namespace KtaneWeb
         public override bool Equals(object obj) => obj != null && obj is KtaneTimeModeInfo info && Equals(info);
         public bool Equals(KtaneTimeModeInfo other) => other != null && other.Score == Score && other.ScorePerModule == ScorePerModule && other.Origin == Origin;
         public override int GetHashCode() => Ut.ArrayHash(Score, ScorePerModule, Origin);
+    }
+
+    sealed class TutorialVideoInfo : IEquatable<TutorialVideoInfo>
+    {
+        [ClassifyIgnoreIfDefault, ClassifyName("language"), EditableField("language", "Spoken language in the tutorial video.")]
+        public string Language;
+        [ClassifyIgnoreIfDefault, ClassifyName("descr"), EditableField("descr", "Optional, description of the tutorial, for distinguishing multiple turorials of the same language.")]
+        public string Description;
+        [ClassifyIgnoreIfDefault, ClassifyName("url"), EditableField("url", "Link to the video, usually on YouTube.")]
+        public string URL;
+        public override bool Equals(object obj) => obj != null && obj is TutorialVideoInfo info && Equals(info);
+
+        public bool Equals(TutorialVideoInfo other)
+        {
+            return Language == other.Language && Description == other.Description && URL == other.URL;
+        }
+
+        public override int GetHashCode() => Ut.ArrayHash(Language, Description, URL);
     }
 
     sealed class ContributorInfo : IEquatable<ContributorInfo>

@@ -532,7 +532,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 if (sel.ShowIconFunction(mod, mod.Manuals))
                                 {
                                     let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
-                                    if (sel.PropName === 'video' && (Object.keys(mod.TutorialVideoUrl).filter(key => key !== "default").length > 0))
+                                    if (sel.PropName === 'video' && (mod.TutorialVideoUrl && mod.TutorialVideoUrl.length > 1))
                                     {
                                         let lnkDiv = el("div", "dropdown", iconImg);
                                         lnkDiv.addEventListener("click", makeTutorialPopupHandler(lnkDiv, mod.TutorialVideoUrl));
@@ -1209,33 +1209,29 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         menuDiv.appendChild(el('h5', null, translation.selectableTutorial));
         const tutorialMenu = el('div', 'tutorial-select');
-        const tutorialOrder = Object.keys(urls);
-        const langName = languageCodesReverse[translation.langCode];
-        tutorialOrder.sort((t1, t2) =>
-        {
-            const tt1 = t1 === "default" ? "English" : (t1.includes("-") || languageCodes[t1]) ? t1 : "English-" + t1;
-            const tt2 = t2 === "default" ? "English" : (t2.includes("-") || languageCodes[t2]) ? t2 : "English-" + t2;
-            if ((tt1.startsWith(langName) && !tt2.startsWith(langName))) return -1;
-            if ((tt2.startsWith(langName) && !tt1.startsWith(langName))) return 1;
-            return tt1.localeCompare(tt2);
+        const tutorialOrder = urls.slice();
+        tutorialOrder.sort((t1, t2) => {
+            if (t1.length > 0 && t1.length > 0)
+                return t1[0].localeCompare(t2[0]);
+            else if (t1.length > 0)
+                return 1;
+            else if (t2.length > 0)
+                return -1;
+            else
+                return 0;
         });
-        for (let tutorialType of tutorialOrder)
-        {
-            const tutorialTypeSplit = tutorialType.split("-");
-            const tutorialLang = tutorialTypeSplit.length > 1 || languageCodes.hasOwnProperty(tutorialType) ? tutorialTypeSplit[0] : "English";
-            let tutorialName =
-                languageCodes.hasOwnProperty(tutorialType) || tutorialType === "default" ? "" :
-                    tutorialTypeSplit.length > 1 ? tutorialTypeSplit[1] : tutorialTypeSplit[0];
-            if (tutorialName.length > 1)
-                tutorialName = tutorialName[0].toUpperCase() + tutorialName.slice(1);
+        tutorialOrder.forEach(function (tutorialItem) {
+            const tutorialLang = "language" in tutorialItem ? tutorialItem["language"] : "";
+            const tutorialName = "descr" in tutorialItem ? tutorialItem["descr"] : "";
+            const tutorialURL = "url" in tutorialItem ? tutorialItem["url"] : "";
 
             tutorialMenu.appendChild(
                 el('a', null,
-                    { href: urls[tutorialType] },
+                    { href: tutorialURL },
                     el('div', null, tutorialLang),
                     el('div', null, tutorialName),
                     el('div', null, el('img', 'icon', { title: "Tutorial video", alt: "Tutorial video", src: "HTML/img/video.png" }))));
-        }
+        });
         menuDiv.appendChild(tutorialMenu);
 
     }
@@ -1718,7 +1714,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 ui.querySelector(`[name="${key}"]`).value = (mod.Souvenir[key] || '');
 
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
-        ui.querySelector(`[name="TutorialVideoUrl"]`).value = mod.TutorialVideoUrl ? Object.entries(mod.TutorialVideoUrl).map(([k, v]) => `${k}, ${v}`).join(';') : '';
+        ui.querySelector(`[name="TutorialVideoUrl"]`).value = mod.TutorialVideoUrl ? mod.TutorialVideoUrl.map(tut => `${tut.language}, ${tut.url}`).join(';') : '';
         UpdateEditUiElements();
     }
     function UpdateEditUiElements()
