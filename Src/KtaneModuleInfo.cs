@@ -230,7 +230,7 @@ namespace KtaneWeb
     {
         [ClassifyIgnoreIfDefault, EditableField("Language", "Spoken language in the tutorial video.")]
         public string Language;
-        [ClassifyIgnoreIfDefault, EditableField("Description", "Optional, description of the tutorial, for distinguishing multiple turorials of the same language.")]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIf(""), EditableField("Description", "Optional, description of the tutorial, for distinguishing multiple turorials of the same language.")]
         public string Description;
         [ClassifyIgnoreIfDefault, EditableField("Url", "Link to the video, usually on YouTube.")]
         public string Url;
