@@ -1714,7 +1714,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 ui.querySelector(`[name="${key}"]`).value = (mod.Souvenir[key] || '');
 
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
-        ui.querySelector(`[name="TutorialVideoUrl"]`).value = mod.TutorialVideoUrl ? mod.TutorialVideoUrl.map(tut => `${tut.language}, ${tut.url}`).join(';') : '';
+        ui.querySelector(`[name="TutorialVideoUrl"]`).value = mod.TutorialVideoUrl ? mod.TutorialVideoUrl.map(tut => `${tut["language"]}, ${tut["url"]}`).join(';') : '';
         UpdateEditUiElements();
     }
     function UpdateEditUiElements()
