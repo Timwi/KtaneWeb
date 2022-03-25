@@ -45,7 +45,7 @@ namespace KtaneWeb
         public string SourceUrl;
         [ClassifyIgnoreIf(KtaneModuleLicense.Restricted), EditableField("License", "Specifies how the module is licensed. Specifically, what can be reused and republished.")]
         public KtaneModuleLicense License = KtaneModuleLicense.Restricted;
-        [ClassifyIgnoreIfDefault, EditableField("Tutorial videos", @"Links to tutorial videos, if available (usually on YouTube). Each item in the list is a dictionary of the form { ""Language"": value, ""Description"": description, ""Url"": link }.")]
+        [ClassifyIgnoreIfDefault, EditableField("Tutorial videos", "Links to tutorial videos, if available. Sites other than YouTube are of course totally fine.")]
         public TutorialVideoInfo[] TutorialVideos = null;
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;

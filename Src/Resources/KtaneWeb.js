@@ -1717,6 +1717,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
         let tbody = ui.querySelector(`table.tutorial-video-list>tbody`);
+        function removeRow(row)
+        {
+            let trs = Array.from(tbody.querySelectorAll('tr'));
+            let buttons = Array.from(tbody.querySelectorAll('button[type="button"]'));
+            trs[row].remove();
+            for (let i = row + 1; i < trs.length; i++)
+                buttons[i].onclick = (function(j) { return function() { return removeRow(j); }; })(i - 1);
+            return false;
+        }
         if (mod.TutorialVideos && mod.TutorialVideos.length > 0)
         {
             tbody.innerHTML = mod.TutorialVideos.map(_ => `<tr><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td></tr>`).join('');
@@ -1728,14 +1737,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 inputs[3 * i].value = mod.TutorialVideos[i].Language || '';
                 inputs[3 * i + 1].value = mod.TutorialVideos[i].Description || '';
                 inputs[3 * i + 2].value = mod.TutorialVideos[i].Url || '';
-                buttons[i].onclick = (function(j) { return function() { trs[j].remove(); return false; }; })(i);
+                buttons[i].onclick = (function(j) { return function() { return removeRow(j); }; })(i);
             }
         }
         ui.querySelector('#tutorial-video-add').onclick = function()
         {
+            let c = tbody.querySelectorAll('tr').length;
             let tr = document.createElement('tr');
             tr.innerHTML = `<td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td>`;
             tbody.appendChild(tr);
+            tr.querySelector('button[type="button"]').onclick = function() { return removeRow(c); };
             return false;
         };
         UpdateEditUiElements();
