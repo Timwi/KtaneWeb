@@ -429,6 +429,7 @@ namespace KtaneWeb
                                     yield return new TR { id = $"edit-{field.Name}", class_ = "editable-row" }
                                         .Data("editable-if", ifAttr.NullOr(a => a.OtherField))
                                         .Data("editable-if-values", ifAttr.NullOr(a => a.Values.Select(v => v.ToString()).JoinString(",")))
+                                        .Data("enum-values", field.FieldType.IsEnum && field.FieldType.GetCustomAttribute<FlagsAttribute>() != null ? Enum.GetValues(field.FieldType).Cast<object>().JoinString(",") : null)
                                         ._(new TH(attr.ReadableName), new TD(createTableCellContent(field, attr)));
                                 }
                             }

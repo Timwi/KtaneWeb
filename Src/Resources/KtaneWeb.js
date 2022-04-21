@@ -1708,12 +1708,23 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     function setEditUi(mod)
     {
         let ui = document.getElementById('module-ui');
-        for (var key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,MysteryModule'.split(','))
+        for (let key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
+        for (let key of 'Quirks'.split(','))
+        {
+            let modValues = mod[key] ? mod[key].split(', ') : [];
+            for (let enumValue of ui.querySelector(`tr#edit-${key}`).dataset.enumValues.split(','))
+                ui.querySelector(`#input-${key}-${enumValue}`).checked = modValues.includes(enumValue);
+        }
+
         if (document.getElementById('nested-Souvenir').checked = mod.Souvenir != undefined)
-            for (var key of 'Status,Explanation'.split(','))
+            for (let key of 'Status,Explanation'.split(','))
                 ui.querySelector(`[name="${key}"]`).value = (mod.Souvenir[key] || '');
+
+        if (document.getElementById('nested-Contributors').checked = mod.Contributors != undefined)
+            for (let key of 'Developer,Manual,ManualGraphics,TwitchPlays,Maintainer,Audio,Modeling,Idea'.split(','))
+                ui.querySelector(`[name="${key}"]`).value = (mod.Contributors[key] ? mod.Contributors[key].join('; ') : '');
 
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
         let tbody = ui.querySelector(`table.tutorial-video-list>tbody`);
@@ -1731,7 +1742,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             tbody.innerHTML = mod.TutorialVideos.map(_ => `<tr><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td></tr>`).join('');
             let inputs = tbody.querySelectorAll('input[type="text"]');
             let buttons = tbody.querySelectorAll('button[type="button"]');
-            for (var i = 0; i < mod.TutorialVideos.length; i++)
+            for (let i = 0; i < mod.TutorialVideos.length; i++)
             {
                 inputs[3 * i].value = mod.TutorialVideos[i].Language || '';
                 inputs[3 * i + 1].value = mod.TutorialVideos[i].Description || '';
@@ -1758,21 +1769,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let rows = ui.querySelectorAll('tr.editable-row');
         for (let i = 0; i < rows.length; i++)
         {
-            let attr = rows[i].getAttribute('data-editable-if');
-            if (!attr)
+            if (rows[i].id === 'edit-Author')
+                rows[i].style.display = ui.querySelector('#nested-Contributors').checked ? 'none' : '';
+            if (!rows[i].dataset.editableIf)
                 continue;
-            let elem = ui.querySelector(`[name="${attr}"]`);
-            var val = elem.value;
-            let vals = rows[i].getAttribute('data-editable-if-values').split(',');
+            let elem = ui.querySelector(`[name="${rows[i].dataset.editableIf}"]`);
+            let val = elem.value;
+            let vals = rows[i].dataset.editableIfValues.split(',');
             rows[i].style.display = vals.indexOf(val) === -1 ? 'none' : '';
         }
+        ui.querySelector(`[name="Author"]`);
         let tables = ui.querySelectorAll('table.fields');
         for (let i = 0; i < tables.length; i++)
         {
-            let attr = tables[i].getAttribute('data-nested');
-            if (!attr)
+            if (!tables[i].dataset.nested)
                 continue;
-            let elem = document.getElementById(`nested-${attr}`);
+            let elem = document.getElementById(`nested-${tables[i].dataset.nested}`);
             tables[i].style.display = elem.checked ? '' : 'none';
         }
 
@@ -1791,7 +1803,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     };
     document.getElementById('generate-json').onclick = function(e)
     {
-        var form = document.getElementById('generate-json').form;
+        let form = document.getElementById('generate-json').form;
         if (form.Name.value === "")
         {
             alert("You do need to supply at least a name for the module or widget.");
@@ -1815,9 +1827,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         for (let el of document.querySelectorAll(".use-dict-editor"))
         {
             if (!el.value
-                .split(new RegExp(`(${el.dataset["allowedseparators"]})`))
-                .filter(str => !el.dataset["allowedseparators"].includes(str))
-                .every(str => new RegExp(`^[^${el.dataset["alloweddictseparators"]}]+(${el.dataset["alloweddictseparators"]})[^${el.dataset["alloweddictseparators"]}]+$`).test(str))
+                .split(new RegExp(`(${el.dataset.allowedseparators})`))
+                .filter(str => !el.dataset.allowedseparators.includes(str))
+                .every(str => new RegExp(`^[^${el.dataset.alloweddictseparators}]+(${el.dataset.alloweddictseparators})[^${el.dataset.alloweddictseparators}]+$`).test(str))
             ) 
             {
                 alert(`Invalid dict value for field ${el.getAttribute("name")}`);

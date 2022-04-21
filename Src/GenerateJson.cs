@@ -95,6 +95,8 @@ namespace KtaneWeb
             populateObject(m, typeof(KtaneModuleInfo));
             if (string.IsNullOrWhiteSpace(m.Name))
                 return HttpResponse.PlainText("You did not specify a module name.");
+            if (m.Contributors != null)
+                m.Author = null;
             var json = ClassifyJson.Serialize(m);
             // Now deserialize and then re-serialize this to force KtaneModuleInfo to perform some sanity things
             var m2 = ClassifyJson.Deserialize<KtaneModuleInfo>(json);
