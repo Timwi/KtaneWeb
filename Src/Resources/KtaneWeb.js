@@ -495,6 +495,20 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             });
         }
 
+        function makeQuirksElement(mod)
+        {
+            let q = String(mod.Quirks);
+            let quirks = [];
+            if (q.includes("SolvesAtEnd")) quirks.push("End");
+            if (q.includes("NeedsOtherSolves")) quirks.push("NdOt");
+            if (q.includes("SolvesBeforeSome")) quirks.push("Bef");
+            if (q.includes("SolvesWithOthers")) quirks.push("Wit");
+            if (q.includes("WillSolveSuddenly")) quirks.push("Sud");
+            if (q.includes("PseudoNeedy")) quirks.push("Psd");
+            if (q.includes("TimeDependent")) quirks.push("HvTm");
+            return el('div', 'inf-quirks inf', quirks.join(", "));
+        }
+
         switch (newView)
         {
             case 'List': {
@@ -588,6 +602,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             }
                             infos.append(makeAuthorElement(mod), makeAllAuthorElement(mod),
                                 el("div", "inf-published inf inf2", mod.Published));
+
+                            if (mod.Symbol)
+                                infos.append(el("div", "inf-symbol inf inf2", mod.Symbol));
                             if (mod.TwitchPlays)
                             {
                                 mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for ${mod.TwitchPlays.ScoreStringDescription}.`;
@@ -616,14 +633,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
                             }
 
-                            if (mod.ModuleID)
-                                infos.append(el("div", "inf-id inf", mod.ModuleID));
+                            if (mod.Quirks || mod.ModuleID)
+                            {
+                                let holder = el("div", "inf-quirks-id" + (mod.Quirks && mod.ModuleID ? " both" : ""));
+                                if (mod.Quirks)
+                                    holder.append(makeQuirksElement(mod));
+                                if (mod.ModuleID)
+                                    holder.append(el("div", "inf-id inf", mod.ModuleID));
+                                infos.append(holder);
+                            }
+                            
                             let descrip = el("div", "inf-description inf");
                             descrip.appendChild(el("span", "inf-description-only inf", mod.DescTags ? mod.DescriptionOnly : mod.Description));
                             descrip.appendChild(el("span", "inf-tags inf", mod.DescTags ? mod.DescTags : ""));
+                            td2.appendChild(infos.cloneNode(true));
                             infos.append(descrip);
                             td1.appendChild(infos);
-                            td2.appendChild(infos.cloneNode(true));
 
                             addAuthorClick(td1.querySelector(".inf-author"), mod);
                             addAuthorClick(td2.querySelector(".inf-author"), mod);
@@ -681,7 +706,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         el('div', 'tpscore', tpScore),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
-                    setCompatibilityTooltip(a, mod.Compatibility);
+                    setCompatibilityTooltip(a, mod);
 
                     manualSelector.onclick = makeClickHander(manualSelector, false, mod);
 

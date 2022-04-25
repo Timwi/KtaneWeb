@@ -202,6 +202,10 @@ div.infos .inf2::before {
     content: ' • ';
 }
 
+body.display-id.display-quirks div.inf-quirks-id.both > div.inf-id::before {
+    content: ' • ';
+}
+
 div.infos .inf-twitch {
     font-size: 10pt;
 }
@@ -257,6 +261,10 @@ div.infos .inf-rule-seed::before {
     padding-right: 10px;
 }
 
+div.infos .inf-quirks {
+    display: inline;
+}
+
 div.infos .inf-author, div.infos .inf-published {
     opacity: .5;
 }
@@ -287,7 +295,7 @@ div.infos .inf-difficulty .inf-difficulty-sub {
 div.infos .inf-id {
     opacity: .5;
     font-family: Consolas, 'DejaVu Sans Mono', monospace;
-    display: block;
+    display: inline;
 }
 
 td.infos-1 div.infos > .inf-description {
@@ -320,6 +328,8 @@ body:not(.display-origin) div.infos .inf-origin,
 body:not(.display-twitch) div.infos .inf-twitch,
 body:not(.display-time-mode) div.infos .inf-time-mode,
 body:not(.display-rule-seed) div.infos .inf-rule-seed,
+body:not(.display-quirks) div.infos .inf-quirks,
+body:not(.display-symbol) div.infos .inf-symbol,
 body:not(.display-souvenir) div.infos .inf-souvenir,
 body:not(.display-id) div.infos .inf-id,
 body:not(.display-description) div.infos .inf-description-only,
@@ -1094,6 +1104,9 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
             body.display-twitch td.infos-1 div.infos > div.inf-twitch,
             body.display-time-mode td.infos-1 div.infos > div.inf-time-mode,
             body.display-souvenir td.infos-1 div.infos > div.inf-souvenir,
+            body.display-symbol td.infos-1 div.infos > div.inf-symbol,
+            body.display-quirks td.infos-1 div.infos > div.inf-quirks,
+            body.display-id td.infos-1 div.infos > div.inf-id,
             body.display-rule-seed td.infos-1 div.infos > div.inf-rule-seed {
                 display: inline;
             }
@@ -1106,7 +1119,9 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
                 content: ' • by ';
             }
 
-    body.display-description td.infos-1 div.infos > div.inf-description, body.display-id td.infos-1 div.infos > div.inf-id {
+    body.display-description td.infos-1 div.infos > div.inf-description,
+    body.display-quirks td.infos-1 div.infos > div.inf-quirks-id,
+    body.display-id td.infos-1 div.infos > div.inf-quirks-id {
         display: block;
     }
 

@@ -176,6 +176,8 @@ namespace KtaneWeb
         public string displayTwitch = "Twitch Plays score";
         public string displayTimeMode = "Time Mode score";
         public string displaySouvenir = "Souvenir support";
+        public string displaySymbol = "PT Symbol";
+        public string displayQuirks = "Quirks";
         public string displayRuleSeed = "Rule seed support";
         public string displayDate = "Date published";
         public string displayID = "Module ID";
@@ -267,6 +269,8 @@ namespace KtaneWeb
             (readable: displayTwitch, id: "twitch"),
             (readable: displayTimeMode, id: "time-mode"),
             (readable: displaySouvenir, id: "souvenir"),
+            (readable: displaySymbol, id: "symbol"),
+            (readable: displayQuirks, id: "quirks"),
             (readable: displayRuleSeed, id: "rule-seed"),
             (readable: displayDate, id: "published"),
             (readable: displayID, id: "id"),
