@@ -202,10 +202,6 @@ div.infos .inf2::before {
     content: ' • ';
 }
 
-body.display-id.display-quirks div.inf-quirks-id.both > div.inf-id::before {
-    content: ' • ';
-}
-
 div.infos .inf-twitch {
     font-size: 10pt;
 }
@@ -261,10 +257,6 @@ div.infos .inf-rule-seed::before {
     padding-right: 10px;
 }
 
-div.infos .inf-quirks {
-    display: inline;
-}
-
 div.infos .inf-author, div.infos .inf-published {
     opacity: .5;
 }
@@ -295,7 +287,7 @@ div.infos .inf-difficulty .inf-difficulty-sub {
 div.infos .inf-id {
     opacity: .5;
     font-family: Consolas, 'DejaVu Sans Mono', monospace;
-    display: inline;
+    display: block;
 }
 
 td.infos-1 div.infos > .inf-description {

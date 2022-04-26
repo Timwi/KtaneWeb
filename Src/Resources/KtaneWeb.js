@@ -498,15 +498,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         function makeQuirksElement(mod)
         {
             let q = String(mod.Quirks);
-            let quirks = [];
-            if (q.includes("SolvesAtEnd")) quirks.push("End");
-            if (q.includes("NeedsOtherSolves")) quirks.push("NdOt");
-            if (q.includes("SolvesBeforeSome")) quirks.push("Bef");
-            if (q.includes("SolvesWithOthers")) quirks.push("Wit");
-            if (q.includes("WillSolveSuddenly")) quirks.push("Sud");
-            if (q.includes("PseudoNeedy")) quirks.push("Psd");
-            if (q.includes("TimeDependent")) quirks.push("HvTm");
-            return el('div', 'inf-quirks inf', quirks.join(", "));
+            let quirks = [], quirksFull = [];
+            if (q.includes("SolvesAtEnd")) { quirks.push("End"); quirksFull.push("Solves at the end."); }
+            if (q.includes("NeedsOtherSolves")) { quirks.push("NdOt"); quirksFull.push("Needs other solves."); }
+            if (q.includes("SolvesBeforeSome")) { quirks.push("Bef"); quirksFull.push("Solves before some."); }
+            if (q.includes("SolvesWithOthers")) { quirks.push("Wit"); quirksFull.push("Solves with others."); }
+            if (q.includes("WillSolveSuddenly")) { quirks.push("Sud"); quirksFull.push("Will solve suddenly."); }
+            if (q.includes("PseudoNeedy")) { quirks.push("Psd"); quirksFull.push("Pseudo-needy."); }
+            if (q.includes("TimeDependent")) { quirks.push("HvTm"); quirksFull.push("Time-dependent."); }
+            return el('div', 'inf-quirks inf inf2', quirks.join(", "), { title: quirksFull.join(", ") });
         }
 
         switch (newView)
@@ -581,6 +581,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             let infos = el("div", "infos",
                                 el("div", "inf-type inf", translation["moduleType" + mod.Type + "S"] || translation["moduleType" + mod.Type] || mod.Type),
                                 el("div", "inf-origin inf inf2", translation["origin" + mod.Origin] || mod.Origin));
+                            if (mod.Quirks)
+                                infos.append(makeQuirksElement(mod));
                             if (mod.Type === 'Regular' || mod.Type === 'Needy' || mod.Type === 'Holdable')
                             {
                                 function readable(difficulty)
@@ -633,16 +635,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
                             }
 
-                            if (mod.Quirks || mod.ModuleID)
-                            {
-                                let holder = el("div", "inf-quirks-id" + (mod.Quirks && mod.ModuleID ? " both" : ""));
-                                if (mod.Quirks)
-                                    holder.append(makeQuirksElement(mod));
-                                if (mod.ModuleID)
-                                    holder.append(el("div", "inf-id inf", mod.ModuleID));
-                                infos.append(holder);
-                            }
-                            
+                            if (mod.ModuleID)
+                                infos.append(el("div", "inf-id inf", mod.ModuleID));
+
                             let descrip = el("div", "inf-description inf");
                             descrip.appendChild(el("span", "inf-description-only inf", mod.DescTags ? mod.DescriptionOnly : mod.Description));
                             descrip.appendChild(el("span", "inf-tags inf", mod.DescTags ? mod.DescTags : ""));
