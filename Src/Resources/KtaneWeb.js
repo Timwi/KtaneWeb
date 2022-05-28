@@ -715,9 +715,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         {
                             let symText = a.querySelector('.symbol>.inner');
                             symText.style.transform = '';
-                            let w = symText.offsetWidth;
-                            if (w > 47)
-                                symText.style.transform = `scaleX(${47 / w})`;
+
+                            // Prevent layout thrashing
+                            requestAnimationFrame(() => {
+                                let w = symText.offsetWidth;
+                                if (w > 47)
+                                    symText.style.transform = `scaleX(${47 / w})`;
+                            });
                         }
                     });
                     mod.FncsSetSelectable.push(url => { a.href = url; });
