@@ -681,6 +681,21 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     Supported: 'S'
                 };
 
+                let layoutProcessing = [];
+                function processLayout()
+                {
+                    let layoutFixing = [];
+                    for (let symText of layoutProcessing)
+                    {
+                        let w = symText.offsetWidth;
+                        if (w > 47)
+                            layoutFixing.push({ symText: symText, transform: `scaleX(${47 / w})` });
+                    }
+                    for (let inf of layoutFixing)
+                        inf.symText.style.transform = inf.transform;
+                    layoutProcessing = [];
+                }
+
                 for (let i = 0; i < modules.length; i++)
                 {
                     let mod = modules[i];
@@ -717,11 +732,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             symText.style.transform = '';
 
                             // Prevent layout thrashing
-                            requestAnimationFrame(() => {
-                                let w = symText.offsetWidth;
-                                if (w > 47)
-                                    symText.style.transform = `scaleX(${47 / w})`;
-                            });
+                            layoutProcessing.push(symText);
+                            requestAnimationFrame(processLayout);
                         }
                     });
                     mod.FncsSetSelectable.push(url => { a.href = url; });
