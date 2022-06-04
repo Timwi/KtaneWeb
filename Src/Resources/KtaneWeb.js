@@ -296,8 +296,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             return (c === 0) ? compare(a.SortKey, b.SortKey, rvrse) : c;
         });
 
-        updateFilter();
         viewsReady.get(view).Sort();
+        updateFilter();
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
@@ -334,12 +334,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         // Show all modules again to undo any effects of the previous results mode.
         if (mode !== resultsMode)
-        {
             for (const mod of modules)
                 for (const fnc of mod.FncsShowHide)
                     fnc(true);
-            viewsReady.get(view).Sort();
-        }
 
         lStorage.setItem('resultsMode', mode);
         lStorage.setItem('resultsLimit', limit);
@@ -663,6 +660,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             tr.appendChild(el("td", "mobile-ui", lnk2));
 
                             mod.ViewData.List.Created = true;
+
+                            mainTable.append(tr);
                         }
 
                         if (mod.ViewData.List.Created)
