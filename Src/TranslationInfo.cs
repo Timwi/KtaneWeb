@@ -227,7 +227,7 @@ namespace KtaneWeb
                 Accel = 'u',
                 Icon = "HTML/img/manual.png",
                 PropName = "manual",
-                UrlFunction = @"mod=>null",
+                UrlFunction = @"mod=>mod.ManualIconUrl",
                 ShowIconFunction = @"(_,s)=>s.length>0"
             },
             new Selectable

@@ -564,7 +564,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             }
 
                             let icon = el("div", "mod-icon", { style: `background-position:-${mod.X * 32}px -${mod.Y * 32}px;` });
-                            let modlink = el("a", "modlink", icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
+                            let modlink = el("a", "modlink", { href: mod.SelectableLinkUrl }, icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
                             setCompatibilityTooltip(modlink, mod);
                             mod.ViewData.List.SelectableLink = modlink;
                             let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
@@ -1290,6 +1290,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     for (var i = 0; i < modules.length; i++)
     {
         let mod = modules[i];
+        mod.ManualIconUrl = null;
         mod.SelectableLinkUrl = null;
         mod.IsVisible = true;
         mod.MatchesFilter = false;
@@ -1318,7 +1319,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         mod.FncsShowHide = [sh => { mod.IsVisible = sh; }];
 
         // (string url) => changes what the manual icon links to (preferred manual)
-        mod.FncsSetManualLink = [];
+        mod.FncsSetManualLink = [url => { mod.ManualIconUrl = url; }];
 
         // (string url) => changes what the module’s main link links to (selectable)
         mod.FncsSetSelectable = [url => { mod.SelectableLinkUrl = url; }];
