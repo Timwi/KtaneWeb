@@ -296,8 +296,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             return (c === 0) ? compare(a.SortKey, b.SortKey, rvrse) : c;
         });
 
-        viewsReady.get(view).Sort();
         updateFilter();
+        viewsReady.get(view).Sort();
 
         $(document.body).removeClass(document.body.className.split(' ').filter(cls => cls.startsWith('sort-')).join(' ')).addClass(sorts[srt].bodyCss);
         $(sorts[srt].radioButton).prop('checked', true);
@@ -333,9 +333,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     function setResultsMode(mode, limit)
     {
         // Show all modules again to undo any effects of the previous results mode.
-        for (const mod of modules)
-            for (const fnc of mod.FncsShowHide)
-                fnc(true);
+        if (mode !== resultsMode)
+        {
+            for (const mod of modules)
+                for (const fnc of mod.FncsShowHide)
+                    fnc(true);
+            viewsReady.get(view).Sort();
+        }
 
         lStorage.setItem('resultsMode', mode);
         lStorage.setItem('resultsLimit', limit);
@@ -521,7 +525,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                     mod.FncsShowHide.push(sh =>
                     {
-                        if (!mod.ViewData.List.Created)
+                        if (sh && !mod.ViewData.List.Created)
                         {
                             let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
                             mod.ViewData.List.TableRow = tr;
@@ -660,7 +664,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                             mod.ViewData.List.Created = true;
                         }
-                        mod.ViewData.List.TableRow.style.display = (sh ? '' : 'none');
+
+                        if (mod.ViewData.List.Created)
+                            mod.ViewData.List.TableRow.style.display = (sh ? '' : 'none');
                     });
                 }
 
