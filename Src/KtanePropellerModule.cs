@@ -36,9 +36,12 @@ namespace KtaneWeb
                     new UrlMapping(path: "/profile", handler: generateProfileZip),
                     new UrlMapping(path: "/json", handler: req =>
                     {
-                        if (req.Url.Path != "/raw")
+                        if (req.Url.Path == "/raw")
+                            return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
+                        else if (req.Url.Path == "/flavourtext")
+                            return HttpResponse.Json(_moduleInfoCache.ModulesJsonFlavourText, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
+                        else
                             return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON/" + req.Url.Path));
-                        return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                     }),
                     new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/ManualLastUpdated", handler: ManualLastUpdated),

@@ -13,6 +13,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.43" />
     <PackageReference Include="ICSharpCode.SharpZipLib" Version="0.86.0.518" />
     <PackageReference Include="PdfSharp" Version="1.50.5147.0" />
     <PackageReference Include="PropellerApi" Version="1.0.26" />
