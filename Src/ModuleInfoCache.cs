@@ -50,7 +50,7 @@ namespace KtaneWeb
                 node.GetAttributeValue("class", "").Contains("flavour-text")
             ).ToList();
 
-            List<string> texts = new List<string>();
+            var texts = new HashSet<string>();
 
             foreach (var text in flav)
             {
@@ -177,11 +177,9 @@ namespace KtaneWeb
                 modJson["Y"] = y;
 
                 //get flavour-text from HTML of original manual
-                string htmlFilename = Path.Combine(_config.BaseDir, "HTML/" + fileName + ".html");
-                string[] flavourTexts = getFlavourTexts(htmlFilename);
                 flavourTextList.Add(new JsonDict() {
                     { "Name", mod.Name },
-                    { "Flavour", flavourTexts },
+                    { "Flavour", getFlavourTexts(Path.Combine(_config.BaseDir, "HTML", fileName + ".html"))},
                     { "SteamID", mod.SteamID },
                     { "ModuleID", mod.ModuleID }
                 });

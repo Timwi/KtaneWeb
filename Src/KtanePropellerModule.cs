@@ -41,7 +41,7 @@ namespace KtaneWeb
                         else if (req.Url.Path == "/flavourtext")
                             return HttpResponse.Json(_moduleInfoCache.ModulesJsonFlavourText, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                         else
-                            return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON/" + req.Url.Path));
+                            return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON" + req.Url.Path));
                     }),
                     new UrlMapping(path: "/pull", handler: pull),
                     new UrlMapping(path: "/ManualLastUpdated", handler: ManualLastUpdated),
