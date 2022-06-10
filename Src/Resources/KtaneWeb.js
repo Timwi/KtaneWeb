@@ -661,7 +661,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                             mod.ViewData.List.Created = true;
 
-                            mainTable.append(tr);
+                            // We need to insert the new row while maintaining sort order
+                            // Find the prior mod that has been created
+                            let priorMod = null;
+                            for (let j = modules.indexOf(mod) - 1; j >= 0; j--) {
+                                if (modules[j].ViewData.List.Created) {
+                                    priorMod = modules[j];
+                                    break;
+                                }
+                            }
+
+                            if (priorMod !== null)
+                                // Insert it after that prior mod
+                                priorMod.ViewData.List.TableRow.after(tr);
+                            else
+                                // No prior mod, so it should be the first element
+                                mainTable.prepend(tr);
                         }
 
                         if (mod.ViewData.List.Created)
