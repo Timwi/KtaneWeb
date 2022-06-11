@@ -675,8 +675,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 // Insert it after that prior mod
                                 priorMod.ViewData.List.TableRow.after(tr);
                             else
-                                // No prior mod, so it should be the first element
-                                mainTable.prepend(tr);
+                                // No prior mod, so it should be the first row after the header
+                                mainTable.querySelector("tr.header-row").after(tr);
                         }
 
                         if (mod.ViewData.List.Created)
