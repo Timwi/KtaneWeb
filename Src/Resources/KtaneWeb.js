@@ -1768,6 +1768,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         for (let key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
+        if (!mod['BossStatus'] && Object.keys(mod).length > 0)
+            ui.querySelector(`[name="BossStatus"]`).value = 'NotABoss';
+        if (!mod['MysteryModule'] && Object.keys(mod).length > 0)
+            ui.querySelector(`[name="MysteryModule"]`).value = 'NoConflict';
+
         for (let key of 'Quirks'.split(','))
         {
             let modValues = mod[key] ? mod[key].split(', ') : [];
@@ -1783,6 +1788,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             for (let key of 'Developer,Manual,ManualGraphics,TwitchPlays,Maintainer,Audio,Modeling,Idea'.split(','))
                 ui.querySelector(`[name="${key}"]`).value = (mod.Contributors[key] ? mod.Contributors[key].join('; ') : '');
 
+        ui.querySelector(`[name="ObsoleteSteamIDs"]`).value = mod.ObsoleteSteamIDs ? mod.ObsoleteSteamIDs.join(', ') : '';
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
         let tbody = ui.querySelector(`table.tutorial-video-list>tbody`);
         function removeRow(row)
