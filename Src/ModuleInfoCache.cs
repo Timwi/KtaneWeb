@@ -66,12 +66,16 @@ namespace KtaneWeb
         {
             var moduleInfoCache = new ModuleInfoCache();
             Dictionary<string, string>[] tpEntries = null, timeModeEntries = null;
-            Dictionary<string, (int x, int y)> coords = null;
             var exceptions = new JsonList();
             JsonValue contactInfoJson = null;
 
+            // Icon sprite parameters
+            const int cols = 47;   // number of icons per row
+            const int w = 32;   // width of an icon in pixels
+            const int h = 32;   // height of an icon in pixels
+            var coords = new Dictionary<string, (int x, int y)>();
+
             var tasks = Ut.NewArray<(string name, Action action)>(
-                ("Generating icon sprite", () => (moduleInfoCache.IconSpritePng, moduleInfoCache.IconSpriteCss, coords) = GenerateIconSprite()),
                 ("Retrieving TP data from Google Sheets", () => tpEntries = LoadTpDataFromGoogleSheets()),
                 ("Retrieving Time Mode data from Google Sheets", () => timeModeEntries = LoadTimeModeDataFromGoogleSheets()),
                 ("Loading contact info", () => contactInfoJson = JsonValue.Parse(File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json")))));
@@ -136,92 +140,126 @@ namespace KtaneWeb
                     }
                 })
                 .WhereNotNull()
+                .OrderBy(mod => mod.mod.Published).ThenBy(mod => mod.mod.TranslationOf != null)  // Sort for the icon sprite; for everything else, the sort order doesn’t matter
                 .ToArray();
 
             static string getFileName(JsonDict modJson, KtaneModuleInfo mod) => modJson.ContainsKey("FileName") ? modJson["FileName"].GetString() : mod.Name;
 
             var flavourTextList = new JsonList();
-
-            foreach (var (modJson, mod, _) in modules)
+            using var iconSpriteBmp = new Bitmap(w * cols, h * ((modules.Length + cols - 1) / cols));
+            using var iconSpriteGr = Graphics.FromImage(iconSpriteBmp);
             {
-                // Process ignore lists that contain special operators
-                if (mod.Ignore != null && mod.Ignore.Any(str => str.StartsWith("+")))
+                // blank icon
+                using (var icon = new Bitmap(Path.Combine(_config.BaseDir, "Icons", "blank.png")))
+                    iconSpriteGr.DrawImage(icon, 0, 0);
+                var curX = 0;
+                var curY = 0;
+
+                foreach (var (modJson, mod, _) in modules)
                 {
-                    var processedIgnoreList = new List<string>();
-                    foreach (var str in mod.Ignore)
+                    // Process ignore lists that contain special operators
+                    if (mod.Ignore != null && mod.Ignore.Any(str => str.StartsWith("+")))
                     {
-                        if (str.StartsWith("+") && EnumStrong.TryParse<KtaneQuirk>(str.Substring(1), out var quirk))
-                            processedIgnoreList.AddRange(modules.Where(tup => tup.mod.Quirks.HasFlag(quirk)).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                        else if (str.StartsWith("-"))
-                            processedIgnoreList.Remove(str.Substring(1));
-                        else if (!str.StartsWith("+"))
-                            processedIgnoreList.Add(str);
+                        var processedIgnoreList = new List<string>();
+                        foreach (var str in mod.Ignore)
+                        {
+                            if (str.StartsWith("+") && EnumStrong.TryParse<KtaneQuirk>(str.Substring(1), out var quirk))
+                                processedIgnoreList.AddRange(modules.Where(tup => tup.mod.Quirks.HasFlag(quirk)).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
+                            else if (str.StartsWith("-"))
+                                processedIgnoreList.Remove(str.Substring(1));
+                            else if (!str.StartsWith("+"))
+                                processedIgnoreList.Add(str);
+                        }
+                        modJson["IgnoreProcessed"] = processedIgnoreList.ToJsonList();
                     }
-                    modJson["IgnoreProcessed"] = processedIgnoreList.ToJsonList();
-                }
 
-                static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
+                    static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
 
-                // Sheets and iconsprite coordinates
-                var fileName = getFileName(modJson, mod);
-                if (mod.TranslationOf == null)
-                    modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
-                else if (!coords.ContainsKey(fileName))
-                {
-                    var origModule = modules.FirstOrNull(module => module.mod.ModuleID == mod.TranslationOf);
-                    if (origModule != null)
-                        fileName = getFileName(origModule.Value.modJson, origModule.Value.mod);
-                }
-                var (x, y) = coords.Get(fileName, (x: 0, y: 0));
-                modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
-                modJson["Y"] = y;
+                    // Sheets
+                    var fileName = getFileName(modJson, mod);
+                    if (mod.TranslationOf == null)
+                        modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
 
-                //get flavour-text from HTML of original manual
-                flavourTextList.Add(new JsonDict() {
-                    { "Name", mod.Name },
-                    { "Flavour", getFlavourTexts(Path.Combine(_config.BaseDir, "HTML", fileName + ".html"))},
-                    { "SteamID", mod.SteamID },
-                    { "ModuleID", mod.ModuleID }
-                });
+                    // Iconsprite
+                    if (mod.TranslationOf != null)
+                    {
+                        var origModule = modules.FirstOrNull(module => module.mod.ModuleID == mod.TranslationOf);
+                        if (origModule != null && coords.Get(getFileName(origModule.Value.modJson, origModule.Value.mod), null) is (int, int) c)
+                            coords.Add(fileName, c);
+                    }
+                    else
+                    {
+                        var iconFilePath = Path.Combine(_config.BaseDir, "Icons", fileName + ".png");
+                        if (File.Exists(iconFilePath))
+                        {
+                            curX++;
+                            if (curX == cols)
+                            {
+                                curY++;
+                                curX = 0;
+                            }
+                            using (var icon = new Bitmap(iconFilePath))
+                                iconSpriteGr.DrawImage(icon, w * curX, h * curY);
+                            coords.Add(fileName, (curX, curY));
+                        }
+                    }
 
-                try
-                {
-                    // Merge in Time Mode data
-                    var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
-                    if (timeModeEntry != null)
-                        mergeTimeModeData(mod, modJson, timeModeEntry);
-                }
-                catch (Exception e)
-                {
+                    var (x, y) = coords.Get(fileName, (x: 0, y: 0));
+                    modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
+                    modJson["Y"] = y;
+
+                    // Get flavour text from HTML of original manual
+                    flavourTextList.Add(new JsonDict() {
+                        { "Name", mod.Name },
+                        { "Flavour", getFlavourTexts(Path.Combine(_config.BaseDir, "HTML", fileName + ".html"))},
+                        { "SteamID", mod.SteamID },
+                        { "ModuleID", mod.ModuleID }
+                    });
+
+                    try
+                    {
+                        // Merge in Time Mode data
+                        var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
+                        if (timeModeEntry != null)
+                            mergeTimeModeData(mod, modJson, timeModeEntry);
+                    }
+                    catch (Exception e)
+                    {
 #if DEBUG
-                    Console.WriteLine(mod.FileName);
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                        Console.WriteLine(mod.FileName);
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.GetType().FullName);
+                        Console.WriteLine(e.StackTrace);
 #endif
-                    Log.Exception(e);
-                    exceptions.Add($"{mod.FileName} error reading Time Mode data: {e.Message}");
-                }
+                        Log.Exception(e);
+                        exceptions.Add($"{mod.FileName} error reading Time Mode data: {e.Message}");
+                    }
 
-                try
-                {
-                    // Merge in TP data
-                    var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
-                    if (tpEntry != null)
-                        mergeTPData(mod, modJson, tpEntry["tpscore"]);
-                }
-                catch (Exception e)
-                {
+                    try
+                    {
+                        // Merge in TP data
+                        var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
+                        if (tpEntry != null)
+                            mergeTPData(mod, modJson, tpEntry["tpscore"]);
+                    }
+                    catch (Exception e)
+                    {
 #if DEBUG
-                    Console.WriteLine(mod.FileName);
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.GetType().FullName);
-                    Console.WriteLine(e.StackTrace);
+                        Console.WriteLine(mod.FileName);
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.GetType().FullName);
+                        Console.WriteLine(e.StackTrace);
 #endif
-                    Log.Exception(e);
-                    exceptions.Add($"{mod.FileName} error reading TP score data: {e.Message}");
+                        Log.Exception(e);
+                        exceptions.Add($"{mod.FileName} error reading TP score data: {e.Message}");
+                    }
                 }
             }
+
+            using var mem = new MemoryStream();
+            iconSpriteBmp.Save(mem, ImageFormat.Png);
+            moduleInfoCache.IconSpritePng = mem.ToArray();
+            moduleInfoCache.IconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(moduleInfoCache.IconSpritePng)})}}";
 
             moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
             moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
@@ -335,33 +373,6 @@ namespace KtaneWeb
             }
 
             return tpEntries;
-        }
-
-        private (byte[] iconSpritePng, string iconSpriteCss, Dictionary<string, (int x, int y)> coords) GenerateIconSprite()
-        {
-            const int cols = 40;   // number of icons per row
-            const int w = 32;   // width of an icon in pixels
-            const int h = 32;   // height of an icon in pixels
-
-            var iconFiles = new DirectoryInfo(Path.Combine(_config.BaseDir, "Icons")).EnumerateFiles("*.png", SearchOption.TopDirectoryOnly).OrderBy(file => file.Name != "blank.png").ToArray();
-            var rows = (iconFiles.Length + cols - 1) / cols;
-            var coords = new Dictionary<string, (int x, int y)>();
-            using var bmp = new Bitmap(w * cols, h * rows);
-            using (var g = Graphics.FromImage(bmp))
-            {
-                for (int i = 0; i < iconFiles.Length; i++)
-                {
-                    using (var icon = new Bitmap(iconFiles[i].FullName))
-                        g.DrawImage(icon, w * (i % cols), h * (i / cols));
-                    coords.Add(Path.GetFileNameWithoutExtension(iconFiles[i].Name), (i % cols, i / cols));
-                }
-            }
-            using var mem = new MemoryStream();
-            bmp.Save(mem, ImageFormat.Png);
-
-            var iconSpritePng = mem.ToArray();
-            var iconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(iconSpritePng)})}}";
-            return (iconSpritePng, iconSpriteCss, coords);
         }
 
         private void mergeTPData(KtaneModuleInfo mod, JsonDict modJson, string scoreString)
