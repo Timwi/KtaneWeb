@@ -1105,6 +1105,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
                 display: inline;
             }
 
+            td.infos-1 div.infos > div.inf-id::before,
             td.infos-1 div.infos > div.inf2::before {
                 content: '\a0 • ';
             }
