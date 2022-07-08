@@ -598,10 +598,24 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                     }
                                     return result;
                                 }
-                                if (mod.DefuserDifficulty === mod.ExpertDifficulty)
-                                    infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
+                                function customDifficulty(custDifficulty, realDifficulty)
+                                {
+                                    if (custDifficulty)
+                                        return el("span", "inf-difficulty-sub", { title: readable(realDifficulty) }, custDifficulty);
+                                    return el("span", "inf-difficulty-sub", readable(realDifficulty));
+                                }
+
+                                if (mod.CustomDefuserDifficulty && mod.CustomExpertDifficulty && mod.CustomDefuserDifficulty === mod.CustomExpertDifficulty)
+                                    infos.append(el("div", "inf-difficulty custom-difficulty inf inf2", el("span", "inf-difficulty-sub", customDifficulty(mod.CustomDefuserDifficulty, mod.DefuserDifficulty))));
+                                else if (!mod.CustomDefuserDifficulty && !mod.CustomExpertDifficulty && mod.DefuserDifficulty === mod.ExpertDifficulty)
+                                    infos.append(el("div", "inf-difficulty custom-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
                                 else
-                                    infos.append(el("div", "inf-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
+                                    infos.append(el("div", "inf-difficulty custom-difficulty inf inf2", customDifficulty(mod.CustomDefuserDifficulty, mod.DefuserDifficulty), ' (d), ', customDifficulty(mod.CustomExpertDifficulty, mod.ExpertDifficulty), ' (e)'));
+
+                                if (mod.DefuserDifficulty === mod.ExpertDifficulty)
+                                    infos.append(el("div", "inf-difficulty real-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
+                                else
+                                    infos.append(el("div", "inf-difficulty real-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty)), ' (d), ', el("span", "inf-difficulty-sub", readable(mod.ExpertDifficulty)), ' (e)'));
                             }
                             infos.append(makeAuthorElement(mod), makeAllAuthorElement(mod),
                                 el("div", "inf-published inf inf2", mod.Published));
@@ -1765,7 +1779,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     function setEditUi(mod)
     {
         let ui = document.getElementById('module-ui');
-        for (let key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
+        for (let key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,CustomDefuserDifficulty,CustomExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
         if (!mod['BossStatus'] && Object.keys(mod).length > 0)

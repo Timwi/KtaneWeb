@@ -68,6 +68,13 @@ namespace KtaneWeb
         [EditableField("Expert difficulty", "An approximate difficulty rating for the expert.")]
         public KtaneModuleDifficulty? ExpertDifficulty;
 
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
+        [EditableField("Custom difficulty (D)", "An optional alternative defuser difficulty descriptor, limted to 12 characters.")]
+        public string CustomDefuserDifficulty = null;
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
+        [EditableField("Custom difficulty (E)", "An optional alternative expert difficulty descriptor, limted to 12 characters.")]
+        public string CustomExpertDifficulty = null;
+
         [ClassifyIgnoreIfDefault, EditableField("Rule-seed", "Does the module vary its rules and manual under the Rule Seed Modifier?")]
         public KtaneSupport RuleSeedSupport = KtaneSupport.NotSupported;
 
@@ -140,11 +147,18 @@ namespace KtaneWeb
             {
                 DefuserDifficulty ??= KtaneModuleDifficulty.Easy;
                 ExpertDifficulty ??= KtaneModuleDifficulty.Easy;
+                int lim = 12;
+                if (CustomDefuserDifficulty != null)
+                    CustomDefuserDifficulty = CustomDefuserDifficulty.Substring(0, CustomDefuserDifficulty.Length <= lim ? CustomDefuserDifficulty.Length : lim);
+                if (CustomExpertDifficulty != null)
+                    CustomExpertDifficulty = CustomExpertDifficulty.Substring(0, CustomExpertDifficulty.Length <= lim ? CustomExpertDifficulty.Length : lim);
             }
             else
             {
                 DefuserDifficulty = null;
                 ExpertDifficulty = null;
+                CustomDefuserDifficulty = null;
+                CustomExpertDifficulty = null;
                 RuleSeedSupport = KtaneSupport.NotSupported;
             }
 

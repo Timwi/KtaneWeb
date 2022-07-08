@@ -327,6 +327,8 @@ body:not(.display-id) div.infos .inf-id,
 body:not(.display-description) div.infos .inf-description-only,
 body:not(.display-tags) div.infos .inf-tags,
 body:not(.display-published) div.infos .inf-published,
+body:not(.display-custom-difficulty) div.infos .inf.inf2.inf-difficulty.custom-difficulty,
+body.display-custom-difficulty div.infos .inf.inf2.inf-difficulty.real-difficulty,
 body:not(.display-all-contributors) div.infos .inf-author.all-contributors,
 body.display-all-contributors div.infos .inf-author:not(.all-contributors) {
     display: none;
