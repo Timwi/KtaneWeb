@@ -678,8 +678,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             // We need to insert the new row while maintaining sort order
                             // Find the prior mod that has been created
                             let priorMod = null;
-                            for (let j = modules.indexOf(mod) - 1; j >= 0; j--) {
-                                if (modules[j].ViewData.List.Created) {
+                            for (let j = modules.indexOf(mod) - 1; j >= 0; j--)
+                            {
+                                if (modules[j].ViewData.List.Created)
+                                {
                                     priorMod = modules[j];
                                     break;
                                 }
@@ -1781,6 +1783,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let ui = document.getElementById('module-ui');
         for (let key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,CustomDefuserDifficulty,CustomExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
+
+        ui.querySelector('[name="DBMLIgnored"]').checked = (mod.DBMLIgnored || false);
 
         if (!mod['BossStatus'] && Object.keys(mod).length > 0)
             ui.querySelector(`[name="BossStatus"]`).value = 'NotABoss';
