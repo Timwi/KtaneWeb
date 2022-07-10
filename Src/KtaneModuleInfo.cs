@@ -53,6 +53,9 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Obsolete Steam IDs", "Numerical IDs of Steam Workshop items containing old versions of this mod that have since been reuploaded.", AllowedSeparators = new[] { ';', ',' })]
         public string[] ObsoleteSteamIDs;
 
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignored by DBML", "Specify if DBML should not be used to load this module.")]
+        public bool DBMLIgnored;
+
         [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes or softlocked games, even if rare.")]
         public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Compatible;
         [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Compatibility setting above."), EditableIf(nameof(Compatibility), KtaneModuleCompatibility.Problematic, KtaneModuleCompatibility.Unplayable)]
