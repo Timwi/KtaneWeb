@@ -482,10 +482,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             if (services[correctedService] === undefined)
                                 contactItem.textContent = `${service}: ${username}`;
                             else
-                            {
-                                let siteString = services[correctedService].replace("{}", username)
-                                contactItem.appendChild(el('a', null, correctedService, { href: "https://" + siteString }));
-                            }
+                                contactItem.appendChild(el('a', null, correctedService, { href: "https://" + services[correctedService].replace("{}", username) }));
 
                             sublist.appendChild(contactItem);
                         }
