@@ -424,14 +424,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         }
 
         const services = {
-            "Facebook": "facebook.com/",
-            "GitHub": "github.com/",
-            "Reddit": "reddit.com/u/",
-            "Steam": "steamcommunity.com/",
-            "Twitch": "twitch.tv/",
-            "Twitter": "twitter.com/",
-            "Website": "",
-            "YouTube": "youtube.com/",
+            "DeviantArt": "deviantart.com/{}",
+            "Facebook": "facebook.com/{}",
+            "GitHub": "github.com/{}",
+            "Newgrounds": "{}.newgrounds.com",
+            "Reddit": "reddit.com/u/{}",
+            "Steam": "steamcommunity.com/{}",
+            "Twitch": "twitch.tv/{}",
+            "Twitter": "twitter.com/{}",
+            "Website": "{}",
+            "YouTube": "youtube.com/{}"
         };
 
         function makeAuthorElement(mod)
@@ -480,7 +482,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             if (services[correctedService] === undefined)
                                 contactItem.textContent = `${service}: ${username}`;
                             else
-                                contactItem.appendChild(el('a', null, correctedService, { href: "https://" + services[correctedService] + username }));
+                            {
+                                let siteString = services[correctedService].replace("{}", username)
+                                contactItem.appendChild(el('a', null, correctedService, { href: "https://" + siteString }));
+                            }
 
                             sublist.appendChild(contactItem);
                         }
