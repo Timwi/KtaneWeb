@@ -54,6 +54,23 @@ textarea {
     height: 50em;
 }
 
+/* Language Dropdown */
+.lang {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+    .lang > .lang-label {
+        font-size: 10pt;
+        transform: none;
+    }
+
+    .lang > .lang-selector {
+        margin-left: 5px;
+        max-width: 100%;
+    }
+
 /* Top controls */
 #top-controls {
     position: sticky;

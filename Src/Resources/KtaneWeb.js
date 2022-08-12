@@ -125,6 +125,36 @@ function el(tagName, className, ...args)
     return element;
 }
 
+// Add language options for the website
+function setLanguageSelector(selectedLanguage) {
+    const languageSelector = document.getElementById("lang-selector");
+    var validLanguage = false
+
+    languageSelector.onchange = function (val) {
+        window.location.href = replaceQueryParams("lang", this.value);
+    }
+
+    for (const langCode of Object.values(languageCodes)) {
+        validLanguage = validLanguage || selectedLanguage === langCode;
+
+        languageSelector.appendChild(
+            el("option", "lang-option-" + langCode, langCode, selectedLanguage === langCode ? { selected: true } : null)
+        );
+    }
+
+    if (!validLanguage) {
+        const englishOption = document.getElementsByClassName("lang-option-en")[0];
+        englishOption.selected = true;
+    }
+}
+
+function replaceQueryParams(key, val) {
+    uri = window.location.href
+        .replace(RegExp("([?&]" + key + "(?=[=&#]|$)[^#&]*|(?=#|$))"), "&" + key + "=" + encodeURIComponent(val))
+        .replace(/^([^?&]+)&/, "$1?");
+    return uri;
+}
+
 function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, contactInfo)
 {
     for (let exception of moduleLoadExceptions)
@@ -138,10 +168,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     };
 
     var pageLang = window.location.search.match(/lang=([^?&]+)/);
-    if (!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1)
+    if (!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1) {
         pageLang = null;
-    else
+        setLanguageSelector("en")
+    } else {
         pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === pageLang[1])[0]
+        setLanguageSelector(languageCodes[pageLang])
+    }
 
     var filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }

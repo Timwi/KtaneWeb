@@ -71,6 +71,13 @@ namespace KtaneWeb
                 new BODY(
                     new DIV { id = "main-content" }._(
                         new DIV { class_ = "header" }._(
+
+                            /* LANGUAGE SELECTOR */
+                            new DIV { class_ = "lang" }._(
+                                new SPAN { class_ = "lang-label" }._(translation.langSelectorLabel + ":"),
+                                new SELECT { class_ = "lang-selector", id = "lang-selector" }
+                            ),
+
                             new IMG { id = "logo", src = translation.titleImg },
                             new DIV { id = "icons", class_ = "icons" }._(
                                 new DIV { class_ = "icon-page shown" }._(

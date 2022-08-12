@@ -21,6 +21,7 @@ namespace KtaneWeb
 
         public string title = "Repository of Manual Pages";
         public string titleImg = "HTML/img/repo-logo.svg";
+        public string langSelectorLabel = "Language";
         public string searchFind = "Find:";
         public string searchMission = "Mission:";
         public string searchNames = "Names";
