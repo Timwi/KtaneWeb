@@ -128,17 +128,18 @@ function el(tagName, className, ...args)
 // Add language options for the website
 function setLanguageSelector(selectedLanguage) {
     const languageSelector = document.getElementById("lang-selector");
-    var validLanguage = false
+    var validLanguage = false;
 
-    languageSelector.onchange = function (val) {
-        window.location.href = replaceQueryParams("lang", this.value);
+    languageSelector.onchange = function() {
+        window.location.href = replaceQueryParams("lang", languageCodes[this.value]);
     }
 
-    for (const langCode of Object.values(languageCodes)) {
-        validLanguage = validLanguage || selectedLanguage === langCode;
+    for (const langCode of Object.keys(languageCodes)) {
+        let val = languageCodes[langCode];
+        validLanguage = validLanguage || selectedLanguage === val;
 
         languageSelector.appendChild(
-            el("option", "lang-option-" + langCode, langCode, selectedLanguage === langCode ? { selected: true } : null)
+            el("option", "lang-option-" + val, langCode, selectedLanguage === val ? { selected: true } : null)
         );
     }
 
@@ -170,10 +171,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     var pageLang = window.location.search.match(/lang=([^?&]+)/);
     if (!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1) {
         pageLang = null;
-        setLanguageSelector("en")
+        setLanguageSelector("en");
     } else {
-        pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === pageLang[1])[0]
-        setLanguageSelector(languageCodes[pageLang])
+        pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === pageLang[1])[0];
+        setLanguageSelector(languageCodes[pageLang]);
     }
 
     var filter = {};
@@ -1068,13 +1069,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 manual = mod.Manuals[0];
                 for (let i = 0; i < mod.Manuals.length; i++)
                     if (mod.Manuals[i].Name === mod.Name + " (PDF)")
+                    {
                         manual = mod.Manuals[i];
+                        break;
+                    }
                 for (let i = 0; i < mod.Manuals.length; i++)
                     if (mod.Manuals[i].Name === mod.Name + " (HTML)")
+                    {
                         manual = mod.Manuals[i];
+                        break;
+                    }
                 for (let i = 0; i < mod.Manuals.length; i++)
                     if (mod.Manuals[i].Language === pageLang && mod.Manuals[i].Name.slice(-6) === "(HTML)")
+                    {
                         manual = mod.Manuals[i];
+                        break;
+                    }
                 if (mod.Name in preferredManuals)
                     for (let i = 0; i < mod.Manuals.length; i++)
                     {
