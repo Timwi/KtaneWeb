@@ -72,14 +72,13 @@ namespace KtaneWeb
                     new DIV { id = "main-content" }._(
                         new DIV { class_ = "header" }._(
 
-                            /* LANGUAGE SELECTOR */
-                            new DIV { class_ = "lang" }._(
-                                new SPAN { class_ = "lang-label" }._(translation.langSelectorLabel + ":"),
-                                new SELECT { class_ = "lang-selector", id = "lang-selector" }
-                            ),
-
                             new IMG { id = "logo", src = translation.titleImg },
                             new DIV { id = "icons", class_ = "icons" }._(
+                                /* LANGUAGE SELECTOR */
+                                new DIV { class_ = "lang" }._(
+                                    new SPAN { class_ = "lang-label" }._(translation.langSelectorLabel + ":"),
+                                    new SELECT { class_ = "lang-selector", id = "lang-selector" }
+                                ),
                                 new DIV { class_ = "icon-page shown" }._(
                                     new DIV { class_ = "icon", id = "links-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "links")._(new IMG { class_ = "icon-img", src = "HTML/img/links-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.popupLinks))),
                                     new DIV { class_ = "icon", id = "tools-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "tools")._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._(translation.popupTools))),

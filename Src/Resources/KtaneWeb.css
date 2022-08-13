@@ -1056,16 +1056,26 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 }
 
 /* Desktop version for narrow screens */
-@media screen and (max-width: 1090px) and (min-width: 650.01px) {
-    body {
-        font-size: 12pt;
-        max-width: none;
-    }
-
+@media screen and (max-width: 1090px) {
     .header {
         flex-direction: column;
         align-items: center;
         justify-items: center;
+    }
+
+    .lang {
+        position: relative;
+        line-height: 40px;
+        top: 0;
+        right: 0;
+        margin-bottom: 20px;
+    }
+}
+
+@media screen and (max-width: 1090px) and (min-width: 650.01px) {
+    body {
+        font-size: 12pt;
+        max-width: none;
     }
 
     #logo {
