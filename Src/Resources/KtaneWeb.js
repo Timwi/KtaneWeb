@@ -1849,8 +1849,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 ui.querySelector(`[name="${key}"]`).value = (mod.Souvenir[key] || '');
 
         if (document.getElementById('nested-Contributors').checked = mod.Contributors != undefined)
-            for (let key of 'Developer,Manual,ManualGraphics,TwitchPlays,Maintainer,Audio,Modeling,Idea'.split(','))
-                ui.querySelector(`[name="${key}"]`).value = (mod.Contributors[key] ? mod.Contributors[key].join('; ') : '');
+        {
+            let inputKeys = 'Developer,Manual,ManualGraphics,TwitchPlays,Maintainer,Audio,Modeling,Idea'.split(',');
+            let contrKeys = Object.assign({}, ...inputKeys.map(k => ({ [k]: ui.querySelector(`tr#edit-${k} th`).innerText })));
+            for (let key of inputKeys)
+                ui.querySelector(`[name="${key}"]`).value = (mod.Contributors[ contrKeys[key] ] ? mod.Contributors[ contrKeys[key] ].join('; ') : '');
+        }
 
         ui.querySelector(`[name="ObsoleteSteamIDs"]`).value = mod.ObsoleteSteamIDs ? mod.ObsoleteSteamIDs.join(', ') : '';
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
