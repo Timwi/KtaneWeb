@@ -73,6 +73,8 @@ namespace KtaneWeb
                             else
                                 f.SetValue(obj, val.Split(attr.AllowedSeparators).Select(str => str.Split(attr.AllowedDictSeparators)).ToDictionary(x => x[0].Trim(), x => x[1].Trim()));
                         }
+                        else if (fType == typeof(int) && f.Name == "PageRenderTime")
+                            f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? null : int.Parse(val));
                         else if (fType == typeof(int))
                             f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0 : int.Parse(val));
                         else if (fType == typeof(decimal))
