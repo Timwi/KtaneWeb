@@ -1830,7 +1830,6 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
         ui.querySelector('[name="DBMLIgnored"]').checked = (mod.DBMLIgnored || false);
-        ui.querySelector('[name="PageRenderTime"]').value = (mod.PageRenderTime || '');
 
         if (!mod['BossStatus'] && Object.keys(mod).length > 0)
             ui.querySelector(`[name="BossStatus"]`).value = 'NotABoss';

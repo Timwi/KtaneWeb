@@ -101,7 +101,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Mystery Module compatibility", "Specify how Mystery Module may affect this module. Use “MM must not hide this” if this module requires other modules to be solved earlier (e.g. Encryption Bingo, Hogwarts). Use “MM must not require this” if the module depends on whether or not other modules are on the bomb (e.g. Free Parking, Mafia). Use “MM must not use this at all” if both is the case. Use “MM must auto-solve” if this module imposes a solve order on other modules (e.g. Organization, Turn the Keys).")]
         public KtaneMysteryModuleCompatibility MysteryModule = KtaneMysteryModuleCompatibility.NoConflict;
 
-        [ClassifyIgnoreIfDefault, EditableField("Page Render Time", "Time in milliseconds alloted to wait for the page to fully render before generating the PDF.")]
+        [ClassifyIgnoreIfDefault]
         public int? PageRenderTime = null;
 
         // This information is imported from a spreadsheet, so not serialized in JSON.

@@ -391,8 +391,6 @@ namespace KtaneWeb
                                     yield return new INPUT { type = itype.text, name = field.Name, class_ = "use-tag-editor" };
                                 else if (type == typeof(DateTime))
                                     yield return new INPUT { type = itype.date, value = DateTime.UtcNow.Date.ToString("yyyy-MM-dd"), name = field.Name };
-                                else if (type == typeof(int) && field.Name == "PageRenderTime")
-                                    yield return new INPUT { type = itype.number, step = "1", value = "0", min = "0", pattern="[0-9]*", name = field.Name };
                                 else if (type == typeof(int))
                                     yield return new INPUT { type = itype.number, step = "1", value = "0", name = field.Name };
                                 else if (type == typeof(decimal))
