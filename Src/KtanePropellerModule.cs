@@ -66,6 +66,9 @@ namespace KtaneWeb
                     new UrlMapping(path: "/pe", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Profile Editor.html"))),
                     new UrlMapping(path: "/mse", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Mode Settings Editor.html"))),
 
+                    // Special endpoints
+                    new UrlMapping(path: "/custom-keys", handler: CustomKeys),
+
                     // Default fallback: file system handler or PDF generator
                     new UrlMapping(handler: pdfOrFileSystem)
                 );
