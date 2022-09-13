@@ -23,6 +23,9 @@ namespace KtaneWeb
 
             return new KtaneWebSession(_config).EnableAutomatic(request, session =>
             {
+                var logFileFs = new FileSystemHandler(_config.LogfilesDir, new FileSystemOptions { ResponseHeaderProcessor = (h, t) => { h.AccessControlAllowOrigin = "*"; } });
+                var mergedPdfsFs = new FileSystemHandler(_config.MergedPdfsDir);
+
                 var resolver = new UrlResolver(
 #if DEBUG
                     new UrlMapping(path: "/js", specificPath: true, handler: req => HttpResponse.File(_config.JavaScriptFile, "text/javascript; charset=utf-8")),
@@ -57,8 +60,8 @@ namespace KtaneWeb
                     new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
 
                     new UrlMapping(path: "/Unfinished", handler: unfinished, skippable: true),
-                    new UrlMapping(path: "/Logfiles", handler: req => new FileSystemHandler(_config.LogfilesDir).Handle(req)),
-                    new UrlMapping(path: "/MergedPdfs", handler: req => new FileSystemHandler(_config.MergedPdfsDir).Handle(req)),
+                    new UrlMapping(path: "/Logfiles", handler: logFileFs.Handle),
+                    new UrlMapping(path: "/MergedPdfs", handler: mergedPdfsFs.Handle),
 
                     // Shortcut URLs
                     new UrlMapping(path: "/lfa", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Logfile Analyzer.html"))),
