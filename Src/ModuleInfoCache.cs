@@ -65,7 +65,7 @@ namespace KtaneWeb
         private void generateModuleInfoCache()
         {
             var moduleInfoCache = new ModuleInfoCache();
-            Dictionary<string, string>[] tpEntries = null, timeModeEntries = null;
+            Dictionary<string, Dictionary<string, string>> tpEntries = null, timeModeEntries = null;
             var exceptions = new JsonList();
             JsonValue contactInfoJson = null;
 
@@ -93,6 +93,8 @@ namespace KtaneWeb
                     }
                 }
             });
+
+            var flavourTextList = new JsonList();
 
             var modules = new DirectoryInfo(Path.Combine(_config.BaseDir, "JSON"))
                 .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
@@ -124,6 +126,60 @@ namespace KtaneWeb
                         if (modJson["SortKey"].GetStringSafe() == Regex.Replace(mod.Name.ToUpperInvariant(), "^THE ", "").Where(ch => (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')).JoinString())
                             modJson.Remove("SortKey");
 
+                        // Get flavour text from HTML of original manual
+                        var flavourTexts = new JsonDict() {
+                            { "Name", mod.Name },
+                            { "Flavour", getFlavourTexts(Path.Combine(_config.BaseDir, "HTML", Path.GetFileNameWithoutExtension(file.Name) + ".html"))},
+                            { "SteamID", mod.SteamID },
+                            { "ModuleID", mod.ModuleID }
+                        };
+                        lock (flavourTextList)
+                            flavourTextList.Add(flavourTexts);
+
+                        try
+                        {
+                            // Merge in Time Mode data
+                            var timeModeEntry = timeModeEntries?.Get(tpNormalize(mod.DisplayName ?? mod.Name), null);
+                            if (timeModeEntry != null)
+                                mergeTimeModeData(mod, modJson, timeModeEntry);
+                        }
+                        catch (Exception e)
+                        {
+                            lock (this)
+                            {
+#if DEBUG
+                                Console.WriteLine(mod.FileName);
+                                Console.WriteLine(e.Message);
+                                Console.WriteLine(e.GetType().FullName);
+                                Console.WriteLine(e.StackTrace);
+#endif
+                                Log.Exception(e);
+                                exceptions.Add($"{mod.FileName} error reading Time Mode data: {e.Message}");
+                            }
+                        }
+
+                        try
+                        {
+                            // Merge in TP data
+                            var tpEntry = tpEntries?.Get(tpNormalize(mod.DisplayName ?? mod.Name), null);
+                            if (tpEntry != null)
+                                mergeTPData(mod, modJson, tpEntry["tpscore"]);
+                        }
+                        catch (Exception e)
+                        {
+                            lock (this)
+                            {
+#if DEBUG
+                                Console.WriteLine(mod.FileName);
+                                Console.WriteLine(e.Message);
+                                Console.WriteLine(e.GetType().FullName);
+                                Console.WriteLine(e.StackTrace);
+#endif
+                                Log.Exception(e);
+                                exceptions.Add($"{mod.FileName} error reading TP score data: {e.Message}");
+                            }
+                        }
+
                         return (modJson, mod, file.LastWriteTimeUtc).Nullable();
                     }
                     catch (Exception e)
@@ -145,7 +201,6 @@ namespace KtaneWeb
 
             static string getFileName(JsonDict modJson, KtaneModuleInfo mod) => modJson.ContainsKey("FileName") ? modJson["FileName"].GetString() : mod.Name;
 
-            var flavourTextList = new JsonList();
             using var iconSpriteBmp = new Bitmap(w * cols, h * ((modules.Length + cols - 1) / cols));
             using var iconSpriteGr = Graphics.FromImage(iconSpriteBmp);
             {
@@ -188,8 +243,6 @@ namespace KtaneWeb
                     else
                         uniqueSortKeys.Add(mod.SortKey, mod);
 
-                    static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
-
                     // Sheets
                     var fileName = getFileName(modJson, mod);
                     if (mod.TranslationOf == null)
@@ -223,51 +276,6 @@ namespace KtaneWeb
                     modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
                     modJson["Y"] = y;
 
-                    // Get flavour text from HTML of original manual
-                    flavourTextList.Add(new JsonDict() {
-                        { "Name", mod.Name },
-                        { "Flavour", getFlavourTexts(Path.Combine(_config.BaseDir, "HTML", fileName + ".html"))},
-                        { "SteamID", mod.SteamID },
-                        { "ModuleID", mod.ModuleID }
-                    });
-
-                    try
-                    {
-                        // Merge in Time Mode data
-                        var timeModeEntry = timeModeEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
-                        if (timeModeEntry != null)
-                            mergeTimeModeData(mod, modJson, timeModeEntry);
-                    }
-                    catch (Exception e)
-                    {
-#if DEBUG
-                        Console.WriteLine(mod.FileName);
-                        Console.WriteLine(e.Message);
-                        Console.WriteLine(e.GetType().FullName);
-                        Console.WriteLine(e.StackTrace);
-#endif
-                        Log.Exception(e);
-                        exceptions.Add($"{mod.FileName} error reading Time Mode data: {e.Message}");
-                    }
-
-                    try
-                    {
-                        // Merge in TP data
-                        var tpEntry = tpEntries?.FirstOrDefault(entry => normalize(entry["modulename"]) == normalize(mod.DisplayName ?? mod.Name));
-                        if (tpEntry != null)
-                            mergeTPData(mod, modJson, tpEntry["tpscore"]);
-                    }
-                    catch (Exception e)
-                    {
-#if DEBUG
-                        Console.WriteLine(mod.FileName);
-                        Console.WriteLine(e.Message);
-                        Console.WriteLine(e.GetType().FullName);
-                        Console.WriteLine(e.StackTrace);
-#endif
-                        Log.Exception(e);
-                        exceptions.Add($"{mod.FileName} error reading TP score data: {e.Message}");
-                    }
                 }
             }
 
@@ -342,15 +350,18 @@ namespace KtaneWeb
             }
         }
 
-        private Dictionary<string, string>[] LoadTimeModeDataFromGoogleSheets()
+        private static string tpNormalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
+
+        private Dictionary<string, Dictionary<string, string>> LoadTimeModeDataFromGoogleSheets()
         {
             var attempts = 4;
             retry:
-            Dictionary<string, string>[] timeModeEntries;
+            var timeModeEntries = new Dictionary<string, Dictionary<string, string>>();
             try
             {
                 Log.Info($"Loading Time Mode spreadsheet (attempt {5 - attempts}/5)");
-                timeModeEntries = getJsonFromSheets("16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM").ToArray();
+                foreach (var entry in getJsonFromSheets("16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM"))
+                    timeModeEntries[tpNormalize(entry["modulename"])] = entry;
                 Log.Info($"Loading Time Mode spreadsheet: SUCCESS");
             }
             catch
@@ -366,15 +377,16 @@ namespace KtaneWeb
             return timeModeEntries;
         }
 
-        private Dictionary<string, string>[] LoadTpDataFromGoogleSheets()
+        private Dictionary<string, Dictionary<string, string>> LoadTpDataFromGoogleSheets()
         {
             var attempts = 4;
             retry:
-            Dictionary<string, string>[] tpEntries;
+            var tpEntries = new Dictionary<string, Dictionary<string, string>>();
             try
             {
                 Log.Info($"Loading TP spreadsheet (attempt {5 - attempts}/5)");
-                tpEntries = getJsonFromSheets("1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA").ToArray();
+                foreach (var entry in getJsonFromSheets("1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA"))
+                    tpEntries[tpNormalize(entry["modulename"])] = entry;
                 Log.Info($"Loading TP spreadsheet: SUCCESS");
             }
             catch
@@ -390,7 +402,7 @@ namespace KtaneWeb
             return tpEntries;
         }
 
-        private void mergeTPData(KtaneModuleInfo mod, JsonDict modJson, string scoreString)
+        private static void mergeTPData(KtaneModuleInfo mod, JsonDict modJson, string scoreString)
         {
             // UN and T is for unchanged and temporary score which are read normally.
             scoreString = Regex.Replace(scoreString, @"(UN|(?<=\d)T)", "");
@@ -455,7 +467,7 @@ namespace KtaneWeb
             modJson["TwitchPlays"]["ScoreStringDescription"] = parts.JoinString(" + ");
         }
 
-        private void mergeTimeModeData(KtaneModuleInfo mod, JsonValue modJson, Dictionary<string, string> entry)
+        private static void mergeTimeModeData(KtaneModuleInfo mod, JsonValue modJson, Dictionary<string, string> entry)
         {
             // Get score strings
             string scoreString = entry["resolvedscore"].Trim();
