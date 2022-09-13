@@ -155,6 +155,7 @@ namespace KtaneWeb
                 var curX = 0;
                 var curY = 0;
 
+                Dictionary<string, KtaneModuleInfo> uniqueSortKeys = new Dictionary<string, KtaneModuleInfo>();
                 foreach (var (modJson, mod, _) in modules)
                 {
                     // Process ignore lists that contain special operators
@@ -171,6 +172,22 @@ namespace KtaneWeb
                                 processedIgnoreList.Add(str);
                         }
                         modJson["IgnoreProcessed"] = processedIgnoreList.ToJsonList();
+                    }
+
+                    try
+                    {
+                        uniqueSortKeys.Add(mod.SortKey, mod);
+                    }
+                    catch (Exception e)
+                    {
+                        if (mod.TranslationOf != uniqueSortKeys[mod.SortKey].ModuleID && uniqueSortKeys[mod.SortKey].TranslationOf != mod.ModuleID)
+                        {
+#if DEBUG
+                            var msg = string.Format("Module: {0}\nDuplicate SortKey {1} with module: {2}", mod.Name, mod.SortKey, uniqueSortKeys[mod.SortKey].Name);
+                            Console.WriteLine(msg);
+#endif
+                            exceptions.Add(msg);
+                        }
                     }
 
                     static string normalize(string value) => value.ToLowerInvariant().Replace('’', '\'');
