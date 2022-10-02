@@ -201,14 +201,15 @@ namespace KtaneWeb
 
             static string getFileName(JsonDict modJson, KtaneModuleInfo mod) => modJson.ContainsKey("FileName") ? modJson["FileName"].GetString() : mod.Name;
 
+            // For generating the icon sprite, start with a bitmap that is at least as big as we need (possibly bigger)
+            var curX = 0;
+            var curY = 0;
             using var iconSpriteBmp = new Bitmap(w * cols, h * ((modules.Length + cols - 1) / cols));
             using var iconSpriteGr = Graphics.FromImage(iconSpriteBmp);
             {
                 // blank icon
                 using (var icon = new Bitmap(Path.Combine(_config.BaseDir, "Icons", "blank.png")))
                     iconSpriteGr.DrawImage(icon, 0, 0);
-                var curX = 0;
-                var curY = 0;
 
                 var uniqueSortKeys = new Dictionary<string, KtaneModuleInfo>();
                 foreach (var (modJson, mod, _) in modules)
@@ -279,8 +280,12 @@ namespace KtaneWeb
                 }
             }
 
+            // Now that we know how many icons are in the icon sprite, create a bitmap of the correct size
+            using var iconSpriteBmp2 = new Bitmap(w * cols, h * (curX == 0 ? curY : curY + 1));
+            using var iconSpriteGr2 = Graphics.FromImage(iconSpriteBmp2);
+            iconSpriteGr2.DrawImage(iconSpriteBmp, 0, 0);
             using var mem = new MemoryStream();
-            iconSpriteBmp.Save(mem, ImageFormat.Png);
+            iconSpriteBmp2.Save(mem, ImageFormat.Png);
             moduleInfoCache.IconSpritePng = mem.ToArray();
             moduleInfoCache.IconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(moduleInfoCache.IconSpritePng)})}}";
 
