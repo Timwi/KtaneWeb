@@ -121,6 +121,7 @@ namespace KtaneWeb
         public string filterMMNotUse = "MM must not use this at all";
         public string filterMMAutoSovle = "MM must auto-solve";
         public string licenseOpenSource = "The module has its source code released and will follow the module’s license.";
+        public string licenseOpenSourceClone = "The module's source code is a clone/fork of its original repository, and will follow the license of the original.";
         public string licenseRepublishable = "The module may be republished on someone else’s Steam account. Any work may not be reused.";
         public string licenseRestricted = "The module may not be republished and any work may not be reused.";
         public string bossStatusFullBoss = "Full Boss";
@@ -167,6 +168,7 @@ namespace KtaneWeb
         public string selectableManual = "Manual";
         public string selectableSteam = "Steam Workshop";
         public string selectableSource = "Source code";
+        public string selectableSourceClone = "Source code (clone)";
         public string selectableTutorial = "Tutorial videos";
         public string displayOption = "Display";
         public string displayOriginalName = "Original Name";
@@ -225,37 +227,38 @@ namespace KtaneWeb
         public Selectable[] Selectables => _selectablesCache ??= Ut.NewArray(
             new Selectable
             {
-                HumanReadable = selectableManual,
                 Accel = 'u',
-                Icon = "HTML/img/manual.png",
                 PropName = "manual",
+                HumanReadable = selectableManual,
+                IconFunction = @"mod=>'HTML/img/manual.png'",
                 UrlFunction = @"mod=>mod.ManualIconUrl",
                 ShowIconFunction = @"(_,s)=>s.length>0"
             },
             new Selectable
             {
-                HumanReadable = selectableSteam,
                 Accel = 'W',
-                Icon = "HTML/img/steam-workshop-item.png",
                 PropName = "steam",
+                HumanReadable = selectableSteam,
+                IconFunction = @"mod=>'HTML/img/steam-workshop-item.png'",
                 UrlFunction = @"mod=>mod.SteamID?`http://steamcommunity.com/sharedfiles/filedetails/?id=${mod.SteamID}`:null",
                 ShowIconFunction = @"mod=>!!mod.SteamID",
             },
             new Selectable
             {
-                HumanReadable = selectableSource,
                 Accel = 'c',
-                Icon = "HTML/img/unity.png",
                 PropName = "source",
+                HumanReadable = selectableSource,
+                HumanReadableFunction = @$"mod=>mod.License==='OpenSourceClone'?'{selectableSourceClone}':'{selectableSource}'",
+                IconFunction = @"mod=>mod.License==='OpenSourceClone'?'HTML/img/unity-clone.png':'HTML/img/unity.png'",
                 UrlFunction = @"mod=>mod.SourceUrl",
                 ShowIconFunction = @"mod=>!!mod.SourceUrl",
             },
             new Selectable
             {
-                HumanReadable = selectableTutorial,
                 Accel = 'T',
-                Icon = "HTML/img/video.png",
                 PropName = "video",
+                HumanReadable = selectableTutorial,
+                IconFunction = @"mod=>'HTML/img/video.png'",
                 UrlFunction = @"mod=>mod.TutorialVideos&&mod.TutorialVideos[0].Url",
                 ShowIconFunction = @"mod=>!!mod.TutorialVideos&&mod.TutorialVideos.length>0",
             });

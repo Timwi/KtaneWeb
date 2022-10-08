@@ -184,7 +184,7 @@ namespace KtaneWeb
             if (Symbol != null && Symbol.Length > 0)
                 Symbol = Symbol.Substring(0, 1).ToUpperInvariant() + Symbol.Substring(1).ToLowerInvariant();
 
-            if (SourceUrl != null)
+            if (SourceUrl != null && License != KtaneModuleLicense.OpenSourceClone)
                 License = KtaneModuleLicense.OpenSource;
         }
 

@@ -582,7 +582,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 tr.appendChild(td);
                                 if (sel.ShowIconFunction(mod, mod.Manuals))
                                 {
-                                    let iconImg = el("img", "icon", { title: sel.HumanReadable, alt: sel.HumanReadable, src: sel.Icon });
+                                    let humanReadable = sel.HumanReadableFunction ? sel.HumanReadableFunction(mod, mod.Manuals) : sel.HumanReadable;
+                                    let iconImg = el("img", "icon", { title: humanReadable, alt: humanReadable, src: sel.IconFunction(mod, mod.Manuals) });
                                     if (sel.PropName === 'video' && (mod.TutorialVideos && mod.TutorialVideos.length > 1))
                                     {
                                         let lnkDiv = el("div", "dropdown", iconImg);
@@ -1161,8 +1162,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         continue;
                     var iconDiv = el('div', 'icon',
                         el('a', 'icon-link', { href: sel.UrlFunction(mod, mod.Manuals) },
-                            el('img', 'icon-img', { src: sel.Icon }),
-                            el('span', 'icon-label', sel.HumanReadable)));
+                            el('img', 'icon-img', { src: sel.IconFunction(mod, mod.Manuals) }),
+                            el('span', 'icon-label', sel.HumanReadableFunction ? sel.HumanReadableFunction(mod, mod.Manuals) : sel.HumanReadable)));
                     iconsDiv.appendChild(iconDiv);
                 }
 
@@ -1920,7 +1921,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         const license = ui.querySelector('select[name="License"]');
         const agreement = ui.querySelector('#license-agreement');
-        agreement.style.display = license.value == "OpenSource" ? '' : 'none';
+        agreement.style.display = license.value == "OpenSource" || license.value == "OpenSourceClone" ? '' : 'none';
     }
     Array.from(document.getElementById('module-ui').querySelectorAll('input,textarea,select')).forEach(elem => { elem.onchange = UpdateEditUiElements; });
     UpdateEditUiElements();
@@ -1934,22 +1935,23 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     document.getElementById('generate-json').onclick = function(e)
     {
         let form = document.getElementById('generate-json').form;
+        let openSource = form.License.value === "OpenSource" || form.License.value === "OpenSourceClone";
         if (form.Name.value === "")
         {
             alert("You do need to supply at least a name for the module or widget.");
             return false;
         }
-        else if (form.SourceUrl.value === "" && form.License.value === "OpenSource")
+        else if (form.SourceUrl.value === "" && openSource)
         {
             alert("A link to the source code must be provided to use the open source license.");
             return false;
         }
-        else if (form.SourceUrl.value !== "" && form.License.value !== "OpenSource")
+        else if (form.SourceUrl.value !== "" && !openSource)
         {
-            alert("If a link to the source code is provided then you must use the open source license.");
+            alert("If a link to the source code is provided then you must use the open source or the open source clone license.");
             return false;
         }
-        else if (form.License.value === "OpenSource" && !form.LicenseAgreement.checked)
+        else if (openSource && !form.LicenseAgreement.checked)
         {
             alert("You must read and agree to the modkit license.");
             return false;

@@ -4,10 +4,11 @@ namespace KtaneWeb
 {
     sealed class Selectable
     {
-        public string HumanReadable;
         public char? Accel;
-        public string Icon;
         public string PropName;
+        public string HumanReadable;
+        public string HumanReadableFunction;
+        public string IconFunction;
         public string UrlFunction;
         public string ShowIconFunction;
 
@@ -15,14 +16,15 @@ namespace KtaneWeb
         {
             var dict = new JsonDict();
 
-            // Strings
-            if (HumanReadable != null) dict["HumanReadable"] = HumanReadable;
-            if (Icon != null) dict["Icon"] = Icon;
-            if (PropName != null) dict["PropName"] = PropName;
+            // String
+            if (PropName != null) dict[nameof(PropName)] = PropName;
+            if (HumanReadable != null) dict[nameof(HumanReadable)] = HumanReadable;
 
             // Functions
-            if (UrlFunction != null) dict["UrlFunction"] = new JsonRaw(UrlFunction);
-            if (ShowIconFunction != null) dict["ShowIconFunction"] = new JsonRaw(ShowIconFunction);
+            if (HumanReadableFunction != null) dict[nameof(HumanReadableFunction)] = new JsonRaw(HumanReadableFunction);
+            if (IconFunction != null) dict[nameof(IconFunction)] = new JsonRaw(IconFunction);
+            if (UrlFunction != null) dict[nameof(UrlFunction)] = new JsonRaw(UrlFunction);
+            if (ShowIconFunction != null) dict[nameof(ShowIconFunction)] = new JsonRaw(ShowIconFunction);
 
             return dict;
         }

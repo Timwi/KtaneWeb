@@ -84,6 +84,8 @@ namespace KtaneWeb
     {
         [KtaneFilterOption(nameof(TranslationInfo.licenseOpenSource))]
         OpenSource,
+        [KtaneFilterOption(nameof(TranslationInfo.licenseOpenSourceClone))]
+        OpenSourceClone,
         [KtaneFilterOption(nameof(TranslationInfo.licenseRepublishable))]
         Republishable,
         [KtaneFilterOption(nameof(TranslationInfo.licenseRestricted))]
