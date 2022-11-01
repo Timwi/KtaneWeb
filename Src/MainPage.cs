@@ -142,7 +142,7 @@ namespace KtaneWeb
                         new DIV { id = "links", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/ktane" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._(translation.joinDiscordAnchor))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/K6uQMyBcYZ" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._(translation.joinDiscordAnchor))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = translation.faqURL, accesskey = "g" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._(translation.faqAnchor.Accel('G')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = translation.tutorialURL }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.tutorialAnchor))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Making%20a%20Great%20Module.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.makingModsAnchor))),
