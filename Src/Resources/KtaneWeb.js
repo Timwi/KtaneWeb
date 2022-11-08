@@ -1543,6 +1543,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('.search-field-clear').click(function() { disappear(); var inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
+    function stringTruncate(str, limit) {
+        let final = str;
+        if (str.length > limit) {
+            let words = str.split(' ');
+            for (let w = words.length - 1; w >= 3; w--) {
+                let left = words.slice(0, w - 1).join(' ');
+                let right = words.slice(words.length - 2).join(' ');
+                if (left.length + right.length <= limit)
+                    return `${left} … ${right}`;
+            }
+            let divi = Math.floor(limit * 0.7);
+            final = str.substr(0, divi) + ' … ' + str.substr(str.length - limit + divi);
+        }
+        return final;
+    }
+
     let switcherData = { missionSheetsLoaded: false, missions: {} };
     $('#search-switcher').click(function()
     {
@@ -1582,7 +1598,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             let prevValue = sel.value;
                             sheets.push(...result.map(obj => {
                                 const solvedcss = (obj.completions > 0 || obj.tpSolve) ? 'solved' : 'unsolved';
-                                return { title: obj.name, css: solvedcss };
+                                return { title: obj.name, label: stringTruncate(obj.name, 50), css: solvedcss };
                             }));
                             switcherData.missions = result.reduce((acc, curr) => {
                                 acc[curr.name] = {
@@ -1593,8 +1609,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 return acc;
                             }, {});
                             sheets.sort((a, b) => a.title.localeCompare(b.title));
-                            sel.innerHTML = '<option value=""></option>' + sheets.map(m => `<option class="${m.css}" value="${m.title}"></option>`).join('');
-                            Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
+                            sel.innerHTML = '<option value=""></option>' + sheets.map(m => `<option class="${m.css}" value="${encodeURIComponent(m.title)}"></option>`).join('');
+                            Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].label; });
                             sel.value = prevValue;
                         }, 'json')
                             .fail(function()
@@ -1616,15 +1632,16 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     sel.onchange = function()
                     {
                         let title = sel.value;
+                        let name = decodeURIComponent(title);
 
-                        if (title !== '')
-                            document.getElementById('search-field-mission-link').setAttribute('href', `https://bombs.samfun.dev/mission/${encodeURIComponent(title)}`);
+                        if (name !== '')
+                            document.getElementById('search-field-mission-link').setAttribute('href', `https://bombs.samfun.dev/mission/${title}`);
                         else
                             document.getElementById('search-field-mission-link').removeAttribute('href');
 
-                        if (title in switcherData.missions)
+                        if (name in switcherData.missions)
                         {
-                            let newMissionList = new Set(switcherData.missions[title].moduleList);
+                            let newMissionList = new Set(switcherData.missions[name].moduleList);
                             missionList = newMissionList;
                             updateFilter();
                         }
