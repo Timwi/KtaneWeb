@@ -1563,100 +1563,70 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 {
                     switcherData.missionSheetsLoaded = true;
 
-                    const spreadsheets = [
-                        { name: 'solved', pid: '1yQDBEpu0dO7-CFllakfURm4NGGdQl6tN-39m6O0Q_Ow', skipSheets: 2, css: 'solved' },     // Solved challenge missions (maintained by Espik/Burniel)
-                        { name: 'unsolved', pid: '1k2LlhY-BBJQImEHo_S51L_okPiOee6xgdk5mkVwn2ZU', skipSheets: 1, css: 'unsolved' },    // Unsolved challenge missions (maintained by Espik/Burniel)
-                        { name: 'TP', pid: '1pzoatn2mX1gtKurxt1OBejbutTrKq0kqO9dNohnu33Q', skipSheets: 1, css: 'tp' }                   // Twitch Plays challenge missions (maintained by Espik/Burniel)
-                    ];
-
-                    function getSheetRange(props)
-                    {
-                        const raw = `'${props.title.replaceAll("'", "''")}'!R3C12:R${props.gridProperties.rowCount}C12`;
-
-                        return raw
-                            .replaceAll('"', '%22')
-                            .replaceAll('+', '%2B')
-                            .replaceAll('/', '%2F')
-                            .replaceAll('?', '%3F')
-                    }
+                    const bombsURL = 'https://bombs.samfun.dev/json/missionsreduced';
+                    const sheetname = 'Challenge Bombs';
 
                     const sel = document.getElementById('search-field-mission');
                     sel.innerHTML = '<option value="">Loading...</option>';
                     let sheets = [];
 
                     let delay = 1;
-                    for (let spreadsheet of spreadsheets)
+                    let attempts = 5;
+                    let attemptLoadSheet = function()
                     {
-                        let attempts = 5;
-                        let attemptLoadSheet = function()
+                        console.log(`Loading ${sheetname} data (${attempts} attempts)...`);
+                        $.get(bombsURL, result =>
                         {
-                            console.log(`Loading ${spreadsheet.name} sheet (${attempts} attempts)...`);
-                            $.get(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheet.pid}?includeGridData=false&key=${SHEETS_KEY}`, result =>
+                            console.log(`Loading ${sheetname} data: success`);
+
+                            let prevValue = sel.value;
+                            sheets.push(...result.map(obj => {
+                                const solvedcss = (obj.completions > 0 || obj.tpSolve) ? 'solved' : 'unsolved';
+                                return { title: obj.name, css: solvedcss };
+                            }));
+                            switcherData.missions = result.reduce((acc, curr) => {
+                                acc[curr.name] = {
+                                    moduleList: curr.moduleList,
+                                    tpSolve: curr.tpSolve,
+                                    completions: curr.completions
+                                };
+                                return acc;
+                            }, {});
+                            sheets.sort((a, b) => a.title.localeCompare(b.title));
+                            sel.innerHTML = '<option value=""></option>' + sheets.map(m => `<option class="${m.css}" value="${m.title}"></option>`).join('');
+                            Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
+                            sel.value = prevValue;
+                        }, 'json')
+                            .fail(function()
                             {
-                                console.log(`Loading ${spreadsheet.name} sheet: success`);
-                                let prevValue = sel.value;
-                                sheets.push(...result.sheets.slice(spreadsheet.skipSheets)
-                                    .map(obj =>
-                                    {
-                                        const props = obj.properties;
-                                        const urltag = props.sheetId;
-                                        return { pid: spreadsheet.pid, cid: getSheetRange(props), title: props.title, css: spreadsheet.css, urltag: urltag };
-                                    }));
-                                sheets.sort((a, b) => a.title.localeCompare(b.title));
-                                sel.innerHTML = '<option value=""></option>' + sheets.map(sh => `<option class="${sh.css}" value="${sh.pid}/${sh.cid}/${sh.urltag}"></option>`).join('');
-                                Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].title; });
-                                sel.value = prevValue;
-                            }, 'json')
-                                .fail(function()
+                                if (attempts-- > 0)
                                 {
-                                    if (attempts-- > 0)
-                                    {
-                                        console.log(`Loading ${spreadsheet.name} sheet: failure, retrying`);
-                                        setTimeout(attemptLoadSheet, 700);
-                                    }
-                                    else
-                                    {
-                                        console.log(`Loading ${spreadsheet.name} sheet: failure, giving up`);
-                                        alert(`Google Sheets is not letting me load the ${spreadsheet.name} missions sheet.`);
-                                    }
-                                });
-                        };
-                        setTimeout(attemptLoadSheet, delay);
-                        delay += 700;
-                    }
+                                    console.log(`Loading ${sheetname} data: failure, retrying`);
+                                    setTimeout(attemptLoadSheet, 700);
+                                }
+                                else
+                                {
+                                    console.log(`Loading ${sheetname} data: failure, giving up`);
+                                    alert(`bombs.samfun.dev is not letting me load the ${sheetname} missions json data.`);
+                                }
+                            });
+                    };
+                    setTimeout(attemptLoadSheet, delay);
 
                     sel.onchange = function()
                     {
-                        let val = sel.value;
+                        let title = sel.value;
 
-                        let [pid, cid, urltag] = val.split('/');
-                        if (val !== '')
-                            document.getElementById('search-field-mission-link').setAttribute('href', `https://docs.google.com/spreadsheets/d/${pid}/edit#gid=${urltag}`);
+                        if (title !== '')
+                            document.getElementById('search-field-mission-link').setAttribute('href', `https://bombs.samfun.dev/mission/${encodeURIComponent(title)}`);
                         else
                             document.getElementById('search-field-mission-link').removeAttribute('href');
 
-                        if (val in switcherData.missions)
+                        if (title in switcherData.missions)
                         {
-                            missionList = switcherData.missions[val];
+                            let newMissionList = new Set(switcherData.missions[title].moduleList);
+                            missionList = newMissionList;
                             updateFilter();
-                        }
-                        else if (val !== '')
-                        {
-                            $.get(`https://sheets.googleapis.com/v4/spreadsheets/${pid}/values/${cid}?key=${SHEETS_KEY}`, result =>
-                            {
-                                let newMissionList = new Set();
-                                let m;
-                                for (let obj of result.values)
-                                    if ((m = /^\[(.*)\] Count: \d+$/s.exec(obj.length > 0 ? obj[0] : '')) !== null)
-                                        for (let modId of m[1].split(','))
-                                            newMissionList.add(modId.trim());
-                                switcherData.missions[val] = newMissionList;
-                                if (sel.value === val)
-                                {
-                                    missionList = newMissionList;
-                                    updateFilter();
-                                }
-                            }, 'json');
                         }
                         else if (missionList !== null)
                         {

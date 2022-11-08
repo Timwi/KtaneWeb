@@ -119,6 +119,9 @@ textarea {
                 padding-left: .5em;
             }
 
+        #top-controls .search-container #search-field-mission {
+            max-width: 40%;
+        }
         #top-controls .search-container #search-field-mission option.solved {
             background-color: #dfd;
         }
