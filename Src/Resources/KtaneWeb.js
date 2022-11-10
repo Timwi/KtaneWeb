@@ -1597,7 +1597,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                             let prevValue = sel.value;
                             sheets.push(...result.map(obj => {
-                                const solvedcss = (obj.completions > 0 || obj.tpSolve) ? 'solved' : 'unsolved';
+                                const solvedcss = obj.designedForTP ? 'tp' : (obj.completions > 0 || obj.tpSolve) ? 'solved' : 'unsolved';
                                 return { title: obj.name, label: stringTruncate(obj.name, 50), css: solvedcss };
                             }));
                             switcherData.missions = result.reduce((acc, curr) => {
