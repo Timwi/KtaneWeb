@@ -138,16 +138,8 @@ namespace KtaneWeb
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = translation.Selectables.Length }._(translation.columnLinks),
-                                    new TH { class_ = "modlink" }
-                                        .Data("sort-name", "   • " + translation.sortOrderName)
-                                        ._(new A { href = "#", class_ = "sort-header" }._(translation.columnName)),
-                                    new TH { class_ = "infos" }
-                                        .Data("sort-published", "   • " + translation.sortOrderDate)
-                                        .Data("sort-defdiff", "   • " + translation.sortOrderDefDifficulty)
-                                        .Data("sort-expdiff", "   • " + translation.sortOrderExpDifficulty)
-                                        .Data("sort-twitch", "   • " + translation.sortOrderTP)
-                                        .Data("sort-time-mode-score", "   • " + translation.sortOrderTime)
-                                        ._(new A { href = "#", class_ = "sort-header" }._(translation.columnInformation)))),
+                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._(translation.columnName)),
+                                    new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._(translation.columnInformation)))),
 
                             // PERIODIC TABLE
                             new DIV { id = "main-periodic-table" }._(
