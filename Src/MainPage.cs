@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -67,7 +68,24 @@ namespace KtaneWeb
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPTLiteral(@"Ktane = { Themes: { 'dark': 'HTML/css/dark-theme.css' } };"),
                     new SCRIPT { src = UniquifiedUrl(req.Url.WithParent("js")) },
-                    new META { name = "viewport", content = "width=device-width,initial-scale=1.0" }),
+                    new META { name = "viewport", content = "width=device-width,initial-scale=1.0" },
+                    new STYLELiteral($@"
+                        div.infos .inf-author::before {{ content: '\000a {cssEscape(translation.by)} '; }}
+                        #main-table .manual-selector::before {{ content: '{cssEscape(translation.more)}'; }}
+                        body.sort-name #main-table th.modlink::after {{ content: '   • {cssEscape(translation.sortedByName)}'; }}
+                        body.sort-defdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByDefDiff)}'; }}
+                        body.sort-expdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByExpDiff)}'; }}
+                        body.sort-twitch-score #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByTPScore)}'; }}
+                        body.sort-time-mode-score #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByTMScore)}'; }}
+                        body.sort-published #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByPubDate)}'; }}
+                        @media screen and (max-width: 1090px) and (min-width: 650.01px) {{
+                            body.sort-name th.modlink::after {{ content: '   • {cssEscape(translation.sortedByName)}'; }}
+                            body.sort-defdiff th.infos::after {{ content: '   • {cssEscape(translation.sortedByDefDiff)}'; }}
+                            body.sort-expdiff th.infos::after {{ content: '   • {cssEscape(translation.sortedByExpDiff)}'; }}
+                            body.sort-twitch-score th.infos::after {{ content: '   • {cssEscape(translation.sortedByTPScore)}'; }}
+                            body.sort-time-mode-score th.infos::after {{ content: '   • {cssEscape(translation.sortedByTMScore)}'; }}
+                            body.sort-published th.infos::after {{ content: '   • {cssEscape(translation.sortedByPubDate)}'; }}
+                        }}")),
                 new BODY(
                     new DIV { id = "main-content" }._(
                         new DIV { class_ = "header" }._(
@@ -476,6 +494,17 @@ namespace KtaneWeb
                     }))));
             resp.UseGzip = UseGzipOption.AlwaysUseGzip;
             return resp;
+        }
+
+        private static string cssEscape(string text)
+        {
+            var sb = new StringBuilder();
+            foreach (var ch in text)
+                if (ch == '\\' || ch == '\'')
+                    sb.Append($"\\{(int) ch:X4} ");
+                else
+                    sb.Append(ch);
+            return sb.ToString();
         }
     }
 }

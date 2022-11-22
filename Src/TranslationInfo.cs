@@ -37,6 +37,14 @@ namespace KtaneWeb
         public string columnLinks = "Links";
         public string columnName = "Name";
         public string columnInformation = "Information";
+        public string by = "by";
+        public string more = "MORE";
+        public string sortedByName = "sorted by name";
+        public string sortedByDefDiff = "sorted by defuser difficulty";
+        public string sortedByExpDiff = "sorted by expert difficulty";
+        public string sortedByTPScore = "sorted by Twitch Plays score";
+        public string sortedByTMScore = "sorted by Time Mode score";
+        public string sortedByPubDate = "sorted by publication date";
         public string joinDiscordAnchor = "Join us on Discord";
         public string faqURL = "More/FAQs.html";
         public string faqAnchor = "Glossary";
