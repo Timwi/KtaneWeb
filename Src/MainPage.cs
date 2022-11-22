@@ -72,19 +72,19 @@ namespace KtaneWeb
                     new STYLELiteral($@"
                         div.infos .inf-author::before {{ content: '\000a {cssEscape(translation.by)} '; }}
                         #main-table .manual-selector::before {{ content: '{cssEscape(translation.more)}'; }}
-                        body.sort-name #main-table th.modlink::after {{ content: '   • {cssEscape(translation.sortedByName)}'; }}
-                        body.sort-defdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByDefDiff)}'; }}
-                        body.sort-expdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByExpDiff)}'; }}
-                        body.sort-twitch-score #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByTPScore)}'; }}
-                        body.sort-time-mode-score #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByTMScore)}'; }}
-                        body.sort-published #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortedByPubDate)}'; }}
+                        body.sort-name #main-table th.modlink::after {{ content: '   • {cssEscape(translation.sortOrderName)}'; }}
+                        body.sort-defdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortOrderDefDifficulty)}'; }}
+                        body.sort-expdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortOrderExpDifficulty)}'; }}
+                        body.sort-twitch-score #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortOrderTP)}'; }}
+                        body.sort-time-mode-score #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortOrderTime)}'; }}
+                        body.sort-published #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortOrderDate)}'; }}
                         @media screen and (max-width: 1090px) and (min-width: 650.01px) {{
-                            body.sort-name th.modlink::after {{ content: '   • {cssEscape(translation.sortedByName)}'; }}
-                            body.sort-defdiff th.infos::after {{ content: '   • {cssEscape(translation.sortedByDefDiff)}'; }}
-                            body.sort-expdiff th.infos::after {{ content: '   • {cssEscape(translation.sortedByExpDiff)}'; }}
-                            body.sort-twitch-score th.infos::after {{ content: '   • {cssEscape(translation.sortedByTPScore)}'; }}
-                            body.sort-time-mode-score th.infos::after {{ content: '   • {cssEscape(translation.sortedByTMScore)}'; }}
-                            body.sort-published th.infos::after {{ content: '   • {cssEscape(translation.sortedByPubDate)}'; }}
+                            body.sort-name th.modlink::after {{ content: '   • {cssEscape(translation.sortOrderName)}'; }}
+                            body.sort-defdiff th.infos::after {{ content: '   • {cssEscape(translation.sortOrderDefDifficulty)}'; }}
+                            body.sort-expdiff th.infos::after {{ content: '   • {cssEscape(translation.sortOrderExpDifficulty)}'; }}
+                            body.sort-twitch-score th.infos::after {{ content: '   • {cssEscape(translation.sortOrderTP)}'; }}
+                            body.sort-time-mode-score th.infos::after {{ content: '   • {cssEscape(translation.sortOrderTime)}'; }}
+                            body.sort-published th.infos::after {{ content: '   • {cssEscape(translation.sortOrderDate)}'; }}
                         }}")),
                 new BODY(
                     new DIV { id = "main-content" }._(
