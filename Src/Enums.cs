@@ -139,5 +139,7 @@ namespace KtaneWeb
         PseudoNeedy = 1 << 6,
         [KtaneFilterOption(nameof(TranslationInfo.quirkTimeDependent)), EditableHelp(nameof(TranslationInfo.quirkTimeDependentExplain))]
         TimeDependent = 1 << 7,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkNeedsImmediateAttention)), EditableHelp(nameof(TranslationInfo.quirkNeedsImmediateAttentionExplain))]
+        NeedsImmediateAttention = 1 << 8
     }
 }

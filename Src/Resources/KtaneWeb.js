@@ -230,7 +230,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         sort = 'published';
     let reverse = lStorage.getItem('sort-reverse') == "true" || false;
 
-    let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'tags', 'published', 'twitch', 'time-mode', 'souvenir', 'rule-seed'];
+    let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'tags', 'published', 'twitch', 'souvenir', 'rule-seed'];
     let displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
@@ -543,6 +543,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             if (q.includes("WillSolveSuddenly")) { quirks.push("Sud"); quirksFull.push("Will solve suddenly."); }
             if (q.includes("PseudoNeedy")) { quirks.push("Psd"); quirksFull.push("Pseudo-needy."); }
             if (q.includes("TimeDependent")) { quirks.push("HvTm"); quirksFull.push("Time-dependent."); }
+            if (q.includes("NeedsImmediateAttention")) { quirks.push("ImAt"); quirksFull.push("Needs immediate attention."); }
             return el('div', 'inf-quirks inf inf2', quirks.join(", "), { title: quirksFull.join(", ") });
         }
 

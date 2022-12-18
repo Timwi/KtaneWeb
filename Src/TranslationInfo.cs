@@ -146,6 +146,8 @@ namespace KtaneWeb
         public string quirkPseudoNeedyExplain = "The module poses a recurring hazard in a similar fashion to a needy before it can be solved.";
         public string quirkTimeDependent = "Heavily time-dependent";
         public string quirkTimeDependentExplain = "The module has very precise timing requirements or can only be solved at an exact time.";
+        public string quirkNeedsImmediateAttention = "Needs immediate attention";
+        public string quirkNeedsImmediateAttentionExplain = "The module must be solved (or is significantly easier to solve) within a short window of time at bomb start.";
 
         public string timeModeUnassigned = "This module does not have any assigned Time Mode score.";
         public string timeModeFromTP = "This module uses its Twitch Plays score as its Time Mode score.";
