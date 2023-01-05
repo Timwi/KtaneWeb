@@ -228,7 +228,14 @@ namespace KtaneWeb
                                 new TR(new TH(translation.fileLocationLogfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log" })),
                                 new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
                                 new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
-                                new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/userdata/<some number>/760/remote/341800/screenshots" }))),
+                                new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/steam/userdata/<some number>/760/remote/341800/screenshots" }))),
+                            new H4("Steam Deck (Proton)"),
+                            new TABLE { class_ = "file-locations" }._(
+                                new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT {  type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH(translation.fileLocationLogfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/compatdata/341800/pfx/drive_c/users/steamuser/AppData/LocalLow/Steel Crate Games/Keep Talking and Nobody Explodes/output_log.txt" })),
+                                new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/compatdata/341800/pfx/drive_c/users/steamuser/AppData/LocalLow/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
+                                new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/compatdata/341800/pfx/drive_c/users/steamuser/AppData/LocalLow/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
+                                new TR(new TH(translation.fileLocationScreenshot + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new DIV { class_ = "small-links" }._(_config.DocumentDirs.Select(d => new A { href = d }._(d)).InsertBetween<object>(" • ")),
                             new DIV { class_ = "hidden-shortcuts" }._(new A { href = "#", accesskey = "i", id = "toggle-view" })),
 
