@@ -196,7 +196,8 @@ namespace KtaneWeb
                                 new LI(new A { href = "puzzles", class_ = "important" }._(translation.puzzleAnchor)),
                                 new LI(new A { href = "More/Quiz.html", class_ = "important" }._(translation.quizAnchor)),
                                 new LI(new A { href = "More/Experting%20Template.png" }._(translation.expertTemplateAnchor), new DIV { class_ = "link-extra" }._(translation.expertTemplateDesc)),
-                                new LI(new A { href = "More/Template%20Manual.zip" }._(translation.templateManualAnchor), new DIV { class_ = "link-extra" }._(translation.templateManualDesc))),
+                                new LI(new A { href = "More/Template%20Manual.zip" }._(translation.templateManualAnchor), new DIV { class_ = "link-extra" }._(translation.templateManualDesc)),
+                                new LI(new A { href = "More/DeMiLMissionViewer/index.html" }._(translation.demilAnchor), new DIV { class_ = "link-extra" }._(translation.demilDesc))),
                             new DIV { class_ = "highlighting-controls" }._(
                                 new H3(translation.controlHeader),
                                 new TABLE { class_ = "highlighting-controls" }._(

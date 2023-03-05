@@ -82,6 +82,8 @@ namespace KtaneWeb
         public string expertTemplateDesc = "(printable page with boxes to fill in while experting)";
         public string templateManualAnchor = "Template manual";
         public string templateManualDesc = "(for modders wishing to create a manual page for a new module)";
+        public string demilAnchor = "DeMiL Mission Viewer";
+        public string demilDesc = "(see the missions you have installed, see their details, or start a mission)";
         public string originVanilla = "Vanilla";
         public string originMods = "Mods";
         public string moduleTypeRegularS = "Regular";
