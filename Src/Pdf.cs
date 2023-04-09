@@ -84,7 +84,9 @@ namespace KtaneWeb
                     if (avoidGenerating)
                         return (tempFilepath, true);
                     var runner = new CommandRunner();
-                    runner.Command = $@"cmd.exe /S /C """"{_config.ChromePath}"" --headless --disable-gpu ""--print-to-pdf={tempFilepath}"" ""--virtual-time-budget={renderDelay}"" --run-all-compositor-stages-before-draw --no-margins ""{htmlFile}""""";
+                    // Weird workaround: Chrome does not appear to accept apostrophes in filename, but it’s ok with %27
+                    var htmlFileEscaped = htmlFile.Replace("'", "%27");
+                    runner.Command = $@"cmd.exe /S /C """"{_config.ChromePath}"" --headless --disable-gpu ""--print-to-pdf={tempFilepath}"" ""--virtual-time-budget={renderDelay}"" --run-all-compositor-stages-before-draw --no-margins ""{htmlFileEscaped}""""";
                     runner.StartAndWait();
                     didGenerate = true;
                 }
