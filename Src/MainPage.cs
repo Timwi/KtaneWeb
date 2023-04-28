@@ -489,8 +489,10 @@ namespace KtaneWeb
                     {
                         var moduleInfoCache = _moduleInfoCache;
                         return Ut.NewArray<object>(
-                            new SCRIPTLiteral($"var translation = {translation.Json};" + moduleInfoCache.ModuleInfoJs),
-                            new STYLELiteral(moduleInfoCache.IconSpriteCss));
+                            new SCRIPTLiteral($"var translation = {translation.Json};" + moduleInfoCache.ModuleInfoJs)
+                            //,
+                            //new STYLELiteral(moduleInfoCache.IconSpriteCss)
+                            );
                     }))));
             resp.UseGzip = UseGzipOption.AlwaysUseGzip;
             return resp;
