@@ -126,15 +126,18 @@ function el(tagName, className, ...args)
 }
 
 // Add language options for the website
-function setLanguageSelector(selectedLanguage) {
+function setLanguageSelector(selectedLanguage)
+{
     const languageSelector = document.getElementById("lang-selector");
     var validLanguage = false;
 
-    languageSelector.onchange = function() {
+    languageSelector.onchange = function()
+    {
         window.location.href = replaceQueryParams("lang", languageCodes[this.value]);
     }
 
-    for (const langCode of Object.keys(languageCodes)) {
+    for (const langCode of Object.keys(languageCodes))
+    {
         let val = languageCodes[langCode];
         validLanguage = validLanguage || selectedLanguage === val;
 
@@ -143,13 +146,15 @@ function setLanguageSelector(selectedLanguage) {
         );
     }
 
-    if (!validLanguage) {
+    if (!validLanguage)
+    {
         const englishOption = document.getElementsByClassName("lang-option-en")[0];
         englishOption.selected = true;
     }
 }
 
-function replaceQueryParams(key, val) {
+function replaceQueryParams(key, val)
+{
     uri = window.location.href
         .replace(RegExp("([?&]" + key + "(?=[=&#]|$)[^#&]*|(?=#|$))"), "&" + key + "=" + encodeURIComponent(val))
         .replace(/^([^?&]+)&/, "$1?");
@@ -169,10 +174,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     };
 
     var pageLang = window.location.search.match(/lang=([^?&]+)/);
-    if (!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1) {
+    if (!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1)
+    {
         pageLang = null;
         setLanguageSelector("en");
-    } else {
+    }
+    else
+    {
         pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === pageLang[1])[0];
         setLanguageSelector(languageCodes[pageLang]);
     }
@@ -601,7 +609,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 }
                             }
 
-                            let icon = el("img", "mod-icon", { src: `Icons/${ mod.FileName ?? mod.Name }.png` });
+                            let icon = el("img", "mod-icon", { src: `Icons/${encodeURIComponent(mod.FileName ?? mod.Name)}.png` });
                             let modlink = el("a", "modlink", { href: mod.SelectableLinkUrl }, icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
                             setCompatibilityTooltip(modlink, mod);
                             mod.ViewData.List.SelectableLink = modlink;
@@ -785,7 +793,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, el('span', 'inner', mod.Symbol || '??')),
-                        el("img", "mod-icon", { src: `Icons/${ mod.FileName ?? mod.Name }.png` }),
+                        el("img", "mod-icon", { src: `Icons/${encodeURIComponent(mod.FileName ?? mod.Name)}.png` }),
                         el('div', 'name', el('div', 'inner', mod.localName)),
                         el('div', 'tpscore', tpScore),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
@@ -1544,11 +1552,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $('.search-field-clear').click(function() { disappear(); var inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
-    function stringTruncate(str, limit) {
+    function stringTruncate(str, limit)
+    {
         let final = str;
-        if (str.length > limit) {
+        if (str.length > limit)
+        {
             let words = str.split(' ');
-            for (let w = words.length - 1; w >= 3; w--) {
+            for (let w = words.length - 1; w >= 3; w--)
+            {
                 let left = words.slice(0, w - 1).join(' ');
                 let right = words.slice(words.length - 2).join(' ');
                 if (left.length + right.length <= limit)
@@ -1597,11 +1608,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             console.log(`Loading ${sheetname} data: success`);
 
                             let prevValue = sel.value;
-                            sheets.push(...result.map(obj => {
+                            sheets.push(...result.map(obj =>
+                            {
                                 const solvedcss = obj.designedForTP ? 'tp' : (obj.completions > 0 || obj.tpSolve) ? 'solved' : 'unsolved';
                                 return { title: obj.name, label: stringTruncate(obj.name, 50), css: solvedcss };
                             }));
-                            switcherData.missions = result.reduce((acc, curr) => {
+                            switcherData.missions = result.reduce((acc, curr) =>
+                            {
                                 acc[curr.name] = {
                                     moduleList: curr.moduleList,
                                     tpSolve: curr.tpSolve,
@@ -1841,7 +1854,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             let inputKeys = 'Developer,Manual,ManualGraphics,TwitchPlays,Maintainer,Audio,Modeling,Idea'.split(',');
             let contrKeys = Object.assign({}, ...inputKeys.map(k => ({ [k]: ui.querySelector(`tr#edit-${k} th`).innerText })));
             for (let key of inputKeys)
-                ui.querySelector(`[name="${key}"]`).value = (mod.Contributors[ contrKeys[key] ] ? mod.Contributors[ contrKeys[key] ].join('; ') : '');
+                ui.querySelector(`[name="${key}"]`).value = (mod.Contributors[contrKeys[key]] ? mod.Contributors[contrKeys[key]].join('; ') : '');
         }
 
         ui.querySelector(`[name="ObsoleteSteamIDs"]`).value = mod.ObsoleteSteamIDs ? mod.ObsoleteSteamIDs.join(', ') : '';
@@ -1950,7 +1963,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 .split(new RegExp(`(${el.dataset.allowedseparators})`))
                 .filter(str => !el.dataset.allowedseparators.includes(str))
                 .every(str => new RegExp(`^[^${el.dataset.alloweddictseparators}]+(${el.dataset.alloweddictseparators})[^${el.dataset.alloweddictseparators}]+$`).test(str))
-            ) 
+            )
             {
                 alert(`Invalid dict value for field ${el.getAttribute("name")}`);
                 return false;
