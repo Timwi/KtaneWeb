@@ -232,7 +232,7 @@ namespace KtaneWeb
                                 new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new H4("Steam Deck (Proton)"),
                             new TABLE { class_ = "file-locations" }._(
-                                new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT {  type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
+                                new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
                                 new TR(new TH(translation.fileLocationLogfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/compatdata/341800/pfx/drive_c/users/steamuser/AppData/LocalLow/Steel Crate Games/Keep Talking and Nobody Explodes/output_log.txt" })),
                                 new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/compatdata/341800/pfx/drive_c/users/steamuser/AppData/LocalLow/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
                                 new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/compatdata/341800/pfx/drive_c/users/steamuser/AppData/LocalLow/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
@@ -485,15 +485,7 @@ namespace KtaneWeb
                                 new TABLE { class_ = "nested" }._(iterateNestedFields(typeof(KtaneModuleInfo))),
                                 new DIV { class_ = "submit" }._(new BUTTON { id = "generate-json", type = btype.submit, accesskey = "j" }._("Generate JSON".Accel('J'))));
                         })))),
-                    new Func<object>(() =>
-                    {
-                        var moduleInfoCache = _moduleInfoCache;
-                        return Ut.NewArray<object>(
-                            new SCRIPTLiteral($"var translation = {translation.Json};" + moduleInfoCache.ModuleInfoJs)
-                            //,
-                            //new STYLELiteral(moduleInfoCache.IconSpriteCss)
-                            );
-                    }))));
+                    new Func<object>(() => new SCRIPTLiteral($"var translation = {translation.Json};" + _moduleInfoCache.ModuleInfoJs)))));
             resp.UseGzip = UseGzipOption.AlwaysUseGzip;
             return resp;
         }
