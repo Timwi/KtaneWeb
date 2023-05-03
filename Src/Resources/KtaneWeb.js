@@ -544,14 +544,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         {
             let q = String(mod.Quirks);
             let quirks = [], quirksFull = [];
-            if (q.includes("SolvesAtEnd")) { quirks.push("End"); quirksFull.push("Solves at the end."); }
-            if (q.includes("NeedsOtherSolves")) { quirks.push("NdOt"); quirksFull.push("Needs other solves."); }
-            if (q.includes("SolvesBeforeSome")) { quirks.push("Bef"); quirksFull.push("Solves before some."); }
-            if (q.includes("SolvesWithOthers")) { quirks.push("Wit"); quirksFull.push("Solves with others."); }
-            if (q.includes("WillSolveSuddenly")) { quirks.push("Sud"); quirksFull.push("Will solve suddenly."); }
-            if (q.includes("PseudoNeedy")) { quirks.push("Psd"); quirksFull.push("Pseudo-needy."); }
-            if (q.includes("TimeDependent")) { quirks.push("HvTm"); quirksFull.push("Time-dependent."); }
-            if (q.includes("NeedsImmediateAttention")) { quirks.push("ImAt"); quirksFull.push("Needs immediate attention."); }
+            if (q.includes("SolvesAtEnd")) { quirks.push("End"); quirksFull.push("Solves at the end"); }
+            if (q.includes("NeedsOtherSolves")) { quirks.push("NdOt"); quirksFull.push("Needs other solves"); }
+            if (q.includes("SolvesBeforeSome")) { quirks.push("Bef"); quirksFull.push("Solves before some"); }
+            if (q.includes("SolvesWithOthers")) { quirks.push("Wit"); quirksFull.push("Solves with others"); }
+            if (q.includes("WillSolveSuddenly")) { quirks.push("Sud"); quirksFull.push("Will solve suddenly"); }
+            if (q.includes("PseudoNeedy")) { quirks.push("Psd"); quirksFull.push("Pseudo-needy"); }
+            if (q.includes("TimeDependent")) { quirks.push("HvTm"); quirksFull.push("Time-dependent"); }
+            if (q.includes("NeedsImmediateAttention")) { quirks.push("ImAt"); quirksFull.push("Needs immediate attention"); }
+            if (q.includes("InstantDeath")) { quirks.push("IDth"); quirksFull.push("Instant death"); }
             return el('div', 'inf-quirks inf inf2', quirks.join(", "), { title: quirksFull.join(", ") });
         }
 

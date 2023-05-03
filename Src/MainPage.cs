@@ -396,7 +396,7 @@ namespace KtaneWeb
                                     foreach (Enum option in Enum.GetValues(type))
                                     {
                                         yield return new INPUT { type = itype.checkbox, name = $"{field.Name}-{option}", id = $"input-{field.Name}-{option}" };
-                                        yield return new LABEL { for_ = $"input-{field.Name}-{option}" }._("\u00a0", option.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? option.ToString());
+                                        yield return new LABEL { for_ = $"input-{field.Name}-{option}", title = option.GetCustomAttribute<EditableHelpAttribute>()?.Translate(translation) ?? option.ToString() }._("\u00a0", option.GetCustomAttribute<KtaneFilterOptionAttribute>()?.Translate(translation) ?? option.ToString());
                                         yield return new BR();
                                     }
                                 else if (type.IsEnum)

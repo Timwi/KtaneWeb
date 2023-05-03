@@ -140,6 +140,8 @@ namespace KtaneWeb
         [KtaneFilterOption(nameof(TranslationInfo.quirkTimeDependent)), EditableHelp(nameof(TranslationInfo.quirkTimeDependentExplain))]
         TimeDependent = 1 << 7,
         [KtaneFilterOption(nameof(TranslationInfo.quirkNeedsImmediateAttention)), EditableHelp(nameof(TranslationInfo.quirkNeedsImmediateAttentionExplain))]
-        NeedsImmediateAttention = 1 << 8
+        NeedsImmediateAttention = 1 << 8,
+        [KtaneFilterOption(nameof(TranslationInfo.quirkInstantDeath)), EditableHelp(nameof(TranslationInfo.quirkInstantDeathExplain))]
+        InstantDeath = 1 << 9
     }
 }

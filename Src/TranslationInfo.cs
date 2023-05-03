@@ -150,7 +150,9 @@ namespace KtaneWeb
         public string quirkTimeDependentExplain = "The module has very precise timing requirements or can only be solved at an exact time.";
         public string quirkNeedsImmediateAttention = "Needs immediate attention";
         public string quirkNeedsImmediateAttentionExplain = "The module must be solved (or is significantly easier to solve) within a short window of time at bomb start.";
-
+        public string quirkInstantDeath = "Instant death";
+        public string quirkInstantDeathExplain = "Failing to solve or striking on the module ends the bomb, often the bomb will immediatly detonate or the whole game will exit.";
+        
         public string timeModeUnassigned = "This module does not have any assigned Time Mode score.";
         public string timeModeFromTP = "This module uses its Twitch Plays score as its Time Mode score.";
         public string timeModeCommunityScore = "This module has a community-assigned Time Mode score.";
