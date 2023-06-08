@@ -134,7 +134,7 @@ function setLanguageSelector(selectedLanguage)
     languageSelector.onchange = function()
     {
         window.location.href = replaceQueryParams("lang", languageCodes[this.value]);
-    }
+    };
 
     for (const langCode of Object.keys(languageCodes))
     {
@@ -679,7 +679,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 if (mod.TimeMode.ScorePerModule)
                                     mod.TimeModeInfo = `This module can be played in Time Mode for a score of ${mod.TimeMode.Score ? `${mod.TimeMode.Score}, plus ` : ''}${mod.TimeMode.ScorePerModule} for each module on the bomb${mod.TimeMode.Origin ? ` (${TimeModeNames[mod.TimeMode.Origin || 'Unassigned']} score)` : ''}.`;
                                 else
-                                    mod.TimeModeInfo = `This module can be played in Time Mode for a score of ${mod.TimeMode.Score}${mod.TimeMode.Origin ? ` (${TimeModeNames[mod.TimeMode.Origin || 'Unassigned']} score)` : ''}.`
+                                    mod.TimeModeInfo = `This module can be played in Time Mode for a score of ${mod.TimeMode.Score}${mod.TimeMode.Origin ? ` (${TimeModeNames[mod.TimeMode.Origin || 'Unassigned']} score)` : ''}.`;
                                 infos.append(el("div", `inf-time-mode inf-time-mode-${mod.TimeMode.Origin || 'Unassigned'} inf inf2`, { title: mod.TimeModeInfo },
                                     mod.TimeMode.ScorePerModule ? 'S' : mod.TimeMode.Score));
                             }
@@ -1179,7 +1179,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                 menuDiv.appendChild(iconsDiv);
                 if ($('#display-souvenir').prop('checked'))
-                    menuDiv.appendChild(el('div', 'module-further-info', mod.SouvenirInfo));
+                    menuDiv.appendChild(el('div', 'module-further-info', mod.SouvenirInfo ?? "This module is not a candidate for inclusion in Souvenir."));
                 if ($('#display-twitch').prop('checked') && 'TwitchPlaysInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.TwitchPlaysInfo));
                 if ($('#display-time-mode').prop('checked') && 'TimeModeInfo' in mod)
@@ -1191,7 +1191,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     menuDiv.appendChild(el('div', 'module-further-info', title));
             }
             var lastupdatedEnabled = false;
-            try { lastupdatedEnabled = (JSON.parse(lStorage.getItem('display')) || []).includes('last-updated') } catch (exc) { }
+            try { lastupdatedEnabled = (JSON.parse(lStorage.getItem('display')) || []).includes('last-updated'); } catch (exc) { }
             menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.', lastupdatedEnabled ? el('span', '', '(Last updated)', { style: 'float:right;' }) : null));
             var menu = el('div', 'manual-select');
             menuDiv.appendChild(menu);
@@ -1327,11 +1327,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             const menuDiv = el('div', 'popup disappear tutorial-select', { 'style': 'display: block', onclick: function() { preventDisappear++; } });
             menuDiv['data-lnk'] = lnk;
             document.body.appendChild(menuDiv);
-            setTutorialList(menuDiv, urls)
+            setTutorialList(menuDiv, urls);
             $(menuDiv).position({ my: 'left top', at: 'left bottom', of: lnk, collision: 'fit none' });
             event.stopPropagation();
             return false;
-        }
+        };
     }
 
     function setTutorialList(menuDiv, urls)
