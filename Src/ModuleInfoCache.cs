@@ -212,6 +212,7 @@ namespace KtaneWeb
                     iconSpriteGr.DrawImage(icon, 0, 0);
 
                 var uniqueSortKeys = new Dictionary<string, KtaneModuleInfo>();
+                var uniqueSymbols = new Dictionary<string, KtaneModuleInfo>();
                 foreach (var (modJson, mod, _) in modules)
                 {
                     // Process ignore lists that contain special operators
@@ -243,6 +244,26 @@ namespace KtaneWeb
                     }
                     else
                         uniqueSortKeys.Add(mod.SortKey, mod);
+
+                    if (mod.Symbol is null)
+                    {
+#if DEBUG
+                        if (mod.TranslationOf is null) Console.WriteLine("Module: {0} has no Symbol", mod.Name);
+#endif
+                    }
+                    else if (uniqueSymbols.ContainsKey(mod.Symbol))
+                    {
+                        if (mod.TranslationOf != uniqueSymbols[mod.Symbol].ModuleID && uniqueSymbols[mod.Symbol].TranslationOf != mod.ModuleID)
+                        {
+                            var msg = string.Format("Module: {0}\nDuplicate Symbol {1} with module: {2}", mod.Name, mod.Symbol, uniqueSymbols[mod.Symbol].Name);
+                            exceptions.Add(msg);
+#if DEBUG
+                            Console.WriteLine(msg);
+#endif
+                        }
+                    }
+                    else
+                        uniqueSymbols.Add(mod.Symbol, mod);
 
                     // Sheets
                     var fileName = getFileName(modJson, mod);
