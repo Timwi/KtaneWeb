@@ -1,4 +1,4 @@
-const SHEETS_KEY = "AIzaSyA7OsUUdO1ZfOolQ1P_dHb8T8EJqUeyowk";
+﻿const SHEETS_KEY = "AIzaSyA7OsUUdO1ZfOolQ1P_dHb8T8EJqUeyowk";
 
 // Handle access to localStorage
 var lStorage = localStorage;
