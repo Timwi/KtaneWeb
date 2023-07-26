@@ -77,7 +77,7 @@ namespace KtaneWeb
             HtmlNode flav = null;
             foreach (HtmlNode tag in htmlDoc.DocumentNode.Descendants())
             {
-                if ((tag.OriginalName == "p" || tag.OriginalName == "li") && (!tag.InnerHtml.Contains("See Appendix") && !tag.InnerHtml.Contains("you are looking at a different module.")))
+                if ((tag.OriginalName == "p" || tag.OriginalName == "li") && (!tag.InnerHtml.Contains("Appendix") && !tag.InnerHtml.Contains("SECTION") && !tag.InnerHtml.Contains("appendices") && !tag.InnerHtml.Contains("appendix") && !tag.InnerHtml.Contains("APPENDIX") && !tag.InnerHtml.Contains("you are looking at a different") && !tag.InnerHtml.Contains("you are looking at the wrong")))
                 {
                     if (!tag.GetAttributeValue("class", "").Contains("flavour-text")&& !tag.GetAttributeValue("class", "").Contains("flavour-text one"))
                     {
