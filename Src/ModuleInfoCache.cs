@@ -22,6 +22,7 @@ namespace KtaneWeb
             public KtaneModuleInfo[] Modules;
             public JsonDict ModulesJson;
             public JsonDict ModulesJsonFlavourText;
+            public JsonDict ModulesJsonStartingLine;
             public byte[] IconSpritePng;
             public string IconSpriteCss;
             public string ModuleInfoJs;
@@ -51,14 +52,47 @@ namespace KtaneWeb
             ).ToList();
 
             var texts = new HashSet<string>();
-
             foreach (var text in flav)
             {
                 if (text.InnerHtml != null && text.InnerHtml.Length > 0)
                     texts.Add(Regex.Replace(text.InnerHtml, @"\s+", " ").Trim());
             }
-
             return texts.ToArray();
+        }
+
+        private string getStartingLine(string htmlFilename)
+        {
+            string htmlContent;
+            try
+            {
+                htmlContent = File.ReadAllText(htmlFilename);
+            }
+            catch (FileNotFoundException)
+            {
+                return "File not found.";
+            }
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+            HtmlNode flav = null;
+            foreach (HtmlNode tag in htmlDoc.DocumentNode.Descendants())
+            {
+                if ((tag.OriginalName == "p" || tag.OriginalName == "li") && (!tag.InnerHtml.Contains("See Appendix") && !tag.InnerHtml.Contains("you are looking at a different module.")))
+                {
+                    if (!tag.GetAttributeValue("class", "").Contains("flavour-text")&& !tag.GetAttributeValue("class", "").Contains("flavour-text one"))
+                    {
+                        flav = tag;
+                        break;
+                    }
+                }
+            }
+
+            string texts= "[Module has No Starting Line]";
+            if (flav != null){
+                if (flav.InnerHtml != null && flav.InnerHtml.Length > 0)
+                    texts = (Regex.Replace(flav.InnerHtml, @"\s+", " ").Trim());
+            }
+            return texts;
         }
 
         // This method is called in Init() (when the server is initialized) and in pull() (when the repo is updated due to a new git commit).
@@ -95,6 +129,7 @@ namespace KtaneWeb
             });
 
             var flavourTextList = new JsonList();
+            var startingLineList = new JsonList();
 
             var modules = new DirectoryInfo(Path.Combine(_config.BaseDir, "JSON"))
                 .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
@@ -135,6 +170,16 @@ namespace KtaneWeb
                         };
                         lock (flavourTextList)
                             flavourTextList.Add(flavourTexts);
+                        
+                        // Get starting lines from HTML of original manual
+                        var startingLines = new JsonDict() {
+                            { "Name", mod.Name },
+                            { "Line", getStartingLine(Path.Combine(_config.BaseDir, "HTML", Path.GetFileNameWithoutExtension(file.Name) + ".html"))},
+                            { "SteamID", mod.SteamID },
+                            { "ModuleID", mod.ModuleID }
+                        };
+                        lock (startingLineList)
+                            startingLineList.Add(startingLines);
 
                         try
                         {
@@ -292,6 +337,7 @@ namespace KtaneWeb
             moduleInfoCache.Modules = modules.Select(m => m.mod).ToArray();
             moduleInfoCache.ModulesJson = new JsonDict { { "KtaneModules", modules.Select(m => m.modJson).ToJsonList() } };
             moduleInfoCache.ModulesJsonFlavourText = new JsonDict { { "KtaneModules", flavourTextList } };
+            moduleInfoCache.ModulesJsonStartingLine = new JsonDict { { "KtaneModules", startingLineList } };
             moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
 
             var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();

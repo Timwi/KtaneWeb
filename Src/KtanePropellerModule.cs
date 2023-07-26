@@ -43,6 +43,8 @@ namespace KtaneWeb
                             return HttpResponse.Json(_moduleInfoCache.ModulesJson, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                         else if (req.Url.Path == "/flavourtext")
                             return HttpResponse.Json(_moduleInfoCache.ModulesJsonFlavourText, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
+                        else if (req.Url.Path == "/startingline")
+                            return HttpResponse.Json(_moduleInfoCache.ModulesJsonStartingLine, HttpStatusCode._200_OK, new HttpResponseHeaders { AccessControlAllowOrigin = "*" });
                         else
                             return HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/JSON" + req.Url.Path));
                     }),
