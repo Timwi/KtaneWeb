@@ -34,65 +34,37 @@ namespace KtaneWeb
         }
         private ModuleInfoCache _moduleInfoCache;
 
-        private string[] getFlavourTexts(string htmlFilename)
+        private (string[] flavourTexts, string startingLine) getManualTexts(string htmlFilename)
         {
             string htmlContent;
-            try
-            {
-                htmlContent = File.ReadAllText(htmlFilename);
-            }
-            catch (FileNotFoundException)
-            {
-                return new string[] { "" };
-            }
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(htmlContent);
-            var flav = htmlDoc.DocumentNode.Descendants("p").Where(node =>
-                node.GetAttributeValue("class", "").Contains("flavour-text")
-            ).ToList();
+            try { htmlContent = File.ReadAllText(htmlFilename); }
+            catch (FileNotFoundException) { return (new string[] { "" }, ""); }
 
-            var texts = new HashSet<string>();
-            foreach (var text in flav)
-            {
-                if (text.InnerHtml != null && text.InnerHtml.Length > 0)
-                    texts.Add(Regex.Replace(text.InnerHtml, @"\s+", " ").Trim());
-            }
-            return texts.ToArray();
-        }
-
-        private string getStartingLine(string htmlFilename)
-        {
-            string htmlContent;
-            try
-            {
-                htmlContent = File.ReadAllText(htmlFilename);
-            }
-            catch (FileNotFoundException)
-            {
-                return "File not found.";
-            }
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(htmlContent);
 
-            HtmlNode flav = null;
-            foreach (HtmlNode tag in htmlDoc.DocumentNode.Descendants())
+            var flavourTexts = new HashSet<string>();
+            string startingLine = null;
+
+            foreach (var tag in htmlDoc.DocumentNode.Descendants())
             {
-                if ((tag.OriginalName == "p" || tag.OriginalName == "li") && (!tag.InnerHtml.Contains("Appendix") && !tag.InnerHtml.Contains("SECTION") && !tag.InnerHtml.Contains("appendices") && !tag.InnerHtml.Contains("appendix") && !tag.InnerHtml.Contains("APPENDIX") && !tag.InnerHtml.Contains("you are looking at a different") && !tag.InnerHtml.Contains("you are looking at the wrong")))
+                if (tag.OriginalName != "p" && tag.OriginalName != "li")
+                    continue;
+
+                if (tag.GetAttributeValue("class", "").Contains("flavour-text"))
+                    flavourTexts.Add(Regex.Replace(tag.InnerText, @"\s+", " ").Trim());
+                else if (startingLine == null)
                 {
-                    if (!tag.GetAttributeValue("class", "").Contains("flavour-text")&& !tag.GetAttributeValue("class", "").Contains("flavour-text one"))
-                    {
-                        flav = tag;
-                        break;
-                    }
+                    var text = tag.InnerText;
+                    if (!text.ContainsIgnoreCase("Appendix") && !text.ContainsIgnoreCase("SECTION") && !text.ContainsIgnoreCase("appendices") && !text.ContainsIgnoreCase("you are looking at a different") && !text.ContainsIgnoreCase("you are looking at the wrong"))
+                        startingLine = Regex.Replace(text, @"\s+", " ").Trim();
                 }
             }
 
-            string texts= "[Module has No Starting Line]";
-            if (flav != null){
-                if (flav.InnerHtml != null && flav.InnerHtml.Length > 0)
-                    texts = (Regex.Replace(flav.InnerHtml, @"\s+", " ").Trim());
-            }
-            return texts;
+            return (
+                flavourTexts: flavourTexts.Where(ft => !string.IsNullOrWhiteSpace(ft)).ToArray(),
+                startingLine: startingLine ?? "[Manual has no starting line]"
+            );
         }
 
         // This method is called in Init() (when the server is initialized) and in pull() (when the repo is updated due to a new git commit).
@@ -162,21 +134,24 @@ namespace KtaneWeb
                             modJson.Remove("SortKey");
 
                         // Get flavour text from HTML of original manual
-                        var flavourTexts = new JsonDict() {
-                            { "Name", mod.Name },
-                            { "Flavour", getFlavourTexts(Path.Combine(_config.BaseDir, "HTML", Path.GetFileNameWithoutExtension(file.Name) + ".html"))},
-                            { "SteamID", mod.SteamID },
-                            { "ModuleID", mod.ModuleID }
+                        var (flavours, starting) = getManualTexts(Path.Combine(_config.BaseDir, "HTML", Path.GetFileNameWithoutExtension(file.Name) + ".html"));
+                        var flavourTexts = new JsonDict
+                        {
+                            ["Name"] = mod.Name,
+                            ["Flavour"] = flavours,
+                            ["SteamID"] = mod.SteamID,
+                            ["ModuleID"] = mod.ModuleID
                         };
                         lock (flavourTextList)
                             flavourTextList.Add(flavourTexts);
-                        
+
                         // Get starting lines from HTML of original manual
-                        var startingLines = new JsonDict() {
-                            { "Name", mod.Name },
-                            { "Line", getStartingLine(Path.Combine(_config.BaseDir, "HTML", Path.GetFileNameWithoutExtension(file.Name) + ".html"))},
-                            { "SteamID", mod.SteamID },
-                            { "ModuleID", mod.ModuleID }
+                        var startingLines = new JsonDict
+                        {
+                            ["Name"] = mod.Name,
+                            ["Line"] = starting,
+                            ["SteamID"] = mod.SteamID,
+                            ["ModuleID"] = mod.ModuleID
                         };
                         lock (startingLineList)
                             startingLineList.Add(startingLines);
