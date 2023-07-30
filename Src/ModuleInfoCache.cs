@@ -56,7 +56,7 @@ namespace KtaneWeb
                 else if (startingLine == null)
                 {
                     var text = tag.InnerText;
-                    if (!text.ContainsIgnoreCase("Appendix") && !text.ContainsIgnoreCase("SECTION") && !text.ContainsIgnoreCase("appendices") && !text.ContainsIgnoreCase("you are looking at a different") && !text.ContainsIgnoreCase("you are looking at the wrong"))
+                    if (!text.ContainsIgnoreCase(" Appendix ") && !text.Contains(" SECTION ") && !text.ContainsIgnoreCase(" appendices ") && !text.ContainsIgnoreCase("you are looking at a different") && !text.ContainsIgnoreCase("you are looking at the wrong"))
                         startingLine = Regex.Replace(text, @"\s+", " ").Trim();
                 }
             }
