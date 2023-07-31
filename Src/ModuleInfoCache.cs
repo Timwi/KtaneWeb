@@ -286,7 +286,10 @@ namespace KtaneWeb
                     // Sheets
                     var fileName = getFileName(modJson, mod);
                     if (mod.TranslationOf == null)
-                        modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules.Select(m => m.mod.Name).Where(m => m.Length > mod.Name.Length && m.StartsWith(mod.Name)).ToArray());
+                        modJson["Sheets"] = _config.EnumerateSheetUrls(fileName, modules
+                            .Select(m => m.mod.FileName ?? m.mod.Name)
+                            .Where(m => m.Length > (mod.FileName ?? mod.Name).Length && m.StartsWith(mod.FileName ?? mod.Name))
+                            .ToArray());
 
                     // Iconsprite
                     if (mod.TranslationOf != null)
