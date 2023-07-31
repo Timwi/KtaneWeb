@@ -52,7 +52,7 @@ namespace KtaneWeb
                     continue;
 
                 if (tag.GetAttributeValue("class", "").Contains("flavour-text"))
-                    flavourTexts.Add(Regex.Replace(tag.InnerText, @"\s+", " ").Trim());
+                    flavourTexts.Add(Regex.Replace(tag.InnerHtml, @"\s+", " ").Trim());
                 else if (startingLine == null)
                 {
                     var text = tag.InnerText;
@@ -149,9 +149,7 @@ namespace KtaneWeb
                         var startingLines = new JsonDict
                         {
                             ["Name"] = mod.Name,
-                            ["Line"] = starting,
-                            ["SteamID"] = mod.SteamID,
-                            ["ModuleID"] = mod.ModuleID
+                            ["Line"] = starting
                         };
                         lock (startingLineList)
                             startingLineList.Add(startingLines);
