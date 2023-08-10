@@ -97,9 +97,9 @@ namespace KtaneWeb
         public string moduleDiffMedium = "medium";
         public string moduleDiffHard = "hard";
         public string moduleDiffVeryHard = "very hard";
-        public string combatibilityCompatible = "Compatible";
-        public string combatibilityProblematic = "Problematic";
-        public string combatibilityUnplayable = "Unplayable";
+        public string compatibilityCompatible = "Compatible";
+        public string compatibilityProblematic = "Problematic";
+        public string compatibilityUnplayable = "Unplayable";
         public string displayMethodList = "List";
         public string displayMethodPeriodic = "Periodic Table";
         public string filterDefuserDifficulty = "Defuser difficulty";
