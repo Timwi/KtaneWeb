@@ -46,11 +46,11 @@ namespace KtaneWeb
 
     public enum KtaneModuleCompatibility
     {
-        [KtaneFilterOption(nameof(TranslationInfo.combatibilityCompatible))]
+        [KtaneFilterOption(nameof(TranslationInfo.compatibilityCompatible))]
         Compatible,
-        [KtaneFilterOption(nameof(TranslationInfo.combatibilityProblematic))]
+        [KtaneFilterOption(nameof(TranslationInfo.compatibilityProblematic))]
         Problematic,
-        [KtaneFilterOption(nameof(TranslationInfo.combatibilityUnplayable))]
+        [KtaneFilterOption(nameof(TranslationInfo.compatibilityUnplayable))]
         Unplayable
     }
 
