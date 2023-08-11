@@ -56,13 +56,13 @@ namespace KtaneWeb
 
     public enum KtaneModuleSouvenir
     {
-        [KtaneFilterOption(nameof(TranslationInfo.filterUnexamined)), KtaneSouvenirInfo('U', "We have not yet decided whether this module is a candidate for inclusion in Souvenir.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterUnexamined)), KtaneSouvenirInfo('U', nameof(TranslationInfo.souvenirUnexamined))]
         Unexamined,
-        [KtaneFilterOption(nameof(TranslationInfo.filterNotCandidate)), KtaneSouvenirInfo('N', "This module is not a candidate for inclusion in Souvenir.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterNotCandidate)), KtaneSouvenirInfo('N', nameof(TranslationInfo.souvenirNotACandidate))]
         NotACandidate,
-        [KtaneFilterOption(nameof(TranslationInfo.filterConsidered)), KtaneSouvenirInfo('C', "This module may be a candidate for inclusion in Souvenir.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterConsidered)), KtaneSouvenirInfo('C', nameof(TranslationInfo.souvenirConsidered))]
         Considered,
-        [KtaneFilterOption(nameof(TranslationInfo.filterSupported)), KtaneSouvenirInfo('S', "This module is included in Souvenir. Refer to the Souvenir manual for details.")]
+        [KtaneFilterOption(nameof(TranslationInfo.filterSupported)), KtaneSouvenirInfo('S', nameof(TranslationInfo.souvenirSupported))]
         Supported
     }
 

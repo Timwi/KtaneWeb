@@ -19,6 +19,8 @@ namespace KtaneWeb
 
         public string langCode = "en";
 
+        public string numberSystemJs = "n => n === 1 ? 0 : 1";
+
         public string title = "Repository of Manual Pages";
         public string titleImg = "HTML/img/repo-logo.svg";
         public string langSelectorLabel = "Language";
@@ -210,6 +212,13 @@ namespace KtaneWeb
         public string languagesOption = "Languages";
         public string languagesToggle = "Toggle All Languages";
         public string listTutorialVideos = "Tutorial Videos";
+        public string contactInformation = "Contact Information";
+        public string selectPreferredManual = "Select your preferred manual for this module.";
+        public string lastUpdated = "(Last updated)";
+        public string findExampleLogfile = "Find example logfile";
+        public string editModule = "Edit this module";
+        public string editWidget = "Edit this widget";
+        public string editHoldable = "Edit this holdable";
 
         public string ruleSeedLabel = "Rule seed:";
         public string ruleSeedExplanation = "Varies the rules/manuals for supported modules.";
@@ -219,8 +228,24 @@ namespace KtaneWeb
         public string bottomLineAll = "{0}.";
         public string bottomLineSome = "{0}; {1}. {2}";
         public string bottomLineShowAllLink = "Show all";
-        public string bottomLineItemsJs = "n => n === 1 ? '1 item' : `${n} items`";
-        public string bottomLineShowingFirstJs = "n => n === 1 ? 'showing first only' : `showing first ${n}`";
+        public string[] bottomLineItems = new[] { "1 item", "{0} items" };
+        public string[] bottomLineShowingFirst = new[] { "showing first only", "showing first {0}" };
+
+        public string missionsLoading = "Loading...";
+        public string missionsNoneSelected = "(no mission selected)";
+
+        public string souvenirUnexamined = "We have not yet decided whether this module is a candidate for inclusion in Souvenir.";
+        public string souvenirNotACandidate = "This module is not a candidate for inclusion in Souvenir.";
+        public string souvenirConsidered = "This module may be a candidate for inclusion in Souvenir.";
+        public string souvenirSupported = "This module is included in Souvenir. Refer to the Souvenir manual for details.";
+
+        public string tpScore = "This module can be played in “Twitch Plays: KTANE” for {0}.";
+        public string tpScoreTbd = "a point score yet to be determined";
+        public string[] tpScoreBase = new[] { "1 base point", "{0} base points" };
+        public string[] tpScoreTime = new[] { "1 point per second", "{0} points per second" };
+        public string[] tpScoreNeedy = new[] { "1 point per deactivation", "{0} points per deactivation" };
+        public string[] tpScoreAction = new[] { "1 point per action", "{0} points per action" };
+        public string[] tpScoreSolve = new[] { "1 point per module", "{0} points per module" };
 
         [ClassifyIgnore]
         private KtaneFilter[] _filtersCache1;

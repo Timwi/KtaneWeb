@@ -55,7 +55,7 @@ namespace KtaneWeb
 
         private HttpResponse mainPage(HttpRequest req)
         {
-            var lang = req.Url["lang"] ?? "en";
+            var lang = req.Url["lang"] ?? req.Headers.Cookie.Get("lang", null)?.Value ?? "en";
             var translation = _translationCache.Get(lang, TranslationInfo.Default);
             var resp = HttpResponse.Html(new HTML { lang = translation.langCode }._(
                 new HEAD(
@@ -382,7 +382,7 @@ namespace KtaneWeb
                         new DIV { id = "contact-info", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new DIV { class_ = "option-group" }._(
-                                new H4("Contact Information"),
+                                new H4(translation.contactInformation),
                                 new UL())),
 
                         // Module info editing UI

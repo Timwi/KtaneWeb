@@ -1,7 +1,7 @@
 ﻿const SHEETS_KEY = "AIzaSyA7OsUUdO1ZfOolQ1P_dHb8T8EJqUeyowk";
 
 // Handle access to localStorage
-var lStorage = localStorage;
+let lStorage = localStorage;
 
 try
 {
@@ -43,7 +43,7 @@ catch (e)
         get length()
         {
             let length = 0;
-            for (var key in this.storage)
+            for (let key in this.storage)
             {
                 if (this.storage.hasOwnProperty(key))
                 {
@@ -56,7 +56,7 @@ catch (e)
 }
 
 // Change the theme CSS before the page renders
-var theme = lStorage.getItem("theme");
+let theme = lStorage.getItem("theme");
 if (!(theme in Ktane.Themes))
     theme = null;
 if (theme in Ktane.Themes)
@@ -102,6 +102,15 @@ const languageCodes = {
 
 const languageCodesReverse = Object.fromEntries(Object.entries(languageCodes).map(([k, v]) => ([v, k])));
 
+// Function to decide on a translated string based on a number (e.g. singular/plural)
+let languageNumberSystem = null;
+function trN(key, n, replaceWhat)
+{
+    languageNumberSystem = languageNumberSystem ?? eval(translation['numberSystemJs']);
+    let ix = +languageNumberSystem(+n), strs = translation[key];
+    return (ix >= 0 && ix < strs.length ? strs[ix] : strs[strs.length - 1]).replace(replaceWhat ?? '{0}', +n);
+}
+
 function el(tagName, className, ...args)
 {
     const element = document.createElement(tagName);
@@ -129,36 +138,22 @@ function el(tagName, className, ...args)
 function setLanguageSelector(selectedLanguage)
 {
     const languageSelector = document.getElementById("lang-selector");
-    var validLanguage = false;
-
     languageSelector.onchange = function()
     {
-        window.location.href = replaceQueryParams("lang", languageCodes[this.value]);
+        document.cookie = `lang=${languageSelector.value}`;
+        window.location.reload();
     };
 
-    for (const langCode of Object.keys(languageCodes))
+    let validLanguage = false;
+    for (const languageName of Object.keys(languageCodes))
     {
-        let val = languageCodes[langCode];
+        let val = languageCodes[languageName];
         validLanguage = validLanguage || selectedLanguage === val;
-
-        languageSelector.appendChild(
-            el("option", "lang-option-" + val, langCode, selectedLanguage === val ? { selected: true } : null)
-        );
+        languageSelector.appendChild(el("option", null, languageName, selectedLanguage === val ? { selected: true, value: val } : { value: val }));
     }
 
     if (!validLanguage)
-    {
-        const englishOption = document.getElementsByClassName("lang-option-en")[0];
-        englishOption.selected = true;
-    }
-}
-
-function replaceQueryParams(key, val)
-{
-    uri = window.location.href
-        .replace(RegExp("([?&]" + key + "(?=[=&#]|$)[^#&]*|(?=#|$))"), "&" + key + "=" + encodeURIComponent(val))
-        .replace(/^([^?&]+)&/, "$1?");
-    return uri;
+        languageSelector.value = 'en';
 }
 
 function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, contactInfo)
@@ -173,28 +168,35 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         "Community": "community"
     };
 
-    var pageLang = window.location.search.match(/lang=([^?&]+)/);
-    if (!pageLang || pageLang.length < 2 || Object.values(languageCodes).indexOf(pageLang[1]) === -1)
+    let pageLang, langCode;
+    if ((pageLang = window.location.search.match(/lang=([^?&]+)/)) && Object.values(languageCodes).indexOf(pageLang[1]) !== -1)
+        langCode = pageLang[1];
+    else if (document.cookie && (pageLang = /(?:^|;)lang=([^=;]+)(?:$|;)/.exec(document.cookie)) && Object.values(languageCodes).indexOf(pageLang[1]) !== -1)
+        langCode = pageLang[1];
+    else
+        langCode = null;
+
+    if (!langCode)
     {
         pageLang = null;
         setLanguageSelector("en");
     }
     else
     {
-        pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === pageLang[1])[0];
-        setLanguageSelector(languageCodes[pageLang]);
+        pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === langCode)[0];
+        setLanguageSelector(langCode);
     }
 
-    var filter = {};
+    let filter = {};
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
-    var selectable = lStorage.getItem('selectable') || 'manual';
+    let selectable = lStorage.getItem('selectable') || 'manual';
     if (initSelectables.map(sel => sel.PropName).indexOf(selectable) === -1)
         selectable = 'manual';
-    var preferredManuals = {};
+    let preferredManuals = {};
     try { preferredManuals = JSON.parse(lStorage.getItem('preferredManuals') || '{}') || {}; }
     catch (exc) { }
-    var preferredLanguages = {};
+    let preferredLanguages = {};
     try { preferredLanguages = JSON.parse(lStorage.getItem('preferredLanguages') || '{}') || {}; }
     catch (exc) { }
 
@@ -223,9 +225,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
 
     function compare(a, b, rev) { return (rev ? -1 : 1) * ((a < b) ? -1 : ((a > b) ? 1 : 0)); }
-    var defdiffFilterValues = initFilters.filter(f => f.id === 'defdiff')[0].values;
-    var expdiffFilterValues = initFilters.filter(f => f.id === 'expdiff')[0].values;
-    var sorts = {
+    let defdiffFilterValues = initFilters.filter(f => f.id === 'defdiff')[0].values;
+    let expdiffFilterValues = initFilters.filter(f => f.id === 'expdiff')[0].values;
+    let sorts = {
         'name': { fnc: function(mod) { return mod.SortKey.toLowerCase(); }, reverse: false, bodyCss: 'sort-name', radioButton: '#sort-name' },
         'defdiff': { fnc: function(mod) { return defdiffFilterValues.indexOf(mod.DefuserDifficulty); }, reverse: false, bodyCss: 'sort-defdiff', radioButton: '#sort-defuser-difficulty' },
         'expdiff': { fnc: function(mod) { return expdiffFilterValues.indexOf(mod.ExpertDifficulty); }, reverse: false, bodyCss: 'sort-expdiff', radioButton: '#sort-expert-difficulty' },
@@ -334,7 +336,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 return (showAtTopOfResults.includes(b) && showAtTopOfResults.indexOf(a) > showAtTopOfResults.indexOf(b)) ? 1 : -1;
             if (showAtTopOfResults.includes(b))
                 return 1;
-            var c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse ^ rvrse);
+            let c = compare(sorts[srt].fnc(a), sorts[srt].fnc(b), sorts[srt].reverse ^ rvrse);
             return (c === 0) ? compare(a.SortKey, b.SortKey, rvrse) : c;
         });
 
@@ -460,7 +462,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         function setCompatibilityTooltip(element, mod)
         {
-            var title = getCompatibilityText(mod);
+            let title = getCompatibilityText(mod);
             if (title && title.length)
                 element.setAttribute('title', title);
         }
@@ -561,7 +563,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             case 'List': {
                 const mainTable = document.getElementById("main-table").getElementsByTagName("tbody")[0];
 
-                for (var i = 0; i < modules.length; i++)
+                for (let i = 0; i < modules.length; i++)
                 {
                     let mod = modules[i];
                     mod.ViewData.List = { Created: false };
@@ -636,8 +638,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 function readable(difficulty)
                                 {
                                     if (translation["moduleDiff" + difficulty]) return translation["moduleDiff" + difficulty];
-                                    var result = '';
-                                    for (var i = 0; i < difficulty.length; i++)
+                                    let result = '';
+                                    for (let i = 0; i < difficulty.length; i++)
                                     {
                                         if (i > 0 && difficulty[i] >= 'A' && difficulty[i] <= 'Z')
                                             result += ' ';
@@ -657,7 +659,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 else if (!mod.CustomDefuserDifficulty && !mod.CustomExpertDifficulty && mod.DefuserDifficulty === mod.ExpertDifficulty)
                                     infos.append(el("div", "inf-difficulty custom-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
                                 else
-                                    infos.append(el("div", "inf-difficulty custom-difficulty inf inf2", customDifficulty(mod.CustomDefuserDifficulty, mod.DefuserDifficulty), ' (d), ', customDifficulty(mod.CustomExpertDifficulty, mod.ExpertDifficulty), ' (e)'));
+                                    infos.append(el("div", "inf-difficulty custom-difficulty inf inf2", el("span", "inf-difficulty-sub", customDifficulty(mod.CustomDefuserDifficulty, mod.DefuserDifficulty), ' (d), ', customDifficulty(mod.CustomExpertDifficulty, mod.ExpertDifficulty), ' (e)')));
 
                                 if (mod.DefuserDifficulty === mod.ExpertDifficulty)
                                     infos.append(el("div", "inf-difficulty real-difficulty inf inf2", el("span", "inf-difficulty-sub", readable(mod.DefuserDifficulty))));
@@ -671,8 +673,26 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 infos.append(el("div", "inf-symbol inf inf2", mod.Symbol));
                             if (mod.TwitchPlays)
                             {
-                                mod.TwitchPlaysInfo = `This module can be played in “Twitch Plays: KTANE” for ${mod.TwitchPlays.ScoreStringDescription}.`;
-                                infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo }, mod.TwitchPlays.ScoreStringDescription.replace(/( base)? points?/g, "")));
+                                let scoreStr = [], m;
+                                for (let piece of mod.TwitchPlays.ScoreString.split('+'))
+                                {
+                                    if (piece === 'TBD')
+                                        scoreStr.push(translation['tpScoreTbd']);
+                                    else if (m = /^\s*(\d*\.?\d+)\s*$/.exec(piece))
+                                        scoreStr.push(trN('tpScoreBase', m[1]));
+                                    else if (m = /^\s*T\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                                        scoreStr.push(trN('tpScoreTime', m[1]));
+                                    else if (m = /^\s*D\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                                        scoreStr.push(trN('tpScoreNeedy', m[1]));
+                                    else if (m = /^\s*PPA\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                                        scoreStr.push(trN('tpScoreAction', m[1]));
+                                    else if (m = /^\s*(\d*\.?\d+)\s*x?\s*PPA\s*$/.exec(piece))
+                                        scoreStr.push(trN('tpScoreAction', m[1]));
+                                    else if (m = /^\s*S\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                                        scoreStr.push(trN('tpScoreSolve', m[1]));
+                                }
+                                mod.TwitchPlaysInfo = `${translation['tpScore'].replace('{0}', scoreStr.join(' + '))}`;
+                                infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo }, mod.TwitchPlays.ScoreString));
                             }
                             if (mod.TimeMode)
                             {
@@ -690,9 +710,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             }
                             if (mod.Type === 'Regular')
                             {
-                                var value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
-                                var attr = souvenirAttributes[value];
-                                var expl = mod.Souvenir && mod.Souvenir.Explanation;
+                                let value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
+                                let attr = souvenirAttributes[value];
+                                let expl = mod.Souvenir && mod.Souvenir.Explanation;
                                 mod.SouvenirInfo = `${attr.Tooltip}${expl ? "\n" + expl : ""}`;
                                 infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
                             }
@@ -712,11 +732,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             addAuthorClick(td1.querySelector(".inf-author.all-contributors"), mod);
                             addAuthorClick(td2.querySelector(".inf-author.all-contributors"), mod);
 
-                            var lnk1 = el("a", "manual-selector", { href: "#" });
+                            let lnk1 = el("a", "manual-selector", { href: "#" });
                             lnk1.onclick = makeClickHander(lnk1, false, mod);
                             td1.appendChild(lnk1);
 
-                            var lnk2 = el("a", "mobile-opt", { href: "#" });
+                            let lnk2 = el("a", "mobile-opt", { href: "#" });
                             lnk2.onclick = makeClickHander(lnk2, true, mod);
                             tr.appendChild(el("td", "mobile-ui", lnk2));
 
@@ -782,21 +802,12 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 for (let i = 0; i < modules.length; i++)
                 {
                     let mod = modules[i];
-                    const tpScore = mod.TwitchPlays ? mod.TwitchPlays.ScoreStringDescription
-                        .replace(/( base)? points?/g, '')
-                        .replace(/ per/g, '')
-                        .replace(' deactivation', 'D')
-                        .replace(' action', 'A')
-                        .replace(' second', 'S')
-                        .replace(' module', 'M')
-                        .replace(/ \+ /g, '+') : '';
-
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, el('span', 'inner', mod.Symbol || '??')),
                         el("img", "mod-icon", { src: `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png` }),
                         el('div', 'name', el('div', 'inner', mod.localName)),
-                        el('div', 'tpscore', tpScore),
+                        el('div', 'tpscore', mod.TwitchPlays?.ScoreString),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
                     setCompatibilityTooltip(a, mod);
@@ -852,7 +863,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         if (createView(newView))
         {
-            for (var [k, v] of viewsReady)
+            for (let [k, v] of viewsReady)
             {
                 if (k === newView)
                     v.Show();
@@ -868,7 +879,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     function handleDataTransfer(dataTransfer)
     {
-        var url;
+        let url;
         if (dataTransfer.files && dataTransfer.files.length == 1)
         {
             setProfile(dataTransfer.files[0]);
@@ -895,10 +906,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     function updateFilter(showAll)
     {
-        var noneSelected = {};
-        for (var i = 0; i < initFilters.length; i++)
+        let noneSelected = {};
+        for (let i = 0; i < initFilters.length; i++)
         {
-            var none = true;
+            let none = true;
             switch (initFilters[i].type)
             {
                 case "slider":
@@ -906,15 +917,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         min: $('div#filter-' + initFilters[i].id).slider('values', 0),
                         max: $('div#filter-' + initFilters[i].id).slider('values', 1)
                     };
-                    var x = function(str) { return translation["moduleDiff" + str] || str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim(); };
-                    var y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
+                    let x = function(str) { return translation["moduleDiff" + str] || str.replace(/[A-Z][a-z]*/g, function(m) { return " " + m.toLowerCase(); }).trim(); };
+                    let y = function(s1, s2) { return s1 === s2 ? x(s1) : x(s1) + ' – ' + x(s2); };
                     $('div#filter-label-' + initFilters[i].id).text(y(initFilters[i].values[filter[initFilters[i].id].min], initFilters[i].values[filter[initFilters[i].id].max]));
                     none = false;
                     break;
 
                 case "checkboxes":
                     filter[initFilters[i].id] = {};
-                    for (var j = 0; j < initFilters[i].values.length; j++)
+                    for (let j = 0; j < initFilters[i].values.length; j++)
                     {
                         filter[initFilters[i].id][initFilters[i].values[j]] = $('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j]).prop('checked');
                         if (filter[initFilters[i].id][initFilters[i].values[j]])
@@ -923,7 +934,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     break;
                 case "flags":
                     filter[initFilters[i].id] = {};
-                    for (var j = 0; j < initFilters[i].values.length; j++)
+                    for (let j = 0; j < initFilters[i].values.length; j++)
                     {
                         if ($('input#filter-' + initFilters[i].id + '-' + initFilters[i].values[j] + '-y').prop('checked'))
                             filter[initFilters[i].id][initFilters[i].values[j]] = 'y';
@@ -1031,12 +1042,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 showAtTop.push(mod);
         });
 
-        let itemCountStr = eval(translation["bottomLineItemsJs"])(modCount);
         let moduleCount = document.getElementById('module-count');
         moduleCount.innerText = (resultsMode === 'scroll' || resultsLimit >= modCount || showAll) ? translation["bottomLineAll"] : translation["bottomLineSome"];
         moduleCount.innerHTML = moduleCount.innerHTML.replace(/\{(\d+)\}/g, (_, n) =>
-            n == 0 ? itemCountStr :
-                n == 1 ? eval(translation["bottomLineShowingFirstJs"])(resultsLimit) :
+            n == 0 ? trN("bottomLineItems", modCount) :
+                n == 1 ? trN('bottomLineShowingFirst', resultsLimit) :
                     n == 2 ? `<a href='#'></a>` : '?');
         let moduleCountShowAllLink = moduleCount.querySelector('a');
         if (moduleCountShowAllLink)
@@ -1156,25 +1166,25 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     {
         return function(event)
         {
-            var numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p['data-lnk'] === lnk).length;
+            let numAlready = Array.from(document.getElementsByClassName('popup')).filter(p => p['data-lnk'] === lnk).length;
             disappear();
             if (numAlready)
                 return false;
-            var menuDiv = el('div', 'popup disappear manual-select', { 'style': 'display: block', onclick: function() { preventDisappear++; } });
+            let menuDiv = el('div', 'popup disappear manual-select', { 'style': 'display: block', onclick: function() { preventDisappear++; } });
             menuDiv['data-lnk'] = lnk;
             document.body.appendChild(menuDiv);
             if (isMobileOpt)
             {
-                var closeButton = el('div', 'close', { onclick: disappear });
+                let closeButton = el('div', 'close', { onclick: disappear });
                 menuDiv.appendChild(closeButton);
-                var iconsDiv = el('div', 'icons');
+                let iconsDiv = el('div', 'icons');
 
                 for (let ix = 0; ix < initSelectables.length; ix++)
                 {
                     let sel = initSelectables[ix];
                     if (['manual', 'video'].includes(sel.PropName) || !sel.ShowIconFunction(mod, mod.Manuals))
                         continue;
-                    var iconDiv = el('div', 'icon',
+                    let iconDiv = el('div', 'icon',
                         el('a', 'icon-link', { href: sel.UrlFunction(mod, mod.Manuals) },
                             el('img', 'icon-img', { src: sel.IconFunction(mod, mod.Manuals) }),
                             el('span', 'icon-label', sel.HumanReadableFunction ? sel.HumanReadableFunction(mod, mod.Manuals) : sel.HumanReadable)));
@@ -1190,22 +1200,22 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     menuDiv.appendChild(el('div', 'module-further-info', mod.TimeModeInfo));
                 if ($('#display-rule-seed').prop('checked') && 'RuleSeedInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.RuleSeedInfo));
-                var title = getCompatibilityText(mod);
+                let title = getCompatibilityText(mod);
                 if (title !== undefined)
                     menuDiv.appendChild(el('div', 'module-further-info', title));
             }
-            var lastupdatedEnabled = false;
+            let lastupdatedEnabled = false;
             try { lastupdatedEnabled = (JSON.parse(lStorage.getItem('display')) || []).includes('last-updated'); } catch (exc) { }
-            menuDiv.appendChild(el('p', 'small-print', 'Select your preferred manual for this module.', lastupdatedEnabled ? el('span', '', '(Last updated)', { style: 'float:right;' }) : null));
-            var menu = el('div', 'manual-select');
+            menuDiv.appendChild(el('p', 'small-print', translation['selectPreferredManual'], lastupdatedEnabled ? el('span', '', translation['lastUpdated'], { style: 'float:right;' }) : null));
+            let menu = el('div', 'manual-select');
             menuDiv.appendChild(menu);
-            var seed = +document.getElementById('rule-seed-input').value || 0;
-            var seedHash = (seed === 1 ? '' : '#' + seed);
-            var already = new Map();
-            for (var i = 0; i < mod.Manuals.length; i++)
+            let seed = +document.getElementById('rule-seed-input').value || 0;
+            let seedHash = (seed === 1 ? '' : '#' + seed);
+            let already = new Map();
+            for (let i = 0; i < mod.Manuals.length; i++)
             {
-                var rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].Name.substr(mod.Name.length));
-                var clickHandler = function(sh)
+                let rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].Name.substr(mod.Name.length));
+                let clickHandler = function(sh)
                 {
                     return function(e)
                     {
@@ -1216,10 +1226,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         return false;
                     };
                 }(mod.Manuals[i].Name.substr(mod.Name.length + 1));
-                var link = el('a', 'link', { href: mod.Manuals[i].Url + seedHash, onclick: clickHandler }, rx1[2]);
+                let link = el('a', 'link', { href: mod.Manuals[i].Url + seedHash, onclick: clickHandler }, rx1[2]);
                 if (!already.has(rx1[1]))
                 {
-                    var trow, rx2;
+                    let trow, rx2;
                     if (rx2 = /^translated(?: full)? \((.*) — (.*)\) (.*) \((.*)\)$/.exec(rx1[1]))
                         trow = [rx2[1], rx2[2], [el('div', 'descriptor', rx2[3]), el('div', 'author', rx2[4])]];
                     else if (rx2 = /^translated(?: full)? \((.*) — (.*)\) \((.*)\)$/.exec(rx1[1]))
@@ -1239,7 +1249,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     if (preferredLanguages[language] === false)
                         continue;
 
-                    var code = languageCodes[trow[0]];
+                    let code = languageCodes[trow[0]];
                     if (code !== undefined)
                         trow[0] += ` (${code})`;
 
@@ -1292,10 +1302,10 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         Row: trowElem
                     });
                 }
-                var inf = already.get(rx1[1]);
+                let inf = already.get(rx1[1]);
                 if (rx1[2] === 'HTML')
                     inf.Row.onclick = clickHandler;
-                var elem = rx1[2] === 'HTML' ? inf.Html : inf.Pdf;
+                let elem = rx1[2] === 'HTML' ? inf.Html : inf.Pdf;
                 elem.appendChild(link);
                 if ((mod.Name in preferredManuals && `${mod.Name} ${preferredManuals[mod.Name]}` === mod.Manuals[i].Name) ||
                     (!(mod.Name in preferredManuals) && mod.Manuals[i].Name === `${mod.Name} (HTML)`))
@@ -1310,8 +1320,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             }
 
             menuDiv.appendChild(el('div', 'bottom-links',
-                el('div', null, el('a', null, { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, 'Find example logfile')),
-                el('div', null, el('a', null, { href: '#', onclick: function() { setEditUi(mod); popup($(lnk), $('#module-ui')); return false; } }, `Edit this ${mod.Type === 'Widget' ? 'widget' : mod.Type === 'Holdable' ? 'holdable' : 'module'}`))));
+                el('div', null, el('a', null, { href: `find-log?find=${encodeURIComponent(mod.ModuleID)}` }, translation['findExampleLogfile'])),
+                el('div', null, el('a', null, { href: '#', onclick: function() { setEditUi(mod); popup($(lnk), $('#module-ui')); return false; } }, translation[mod.Type === 'Widget' ? 'editWidget' : mod.Type === 'Holdable' ? 'editHoldable' : 'editModule']))));
 
             if (!isMobileOpt)
                 $(menuDiv).position({ my: 'right top', at: 'right bottom', of: lnk, collision: 'fit none' });
@@ -1378,7 +1388,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
 
     // ** PROCESS ALL THE MODULES ** //
-    for (var i = 0; i < modules.length; i++)
+    for (let i = 0; i < modules.length; i++)
     {
         let mod = modules[i];
         mod.ManualIconUrl = null;
@@ -1465,7 +1475,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     languages.sort();
 
     // Set filters from saved settings
-    for (var i = 0; i < initFilters.length; i++)
+    for (let i = 0; i < initFilters.length; i++)
     {
         switch (initFilters[i].type)
         {
@@ -1477,7 +1487,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     filter[initFilters[i].id].min = 0;
                 if (!('max' in filter[initFilters[i].id]))
                     filter[initFilters[i].id].max = initFilters[i].values.length - 1;
-                var e = $('div#filter-' + initFilters[i].id);
+                let e = $('div#filter-' + initFilters[i].id);
                 e.slider({
                     range: true,
                     min: 0,
@@ -1491,7 +1501,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'object')
                     filter[initFilters[i].id] = {};
 
-                for (var j = 0; j < initFilters[i].values.length; j++)
+                for (let j = 0; j < initFilters[i].values.length; j++)
                 {
                     if (!(initFilters[i].values[j] in filter[initFilters[i].id]))
                         filter[initFilters[i].id][initFilters[i].values[j]] = true;
@@ -1503,9 +1513,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 if (!(initFilters[i].id in filter) || typeof filter[initFilters[i].id] !== 'object')
                     filter[initFilters[i].id] = {};
 
-                for (var j = 0; j < initFilters[i].values.length; j++)
+                for (let j = 0; j < initFilters[i].values.length; j++)
                 {
-                    var op = filter[initFilters[i].id][initFilters[i].values[j]] || 'e';
+                    let op = filter[initFilters[i].id][initFilters[i].values[j]] || 'e';
                     $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-y`).prop('checked', op == 'y');
                     $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-n`).prop('checked', op == 'n');
                     $(`input#filter-${initFilters[i].id}-${initFilters[i].values[j]}-e`).prop('checked', op == 'e');
@@ -1554,7 +1564,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
     $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
-    $('.search-field-clear').click(function() { disappear(); var inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
+    $('.search-field-clear').click(function() { disappear(); let inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
 
     function stringTruncate(str, limit)
@@ -1600,7 +1610,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     const sheetname = 'Challenge Bombs';
 
                     const sel = document.getElementById('search-field-mission');
-                    sel.innerHTML = '<option value="">Loading...</option>';
+                    sel.innerHTML = `<option value="">${translation["missionsLoading"]}</option>`;
                     let sheets = [];
 
                     let delay = 1;
@@ -1629,7 +1639,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             }, {});
                             sheets.sort((a, b) => a.title.localeCompare(b.title));
                             sel.innerHTML = '<option value=""></option>' + sheets.map(m => `<option class="${m.css}" value="${encodeURIComponent(m.title)}"></option>`).join('');
-                            Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? '(no mission selected)' : sheets[ix - 1].label; });
+                            Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? translation["missionsNoneSelected"] : sheets[ix - 1].label; });
                             sel.value = prevValue;
                         }, 'json')
                             .fail(function()
@@ -1689,7 +1699,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     let lastLnk;
     function popup(lnk, wnd, width)
     {
-        var wasVisible = wnd.is(':visible');
+        let wasVisible = wnd.is(':visible');
         disappear();
         if (!wasVisible)
         {
@@ -1715,8 +1725,8 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     $('#icon-page-next').click(function()
     {
-        var th = $(this), curPage = th.data('cur-page');
-        var pages = $('#icons').children('.icon-page');
+        let th = $(this), curPage = th.data('cur-page');
+        let pages = $('#icons').children('.icon-page');
         if (typeof curPage === 'undefined')
             curPage = 0;
         curPage = (curPage + 1) % pages.length;
@@ -1728,9 +1738,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     $('.popup-link').click(function()
     {
-        var pp = $(this).data('popup');
-        var rel = $(`#${pp}-rel`);
-        var $pp = $(`#${pp}`);
+        let pp = $(this).data('popup');
+        let rel = $(`#${pp}-rel`);
+        let $pp = $(`#${pp}`);
         popup(rel.length ? rel : $(`#${pp}-link`), $pp);
         Array.from($pp.find('.focus-on-show').focus()).forEach(x => $(x).select());
         return false;
@@ -1751,9 +1761,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     // Links in the table headers (not visible on mobile UI)
     $('.sort-header').click(function()
     {
-        var arr = Object.keys(sorts);
-        var ix = -1;
-        for (var i = 0; i < arr.length; i++)
+        let arr = Object.keys(sorts);
+        let ix = -1;
+        for (let i = 0; i < arr.length; i++)
             if (arr[i] === sort)
                 ix = i;
         ix = (ix + 1) % arr.length;
@@ -1779,7 +1789,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         })
         .keydown(function(e)
         {
-            var visible = modules.filter(mod => mod.IsVisible);
+            let visible = modules.filter(mod => mod.IsVisible);
             if (e.keyCode === 38 && selectedIndex > 0)   // up arrow
                 selectedIndex--;
             else if (e.keyCode === 40 && selectedIndex < visible.length - 1)      // down arrow
