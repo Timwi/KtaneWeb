@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -244,11 +245,13 @@ namespace KtaneWeb
                         new DIV { id = "rule-seed", class_ = "popup disappear stay" }._(
                             new DIV { class_ = "close" },
                             new P { class_ = "ui" }._(
-                                "Rule seed: ",
+                                translation.ruleSeedLabel, " ",
                                 new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }),
-                            new P { class_ = "explain" }._("Varies the rules/manuals for supported modules."),
-                            new P { class_ = "explain" }._("Requires the ", new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=2037350348" }._("Rule Seed Modifier"), " mod."),
-                            new P { class_ = "explain" }._("Set to 1 to revert to default rules.")),
+                            new P { class_ = "explain" }._(translation.ruleSeedExplanation),
+                            new P { class_ = "explain" }._(Regex.Match(translation.ruleSeedLink, @"^(.*)\{(.*)\}(.*)$").Apply(m => m.Success
+                                ? new object[] { m.Groups[1].Value, new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=2037350348" }._(m.Groups[2].Value), m.Groups[3].Value }
+                                : (object) translation.ruleSeedLink)),
+                            new P { class_ = "explain" }._(translation.ruleSeedDefault)),
 
                         // FILTERS (tab popup)
                         new DIV { id = "filters", class_ = "popup disappear stay no-profile-selected" }._(

@@ -5,7 +5,7 @@ namespace KtaneWeb
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             PropellerUtil.RunStandalone(PathUtil.AppPathCombine("KTANE-Propeller-standalone.json"), new KtanePropellerModule());
         }

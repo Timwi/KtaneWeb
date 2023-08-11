@@ -152,7 +152,7 @@ namespace KtaneWeb
         public string quirkNeedsImmediateAttentionExplain = "The module must be solved (or is significantly easier to solve) within a short window of time at bomb start.";
         public string quirkInstantDeath = "Instant death";
         public string quirkInstantDeathExplain = "Failing to solve or striking on the module ends the bomb, often the bomb will immediately detonate or the whole game will exit.";
-        
+
         public string timeModeUnassigned = "This module does not have any assigned Time Mode score.";
         public string timeModeFromTP = "This module uses its Twitch Plays score as its Time Mode score.";
         public string timeModeCommunityScore = "This module has a community-assigned Time Mode score.";
@@ -210,6 +210,17 @@ namespace KtaneWeb
         public string languagesOption = "Languages";
         public string languagesToggle = "Toggle All Languages";
         public string listTutorialVideos = "Tutorial Videos";
+
+        public string ruleSeedLabel = "Rule seed:";
+        public string ruleSeedExplanation = "Varies the rules/manuals for supported modules.";
+        public string ruleSeedLink = "Requires the {Rule Seed Modifier} mod.";
+        public string ruleSeedDefault = "Set to 1 to revert to default rules.";
+
+        public string bottomLineAll = "{0}.";
+        public string bottomLineSome = "{0}; {1}. {2}";
+        public string bottomLineShowAllLink = "Show all";
+        public string bottomLineItemsJs = "n => n === 1 ? '1 item' : `${n} items`";
+        public string bottomLineShowingFirstJs = "n => n === 1 ? 'showing first only' : `showing first ${n}`";
 
         [ClassifyIgnore]
         private KtaneFilter[] _filtersCache1;
@@ -290,7 +301,7 @@ namespace KtaneWeb
             (readable: displayUpdated, id: "last-updated"),
             (readable: displayCustomDifficulty, id: "custom-difficulty"),
             (readable: displayAllContributors, id: "all-contributors")
-            ).WhereNotNull().ToArray();
+        ).WhereNotNull().ToArray();
 
         [ClassifyIgnore]
         public string Json;

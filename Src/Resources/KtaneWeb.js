@@ -1031,14 +1031,18 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 showAtTop.push(mod);
         });
 
+        let itemCountStr = eval(translation["bottomLineItemsJs"])(modCount);
         let moduleCount = document.getElementById('module-count');
-        if (resultsMode === 'scroll' || resultsLimit >= modCount || showAll)
-            moduleCount.innerText = `${modCount} items`;
-        else
+        moduleCount.innerText = (resultsMode === 'scroll' || resultsLimit >= modCount || showAll) ? translation["bottomLineAll"] : translation["bottomLineSome"];
+        moduleCount.innerHTML = moduleCount.innerHTML.replace(/\{(\d+)\}/g, (_, n) =>
+            n == 0 ? itemCountStr :
+                n == 1 ? eval(translation["bottomLineShowingFirstJs"])(resultsLimit) :
+                    n == 2 ? `<a href='#'></a>` : '?');
+        let moduleCountShowAllLink = moduleCount.querySelector('a');
+        if (moduleCountShowAllLink)
         {
-            moduleCount.innerHTML = `${modCount} items; showing first ${resultsLimit}. <a href='#'>Show all</a>`;
-            let a = moduleCount.querySelector('a');
-            a.onclick = function()
+            moduleCountShowAllLink.innerText = translation["bottomLineShowAllLink"];
+            moduleCountShowAllLink.onclick = function()
             {
                 updateFilter(true);
                 return false;
