@@ -50,9 +50,9 @@ namespace KtaneWeb
         public string modIdeaAnchor = "Mod ideas website";
         public string modIdeaPastAnchor = "Mod ideas: spreadsheet of past ideas";
         public string modIdeaSubredditAnchor = "Mod ideas: subreddit";
-        public string contentGithubAnchor = "KtaneContent github repository";
+        public string contentGithubAnchor = "KtaneContent GitHub repository";
         public string contentGithubDesc = "(contains the manuals, Profile Editor, Logfile Analyzer and other static files)";
-        public string webGithubAnchor = "KtaneWeb github repository";
+        public string webGithubAnchor = "KtaneWeb GitHub repository";
         public string webGithubDesc = "(contains this website’s server code)";
         public string lfaAnchor = "Logfile Analyzer";
         public string profileEditorAnchor = "Profile Editor";
@@ -64,7 +64,7 @@ namespace KtaneWeb
         public string tfcAnchor = "Text Field Calculator";
         public string puzzleAnchor = "PUZZLES";
         public string quizAnchor = "QUIZZES";
-        public string controlHeader = "Controls to highlight elements in HTML manuals";
+        public string controlHeader = "Controls for highlighting elements in HTML manuals";
         public string[][] controls = {
             new string[] { "Highlight a table column", "Ctrl+Click (Windows)", "Command+Click (Mac)" },
             new string[] { "Highlight a table row", "Shift+Click" },
