@@ -713,7 +713,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 let value = !('Souvenir' in mod) || mod.Souvenir === null || !('Status' in mod.Souvenir) ? 'Unexamined' : mod.Souvenir.Status;
                                 let attr = souvenirAttributes[value];
                                 let expl = mod.Souvenir && mod.Souvenir.Explanation;
-                                mod.SouvenirInfo = `${attr.Tooltip}${expl ? "\n" + expl : ""}`;
+                                mod.SouvenirInfo = `${translation[attr.Tooltip]}${expl ? "\n" + expl : ""}`;
                                 infos.append(el("div", `inf-souvenir inf inf2${expl ? " souvenir-explanation" : ""}`, { title: mod.SouvenirInfo }, attr.Char));
                             }
 
@@ -1193,7 +1193,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
                 menuDiv.appendChild(iconsDiv);
                 if ($('#display-souvenir').prop('checked'))
-                    menuDiv.appendChild(el('div', 'module-further-info', mod.SouvenirInfo ?? "This module is not a candidate for inclusion in Souvenir."));
+                    menuDiv.appendChild(el('div', 'module-further-info', mod.SouvenirInfo ?? translation['souvenirNotACandidate']));
                 if ($('#display-twitch').prop('checked') && 'TwitchPlaysInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.TwitchPlaysInfo));
                 if ($('#display-time-mode').prop('checked') && 'TimeModeInfo' in mod)
