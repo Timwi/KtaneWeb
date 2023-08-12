@@ -792,7 +792,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
                     let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, el('span', 'inner', mod.Symbol || '??')),
-                        el("img", "mod-icon", { src: `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png` }),
+                        el('div', 'mod-icon', el("img", "mod-icon", { src: `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png` })),
                         el('div', 'name', el('div', 'inner', mod.localName)),
                         el('div', 'tpscore', mod.TwitchPlays?.ScoreString ?? ''),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
