@@ -94,11 +94,13 @@ namespace KtaneWeb
         public string moduleTypeNeedy = "Needy module";
         public string moduleTypeWidget = "Widget";
         public string moduleTypeHoldable = "Holdable";
+        public string moduleDiffTrivial = "trivial";
         public string moduleDiffVeryEasy = "very easy";
         public string moduleDiffEasy = "easy";
         public string moduleDiffMedium = "medium";
         public string moduleDiffHard = "hard";
         public string moduleDiffVeryHard = "very hard";
+        public string moduleDiffExtreme = "extreme";
         public string compatibilityCompatible = "Compatible";
         public string compatibilityProblematic = "Problematic";
         public string compatibilityUnplayable = "Unplayable";
@@ -195,7 +197,6 @@ namespace KtaneWeb
         public string displayDate = "Date published";
         public string displayID = "Module ID";
         public string displayUpdated = "Last updated";
-        public string displayCustomDifficulty = "Custom Difficulty";
         public string displayAllContributors = "All contributors";
         public string searchOption = "Search options";
         public string searchSteamID = "Search by Steam ID";
@@ -324,7 +325,6 @@ namespace KtaneWeb
             (readable: displayDate, id: "published"),
             (readable: displayID, id: "id"),
             (readable: displayUpdated, id: "last-updated"),
-            (readable: displayCustomDifficulty, id: "custom-difficulty"),
             (readable: displayAllContributors, id: "all-contributors")
         ).WhereNotNull().ToArray();
 

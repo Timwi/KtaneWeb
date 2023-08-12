@@ -24,6 +24,8 @@ namespace KtaneWeb
 
     public enum KtaneModuleDifficulty
     {
+        [KtaneFilterOption(nameof(TranslationInfo.moduleDiffTrivial))]
+        Trivial,
         [KtaneFilterOption(nameof(TranslationInfo.moduleDiffVeryEasy))]
         VeryEasy,
         [KtaneFilterOption(nameof(TranslationInfo.moduleDiffEasy))]
@@ -33,7 +35,9 @@ namespace KtaneWeb
         [KtaneFilterOption(nameof(TranslationInfo.moduleDiffHard))]
         Hard,
         [KtaneFilterOption(nameof(TranslationInfo.moduleDiffVeryHard))]
-        VeryHard
+        VeryHard,
+        [KtaneFilterOption(nameof(TranslationInfo.moduleDiffExtreme))]
+        Extreme
     }
 
     public enum KtaneSupport
