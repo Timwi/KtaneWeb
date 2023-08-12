@@ -558,6 +558,29 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             return el('div', 'inf-quirks inf inf2', quirks.join(", "), { title: quirksFull.join(", ") });
         }
 
+        function parseTpScore(score)
+        {
+            let scoreStr = [], m;
+            for (let piece of score.split('+'))
+            {
+                if (piece === 'TBD')
+                    scoreStr.push(translation['tpScoreTbd']);
+                else if (m = /^\s*(\d*\.?\d+)\s*$/.exec(piece))
+                    scoreStr.push(trN('tpScoreBase', m[1]));
+                else if (m = /^\s*T\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                    scoreStr.push(trN('tpScoreTime', m[1]));
+                else if (m = /^\s*D\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                    scoreStr.push(trN('tpScoreNeedy', m[1]));
+                else if (m = /^\s*PPA\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                    scoreStr.push(trN('tpScoreAction', m[1]));
+                else if (m = /^\s*(\d*\.?\d+)\s*x?\s*PPA\s*$/.exec(piece))
+                    scoreStr.push(trN('tpScoreAction', m[1]));
+                else if (m = /^\s*S\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
+                    scoreStr.push(trN('tpScoreSolve', m[1]));
+            }
+            return scoreStr.join(' + ');
+        }
+
         switch (newView)
         {
             case 'List': {
@@ -660,25 +683,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                                 infos.append(el("div", "inf-symbol inf inf2", mod.Symbol));
                             if (mod.TwitchPlays)
                             {
-                                let scoreStr = [], m;
-                                for (let piece of mod.TwitchPlays.ScoreString.split('+'))
-                                {
-                                    if (piece === 'TBD')
-                                        scoreStr.push(translation['tpScoreTbd']);
-                                    else if (m = /^\s*(\d*\.?\d+)\s*$/.exec(piece))
-                                        scoreStr.push(trN('tpScoreBase', m[1]));
-                                    else if (m = /^\s*T\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
-                                        scoreStr.push(trN('tpScoreTime', m[1]));
-                                    else if (m = /^\s*D\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
-                                        scoreStr.push(trN('tpScoreNeedy', m[1]));
-                                    else if (m = /^\s*PPA\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
-                                        scoreStr.push(trN('tpScoreAction', m[1]));
-                                    else if (m = /^\s*(\d*\.?\d+)\s*x?\s*PPA\s*$/.exec(piece))
-                                        scoreStr.push(trN('tpScoreAction', m[1]));
-                                    else if (m = /^\s*S\s*(\d*\.?\d+)\s*x?\s*$/.exec(piece))
-                                        scoreStr.push(trN('tpScoreSolve', m[1]));
-                                }
-                                mod.TwitchPlaysInfo = `${translation['tpScore'].replace('{0}', scoreStr.join(' + '))}`;
+                                mod.TwitchPlaysInfo = `${translation['tpScore'].replace('{0}', parseTpScore(mod.TwitchPlays.ScoreString))}`;
                                 infos.append(el("div", "inf-twitch inf inf2", { title: mod.TwitchPlaysInfo }, mod.TwitchPlays.ScoreString));
                             }
                             if (mod.TimeMode)
@@ -794,7 +799,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                         el('div', `symbol ${mod.DefuserDifficulty}`, el('span', 'inner', mod.Symbol || '??')),
                         el('div', 'mod-icon', el("img", "mod-icon", { src: `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png` })),
                         el('div', 'name', el('div', 'inner', mod.localName)),
-                        el('div', 'tpscore', mod.TwitchPlays?.ScoreString ?? ''),
+                        el('div', 'tpscore', mod.TwitchPlays?.ScoreString ?? '', { title: mod.TwitchPlays ? parseTpScore(mod.TwitchPlays.ScoreString) : null }),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
                     setCompatibilityTooltip(a, mod);
