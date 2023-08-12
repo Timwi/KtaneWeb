@@ -939,9 +939,9 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 
 	#actual-periodic-table .souvenir {
 		position: absolute;
-		left: 35px;
+		left: 37px;
 		top: -1px;
-		font-size: 8pt;
+		font-size: 7pt;
 		text-align: left;
 	}
 
@@ -949,7 +949,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
 		position: absolute;
 		right: 2px;
 		top: -1px;
-		font-size: 8pt;
+		font-size: 7pt;
 		text-align: right;
 	}
 
