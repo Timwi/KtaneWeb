@@ -42,7 +42,7 @@ namespace KtaneWeb
         public string by = "by";
         public string more = "MORE";
         public string joinDiscordAnchor = "Join us on Discord";
-        public string faqURL = "More/FAQs.html";
+        public string faqURL = "More/Glossary.html";
         public string faqAnchor = "Glossary";
         public string tutorialURL = "https://docs.google.com/document/d/1K2la3yW_l6WHXSIaK-b6WKJAsgL9TuGjx8ZhAZeHQko/edit";
         public string tutorialAnchor = "Intro to Playing with Mods";

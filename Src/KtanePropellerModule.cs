@@ -67,9 +67,12 @@ namespace KtaneWeb
 
                     // Shortcut URLs
                     new UrlMapping(path: "/lfa", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Logfile Analyzer.html"))),
-                    new UrlMapping(path: "/faq", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/FAQs.html"))),
+                    new UrlMapping(path: "/faq", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Glossary.html"))),
                     new UrlMapping(path: "/pe", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Profile Editor.html"))),
                     new UrlMapping(path: "/mse", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Mode Settings Editor.html"))),
+
+                    // Redirects from old file names
+                    new UrlMapping(path: "/More/FAQs.html", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPath("/More/Glossary.html"))),
 
                     // Default fallback: file system handler or PDF generator
                     new UrlMapping(handler: pdfOrFileSystem)
