@@ -471,6 +471,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             "DeviantArt": "deviantart.com/{}",
             "Facebook": "facebook.com/{}",
             "GitHub": "github.com/{}",
+            "Itaku": "itaku.ee/profile/{}",
             "Newgrounds": "{}.newgrounds.com",
             "Reddit": "reddit.com/u/{}",
             "Steam": "steamcommunity.com/{}",
