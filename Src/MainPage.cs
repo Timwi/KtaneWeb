@@ -166,7 +166,7 @@ namespace KtaneWeb
                             new UL { class_ = "below-icons" }._(
                                 new LI(new A { href = "More/Repository%20Symbols%20Guide.html" }._(translation.symbolGuideAnchor)),
                                 new LI(new A { href = "https://bombs.samfun.dev" }._(translation.challengeBombAnchor)),
-                                new LI(new A { href = "https://ktane.onpointcoding.net/ideas/" }._(translation.modIdeaAnchor)),
+                                new LI(new A { href = "https://ktane-ideas.mrmelon54.com" }._(translation.modIdeaAnchor)),
                                 new LI(new A { href = "https://docs.google.com/spreadsheets/d/10Z7Ivc784QaFrQCaGwIPUYrS6NNXiLJPi8nADiFR_0s" }._(translation.modIdeaPastAnchor)),
                                 new LI(new A { href = "https://www.reddit.com/r/ktanemod/" }._(translation.modIdeaSubredditAnchor)),
                                 new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._(translation.contentGithubAnchor), new DIV { class_ = "link-extra" }._(translation.contentGithubDesc)),
