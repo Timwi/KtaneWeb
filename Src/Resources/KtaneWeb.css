@@ -335,6 +335,7 @@ td.infos-1 div.infos > .inf-description {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 30"><path fill="hsl(240, 60%, 70%)" d="M0 10,24 10,12 30z" /></svg>');
 }
 
+body:not(.display-origname) div.modlink-wrap .inf-origname,
 body:not(.display-difficulty) div.infos .inf-difficulty,
 body:not(.display-origin) div.infos .inf-origin,
 body:not(.display-twitch) div.infos .inf-twitch,
@@ -351,6 +352,19 @@ body:not(.display-all-contributors) div.infos .inf-author.all-contributors,
 body.display-all-contributors div.infos .inf-author:not(.all-contributors) {
     display: none;
 }
+
+div.modlink-wrap .inf-origname {
+    opacity: .3;
+    font-size: 10pt;
+}
+
+    div.modlink-wrap .inf-origname::before {
+        content: '(';
+    }
+
+    div.modlink-wrap .inf-origname::after {
+        content: ')';
+    }
 
 tr.mod.selected {
     background: rgba(68, 130, 255, .4);
@@ -1125,6 +1139,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
                 content: ' • by ';
             }
 
+    body.display-origname td.infos-1 div.infos div.inf-origname,
     body.display-description td.infos-1 div.infos > div.inf-description,
     body.display-quirks td.infos-1 div.infos > div.inf-quirks-id,
     body.display-id td.infos-1 div.infos > div.inf-quirks-id {

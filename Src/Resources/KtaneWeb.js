@@ -117,7 +117,7 @@ function setLanguageSelector(selectedLanguage)
         languageSelector.value = 'en';
 }
 
-function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, contactInfo)
+function initializePage(modules, initIcons, initDocDirs, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, contactInfo)
 {
     for (let exception of moduleLoadExceptions)
         console.error(exception);
@@ -313,7 +313,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     function setDisplayOptions(set)
     {
-        displayOptions = (set instanceof Array) ? set.filter(function(x) { return initDisplays.indexOf(x) !== -1; }) : defaultDisplayOptions;
+        displayOptions = (set instanceof Array) ? set.filter(function(x) { return Ktane.InitDisplays.indexOf(x) !== -1; }) : defaultDisplayOptions;
         $(document.body).removeClass(document.body.className.split(' ').filter(function(x) { return x.startsWith('display-'); }).join(' '));
         $('input.display').prop('checked', false);
         $(document.body).addClass(displayOptions.map(function(x) { return "display-" + x; }).join(' '));
@@ -601,7 +601,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             let modlink = el("a", "modlink", { href: mod.SelectableLinkUrl }, icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
                             setCompatibilityTooltip(modlink, mod);
                             mod.ViewData.List.SelectableLink = modlink;
-                            let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink));
+                            let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink, mod.localName === mod.Name ? null : el("div", "inf-origname", mod.Name.replace(/'/g, "’"))));
                             tr.appendChild(td1);
                             mod.FncsSetSelectable.push(url =>
                             {
@@ -1517,7 +1517,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     $("input.results-mode").click(function() { setResultsMode(this.value, resultsLimit); });
     $("input#results-limit").change(function() { setResultsMode(resultsMode, this.value | 0); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
-    $('input.display').click(function() { setDisplayOptions(initDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
+    $('input.display').click(function() { setDisplayOptions(Ktane.InitDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
     $('.search-field-clear').click(function() { disappear(); let inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });

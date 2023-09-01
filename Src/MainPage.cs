@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using RT.Json;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -69,7 +70,8 @@ namespace KtaneWeb
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
                     new SCRIPTLiteral($@"Ktane = {{
                         Themes: {{ 'dark': 'HTML/css/dark-theme.css' }},
-                        Languages: {{ {TranslationInfo.LanguageCodeToName.Select(kvp => $"{kvp.Key.JsEscape()}: {kvp.Value.JsEscape()}").JoinString(", ")} }}
+                        Languages: {{ {TranslationInfo.LanguageCodeToName.Select(kvp => $"{kvp.Key.JsEscape()}: {kvp.Value.JsEscape()}").JoinString(", ")} }},
+                        InitDisplays: [{translation.Displays.Select(d => d.id.JsEscape()).JoinString(", ")}]
                     }};"),
                     new SCRIPT { src = UniquifiedUrl(req.Url.WithParent("js")) },
                     new META { name = "viewport", content = "width=device-width,initial-scale=1.0" },

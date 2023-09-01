@@ -338,12 +338,19 @@ namespace KtaneWeb
             moduleInfoCache.LastModifiedUtc = modules.Max(m => m.LastWriteTimeUtc);
 
             var iconDirs = Enumerable.Range(0, _config.DocumentDirs.Length).SelectMany(ix => new[] { _config.OriginalDocumentIcons[ix], _config.ExtraDocumentIcons[ix] }).ToJsonList();
-            var disps = TranslationInfo.Default.Displays.Select(d => d.id).ToJsonList();
             var filters = TranslationInfo.Default.Filters1.Concat(TranslationInfo.Default.Filters2).Select(f => f.ToJson()).ToJsonList();
             var selectables = TranslationInfo.Default.Selectables.Select(sel => sel.ToJson()).ToJsonList();
             var souvenir = EnumStrong.GetValues<KtaneModuleSouvenir>().ToJsonDict(val => val.ToString(), val => val.GetCustomAttribute<KtaneSouvenirInfoAttribute>().Apply(attr => new JsonDict { { "Tooltip", attr.Tooltip }, { "Char", attr.Char.ToString() } }));
 
-            moduleInfoCache.ModuleInfoJs = $@"initializePage({modules.Where(m => m.mod.TranslationOf == null).Select(m => m.modJson).ToJsonList()},{iconDirs},{_config.DocumentDirs.ToJsonList()},{disps},{filters},{selectables},{souvenir},{exceptions},{contactInfoJson ?? new JsonDict()});";
+            moduleInfoCache.ModuleInfoJs = "initializePage(" +
+                $"{modules.Where(m => m.mod.TranslationOf == null).Select(m => m.modJson).ToJsonList()}," +
+                $"{iconDirs}," +
+                $"{_config.DocumentDirs.ToJsonList()}," +
+                $"{filters}," +
+                $"{selectables}," +
+                $"{souvenir}," +
+                $"{exceptions}," +
+                $"{contactInfoJson ?? new JsonDict()});";
             _moduleInfoCache = moduleInfoCache;
         }
 

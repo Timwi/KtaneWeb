@@ -352,7 +352,7 @@ namespace KtaneWeb
         [ClassifyIgnore]
         private (string readable, string id)[] _displaysCache;
         public (string readable, string id)[] Displays => _displaysCache ??= Ut.NewArray<(string readable, string id)?>(
-            langCode == "en" ? null : (readable: displayOriginalName, id: "name"),
+            langCode == "en" ? null : (readable: displayOriginalName, id: "origname"),
             (readable: displayDescription, id: "description"),
             (readable: displayTags, id: "tags"),
             (readable: displayDifficulty, id: "difficulty"),
