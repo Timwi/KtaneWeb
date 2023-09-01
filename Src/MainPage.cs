@@ -67,12 +67,16 @@ namespace KtaneWeb
                     new SCRIPT { src = "HTML/js/jquery.3.7.0.min.js" },
                     new SCRIPT { src = "HTML/js/jquery-ui.1.13.2.min.js" },
                     new LINK { href = req.Url.WithParent("HTML/css/jquery-ui.1.12.1.css").ToHref(), rel = "stylesheet", type = "text/css" },
-                    new SCRIPTLiteral(@"Ktane = { Themes: { 'dark': 'HTML/css/dark-theme.css' } };"),
+                    new SCRIPTLiteral($@"Ktane = {{
+                        Themes: {{ 'dark': 'HTML/css/dark-theme.css' }},
+                        Languages: {{ {TranslationInfo.LanguageCodeToName.Select(kvp => $"{kvp.Key.JsEscape()}: {kvp.Value.JsEscape()}").JoinString(", ")} }}
+                    }};"),
                     new SCRIPT { src = UniquifiedUrl(req.Url.WithParent("js")) },
                     new META { name = "viewport", content = "width=device-width,initial-scale=1.0" },
                     new STYLELiteral($@"
                         div.infos .inf-author::before {{ content: '\000a {cssEscape(translation.by)} '; }}
                         #main-table .manual-selector::before {{ content: '{cssEscape(translation.more)}'; }}
+                        td.infos-1 div.infos > .inf-description > .inf-tags::before {{ content: '{cssEscape(translation.tags)}'; }}
                         body.sort-name #main-table th.modlink::after {{ content: '   • {cssEscape(translation.sortOrderName)}'; }}
                         body.sort-defdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortOrderDefDifficulty)}'; }}
                         body.sort-expdiff #main-table th.infos::after {{ content: '   • {cssEscape(translation.sortOrderExpDifficulty)}'; }}
@@ -180,7 +184,7 @@ namespace KtaneWeb
                                 new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
                                 new BUTTON { id = "generate-pdf", type = btype.submit }._(translation.downloadPDF))),
                             new UL { class_ = "below-icons" }._(
-                                new LI(new A { href = "More/Ignore%20Table.html" }._(translation.ignoredTableAnchor)),
+                                new LI(new A { href = translation.ignoreTableURL }._(translation.ignoredTableAnchor)),
                                 new LI(new A { href = "https://files.timwi.de/Tools/Calculator.html" }._(translation.tfcAnchor)))),
 
                         // VIEW (icon popup)
@@ -195,7 +199,7 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new UL { class_ = "below-icons first" }._(
                                 new LI(new A { href = "puzzles", class_ = "important" }._(translation.puzzleAnchor)),
-                                new LI(new A { href = "More/Quiz.html", class_ = "important" }._(translation.quizAnchor)),
+                                new LI(new A { href = translation.quizURL, class_ = "important" }._(translation.quizAnchor)),
                                 new LI(new A { href = "More/Experting%20Template.png" }._(translation.expertTemplateAnchor), new DIV { class_ = "link-extra" }._(translation.expertTemplateDesc)),
                                 new LI(new A { href = "More/Template%20Manual.zip" }._(translation.templateManualAnchor), new DIV { class_ = "link-extra" }._(translation.templateManualDesc)),
                                 new LI(new A { href = "More/DeMiLMissionViewer/index.html" }._(translation.demilAnchor), new DIV { class_ = "link-extra" }._(translation.demilDesc))),
@@ -426,6 +430,13 @@ namespace KtaneWeb
                                     yield return "\u00a0";
                                     yield return new LABEL { for_ = $"input-{field.Name}" }._(attr.ReadableName);
                                 }
+                                else if (type == typeof(DescriptionInfo[]))
+                                    yield return new DIV { class_ = "descriptions" }._(
+                                        new INPUT { type = itype.hidden, name = "Descriptions", value = "" },
+                                        new TABLE { class_ = "description-list nested" }._(
+                                            new THEAD(new TR(new TH("Language"), new TH("Description"), new TH("Tags"))),
+                                            new TBODY()),
+                                        new DIV { class_ = "description-controls" }._(new BUTTON { id = "description-add", type = btype.button }._("+")));
                                 else if (type == typeof(TutorialVideoInfo[]))
                                     yield return new DIV { class_ = "tutorial-videos" }._(
                                         new INPUT { type = itype.hidden, name = "TutorialVideos", value = "" },

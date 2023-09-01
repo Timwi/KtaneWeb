@@ -154,7 +154,11 @@ namespace KtaneWeb
 
         private HttpResponse mergePdfs(HttpRequest req)
         {
-            string lastExaminedPdfFile = "<none>";
+            var lastExaminedPdfFile = "<none>";
+
+            var language = req.Headers.Cookie.Get("lang", null)?.Value ?? "en";
+            var langName = TranslationInfo.LanguageCodeToName.Get(language, "English");
+
             try
             {
                 if (req.Method != HttpMethod.Post)
@@ -208,21 +212,16 @@ namespace KtaneWeb
                             searchWhat += " " + (m.Author ?? m.Contributors.ToAllAuthorString()).ToLowerInvariant();
                         else
                             searchWhat += " " + (m.Author ?? m.Contributors.ToAuthorString()).ToLowerInvariant();
+
                     if (searchOptions.Contains("descriptions"))
                     {
-                        var descSplit = m.Description.Split("Tags:");
-                        var descriptionOnly = descSplit[0];
-                        var descTags = "";
-                        if (descSplit.Length > 1)
-                            descTags = "Tags:" + descSplit[1];
-
-                        if (!displayTags && displayDesc)
-                            searchWhat += ' ' + descriptionOnly.ToLowerInvariant();
-                        else if (displayTags && !displayDesc && descSplit.Length > 1)
-                            searchWhat += ' ' + descTags.ToLowerInvariant();
-                        else
-                            searchWhat += ' ' + m.Description.ToLowerInvariant();
+                        var descr = m.Descriptions.FirstOrDefault(d => d.Language == langName);
+                        if (descr != null && displayDesc)
+                            searchWhat += ' ' + descr?.Description.ToLowerInvariant();
+                        if (descr != null && displayTags && !string.IsNullOrWhiteSpace(descr.Tags))
+                            searchWhat += ' ' + descr?.Tags.ToLowerInvariant();
                     }
+
                     if (searchBySymbol && m.Symbol != null)
                         searchWhat += " " + m.Symbol.ToLowerInvariant();
 

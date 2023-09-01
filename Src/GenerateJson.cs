@@ -79,6 +79,8 @@ namespace KtaneWeb
                             f.SetValue(obj, string.IsNullOrWhiteSpace(val) ? 0m : decimal.Parse(val));
                         else if (fType == typeof(bool))
                             f.SetValue(obj, val == "on");
+                        else if (fType == typeof(DescriptionInfo[]))
+                            f.SetValue(obj, ClassifyJson.Deserialize<DescriptionInfo[]>(val));
                         else if (fType == typeof(TutorialVideoInfo[]))
                             f.SetValue(obj, ClassifyJson.Deserialize<TutorialVideoInfo[]>(val));
                         else

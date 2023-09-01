@@ -64,44 +64,6 @@ if (theme in Ktane.Themes)
 else
     document.getElementById("theme-css").setAttribute('href', '');
 
-const languageCodes = {
-    "Català": "ca-CT",
-    "Dansk": "da",
-    "Deutsch": "de",
-    "Eesti": "et",
-    "English": "en",
-    "Euskara": "eu",
-    "Español": "es",
-    "Esperanto": "eo",
-    "Français": "fr",
-    "Frysk": "fy",
-    "Italiano": "it",
-    "Magyar": "hu",
-    "Nederlands": "nl",
-    "Norsk": "no",
-    "Polski": "pl",
-    "Português": "pt-PT",
-    "Português do Brasil": "pt-BR",
-    "Suomi": "fi",
-    "Svenska": "sv",
-    "Türkçe": "tr",
-    "Valencià": "ca-VA",
-    "Čeština": "cs",
-    "Ελληνικά": "el",
-    "Български": "bg",
-    "Русский": "ru",
-    "Українске": "uk",
-    "עברית": "he",
-    "العربية": "ar",
-    "ภาษาไทย": "th",
-    "日本語": "ja",
-    "简体中文": "zh-CN",
-    "繁體中文": "zh-TW",
-    "한국어": "ko"
-};
-
-const languageCodesReverse = Object.fromEntries(Object.entries(languageCodes).map(([k, v]) => ([v, k])));
-
 // Function to decide on a translated string based on a number (e.g. singular/plural)
 let languageNumberSystem = null;
 function trN(key, n, replaceWhat)
@@ -145,11 +107,10 @@ function setLanguageSelector(selectedLanguage)
     };
 
     let validLanguage = false;
-    for (const languageName of Object.keys(languageCodes))
+    for (const langCode of Object.keys(Ktane.Languages))
     {
-        let val = languageCodes[languageName];
-        validLanguage = validLanguage || selectedLanguage === val;
-        languageSelector.appendChild(el("option", null, languageName, selectedLanguage === val ? { selected: true, value: val } : { value: val }));
+        validLanguage = validLanguage || selectedLanguage === langCode;
+        languageSelector.appendChild(el("option", null, Ktane.Languages[langCode], selectedLanguage === langCode ? { selected: true, value: langCode } : { value: langCode }));
     }
 
     if (!validLanguage)
@@ -169,9 +130,9 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     };
 
     let pageLang, langCode;
-    if ((pageLang = window.location.search.match(/lang=([^?&]+)/)) && Object.values(languageCodes).indexOf(pageLang[1]) !== -1)
+    if ((pageLang = window.location.search.match(/lang=([^?&]+)/)) && Ktane.Languages[pageLang[1]] !== undefined)
         langCode = pageLang[1];
-    else if (document.cookie && (pageLang = /(?:^|;)lang=([^=;]+)(?:$|;)/.exec(document.cookie)) && Object.values(languageCodes).indexOf(pageLang[1]) !== -1)
+    else if (document.cookie && (pageLang = /(?:^|;)lang=([^=;]+)(?:$|;)/.exec(document.cookie)) && Ktane.Languages[pageLang[1]] !== undefined)
         langCode = pageLang[1];
     else
         langCode = null;
@@ -183,7 +144,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
     }
     else
     {
-        pageLang = Object.keys(languageCodes).filter(lang => languageCodes[lang] === langCode)[0];
+        pageLang = Ktane.Languages[langCode];
         setLanguageSelector(langCode);
     }
 
@@ -713,9 +674,13 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                             if (mod.ModuleID)
                                 infos.append(el("div", "inf-id inf", mod.ModuleID));
 
+                            let modDescr = mod.Descriptions.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions.filter(d => d.Language == "English")[0];
+
                             let descrip = el("div", "inf-description inf");
-                            descrip.appendChild(el("span", "inf-description-only inf", mod.DescTags ? mod.DescriptionOnly : mod.Description));
-                            descrip.appendChild(el("span", "inf-tags inf", mod.DescTags ? mod.DescTags : ""));
+                            descrip.appendChild(el("span", "inf-description-only inf", modDescr.Description ?? ""));
+                            if (modDescr.Description && modDescr.Tags)
+                                descrip.appendChild(document.createTextNode(" "));
+                            descrip.appendChild(el("span", "inf-tags inf", modDescr.Tags ?? ""));
                             td2.appendChild(infos.cloneNode(true));
                             infos.append(descrip);
                             td1.appendChild(infos);
@@ -958,7 +923,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
         let searchBySteamID = document.getElementById('option-include-steam-id').checked;
         let searchByModuleID = document.getElementById('option-include-module-id').checked;
         let displayAllContributors = document.getElementById('display-all-contributors').checked;
-        let displayDescripton = document.getElementById('display-description').checked;
+        let displayDescription = document.getElementById('display-description').checked;
         let displayTags = document.getElementById('display-tags').checked;
         modules.forEach(function(mod)
         {
@@ -1011,12 +976,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     searchWhat += ' ' + mod.Author.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1)
             {
-                if (!displayTags && displayDescripton)
-                    searchWhat += ' ' + mod.DescriptionOnly.toLowerCase();
-                else if (displayTags && !displayDescripton && mod.DescTags)
-                    searchWhat += ' ' + mod.DescTags.toLowerCase();
-                else
-                    searchWhat += ' ' + mod.Description.toLowerCase();
+                let modDescr = mod.Descriptions.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions.filter(d => d.Language == "English")[0];
+                if (displayDescription)
+                    searchWhat += ' ' + modDescr.Description.toLowerCase();
+                if (displayTags && modDescr.Tags)
+                    searchWhat += ' ' + modDescr.Tags.toLowerCase();
             }
             if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
@@ -1074,6 +1038,15 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             selectedIndex = modules.filter(m => m.IsVisible).findIndex(m => m.MatchesSearch);
     }
 
+    // Find the default manual based on the user’s language
+    function getDefaultManual(mod)
+    {
+        let manual = mod.Manuals[0];
+        manual = mod.Manuals.filter(m => m.Name === mod.Name + " (HTML)")[0] ?? manual;
+        manual = mod.Manuals.filter(m => m.Language === pageLang && m.Name.slice(-6) === "(HTML)")[0] ?? manual;
+        return manual;
+    }
+
     // Sets the module links to the current selectable and the manual icon link to the preferred manuals
     function setLinksAndPreferredManuals()
     {
@@ -1084,36 +1057,24 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             let manual = null;
             if (mod.Manuals.length > 0)
             {
-                manual = mod.Manuals[0];
-                for (let i = 0; i < mod.Manuals.length; i++)
-                    if (mod.Manuals[i].Name === mod.Name + " (PDF)")
-                    {
-                        manual = mod.Manuals[i];
-                        break;
-                    }
-                for (let i = 0; i < mod.Manuals.length; i++)
-                    if (mod.Manuals[i].Name === mod.Name + " (HTML)")
-                    {
-                        manual = mod.Manuals[i];
-                        break;
-                    }
-                for (let i = 0; i < mod.Manuals.length; i++)
-                    if (mod.Manuals[i].Language === pageLang && mod.Manuals[i].Name.slice(-6) === "(HTML)")
-                    {
-                        manual = mod.Manuals[i];
-                        break;
-                    }
+                manual = getDefaultManual(mod);
+
                 if (mod.Name in preferredManuals)
-                    for (let i = 0; i < mod.Manuals.length; i++)
+                {
+                    // Remove it from preferredManuals if it’s the default anyway
+                    if (preferredManuals[mod.Name] === manual.Name.substr(mod.Name.length + 1))
+                        delete preferredManuals[mod.Name];
+                    else
                     {
-                        // localStorage used to contain the full name of the manual, but now we’re running into quota limits, so shorten it by using only the extra part of the filename
-                        if (preferredManuals[mod.Name] === mod.Manuals[i].Name)
-                            preferredManuals[mod.Name] = mod.Manuals[i].Name.substr(mod.Name.length + 1);
-                        if (preferredManuals[mod.Name] === '(HTML)')
+                        // Remove preferred manuals that no longer exist
+                        let prefManual = mod.Manuals.filter(m => m.Name.substr(mod.Name.length + 1) === preferredManuals[mod.Name])[0];
+                        if (!prefManual)
                             delete preferredManuals[mod.Name];
-                        if (`${mod.Name} ${preferredManuals[mod.Name]}` === mod.Manuals[i].Name)
-                            manual = mod.Manuals[i];
+                        else
+                            manual = prefManual;
                     }
+                }
+
                 for (let fnc of mod.FncsSetManualLink)
                     fnc(manual === null ? null : manual.Url + seedHash);
             }
@@ -1242,7 +1203,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                     if (preferredLanguages[language] === false)
                         continue;
 
-                    let code = languageCodes[trow[0]];
+                    let code = Object.keys(Ktane.Languages).filter(langCode => Ktane.Languages[langCode] === trow[0])[0];
                     if (code !== undefined)
                         trow[0] += ` (${code})`;
 
@@ -1301,7 +1262,7 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 let elem = rx1[2] === 'HTML' ? inf.Html : inf.Pdf;
                 elem.appendChild(link);
                 if ((mod.Name in preferredManuals && `${mod.Name} ${preferredManuals[mod.Name]}` === mod.Manuals[i].Name) ||
-                    (!(mod.Name in preferredManuals) && mod.Manuals[i].Name === `${mod.Name} (HTML)`))
+                    (!(mod.Name in preferredManuals) && mod.Manuals[i].Name === getDefaultManual(mod).Name))
                     elem.classList.add('checked');
             }
 
@@ -1404,10 +1365,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
             mod.SortKey = mod.Name.toUpperCase().replace(/^THE /, '').replace(/[^A-Z0-9]/g, '');
 
         // split Description into Tags and Description by delimiter "Tags:"
-        let descSplit = mod.Description.split("Tags:");
-        mod.DescriptionOnly = descSplit[0];
-        if (descSplit.length > 1)
-            mod.DescTags = `Tags:${descSplit[1]}`;
+        if (mod.Description)
+        {
+            let descSplit = mod.Description.split(" Tags: ");
+            mod.Descriptions = [{ Language: "English", Description: descSplit[0], Tags: descSplit[1] ?? '' }];
+        }
 
         // (bool sh) => shows (sh) or hides (!sh) the module
         mod.FncsShowHide = [sh => { mod.IsVisible = sh; }];
@@ -1833,10 +1795,14 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
 
     // For the JSON module info editing UI
+    let editableArrays = [
+        { id: 'description', list: mod => mod.Descriptions, keys: ['Language', 'Description', 'Tags'], formName: 'Descriptions' },
+        { id: 'tutorial-video', list: mod => mod.TutorialVideos, keys: ['Language', 'Description', 'Url'], formName: 'TutorialVideos' }
+    ];
     function setEditUi(mod)
     {
         let ui = document.getElementById('module-ui');
-        for (let key of 'Name,Description,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
+        for (let key of 'Name,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
         ui.querySelector('[name="DBMLIgnored"]').checked = (mod.DBMLIgnored || false);
@@ -1867,42 +1833,47 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
         ui.querySelector(`[name="ObsoleteSteamIDs"]`).value = mod.ObsoleteSteamIDs ? mod.ObsoleteSteamIDs.join(', ') : '';
         ui.querySelector(`[name="Ignore"]`).value = mod.Ignore ? mod.Ignore.join('; ') : '';
-        let tbody = ui.querySelector(`table.tutorial-video-list>tbody`);
-        function removeRow(row)
+
+        for (let inf of editableArrays)
         {
-            let trs = Array.from(tbody.querySelectorAll('tr'));
-            let buttons = Array.from(tbody.querySelectorAll('button[type="button"]'));
-            trs[row].remove();
-            for (let i = row + 1; i < trs.length; i++)
-                buttons[i].onclick = (function(j) { return function() { return removeRow(j); }; })(i - 1);
-            return false;
-        }
-        if (mod.TutorialVideos && mod.TutorialVideos.length > 0)
-        {
-            tbody.innerHTML = mod.TutorialVideos.map(_ => `<tr><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td></tr>`).join('');
-            let inputs = tbody.querySelectorAll('input[type="text"]');
-            let buttons = tbody.querySelectorAll('button[type="button"]');
-            for (let i = 0; i < mod.TutorialVideos.length; i++)
+            let rowHtml = `${"<td><input type='text' value='' /></td>".repeat(inf.keys.length)}<td><button type='button'>−</button></td>`;
+            let tbody = ui.querySelector(`table.${inf.id}-list>tbody`);
+            function removeRow(row)
             {
-                inputs[3 * i].value = mod.TutorialVideos[i].Language || '';
-                inputs[3 * i + 1].value = mod.TutorialVideos[i].Description || '';
-                inputs[3 * i + 2].value = mod.TutorialVideos[i].Url || '';
-                buttons[i].onclick = (function(j) { return function() { return removeRow(j); }; })(i);
+                let trs = Array.from(tbody.querySelectorAll('tr'));
+                let buttons = Array.from(tbody.querySelectorAll('button[type="button"]'));
+                trs[row].remove();
+                for (let i = row + 1; i < trs.length; i++)
+                    buttons[i].onclick = (function(j) { return function() { return removeRow(j); }; })(i - 1);
+                return false;
             }
+            if (inf.list(mod) && inf.list(mod).length > 0)
+            {
+                tbody.innerHTML = inf.list(mod).map(_ => `<tr>${rowHtml}</tr>`).join('');
+                let inputs = tbody.querySelectorAll('input[type="text"]');
+                let buttons = tbody.querySelectorAll('button[type="button"]');
+                for (let i = 0; i < inf.list(mod).length; i++)
+                {
+                    for (let k = 0; k < inf.keys.length; k++)
+                        inputs[inf.keys.length * i + k].value = inf.list(mod)[i][inf.keys[k]] || '';
+                    buttons[i].onclick = (function(j) { return function() { return removeRow(j); }; })(i);
+                }
+            }
+            else
+                tbody.innerHTML = '';
+            ui.querySelector(`#${inf.id}-add`).onclick = function()
+            {
+                let c = tbody.querySelectorAll('tr').length;
+                let tr = document.createElement('tr');
+                tr.innerHTML = rowHtml;
+                tbody.appendChild(tr);
+                tr.querySelector('button[type="button"]').onclick = function() { return removeRow(c); };
+                return false;
+            };
         }
-        else
-            tbody.innerHTML = '';
-        ui.querySelector('#tutorial-video-add').onclick = function()
-        {
-            let c = tbody.querySelectorAll('tr').length;
-            let tr = document.createElement('tr');
-            tr.innerHTML = `<td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><input type='text' value='' /></td><td><button type='button'>−</button></td>`;
-            tbody.appendChild(tr);
-            tr.querySelector('button[type="button"]').onclick = function() { return removeRow(c); };
-            return false;
-        };
         UpdateEditUiElements();
     }
+
     function UpdateEditUiElements()
     {
         let ui = document.getElementById('module-ui');
@@ -1937,11 +1908,11 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
 
     document.getElementById('module-json-new').onclick = function()
     {
-        setEditUi({});
+        setEditUi({ "Descriptions": [{ "Language": "English", "Description": "" }] });
         popup($('#tools-rel'), $('#module-ui'));
         return false;
     };
-    document.getElementById('generate-json').onclick = function(e)
+    document.getElementById('generate-json').onclick = function()
     {
         let form = document.getElementById('generate-json').form;
         let openSource = form.License.value === "OpenSource" || form.License.value === "OpenSourceClone";
@@ -1977,11 +1948,19 @@ function initializePage(modules, initIcons, initDocDirs, initDisplays, initFilte
                 return false;
             }
         }
-        let tutorialVideoInputs = Array.from(form.querySelectorAll('table.tutorial-video-list input[type="text"]'));
-        let tutorialVideos = [];
-        for (let i = 0; i < tutorialVideoInputs.length; i += 3)
-            tutorialVideos.push({ "Language": tutorialVideoInputs[i].value, "Description": tutorialVideoInputs[i + 1].value, "Url": tutorialVideoInputs[i + 2].value });
-        form.TutorialVideos.value = JSON.stringify(tutorialVideos);
+        for (let inf of editableArrays)
+        {
+            let arrayInputs = Array.from(form.querySelectorAll(`table.${inf.id}-list input[type="text"]`));
+            let objects = [];
+            for (let i = 0; i < arrayInputs.length; i += inf.keys.length)
+            {
+                let obj = {};
+                for (let k = 0; k < inf.keys.length; k++)
+                    obj[inf.keys[k]] = arrayInputs[i + k].value;
+                objects.push(obj);
+            }
+            form[inf.formName].value = JSON.stringify(objects);
+        }
     };
     document.getElementById('show-license').onclick = function()
     {

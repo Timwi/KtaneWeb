@@ -27,8 +27,8 @@ namespace KtaneWeb
         public string Name;
         [ClassifyIgnoreIfDefault]
         public string DisplayName;
-        [EditableField("Description", "A concise description of what sets this module or widget apart from others. Include tags at the end.")]
-        public string Description;
+        [ClassifyNotNull, EditableField("Descriptions", "A concise description of what sets this module or widget apart from others. For Tags, provide a set of keywords to find a module based on its appearance (e.g. blue-background, 12-buttons, etc.).")]
+        public DescriptionInfo[] Descriptions = new[] { new DescriptionInfo { Language = "English", Description = "" } };
         [EditableField("Module ID", "The ID that mission makers need for this module. This is the same as the ModuleType property on the KMBombModule component.")]
         public string ModuleID;
         [EditableField("Sort key", "The name of the module or widget in all-caps, without spaces, and without initial “The”.")]
@@ -114,7 +114,6 @@ namespace KtaneWeb
                 other.Author == Author &&
                 other.Compatibility == Compatibility &&
                 other.DefuserDifficulty == DefuserDifficulty &&
-                other.Description == Description &&
                 other.ExpertDifficulty == ExpertDifficulty &&
                 other.ModuleID == ModuleID &&
                 other.Name == Name &&
@@ -127,17 +126,18 @@ namespace KtaneWeb
                 Equals(other.Souvenir, Souvenir) &&
                 other.SteamID == SteamID &&
                 other.Symbol == Symbol &&
+                (other.Descriptions == null || other.Descriptions.Length == 0 ? Descriptions == null || Descriptions.Length == 0 : other.Descriptions.SequenceEqual(Descriptions)) &&
                 (other.TutorialVideos == null || other.TutorialVideos.Length == 0 ? TutorialVideos == null || TutorialVideos.Length == 0 : other.TutorialVideos.SequenceEqual(TutorialVideos)) &&
                 other.Type == Type;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Description, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideos, Type);
+        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Descriptions, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideos, Type);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
         public override string ToString() => Name;
 
         int IComparable<KtaneModuleInfo>.CompareTo(KtaneModuleInfo other) => other == null ? 1 : SortKey == null ? (other.SortKey == null ? 0 : -1) : other.SortKey == null ? 1 : SortKey.CompareTo(other.SortKey);
 
-        void IClassifyObjectProcessor.AfterDeserialize()
+        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element)
         {
             if (SortKey == null || SortKey == "")
                 SortKey = Regex.Replace(Name, @"^The |[^a-zA-Z0-9]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
@@ -172,6 +172,15 @@ namespace KtaneWeb
 
             if (SourceUrl != null && License != KtaneModuleLicense.OpenSourceClone)
                 License = KtaneModuleLicense.OpenSource;
+
+            if (element.ContainsKey("Description") && element["Description"].GetStringSafe() is string descr && !string.IsNullOrWhiteSpace(descr))
+            {
+                var p = descr.IndexOf(" Tags: ");
+                if (p == -1)
+                    Descriptions = new[] { new DescriptionInfo { Language = "English", Description = descr } };
+                else
+                    Descriptions = new[] { new DescriptionInfo { Language = "English", Description = descr.Substring(0, p), Tags = descr.Substring(p + " Tags: ".Length) } };
+            }
         }
 
         void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)
@@ -180,6 +189,12 @@ namespace KtaneWeb
                 element["Published"] = element["Published"].GetString().Apply(s => s.Remove(s.Length - 1));
             if (Type != KtaneModuleType.Regular && element is JsonDict && element.ContainsKey("Souvenir"))
                 element.Remove("Souvenir");
+
+            if (Descriptions.Select(d => d.Language).SequenceEqual("English"))
+            {
+                element["Description"] = string.IsNullOrWhiteSpace(Descriptions[0].Tags) ? Descriptions[0].Description : $"{Descriptions[0].Description} Tags: {Descriptions[0].Tags}";
+                element.Remove("Descriptions");
+            }
         }
 
         void IClassifyObjectProcessor.BeforeSerialize()
@@ -190,9 +205,9 @@ namespace KtaneWeb
                 License = KtaneModuleLicense.Restricted;
         }
 
+        void IClassifyObjectProcessor.AfterDeserialize() { }
         void IClassifyObjectProcessor<JsonValue>.BeforeSerialize() { }
         void IClassifyObjectProcessor<JsonValue>.BeforeDeserialize(JsonValue element) { }
-        void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element) { }
     }
 
     sealed class KtaneSouvenirInfo : IEquatable<KtaneSouvenirInfo>
@@ -242,12 +257,22 @@ namespace KtaneWeb
         public string Url;
         public override bool Equals(object obj) => obj != null && obj is TutorialVideoInfo info && Equals(info);
 
-        public bool Equals(TutorialVideoInfo other)
-        {
-            return other != null && Language == other.Language && Description == other.Description && Url == other.Url;
-        }
-
+        public bool Equals(TutorialVideoInfo other) => other != null && Language == other.Language && Description == other.Description && Url == other.Url;
         public override int GetHashCode() => Ut.ArrayHash(Language, Description, Url);
+    }
+
+    sealed class DescriptionInfo : IEquatable<DescriptionInfo>
+    {
+        [ClassifyIgnoreIfDefault]
+        public string Language;
+        [ClassifyIgnoreIfDefault]
+        public string Description;
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIf("")]
+        public string Tags;
+        public override bool Equals(object obj) => obj != null && obj is DescriptionInfo info && Equals(info);
+
+        public bool Equals(DescriptionInfo other) => other != null && Language == other.Language && Description == other.Description && Tags == other.Tags;
+        public override int GetHashCode() => Ut.ArrayHash(Language, Description, Tags);
     }
 
     sealed class ContributorInfo : IEquatable<ContributorInfo>

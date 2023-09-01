@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using RT.Serialization;
 using RT.Util;
 using RT.Util.ExtensionMethods;
@@ -7,6 +8,43 @@ namespace KtaneWeb
 {
     sealed class TranslationInfo
     {
+        public static readonly Dictionary<string, string> LanguageCodeToName = new()
+        {
+            ["ca-CT"] = "Català",
+            ["da"] = "Dansk",
+            ["de"] = "Deutsch",
+            ["et"] = "Eesti",
+            ["en"] = "English",
+            ["eu"] = "Euskara",
+            ["es"] = "Español",
+            ["eo"] = "Esperanto",
+            ["fr"] = "Français",
+            ["fy"] = "Frysk",
+            ["it"] = "Italiano",
+            ["hu"] = "Magyar",
+            ["nl"] = "Nederlands",
+            ["no"] = "Norsk",
+            ["pl"] = "Polski",
+            ["pt-PT"] = "Português",
+            ["pt-BR"] = "Português do Brasil",
+            ["fi"] = "Suomi",
+            ["sv"] = "Svenska",
+            ["tr"] = "Türkçe",
+            ["ca-VA"] = "Valencià",
+            ["cs"] = "Čeština",
+            ["el"] = "Ελληνικά",
+            ["bg"] = "Български",
+            ["ru"] = "Русский",
+            ["uk"] = "Українська",
+            ["he"] = "עברית",
+            ["ar"] = "العربية",
+            ["th"] = "ภาษาไทย",
+            ["ja"] = "日本語",
+            ["zh-CN"] = "简体中文",
+            ["zh-TW"] = "繁體中文",
+            ["ko"] = "한국어"
+        };
+
         private static TranslationInfo _default;
         public static TranslationInfo Default => _default ??= makeDefault();
 
@@ -41,6 +79,7 @@ namespace KtaneWeb
         public string columnInformation = "Information";
         public string by = "by";
         public string more = "MORE";
+        public string tags = "Tags: ";
         public string joinDiscordAnchor = "Join us on Discord";
         public string glossaryURL = "More/Glossary.html";
         public string glossaryAnchor = "Glossary";
@@ -63,9 +102,11 @@ namespace KtaneWeb
         public string newModuleAnchor = "Create new module";
         public string downloadPDF = "Download merged PDF for current filter";
         public string ignoredTableAnchor = "Table of ignored modules";
+        public string ignoreTableURL = "More/Ignore%20Table.html";
         public string tfcAnchor = "Text Field Calculator";
         public string puzzleAnchor = "PUZZLES";
         public string quizAnchor = "QUIZZES";
+        public string quizURL = "More/Quiz.html";
         public string controlHeader = "Controls for highlighting elements in HTML manuals";
         public string[][] controls = {
             new string[] { "Highlight a table column", "Ctrl+Click (Windows)", "Command+Click (Mac)" },
