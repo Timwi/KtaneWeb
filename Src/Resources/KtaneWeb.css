@@ -922,24 +922,32 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         height: 32px;
     }
 
+    #actual-periodic-table .Trivial {
+        background-color: hsl(120, 100%, 93%);
+    }
+
     #actual-periodic-table .VeryEasy {
-        background-color: #dfd;
+        background-color: hsl(100, 100%, 93%);
     }
 
     #actual-periodic-table .Easy {
-        background-color: #efd;
+        background-color: hsl(80, 100%, 93%);
     }
 
     #actual-periodic-table .Medium {
-        background-color: #ffd;
+        background-color: hsl(60, 100%, 93%);
     }
 
     #actual-periodic-table .Hard {
-        background-color: #fed;
+        background-color: hsl(40, 100%, 93%);
     }
 
     #actual-periodic-table .VeryHard {
-        background-color: #fdd;
+        background-color: hsl(20, 100%, 93%);
+    }
+
+    #actual-periodic-table .Extreme {
+        background-color: hsl(0, 100%, 93%);
     }
 
     #actual-periodic-table .souvenir {
