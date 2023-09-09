@@ -88,6 +88,7 @@ namespace KtaneWeb
         public string makingModsAnchor = "Intro to Making Mods";
         public string playlistAnchor = "Tutorial videos playlist";
         public string symbolGuideAnchor = "Repository Symbols Guide";
+        public string challengeBombAnchor = "Challenge Bomb Website";
         public string modIdeaAnchor = "Mod ideas website";
         public string modIdeaPastAnchor = "Mod ideas: spreadsheet of past ideas";
         public string modIdeaSubredditAnchor = "Mod ideas: subreddit";
