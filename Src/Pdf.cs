@@ -178,6 +178,7 @@ namespace KtaneWeb
                 var displayAllContributors = json["dispAllContr"].GetBoolSafe() ?? false;
                 var displayDesc = json["displayDesc"].GetBoolSafe() ?? false;
                 var displayTags = json["displayTags"].GetBoolSafe() ?? false;
+                var restrictedManuals = json["restrictedManuals"].GetList().Select(j => j.GetString()).ToArray();
 
                 static string unifyString(string str) => Regex.Replace(str.Normalize(NormalizationForm.FormD), @"[\u0300-\u036f]", "").Replace("grey", "gray").Replace("colour", "color");
 
@@ -253,16 +254,18 @@ namespace KtaneWeb
                     {
                         var pref = json["preferredManuals"][module.Name].GetString();
                         var match = Regex.Match(pref, @"^(.*) \((PDF|HTML)\)$");
+                        string fullname = module.Name + " " + match.Groups[1].Value;
+                        bool unRestricted = !restrictedManuals.Contains(fullname);
                         string path;
 
                         // PDF file exists
-                        if (match.Success && match.Groups[2].Value == "PDF" && File.Exists(path = Path.Combine(_config.BaseDir, "PDF", $"{match.Groups[1].Value.Replace(module.Name, module.FileName)}.pdf")))
+                        if (match.Success && unRestricted && match.Groups[2].Value == "PDF" && File.Exists(path = Path.Combine(_config.BaseDir, "PDF", $"{fullname.Replace(module.Name, module.FileName)}.pdf")))
                         {
                             messages.AppendLine($"{pref} (pref) ⇒ {path}");
                             fullPath = path;
                         }
                         // HTML file exists, regardless if HTML or PDF is selected
-                        else if (match.Success && File.Exists(path = Path.Combine(_config.BaseDir, "HTML", $"{match.Groups[1].Value.Replace(module.Name, module.FileName)}.html")))
+                        else if (match.Success && unRestricted && File.Exists(path = Path.Combine(_config.BaseDir, "HTML", $"{fullname.Replace(module.Name, module.FileName)}.html")))
                         {
                             messages.AppendLine($"{pref} (pref) ⇒ {path}");
                             fullPath = path;

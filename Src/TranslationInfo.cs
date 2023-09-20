@@ -240,6 +240,7 @@ namespace KtaneWeb
         public string displayID = "Module ID";
         public string displayUpdated = "Last updated";
         public string displayAllContributors = "All contributors";
+        public string displayRestrictedManuals = "Restricted manuals";
         public string searchOption = "Search options";
         public string searchSteamID = "Search by Steam ID";
         public string searchSymbol = "Search by Symbol";
@@ -367,7 +368,8 @@ namespace KtaneWeb
             (readable: displayDate, id: "published"),
             (readable: displayID, id: "id"),
             (readable: displayUpdated, id: "last-updated"),
-            (readable: displayAllContributors, id: "all-contributors")
+            (readable: displayAllContributors, id: "all-contributors"),
+            (readable: displayRestrictedManuals, id: "restricted-manuals")
         ).WhereNotNull().ToArray();
 
         [ClassifyIgnore]

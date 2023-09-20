@@ -117,7 +117,7 @@ function setLanguageSelector(selectedLanguage)
         languageSelector.value = 'en';
 }
 
-function initializePage(modules, initIcons, initDocDirs, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, contactInfo)
+function initializePage(modules, initIcons, initDocDirs, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, restrictedManuals, contactInfo)
 {
     for (let exception of moduleLoadExceptions)
         console.error(exception);
@@ -201,7 +201,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         sort = 'published';
     let reverse = lStorage.getItem('sort-reverse') == "true" || false;
 
-    let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'tags', 'published', 'twitch', 'souvenir', 'rule-seed'];
+    let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'tags', 'published', 'twitch', 'souvenir', 'rule-seed', 'restricted-manuals'];
     let displayOptions = defaultDisplayOptions;
     try { displayOptions = JSON.parse(lStorage.getItem('display')) || defaultDisplayOptions; } catch (exc) { }
 
@@ -311,6 +311,9 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             updateSearchHighlight();
     }
 
+    let displayRestrictedManuals = true;
+    restrictedManualNames = restrictedManuals.Restricted.map(n => n.replace("\\", " "));
+
     function setDisplayOptions(set)
     {
         displayOptions = (set instanceof Array) ? set.filter(function(x) { return Ktane.InitDisplays.indexOf(x) !== -1; }) : defaultDisplayOptions;
@@ -319,6 +322,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         $(document.body).addClass(displayOptions.map(function(x) { return "display-" + x; }).join(' '));
         $(displayOptions.map(function(x) { return '#display-' + x; }).join(',')).prop('checked', true);
         lStorage.setItem('display', JSON.stringify(displayOptions));
+        displayRestrictedManuals = document.getElementById('display-restricted-manuals').checked;
     }
 
     document.getElementById('option-include-symbol').checked = (lStorage.getItem('option-include-symbol') || '1') === '1';
@@ -1047,6 +1051,14 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         return manual;
     }
 
+    function removeHtmlPdfSuffix(str) {
+        if (str.endsWith(" (HTML)"))
+            str = str.slice(0, str.length - 7)
+        if (str.endsWith(" (PDF)"))
+            str = str.slice(0, str.length - 6);
+        return str;
+    }
+
     // Sets the module links to the current selectable and the manual icon link to the preferred manuals
     function setLinksAndPreferredManuals()
     {
@@ -1070,7 +1082,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         let prefManual = mod.Manuals.filter(m => m.Name.substr(mod.Name.length + 1) === preferredManuals[mod.Name])[0];
                         if (!prefManual)
                             delete preferredManuals[mod.Name];
-                        else
+                        // set to default if preferred is restricted and restricted manuals are currently hidden
+                        else if (displayRestrictedManuals || !restrictedManualNames.some(m => removeHtmlPdfSuffix(prefManual.Name) === m))
                             manual = prefManual;
                     }
                 }
@@ -1200,7 +1213,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         trow = [null, mod.Name, [el('div', 'descriptor', rx1[1])]];
 
                     const language = trow[0] || "English";
-                    if (preferredLanguages[language] === false)
+                    if (preferredLanguages[language] === false || !displayRestrictedManuals && restrictedManualNames.some(m => removeHtmlPdfSuffix(mod.Manuals[i].Name) === m))
                         continue;
 
                     let code = Object.keys(Ktane.Languages).filter(langCode => Ktane.Languages[langCode] === trow[0])[0];
@@ -1517,7 +1530,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     $("input.results-mode").click(function() { setResultsMode(this.value, resultsLimit); });
     $("input#results-limit").change(function() { setResultsMode(resultsMode, this.value | 0); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
-    $('input.display').click(function() { setDisplayOptions(Ktane.InitDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
+    $('input.display').click(function() { setDisplayOptions(Ktane.InitDisplays.filter(function (x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
+    $('input#display-restricted-manuals').click(function () { setLinksAndPreferredManuals(); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
     $('.search-field-clear').click(function() { disappear(); let inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
@@ -1788,7 +1802,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             searchByModuleID: document.getElementById('option-include-module-id').checked,
             dispAllContr: document.getElementById('display-all-contributors').checked,
             displayDesc: document.getElementById('display-description').checked,
-            displayTags: document.getElementById('display-tags').checked
+            displayTags: document.getElementById('display-tags').checked,
+            restrictedManuals: displayRestrictedManuals ? [''] : restrictedManualNames
         }));
         return true;
     });

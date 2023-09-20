@@ -73,6 +73,7 @@ namespace KtaneWeb
             var moduleInfoCache = new ModuleInfoCache();
             Dictionary<string, Dictionary<string, string>> tpEntries = null, timeModeEntries = null;
             var exceptions = new JsonList();
+            JsonValue restrictedManualJson = null;
             JsonValue contactInfoJson = null;
 
             // Icon sprite parameters
@@ -84,6 +85,7 @@ namespace KtaneWeb
             var tasks = Ut.NewArray<(string name, Action action)>(
                 ("Retrieving TP data from Google Sheets", () => tpEntries = LoadTpDataFromGoogleSheets()),
                 ("Retrieving Time Mode data from Google Sheets", () => timeModeEntries = LoadTimeModeDataFromGoogleSheets()),
+                ("Loading restricted manuals", () => restrictedManualJson = JsonValue.Parse(File.ReadAllText(Path.Combine(_config.BaseDir, "More/ChallengeBombRestrictedManuals.json")))),
                 ("Loading contact info", () => contactInfoJson = JsonValue.Parse(File.ReadAllText(Path.Combine(_config.BaseDir, "ContactInfo.json")))));
 
             tasks.ParallelForEach(tup =>
@@ -350,6 +352,7 @@ namespace KtaneWeb
                 $"{selectables}," +
                 $"{souvenir}," +
                 $"{exceptions}," +
+                $"{restrictedManualJson ?? new JsonDict()}," +
                 $"{contactInfoJson ?? new JsonDict()});";
             _moduleInfoCache = moduleInfoCache;
         }
