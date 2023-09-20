@@ -225,22 +225,33 @@ namespace KtaneWeb
         public string selectableSourceClone = "Source code (clone)";
         public string selectableTutorial = "Tutorial videos";
         public string displayOption = "Display";
-        public string displayOriginalName = "Original Name";
+        public string displayOriginalName = "Original name";
+        public string displayOriginalNameTooltip = "Displays the original (English-language) name in addition to the translated name.";
         public string displayDescription = "Description";
         public string displayTags = "Tags";
         public string displayDifficulty = "Difficulty";
         public string displayOrigin = "Origin";
+        public string displayOriginTooltip = "Displays whether a module is part of the base game (“vanilla”) or added by contributors (“mods”).";
         public string displayTwitch = "Twitch Plays score";
+        public string displayTwitchTooltip = "Displays the score that players on “Twitch Plays: KTANE” (see Glossary) receive when solving a module or attending a needy.";
         public string displayTimeMode = "Time Mode score";
+        public string displayTimeModeTooltip = "Displays the multiplier applied when a module is solved in Time Mode (see Glossary).";
         public string displaySouvenir = "Souvenir support";
+        public string displaySouvenirTooltip = "Displays the status of a module’s inclusion in the boss module Souvenir (see its manual).";
         public string displaySymbol = "PT Symbol";
+        public string displaySymbolTooltip = "Displays the abbreviation used by the Periodic Table of Modules (see “View” tab).";
         public string displayQuirks = "Quirks";
+        public string displayQuirksTooltip = "Displays which quirks apply to a module or needy. See the tooltips in the “Filters” tab or the Glossary for an explanation of each quirk.";
         public string displayRuleSeed = "Rule seed support";
+        public string displayRuleSeedTooltip = "Displays whether a module’s ruleset can be dynamically varied using the Rule Seed Modifier (see Glossary).";
         public string displayDate = "Date published";
         public string displayID = "Module ID";
+        public string displayIDTooltip = "Displays the internal module ID (also known as “Module Type”) that mission authors need in order to include a module in a mission.";
         public string displayUpdated = "Last updated";
         public string displayAllContributors = "All contributors";
-        public string displayRestrictedManuals = "Restricted manuals";
+        public string displayAllContributorsTooltip = "When checked, all contributors to a module and its manual are shown. When unchecked, only the module’s primary developer(s) and the manual’s primary author(s) are shown.";
+        public string displayRestrictedManuals = "CBS-restricted manuals";
+        public string displayRestrictedManualsTooltip = "When unchecked, manuals that are not allowed in challenge missions are hidden. Using a CBS-restricted manual will disqualify your run from the CBS leaderboards.";
         public string searchOption = "Search options";
         public string searchSteamID = "Search by Steam ID";
         public string searchSymbol = "Search by Symbol";
@@ -352,24 +363,24 @@ namespace KtaneWeb
             });
 
         [ClassifyIgnore]
-        private (string readable, string id)[] _displaysCache;
-        public (string readable, string id)[] Displays => _displaysCache ??= Ut.NewArray<(string readable, string id)?>(
-            langCode == "en" ? null : (readable: displayOriginalName, id: "origname"),
-            (readable: displayDescription, id: "description"),
-            (readable: displayTags, id: "tags"),
-            (readable: displayDifficulty, id: "difficulty"),
-            (readable: displayOrigin, id: "origin"),
-            (readable: displayTwitch, id: "twitch"),
-            (readable: displayTimeMode, id: "time-mode"),
-            (readable: displaySouvenir, id: "souvenir"),
-            (readable: displaySymbol, id: "symbol"),
-            (readable: displayQuirks, id: "quirks"),
-            (readable: displayRuleSeed, id: "rule-seed"),
-            (readable: displayDate, id: "published"),
-            (readable: displayID, id: "id"),
-            (readable: displayUpdated, id: "last-updated"),
-            (readable: displayAllContributors, id: "all-contributors"),
-            (readable: displayRestrictedManuals, id: "restricted-manuals")
+        private (string readable, string tooltip, string id)[] _displaysCache;
+        public (string readable, string tooltip, string id)[] Displays => _displaysCache ??= Ut.NewArray<(string readable, string tooltip, string id)?>(
+            langCode == "en" ? null : (readable: displayOriginalName, tooltip: displayOriginalNameTooltip, id: "origname"),
+            (readable: displayDescription, tooltip: null, id: "description"),
+            (readable: displayTags, tooltip: null, id: "tags"),
+            (readable: displayDifficulty, tooltip: null, id: "difficulty"),
+            (readable: displayOrigin, tooltip: displayOriginTooltip, id: "origin"),
+            (readable: displayTwitch, tooltip: displayTwitchTooltip, id: "twitch"),
+            (readable: displayTimeMode, tooltip: displayTimeModeTooltip, id: "time-mode"),
+            (readable: displaySouvenir, tooltip: displaySouvenirTooltip, id: "souvenir"),
+            (readable: displaySymbol, tooltip: displaySymbolTooltip, id: "symbol"),
+            (readable: displayQuirks, tooltip: displayQuirksTooltip, id: "quirks"),
+            (readable: displayRuleSeed, tooltip: displayRuleSeedTooltip, id: "rule-seed"),
+            (readable: displayDate, tooltip: null, id: "published"),
+            (readable: displayID, tooltip: displayIDTooltip, id: "id"),
+            (readable: displayUpdated, tooltip: null, id: "last-updated"),
+            (readable: displayAllContributors, tooltip: displayAllContributorsTooltip, id: "all-contributors"),
+            (readable: displayRestrictedManuals, tooltip: displayRestrictedManualsTooltip, id: "restricted-manuals")
         ).WhereNotNull().ToArray();
 
         [ClassifyIgnore]

@@ -309,7 +309,7 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new DIV { class_ = "option-group" }._(
                                 new H4(translation.displayOption),
-                                translation.Displays.Select(dspl => new DIV(
+                                translation.Displays.Select(dspl => new DIV { title = dspl.tooltip }._(
                                     new INPUT { id = "display-" + dspl.id, name = "display", value = dspl.id, class_ = "display", type = itype.checkbox },
                                     new LABEL { for_ = "display-" + dspl.id }._("\u00a0", dspl.readable)))),
                             new DIV { class_ = "option-group" }._(
