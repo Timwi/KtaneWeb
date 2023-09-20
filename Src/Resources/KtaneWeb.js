@@ -1051,9 +1051,10 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         return manual;
     }
 
-    function removeHtmlPdfSuffix(str) {
+    function removeHtmlPdfSuffix(str)
+    {
         if (str.endsWith(" (HTML)"))
-            str = str.slice(0, str.length - 7)
+            str = str.slice(0, str.length - 7);
         if (str.endsWith(" (PDF)"))
             str = str.slice(0, str.length - 6);
         return str;
@@ -1530,8 +1531,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     $("input.results-mode").click(function() { setResultsMode(this.value, resultsLimit); });
     $("input#results-limit").change(function() { setResultsMode(resultsMode, this.value | 0); });
     $("input.set-theme").click(function() { setTheme($(this).data('theme')); });
-    $('input.display').click(function() { setDisplayOptions(Ktane.InitDisplays.filter(function (x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
-    $('input#display-restricted-manuals').click(function () { setLinksAndPreferredManuals(); });
+    $('input.display').click(function() { setDisplayOptions(Ktane.InitDisplays.filter(function(x) { return !$('#display-' + x).length || $('#display-' + x).prop('checked'); })); });
+    $('input#display-restricted-manuals').click(function() { setLinksAndPreferredManuals(); });
     $('input#profile-file').change(function() { const files = document.getElementById('profile-file').files; if (files.length === 1) { setProfile(files[0]); } });
     $('.search-field-clear').click(function() { disappear(); let inp = this.parentNode.querySelector("input[type='text']"); inp.value = ''; inp.focus(); updateFilter(); return false; });
     $('input.search-option-input,input.search-option-checkbox').click(function() { setSearchOptions(validSearchOptions.filter(function(x) { return !$('#search-' + x).length || $('#search-' + x).prop('checked'); })); updateFilter(); });
