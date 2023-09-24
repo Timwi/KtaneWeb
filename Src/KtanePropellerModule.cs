@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using RT.Json;
@@ -75,7 +76,13 @@ namespace KtaneWeb
                     new UrlMapping(path: "/More/FAQs.html", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPath("/More/Glossary.html"))),
 
                     // Default fallback: file system handler or PDF generator
-                    new UrlMapping(handler: pdfOrFileSystem)
+                    new UrlMapping(handler: req => pdf(req) ?? new FileSystemHandler(_config.BaseDir, new FileSystemOptions
+                    {
+                        MimeTypeOverrides = new Dictionary<string, string>
+                        {
+                            ["wav"] = "audio/wav"
+                        }
+                    }).Handle(req))
                 );
 
                 if (auth != null)

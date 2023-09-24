@@ -17,43 +17,37 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private HttpResponse pdfOrFileSystem(HttpRequest req)
+        private HttpResponse pdf(HttpRequest req)
         {
             if (!req.Url.Path.StartsWith("/PDF/", StringComparison.InvariantCultureIgnoreCase))
-                goto doFileSystem;
+                return null;
 
             var filename = req.Url.Path.Substring(5);
             if (filename.Length < 1 || filename.Contains('/'))
-                goto doFileSystem;
+                return null;
             filename = filename.UrlUnescape();
 
             // If the PDF file already exists in the PDF folder, use that
             if (File.Exists(Path.Combine(_config.BaseDir, "PDF", filename)))
-                goto doFileSystem;
+                return null;
 
             // See if an equivalent HTML file exists, even with a wildcard match or incorrect filename capitilization
             string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
             if (htmlFile == null)
-                goto doFileSystem;
+                return null;
 
             // Check if the PDF filename is exactly correct and redirect if it isn’t
             string pdfUrl = $"/PDF/{Path.GetFileNameWithoutExtension(htmlFile)}.pdf";
             if (!Regex.IsMatch(pdfUrl, $"^{Regex.Escape("/PDF/" + filename).Replace("\\*", ".*")}$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
-                goto doFileSystem;
+                return null;
             if (pdfUrl != req.Url.Path.Substring(0, 5) + filename)
                 return HttpResponse.Redirect(req.Url.WithPath(pdfUrl));
 
             // Turns out an HTML file corresponding to the requested PDF file exists, so we will try to generate the PDF automatically by invoking Google Chrome
             KtaneModuleInfo module = null;
-            try
-            {
-                module = _moduleInfoCache.Modules.First(mod => mod.FileName == Path.GetFileNameWithoutExtension(filename));
-            }
+            try { module = _moduleInfoCache.Modules.First(mod => mod.FileName == Path.GetFileNameWithoutExtension(filename)); }
             catch { }
             return HttpResponse.File(generatePdf(htmlFile, false, module?.PageRenderTime ?? defaultRenderDelay).filename, "application/pdf");
-
-            doFileSystem:
-            return new FileSystemHandler(_config.BaseDir).Handle(req);
         }
 
         private const int defaultRenderDelay = 500;
