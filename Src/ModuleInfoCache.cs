@@ -234,8 +234,13 @@ namespace KtaneWeb
 
                 var uniqueSortKeys = new Dictionary<string, KtaneModuleInfo>();
                 var uniqueSymbols = new Dictionary<string, KtaneModuleInfo>();
-                foreach (var (modJson, mod, _) in modules)
+                for (var modIx = 0; modIx < modules.Length; modIx++)
                 {
+                    var (modJson, mod, _) = modules[modIx];
+#if DEBUG
+                    Console.Write($"Processing module {modIx + 1}/{modules.Length} ({(double) (modIx + 1) * 100 / modules.Length:0.0}%)\r");
+#endif
+
                     // Process ignore lists that contain special operators
                     if (mod.Ignore != null && mod.Ignore.Any(str => str.StartsWith("+")))
                     {
