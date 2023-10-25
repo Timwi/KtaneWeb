@@ -24,7 +24,6 @@ namespace KtaneWeb
 
             return new KtaneWebSession(_config).EnableAutomatic(request, session =>
             {
-                var logFileFs = new FileSystemHandler(_config.LogfilesDir, new FileSystemOptions { ResponseHeaderProcessor = (h, t) => { h.AccessControlAllowOrigin = "*"; } });
                 var mergedPdfsFs = new FileSystemHandler(_config.MergedPdfsDir);
 
                 var resolver = new UrlResolver(
@@ -63,8 +62,8 @@ namespace KtaneWeb
                     new UrlMapping(path: "/puzzles", handler: req => puzzles(req, _config.Puzzles, session)),
 
                     new UrlMapping(path: "/Unfinished", handler: unfinished, skippable: true),
-                    new UrlMapping(path: "/Logfiles", handler: logFileFs.Handle),
                     new UrlMapping(path: "/MergedPdfs", handler: mergedPdfsFs.Handle),
+                    new UrlMapping(path: "/Logfiles", handler: logFileHandler),
 
                     // Shortcut URLs
                     new UrlMapping(path: "/lfa", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/More/Logfile Analyzer.html"))),
@@ -105,6 +104,8 @@ namespace KtaneWeb
 
         public override void Init()
         {
+            Log.Info($"KtaneWeb configuration file: {Settings.ConfigFile}");
+
 #if DEBUG
             if (string.IsNullOrWhiteSpace(Settings.ConfigFile))
             {
@@ -261,6 +262,15 @@ namespace KtaneWeb
             var rewrite = serializeConfig();
             if (rewrite != original)
                 File.WriteAllText(Settings.ConfigFile, rewrite);
+
+            if (!string.IsNullOrWhiteSpace(_config.LogfilesDir))
+                Directory.CreateDirectory(_config.LogfilesDir);
+            if (!string.IsNullOrWhiteSpace(_config.PdfTempPath))
+                Directory.CreateDirectory(_config.PdfTempPath);
+            if (!string.IsNullOrWhiteSpace(_config.MergedPdfsDir))
+                Directory.CreateDirectory(_config.MergedPdfsDir);
+
+            _logfileFsHandler = new FileSystemHandler(_config.LogfilesDir, new FileSystemOptions { ResponseHeaderProcessor = (h, t) => h.AccessControlAllowOrigin = "*" });
 
             generateTranslationCache();
             generateModuleInfoCache();

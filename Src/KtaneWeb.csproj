@@ -13,23 +13,25 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.54" />
     <PackageReference Include="ICSharpCode.SharpZipLib" Version="0.86.0.518" />
     <PackageReference Include="PdfSharp" Version="1.50.5147.0" />
-    <PackageReference Include="PropellerApi" Version="1.0.27" />
-    <PackageReference Include="RT.Json" Version="2.0.1721" />
-    <PackageReference Include="RT.PostBuild" Version="2.0.1721" />
-    <PackageReference Include="RT.Serialization" Version="2.0.1721" />
-    <PackageReference Include="RT.Serialization.Binary" Version="2.0.1721" />
-    <PackageReference Include="RT.Serialization.Json" Version="2.0.1721" />
-    <PackageReference Include="RT.Serialization.Xml" Version="2.0.1721" />
-    <PackageReference Include="RT.Servers" Version="1.0.1684" />
-    <PackageReference Include="RT.TagSoup" Version="1.0.1633" />
-    <PackageReference Include="RT.Util" Version="2.0.1721" />
-    <PackageReference Include="RT.Util.Core" Version="2.0.1721" />
+    <PackageReference Include="PropellerApi" Version="1.0.31" />
+    <PackageReference Include="RT.CommandLine" Version="2.0.1752" />
+    <PackageReference Include="RT.Json" Version="2.0.1752" />
+    <PackageReference Include="RT.PostBuild" Version="2.0.1752" />
+    <PackageReference Include="RT.Serialization" Version="2.0.1752" />
+    <PackageReference Include="RT.Serialization.Binary" Version="2.0.1752" />
+    <PackageReference Include="RT.Serialization.Json" Version="2.0.1752" />
+    <PackageReference Include="RT.Serialization.Xml" Version="2.0.1752" />
+    <PackageReference Include="RT.Servers" Version="1.0.1687" />
+    <PackageReference Include="RT.TagSoup" Version="1.0.1634" />
+    <PackageReference Include="RT.Util" Version="2.0.1752" />
+    <PackageReference Include="RT.Util.Core" Version="2.0.1752" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
@@ -48,7 +50,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using HtmlAgilityPack;
@@ -320,7 +321,6 @@ namespace KtaneWeb
                     var (x, y) = coords.Get(fileName, (x: 0, y: 0));
                     modJson["X"] = x;   // note how this gets set to 0,0 for icons that don’t exist, which are the coords for the blank icon
                     modJson["Y"] = y;
-
                 }
             }
 
@@ -386,7 +386,7 @@ namespace KtaneWeb
 
         private IEnumerable<Dictionary<string, string>> getJsonFromSheets(string sheetId)
         {
-            var response = new HClient().Get($"https://docs.google.com/spreadsheets/d/{sheetId}/gviz/tq?tqx=out:json").DataString;
+            var response = new HttpClient().GetAsync($"https://docs.google.com/spreadsheets/d/{sheetId}/gviz/tq?tqx=out:json").Result.Content.ReadAsStringAsync().Result;
             var match = Regex.Match(response, @"google.visualization.Query.setResponse\((.+)\)").Groups[1].Value;
 
             var sheetResponse = ClassifyJson.Deserialize<SheetResponse>(match);

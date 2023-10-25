@@ -1,13 +1,23 @@
-﻿using RT.PropellerApi;
-using RT.Util;
+﻿using RT.CommandLine;
 
 namespace KtaneWeb
 {
     class Program
     {
-        static void Main()
+        static int Main(string[] args)
         {
-            PropellerUtil.RunStandalone(PathUtil.AppPathCombine("KTANE-Propeller-standalone.json"), new KtanePropellerModule());
+            CommandLineBase cmd;
+            try
+            {
+                cmd = CommandLineParser.Parse<CommandLineBase>(args);
+            }
+            catch (CommandLineParseException pe)
+            {
+                pe.WriteUsageInfoToConsole();
+                return 1;
+            }
+
+            return cmd.Execute();
         }
     }
 }

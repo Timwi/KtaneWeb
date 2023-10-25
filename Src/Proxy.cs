@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using RT.Servers;
 using RT.Util;
@@ -9,7 +10,7 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private static string[] _proxyAllowedUrlPrefixes = new[] { "https://cdn.discordapp.com/", "https://hastebin.com/raw/", "https://ktane.w00ty.com/raw/", "https://ktane.onpointcoding.net/" };
+        private static readonly string[] _proxyAllowedUrlPrefixes = ["https://cdn.discordapp.com/", "https://hastebin.com/raw/", "https://ktane.w00ty.com/raw/", "https://ktane.onpointcoding.net/"];
 
         private HttpResponse proxy(HttpRequest req)
         {
@@ -18,7 +19,10 @@ namespace KtaneWeb
             var url = req.Url.Path.Substring(1);
             if (!_proxyAllowedUrlPrefixes.Any(url.StartsWith))
                 throw new HttpException(HttpStatusCode._403_Forbidden);
-            try { return HttpResponse.PlainText(new HClient().Get(url).DataString); }
+            try
+            {
+                return HttpResponse.PlainText(new HttpClient().GetAsync(url).Result.Content.ReadAsStringAsync().Result);
+            }
             catch (Exception e)
             {
                 var sb = new StringBuilder();

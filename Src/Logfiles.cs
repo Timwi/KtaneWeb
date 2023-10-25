@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -87,6 +88,32 @@ namespace KtaneWeb
                                     new TR(new TH("Date/time"), new TH("Logfile")),
                                     list.Select(entry => new TR(new TD(entry.LastWriteTimeUtc.ToIsoString(IsoDatePrecision.Days)), new TD(new A { href = url(entry) }._(Path.GetFileNameWithoutExtension(entry.Name)))))))));
             }
+        }
+
+        private FileSystemHandler _logfileFsHandler = null; // Assigned in Init()
+
+        private HttpResponse logFileHandler(HttpRequest req)
+        {
+            if (string.IsNullOrWhiteSpace(_config.Archive7zPath))
+                return _logfileFsHandler.Handle(req);
+
+            var m = Regex.Match(req.Url.Path, @"^/([0-9a-f]{40}\.txt)$");
+            if (!m.Success)
+                return _logfileFsHandler.Handle(req);
+
+            var filename = m.Groups[1].Value;
+            if (File.Exists(Path.Combine(_config.LogfilesDir, filename)))
+                return _logfileFsHandler.Handle(req);
+
+            // Check if the requested logfile is in the relevant archive
+            var archivePath = Path.Combine(_config.LogfilesDir, $"Ktane Logfiles {filename.Substring(0, 2)}.7z");
+            if (!File.Exists(archivePath))
+                return _logfileFsHandler.Handle(req);
+
+            CommandRunner.Run(_config.Archive7zPath, "e", archivePath, filename).WithWorkingDirectory(_config.LogfilesDir).OutputAugmented().Go();
+
+            // Regardless of whether the file was successfully extracted or not
+            return _logfileFsHandler.Handle(req);
         }
     }
 }
