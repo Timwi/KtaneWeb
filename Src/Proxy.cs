@@ -10,7 +10,7 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
-        private static readonly string[] _proxyAllowedUrlPrefixes = ["https://cdn.discordapp.com/", "https://hastebin.com/raw/", "https://ktane.w00ty.com/raw/", "https://ktane.onpointcoding.net/"];
+        private static readonly string[] _proxyAllowedUrlPrefixes = new[] { "https://cdn.discordapp.com/", "https://hastebin.com/raw/", "https://ktane.w00ty.com/raw/", "https://ktane.onpointcoding.net/" };
 
         private HttpResponse proxy(HttpRequest req)
         {

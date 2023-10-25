@@ -162,7 +162,7 @@ namespace KtaneWeb
         private static (List<string> archivedLogs, int numBlocks) GetFileList(KtaneWebConfig config, string archivePath, bool augmented)
         {
             if (!File.Exists(archivePath))
-                return ([], 0);
+                return (new List<string>(), 0);
 
             var lines = CommandRunner.Run(config.Archive7zPath, "l", archivePath).Apply(c => augmented ? c.OutputAugmented() : c.OutputNothing()).GoGetOutputText().Split('\n');
             var files = new List<string>();
