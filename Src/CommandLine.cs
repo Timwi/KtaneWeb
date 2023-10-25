@@ -25,7 +25,7 @@ namespace KtaneWeb
         }
     }
 
-    [CommandName("run"), Documentation("Runs a standalone Kyudosudoku server.")]
+    [CommandName("run"), Documentation("Runs a standalone KtaneWeb server.")]
     sealed class Run : CommandLineBase
     {
         [IsPositional]
