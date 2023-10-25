@@ -283,8 +283,9 @@ namespace KtaneWeb
         public string bottomLineAll = "{0}.";
         public string bottomLineSome = "{0}; {1}. {2}";
         public string bottomLineShowAllLink = "Show all";
-        public string[] bottomLineItems = new[] { "1 item", "{0} items" };
-        public string[] bottomLineShowingFirst = new[] { "showing first only", "showing first {0}" };
+        public string[] bottomLineItems = ["1 item", "{0} items"];
+        public string[] bottomLineShowingFirst = ["showing first only", "showing first {0}"];
+        public string[] bottomLineFilteredOut = ["1 module matches your search but is hidden by your Filter settings.", "{0} modules match your search but are hidden by your Filter settings."];
 
         public string missionsLoading = "Loading...";
         public string missionsNoneSelected = "(no mission selected)";

@@ -916,7 +916,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
 
-        let searchRaw = $("input#search-field").val().toString().toLowerCase();
+        let searchRaw = $("input#search-field").val().toString().toLowerCase().trim();
         let searchKeywords = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\'')).map(x => new RegExp(escapeRegExp(x).replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y').replace(/impost[oe]r/g, 'impost[oe]r')));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
@@ -1009,6 +1009,12 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             n == 0 ? trN("bottomLineItems", modCount) :
                 n == 1 ? trN('bottomLineShowingFirst', resultsLimit) :
                     n == 2 ? `<a href='#'></a>` : '?');
+        if (searchRaw.length > 0)
+        {
+            let unshown = modules.filter(m => m.MatchesSearch && !m.MatchesFilter).length;
+            if (unshown > 0)
+                moduleCount.innerHTML += ` — ${trN('bottomLineFilteredOut', unshown)}`;
+        }
         let moduleCountShowAllLink = moduleCount.querySelector('a');
         if (moduleCountShowAllLink)
         {
