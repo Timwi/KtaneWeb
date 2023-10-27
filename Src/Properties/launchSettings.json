@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "KtaneWeb": {
-      "commandName": "Project",
-      "commandLineArgs": "run"
-    }
-  }
-}
