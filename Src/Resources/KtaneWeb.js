@@ -446,15 +446,22 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             "YouTube": "youtube.com/{}"
         };
 
+        function contributorSort(a, b)
+        {
+            if (b[0] === 'Developer') return 100;
+            if (b[0] === 'Manual') return 50;
+            return a[0].localeCompare(b[0]);
+        }
+
         function makeAuthorElement(mod)
         {
-            const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
+            const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).sort(contributorSort).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
             return el('div', 'inf-author inf', el('span', 'contributors', mod.Author), { title: title });
         }
 
         function makeAllAuthorElement(mod)
         {
-            const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
+            const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).sort(contributorSort).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
             const author = mod.Contributors === undefined ? mod.Author : mod.AllContr;
             return el('div', 'inf-author all-contributors inf', el('span', 'contributors', author), { title: title });
         }
