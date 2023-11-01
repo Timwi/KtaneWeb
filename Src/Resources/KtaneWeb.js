@@ -117,6 +117,15 @@ function setLanguageSelector(selectedLanguage)
         languageSelector.value = 'en';
 }
 
+const contributorSortPriority = ['Developer', 'Manual', '*', 'Maintainer'];
+function contributorSortIndex(a) { let p = contributorSortPriority.indexOf(a); return p === -1 ? contributorSortPriority.indexOf('*') : p; }
+function contributorSort(a, b)
+{
+    let e1 = Array.isArray(a) ? a[0] : a, e2 = Array.isArray(b) ? b[0] : b;
+    let p1 = contributorSortIndex(e1), p2 = contributorSortIndex(e2);
+    return p1 === p2 ? e1.localeCompare(e2) : p1 - p2;
+}
+
 function initializePage(modules, initIcons, initDocDirs, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, restrictedManuals, contactInfo)
 {
     for (let exception of moduleLoadExceptions)
@@ -446,13 +455,6 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             "YouTube": "youtube.com/{}"
         };
 
-        function contributorSort(a, b)
-        {
-            if (b[0] === 'Developer') return 100;
-            if (b[0] === 'Manual') return 50;
-            return a[0].localeCompare(b[0]);
-        }
-
         function makeAuthorElement(mod)
         {
             const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).sort(contributorSort).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
@@ -475,17 +477,17 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                 list.innerHTML = '';
 
                 let contributors = new Set();
-                if (mod.Contributors)
-                    for (let key of Object.keys(mod.Contributors))
-                        for (let contributor of mod.Contributors[key])
-                            contributors.add(contributor);
                 if (mod.Author)
                     for (let author of mod.Author.split(', '))
                         contributors.add(author);
+                if (mod.Contributors)
+                    for (let key of Object.keys(mod.Contributors).sort(contributorSort))
+                        for (let contributor of mod.Contributors[key])
+                            contributors.add(contributor);
 
                 for (const author of contributors)
                 {
-                    const roles = mod.Contributors === undefined ? '' : ` (${Object.entries(mod.Contributors).filter(([_, names]) => names.includes(author)).map(([role, _]) => role).join(", ")})`;
+                    const roles = mod.Contributors === undefined ? '' : ` (${Object.entries(mod.Contributors).filter(([_, names]) => names.includes(author)).sort(contributorSort).map(([role, _]) => role).join(", ")})`;
                     const item = el('li', null, `${author}:${roles}`);
                     list.appendChild(item);
                     const info = contactInfo[author];
@@ -1377,10 +1379,10 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         mod.IsVisible = true;
         mod.MatchesFilter = false;
 
-        let namesSet = new Set();
         if (mod.Contributors)
         {
-            for (let key of Object.keys(mod.Contributors))
+            let namesSet = new Set();
+            for (let key of Object.keys(mod.Contributors).sort(contributorSort))
                 for (let contributor of mod.Contributors[key])
                     namesSet.add(contributor);
             mod.AllContr = Array.from(namesSet).join(', ');
