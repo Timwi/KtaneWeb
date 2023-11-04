@@ -110,7 +110,7 @@ namespace KtaneWeb
                     return 0;
                 }
 
-                prefix = $"{day - dayOffset:X1}{hour:X1}";
+                prefix = $"{day - dayOffset:X1}{hour:X1}".ToLowerInvariant();
             }
             Console.WriteLine($"Processing prefix {prefix}.".Color(ConsoleColor.Yellow));
 
