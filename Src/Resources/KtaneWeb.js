@@ -209,6 +209,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     if (!(sort in sorts))
         sort = 'published';
     let reverse = lStorage.getItem('sort-reverse') == "true" || false;
+    let invertSearch = false;
 
     let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'tags', 'published', 'twitch', 'souvenir', 'rule-seed', 'restricted-manuals'];
     let displayOptions = defaultDisplayOptions;
@@ -1002,8 +1003,12 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
             mod.MatchesFilter = filteredIn;
             mod.MatchesSearch = searchKeywords.every(x => x.test(searchWhat));
+            mod.includeInResults = mod.MatchesFilter && mod.MatchesSearch;
 
-            if ((resultsMode === 'scroll') ? mod.MatchesFilter : (mod.MatchesFilter && mod.MatchesSearch))
+            if (invertSearch)
+                mod.includeInResults = !mod.includeInResults;
+
+            if ((resultsMode === 'scroll') ? mod.MatchesFilter : mod.includeInResults)
                 modCount++;
 
             if (searchRaw.toLocaleLowerCase().replace(/\s/g, '') === mod.Name.toLocaleLowerCase().replace(/\s/g, ''))
@@ -1049,7 +1054,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         for (let mod of modules)
         {
             for (let fnc of mod.FncsShowHide)
-                fnc(mod.MatchesFilter && (resultsMode === 'scroll' || ((n < resultsLimit || showAll) && mod.MatchesSearch)));
+                fnc(mod.includeInResults && (resultsMode === 'scroll' || ((n < resultsLimit || showAll))));
             if (mod.IsVisible)
                 n++;
         }
@@ -1229,7 +1234,12 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         trow = [null, mod.Name, [el('div', 'descriptor', rx1[1])]];
 
                     const language = trow[0] || "English";
-                    if (preferredLanguages[language] === false || !displayRestrictedManuals && restrictedManualNames.some(m => removeHtmlPdfSuffix(mod.Manuals[i].Name) === m))
+
+                    let languageAllowed = preferredLanguages[language] === false;
+                    if (invertSearch)
+                        languageAllowed = !languageAllowed;
+
+                    if (languageAllowed || !displayRestrictedManuals && restrictedManualNames.some(m => removeHtmlPdfSuffix(mod.Manuals[i].Name) === m))
                         continue;
 
                     let code = Object.keys(Ktane.Languages).filter(langCode => Ktane.Languages[langCode] === trow[0])[0];
@@ -1798,6 +1808,12 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
             updateSearchHighlight();
         });
+    $(".search-field-invert").on("click", e =>
+    {
+        e.target.classList.toggle("active");
+        invertSearch = !invertSearch;
+        updateFilter();
+    });
 
     $('.select-on-focus').focus(function() { this.setSelectionRange(0, this.value.length); });
 
