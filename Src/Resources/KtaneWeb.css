@@ -92,6 +92,8 @@ textarea {
 
     #top-controls .search-container {
         display: none;
+        --button-color: #000;
+        --button-border: 1px solid var(--button-color);
     }
 
         #top-controls .search-container.visible {
@@ -102,12 +104,33 @@ textarea {
             width: 15em;
         }
 
+        #top-controls .search-container .search-field-invert {
+            background: none;
+            border: var(--button-border);
+            border-color: var(--button-color);
+            border-radius: 10px;
+            color: var(--button-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #top-controls .search-container .search-field-invert:hover {
+            --button-color: #777;
+        }
+        #top-controls .search-container .search-field-invert.active {
+            --button-color: #a00;
+        }
+        #top-controls .search-container .search-field-invert.active:hover {
+            --button-color: red;
+        }
+
         #top-controls .search-container .search-field-clear {
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 22 22"><circle r="10" cx="10" cy="10" stroke="%23000" stroke-width="1" fill="none" /><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z" fill="%23000" /></svg>') right center no-repeat;
-            width: 1.25em;
-            height: 1.25em;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z"/></svg>');
+            width: 1em;
+            height: 1em;
             display: inline-block;
             vertical-align: middle;
+            border: var(--button-border);
+            border-radius: 100%;
         }
 
         #top-controls .search-container .search-options {

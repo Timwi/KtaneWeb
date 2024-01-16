@@ -123,7 +123,8 @@ namespace KtaneWeb
                                 new LABEL { for_ = "search-field" }._((translation.searchFind + " ").Accel('F')),
                                 new INPUT { type = itype.text, id = "search-field", class_ = "sw-focus", accesskey = "f" }, " ",
                                 new SCRIPTLiteral("document.getElementById('search-field').focus();"),
-                                new A { href = "#", class_ = "search-field-clear" },
+                                new BUTTON("Invert") { class_ = "search-field-invert search-field-button" }, " ",
+                                new A { href = "#", class_ = "search-field-clear search-field-button" },
                                 new DIV { class_ = "search-options" }._(
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._(translation.searchNames)),
                                     new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._(translation.searchAuthors)),
