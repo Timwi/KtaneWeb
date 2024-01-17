@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using RT.Json;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -23,7 +22,7 @@ namespace KtaneWeb
         // F    Find
         // G    Glossary
         // H
-        // I    toggle views
+        // I    invert filter
         // J    Generate JSON submit button (module edit UI)
         // K    Dark Theme
         // L    Light Theme
@@ -31,14 +30,14 @@ namespace KtaneWeb
         // N    sort by name
         // O    sort by Time Mode score
         // P    Profile Editor
-        // Q    
+        // Q
         // R    include/exclude regular modules
         // S    Rule seed
         // T    link to Tutorial video
         // U    link to Manual
         // V    include/exclude vanilla
         // W    link to Steam Workshop item
-        // X
+        // X    toggle views
         // Y    include/exclude needy modules
         // Z
         // ,    Switch between Find box and Missions drop-down
@@ -246,7 +245,7 @@ namespace KtaneWeb
                                 new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/compatdata/341800/pfx/drive_c/users/steamuser/AppData/LocalLow/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
                                 new TR(new TH(translation.fileLocationScreenshot + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new DIV { class_ = "small-links" }._(_config.DocumentDirs.Select(d => new A { href = d }._(d)).InsertBetween<object>(" • ")),
-                            new DIV { class_ = "hidden-shortcuts" }._(new A { href = "#", accesskey = "i", id = "toggle-view" })),
+                            new DIV { class_ = "hidden-shortcuts" }._(new A { href = "#", accesskey = "x", id = "toggle-view" })),
 
                         // RULE SEED (tab popup)
                         new DIV { id = "rule-seed", class_ = "popup disappear stay" }._(
@@ -263,8 +262,8 @@ namespace KtaneWeb
                         // FILTERS (tab popup)
                         new DIV { id = "filters", class_ = "popup disappear stay no-profile-selected" }._(
                             new DIV { class_ = "close" },
-                            new DIV { class_ = "filter-invert"}._(
-                                new INPUT { id = "filter-invert-search", class_ = "filter", type = itype.checkbox }, " ",
+                            new DIV { class_ = "filter-invert" }._(
+                                new INPUT { id = "filter-invert-search", class_ = "filter", type = itype.checkbox, accesskey = "i" }, " ",
                                 new LABEL { for_ = "filter-invert-search" }._(translation.invertSearchResults)
                             ),
                             new DIV { class_ = "filters hstack" }._(
