@@ -92,8 +92,6 @@ textarea {
 
     #top-controls .search-container {
         display: none;
-        --button-color: #000;
-        --button-border: 1px solid var(--button-color);
     }
 
         #top-controls .search-container.visible {
@@ -104,32 +102,13 @@ textarea {
             width: 15em;
         }
 
-        #top-controls .search-container .search-field-invert {
-            background: none;
-            border: var(--button-border);
-            border-color: var(--button-color);
-            border-radius: 10px;
-            color: var(--button-color);
-            cursor: pointer;
-            font-weight: bold;
-        }
-        #top-controls .search-container .search-field-invert:hover {
-            --button-color: #777;
-        }
-        #top-controls .search-container .search-field-invert.active {
-            --button-color: #a00;
-        }
-        #top-controls .search-container .search-field-invert.active:hover {
-            --button-color: red;
-        }
-
         #top-controls .search-container .search-field-clear {
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M4,6 6,4 10,8 14,4 16,6 12,10 16,14 14,16 10,12 6,16 4,14 8,10z"/></svg>');
             width: 1em;
             height: 1em;
             display: inline-block;
             vertical-align: middle;
-            border: var(--button-border);
+            border: 1px solid #000;
             border-radius: 100%;
         }
 
@@ -569,6 +548,13 @@ div.hstack {
 #options {
     column-count: 2;
     column-gap: 3em;
+}
+
+.filter-invert {
+    border-bottom: 1px solid #444;
+    margin-bottom: .5rem;
+    padding-bottom: .5rem;
+    font-weight: bold;
 }
 
 #filters.no-profile-selected .filter-profile:not(.upload) {

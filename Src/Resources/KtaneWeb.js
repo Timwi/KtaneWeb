@@ -209,7 +209,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     if (!(sort in sorts))
         sort = 'published';
     let reverse = lStorage.getItem('sort-reverse') == "true" || false;
-    let invertSearch = false;
+    let invertSearch = lStorage.getItem('invert-search-results') == "true" || false;
+    $("#filter-invert-search").prop("checked", invertSearch);
 
     let defaultDisplayOptions = ['author', 'type', 'difficulty', 'description', 'tags', 'published', 'twitch', 'souvenir', 'rule-seed', 'restricted-manuals'];
     let displayOptions = defaultDisplayOptions;
@@ -1808,10 +1809,10 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
             updateSearchHighlight();
         });
-    $(".search-field-invert").on("click", e =>
+    $("#filter-invert-search").on("input", e =>
     {
-        e.target.classList.toggle("active");
-        invertSearch = !invertSearch;
+        invertSearch = $(e.target).prop("checked");
+        lStorage.setItem("invert-search-results", invertSearch);
         updateFilter();
     });
 

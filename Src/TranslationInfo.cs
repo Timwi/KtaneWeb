@@ -148,6 +148,7 @@ namespace KtaneWeb
         public string compatibilityUnplayable = "Unplayable";
         public string displayMethodList = "List";
         public string displayMethodPeriodic = "Periodic Table";
+        public string invertSearchResults = "Invert search results";
         public string filterDefuserDifficulty = "Defuser difficulty";
         public string filterExpertDifficulty = "Expert difficulty";
         public string filterType = "Type";
