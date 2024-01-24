@@ -776,9 +776,9 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                 {
                     let mod = modules[i];
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
-                    let a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
+                    let img, a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, el('span', 'inner', mod.Symbol || '??')),
-                        el('div', 'mod-icon', el("img", "mod-icon", { src: `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png` })),
+                        el('div', 'mod-icon', img = el("img", "mod-icon", { src: `Icons/blank.png` })),
                         el('div', 'name', el('div', 'inner', mod.localName)),
                         el('div', 'tpscore', mod.TwitchPlays?.ScoreString ?? '', { title: mod.TwitchPlays ? parseTpScore(mod.TwitchPlays.ScoreString) : null }),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
@@ -797,7 +797,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         {
                             let symText = a.querySelector('.symbol>.inner');
                             symText.style.transform = '';
-
+                            img.setAttribute('src', `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png`);
                             // Prevent layout thrashing
                             layoutProcessing.push(symText);
                             requestAnimationFrame(processLayout);
