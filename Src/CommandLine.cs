@@ -94,7 +94,7 @@ namespace KtaneWeb
             }
 
             var prefix = Prefix?.ToLowerInvariant();
-            if (Prefix == null)
+            if (prefix == null)
             {
                 var day = DateTime.UtcNow.Day;
                 var dayOffset = 1;
