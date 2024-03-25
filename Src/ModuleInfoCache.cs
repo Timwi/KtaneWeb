@@ -110,6 +110,12 @@ namespace KtaneWeb
                 .EnumerateFiles("*.json", SearchOption.TopDirectoryOnly)
                 .ParallelSelect(Environment.ProcessorCount, file =>
                 {
+#if DEBUG
+                    var dfn = file.Name.Length > 47 ? $"{file.Name.Substring(0, 44)}..." : file.Name;
+                    lock (flavourTextList)
+                        Console.Write($"Reading {file.Name}{new string(' ', 47 - file.Name.Length)}\r");
+#endif
+
                     try
                     {
                         var origFile = File.ReadAllText(file.FullName);
