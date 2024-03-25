@@ -99,5 +99,15 @@ namespace KtaneWeb {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] RedirectHtml {
+            get {
+                object obj = ResourceManager.GetObject("RedirectHtml", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

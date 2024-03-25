@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body { background: #E1D1BA url('../HTML/img/web-background.jpg'); }
+		body.dark { background: #353C46 url('../HTML/img/web-background-dark.jpg'); }
+	</style>
+</head>
+<body>
+	<div id='results'></div>
+	<script>
+		if (localStorage && localStorage.getItem && localStorage.getItem('ktane-dark-mode') === 'true')
+			document.body.classList.add('dark');
+		if (!localStorage || !localStorage.getItem)
+			window.location.replace('..');
+		else
+		{
+			let inf = JSON.parse(localStorage.getItem('preferredManuals'));
+			let hash = decodeURIComponent(location.hash.substring(1));
+			let div = document.getElementById('result');
+			let redirectTo = hash in inf
+				? `${hash} ${inf[hash].replace(/ \((HTML|PDF)\)$/, (_, e) => `.${e.toLowerCase()}`)}`
+				: `${hash}.html`;
+			window.location.replace(`../HTML/${encodeURIComponent(redirectTo)}`);
+		}
+	</script>
+</body>
+</html>

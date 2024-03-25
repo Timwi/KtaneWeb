@@ -17,6 +17,7 @@ namespace KtaneWeb
         public string UsersFile;
         public string JavaScriptFile;
         public string CssFile;
+        public string RedirectHtmlFile;
 
         public string BaseDir = @"C:\Sites\KTANE\Public";
         public string[] DocumentDirs = new[] { "HTML", "PDF" };

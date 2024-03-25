@@ -42,6 +42,7 @@ namespace KtaneWeb
                 new UrlMapping(path: "/generate-json", handler: generateJson),
                 new UrlMapping(path: "/iconsprite", handler: req => HttpResponse.Create(_moduleInfoCache.IconSpritePng, "image/png")),
                 new UrlMapping(path: "/sitemap", specificPath: true, handler: sitemapXml),
+                new UrlMapping(path: "/redirect", specificPath: false, handler: req => debug ? HttpResponse.File(_config.RedirectHtmlFile, "text/html; charset=utf-8") : HttpResponse.Html(Resources.RedirectHtml)),
 
                 new UrlMapping(path: "/puzzles", handler: req => new KtaneWebSession(_config).EnableAutomatic(req, session => puzzles(req, _config.Puzzles, session))),
 
