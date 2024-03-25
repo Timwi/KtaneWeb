@@ -2020,4 +2020,20 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         popup(lastLnk, $('#module-ui'));
         return false;
     };
+
+    // Allow users to be redirected to their preferred manual pages
+    const searchParameters = new URLSearchParams(location.search);
+    const manualFor = searchParameters.get("manualFor");
+    if (manualFor) {
+        const mods = modules.filter(mod => mod.Name === manualFor);
+        if (mods.length === 1) {
+            const mod = mods[0];
+            let manual = getDefaultManual(mod);
+            if (mod.Name in preferredManuals) {
+                manual = mod.Manuals.filter(m => m.Name.substr(mod.Name.length + 1) === preferredManuals[mod.Name])[0];
+            }
+
+            location.replace(manual.Url);
+        } 
+    }
 }
