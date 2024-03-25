@@ -13,21 +13,21 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.54" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
     <PackageReference Include="ICSharpCode.SharpZipLib" Version="0.86.0.518" />
     <PackageReference Include="PdfSharp" Version="1.50.5147.0" />
     <PackageReference Include="PropellerApi" Version="1.0.31" />
-    <PackageReference Include="RT.CommandLine" Version="2.0.1752" />
-    <PackageReference Include="RT.Json" Version="2.0.1752" />
-    <PackageReference Include="RT.PostBuild" Version="2.0.1752" />
-    <PackageReference Include="RT.Serialization" Version="2.0.1752" />
-    <PackageReference Include="RT.Serialization.Binary" Version="2.0.1752" />
-    <PackageReference Include="RT.Serialization.Json" Version="2.0.1752" />
-    <PackageReference Include="RT.Serialization.Xml" Version="2.0.1752" />
-    <PackageReference Include="RT.Servers" Version="1.0.1687" />
+    <PackageReference Include="RT.CommandLine" Version="2.1.161" />
+    <PackageReference Include="RT.Json" Version="2.0.1768" />
+    <PackageReference Include="RT.PostBuild" Version="2.0.1768" />
+    <PackageReference Include="RT.Serialization" Version="2.0.1768" />
+    <PackageReference Include="RT.Serialization.Binary" Version="2.0.1768" />
+    <PackageReference Include="RT.Serialization.Json" Version="2.0.1768" />
+    <PackageReference Include="RT.Serialization.Xml" Version="2.0.1768" />
+    <PackageReference Include="RT.Servers" Version="1.0.1690" />
     <PackageReference Include="RT.TagSoup" Version="1.0.1634" />
-    <PackageReference Include="RT.Util" Version="2.0.1752" />
-    <PackageReference Include="RT.Util.Core" Version="2.0.1752" />
+    <PackageReference Include="RT.Util" Version="2.0.1768" />
+    <PackageReference Include="RT.Util.Core" Version="2.0.1768" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />

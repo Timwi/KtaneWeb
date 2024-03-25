@@ -21,7 +21,7 @@ namespace KtaneWeb
 
         public static void PostBuildCheck(IPostBuildReporter rep)
         {
-            CommandLineParser.PostBuildStep<CommandLineBase>(rep, null);
+            CommandLineParser.PostBuildStep<CommandLineBase>(rep);
         }
     }
 
@@ -56,7 +56,7 @@ namespace KtaneWeb
     abstract class CommandWithConfig : CommandLineBase
     {
         [IsPositional, IsMandatory, Documentation("KtaneWeb configuration file (JSON).")]
-        public string ConfigFile;
+        public string ConfigFile = null;
 
         public override int Execute()
         {
@@ -78,10 +78,10 @@ namespace KtaneWeb
     sealed class CleanUpLogfiles : CommandWithConfig, ICommandLineValidatable
     {
         [Option("-p", "--prefix"), Documentation("Specifies a prefix (two hexadecimal digits) of which logfiles to clean up. The default is to derive a prefix from the current day (1-16) and hour (0-15), so an hourly scheduled task will deal with all logfiles throughout the first 16 days of each month.")]
-        public string Prefix;
+        public string Prefix = null;
 
         [Option("-a", "--augmented"), Documentation("Use augmented output when invoking 7z.")]
-        public bool Augmented;
+        public bool Augmented = false;
 
         public ConsoleColoredString Validate() => Prefix == null || Regex.IsMatch(Prefix.ToLowerInvariant(), "^[0-9a-f]{2}$") ? null : "Invalid prefix.".Color(ConsoleColor.Magenta);
 
