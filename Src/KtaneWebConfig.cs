@@ -39,7 +39,7 @@ namespace KtaneWeb
 
         /// <summary>Maps from SessionID to Username.</summary>
         [ClassifyNotNull]
-        public Dictionary<string, string> Sessions = new Dictionary<string, string>();
+        public Dictionary<string, string> Sessions = new();
 
         public JsonList EnumerateSheetUrls(string moduleFileName, string[] notModuleNames)
         {
@@ -47,12 +47,13 @@ namespace KtaneWeb
                 throw new ArgumentNullException(nameof(moduleFileName));
 
             var list = new HashSet<string>();
-            for (int i = 0; i < DocumentDirs.Length; i++)
+            for (var i = 0; i < DocumentDirs.Length; i++)
             {
                 var dirInfo = new DirectoryInfo(Path.Combine(BaseDir, DocumentDirs[i]));
                 var ext = DocumentDirs[i].ToLowerInvariant();
                 foreach (var inf in dirInfo.EnumerateFiles($"{moduleFileName}.{ext}").Select(f => new { File = f, Icon = 2 * i }).Concat(dirInfo.EnumerateFiles($"{moduleFileName} *.{ext}").Select(f => new { File = f, Icon = 2 * i + 1 })))
-                    if (!notModuleNames.Any(inf.File.Name.StartsWith))
+                    // Insist that the capitalization of the module name is exact
+                    if (inf.File.Name.StartsWith(moduleFileName) && !notModuleNames.Any(inf.File.Name.StartsWith))
                     {
                         list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
                         if (ext == "html" && !inf.File.Name.Contains("interactive"))
