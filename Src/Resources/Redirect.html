@@ -18,7 +18,7 @@
 			let inf = JSON.parse(localStorage.getItem('preferredManuals'));
 			let hash = decodeURIComponent(location.hash.substring(1));
 			let div = document.getElementById('result');
-			let redirectTo = hash in inf
+			let redirectTo = inf && hash in inf
 				? `${hash} ${inf[hash].replace(/ \((HTML|PDF)\)$/, (_, e) => `.${e.toLowerCase()}`)}`
 				: `${hash}.html`;
 			window.location.replace(`../HTML/${encodeURIComponent(redirectTo)}`);
