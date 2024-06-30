@@ -1,10 +1,9 @@
-﻿using RT.Servers;
-using RT.Util.ExtensionMethods;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using RT.Servers;
+using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb
 {
@@ -18,7 +17,7 @@ namespace KtaneWeb
                 ["type"] = "website",
                 ["image"] = $"https://ktane.timwi.de/Icons/{(info.HasIcon(_config) ? info.FileName ?? info.Name : "blank")}.png",
                 ["url"] = $"https://ktane.timwi.de/HTML/{info.FileName ?? info.Name}.html",
-                ["description"] = info.Descriptions.FirstOrDefault(d => d.Language == "English")?.Description ?? $"Error: indescribable item"
+                ["description"] = info.Descriptions.FirstOrDefault(d => d.Language == "English")?.Description ?? "Error: indescribable item"
             };
         }
 
@@ -30,16 +29,17 @@ namespace KtaneWeb
                 return resp;
 
             // Only modify manual page HTML
-            var rx = new Regex(@"^/HTML/([^/]+\.html)$");
-            var match = rx.Match(req.Url.Path.UrlUnescape());
-            if (!match.Success)
+            if (!req.Url.Path.UrlUnescape().RegexMatch(@"^/HTML/([^/]+\.html)$", out var match))
                 return resp;
 
             if (!_moduleInfoCache.SheetToJsonLookup.TryGetValue(match.Groups[1].Value, out var info))
                 return resp;
 
-            return new HttpResponseContent(HttpStatusCode._200_OK, resp.Headers, () =>
-                createOpenGraphStream(resp, getOpenGraphData(info)));
+            var openGraphData = getOpenGraphData(info);
+            if (openGraphData.Count == 0)
+                return resp;
+
+            return new HttpResponseContent(HttpStatusCode._200_OK, resp.Headers, () => createOpenGraphStream(resp, openGraphData));
         }
 
         private Stream createOpenGraphStream(HttpResponse resp, Dictionary<string, string> data)
@@ -52,11 +52,7 @@ namespace KtaneWeb
             if (ix == -1)
                 return new HeaderStream(header, innerStream);
 
-            var tagBlock = data.Select(kvp => $"<meta property=\"og:{kvp.Key}\" content=\"{kvp.Value.HtmlEscape()}\" />").JoinString("\n\t");
-            if (tagBlock.Length == 0)
-                return new HeaderStream(header, innerStream);
-
-            var ogBlock = ("\n\t" + tagBlock).ToUtf8();
+            var ogBlock = data.Select(kvp => $"\n    <meta property=\"og:{kvp.Key}\" content=\"{kvp.Value.HtmlEscape()}\" />").JoinString().ToUtf8();
 
             var fullHeader = new byte[header.Length + ogBlock.Length];
             Array.Copy(header, fullHeader, ix + 6);
