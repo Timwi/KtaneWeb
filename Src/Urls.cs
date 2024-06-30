@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RT.Servers;
 using RT.Util;
 
@@ -60,13 +61,13 @@ namespace KtaneWeb
                 new UrlMapping(path: "/More/FAQs.html", handler: req => HttpResponse.Redirect(req.Url.WithPathParent().WithPath("/More/Glossary.html"))),
 
                 // Default fallback: file system handler or PDF generator
-                new UrlMapping(handler: req => pdf(req) ?? new FileSystemHandler(_config.BaseDir, new FileSystemOptions
+                new UrlMapping(handler: req => pdf(req) ?? injectOpenGraphData(req, new FileSystemHandler(_config.BaseDir, new FileSystemOptions
                 {
                     MimeTypeOverrides = new Dictionary<string, string>
                     {
                         ["wav"] = "audio/wav"
                     }
-                }).Handle(req)),
+                }).Handle(req))),
 
                 // Auth
                 new UrlMapping(path: "/auth", handler: req =>

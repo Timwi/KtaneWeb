@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KtaneWeb.Puzzles;
-using RT.Json;
 using RT.Serialization;
 using RT.Util.ExtensionMethods;
 
@@ -41,12 +40,12 @@ namespace KtaneWeb
         [ClassifyNotNull]
         public Dictionary<string, string> Sessions = new();
 
-        public JsonList EnumerateSheetUrls(string moduleFileName, string[] notModuleNames)
+        public List<(string sheetData, string fileName)> EnumerateSheetUrls(string moduleFileName, string[] notModuleNames)
         {
             if (moduleFileName == null)
                 throw new ArgumentNullException(nameof(moduleFileName));
 
-            var list = new HashSet<string>();
+            var list = new HashSet<(string sheetData, string fileName)>();
             for (var i = 0; i < DocumentDirs.Length; i++)
             {
                 var dirInfo = new DirectoryInfo(Path.Combine(BaseDir, DocumentDirs[i]));
@@ -55,12 +54,14 @@ namespace KtaneWeb
                     // Insist that the capitalization of the module name is exact
                     if (inf.File.Name.StartsWith(moduleFileName) && !notModuleNames.Any(inf.File.Name.StartsWith))
                     {
-                        list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}");
+                        list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}",
+                            Path.GetFileName(inf.File.Name)));
                         if (ext == "html" && !inf.File.Name.Contains("interactive"))
-                            list.Add($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon + 2}");
+                            list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon + 2}",
+                                null));
                     }
             }
-            return list.OrderBy(x => x.Substring(0, x.IndexOf('|'))).ToJsonList();
+            return list.OrderBy(x => (x.sheetData.Substring(0, x.sheetData.IndexOf('|')), x.fileName)).ToList();
         }
     }
 }
