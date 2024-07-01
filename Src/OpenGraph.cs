@@ -52,7 +52,7 @@ namespace KtaneWeb
             if (ix == -1)
                 return new HeaderStream(header, innerStream);
 
-            var ogBlock = data.Select(kvp => $"\n    <meta property=\"og:{kvp.Key}\" content=\"{kvp.Value.HtmlEscape()}\" />").JoinString().ToUtf8();
+            var ogBlock = data.Select(kvp => $"\n    <meta property=\"og:{kvp.Key}\" content=\"{kvp.Value.HtmlEscape()}\">").JoinString().ToUtf8();
 
             var fullHeader = new byte[header.Length + ogBlock.Length];
             Array.Copy(header, fullHeader, ix + 6);
@@ -95,8 +95,9 @@ namespace KtaneWeb
                 {
                     Array.Copy(_head, _bytesRead, buffer, offset, _head.Length - _bytesRead);
                     var moved = _tail.Read(buffer, offset + _head.Length - _bytesRead, count - (_head.Length - _bytesRead));
+                    var ret = moved + _head.Length - _bytesRead;
                     _bytesRead = -1;
-                    return moved + _head.Length - _bytesRead;
+                    return ret;
                 }
 
                 Array.Copy(_head, _bytesRead, buffer, offset, count);
