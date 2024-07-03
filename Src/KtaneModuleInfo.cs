@@ -108,7 +108,7 @@ namespace KtaneWeb
         public object Icon(KtaneWebConfig config) => Path.Combine(config.BaseDir, "Icons", Name + ".png")
             .Apply(f => new IMG { class_ = "mod-icon", alt = Name, title = Name, src = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(File.Exists(f) ? f : Path.Combine(config.BaseDir, "Icons", "blank.png")))}" });
 
-        public bool HasIcon(KtaneWebConfig config) => File.Exists(Path.Combine(config.BaseDir, "Icons", Name + ".png"));
+        public bool HasIcon(KtaneWebConfig config) => File.Exists(Path.Combine(config.BaseDir, "Icons", (FileName ?? Name) + ".png"));
 
         public bool Equals(KtaneModuleInfo other)
         {
