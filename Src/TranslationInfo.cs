@@ -316,7 +316,7 @@ namespace KtaneWeb
             KtaneFilter.Checkboxes(filterCompatibility, "compatibility", mod => mod.Compatibility, @"mod=>mod.Compatibility"),
             KtaneFilter.Checkboxes(filterTP, "twitchplays", mod => mod.TwitchPlaysScore == null ? KtaneSupport.NotSupported : KtaneSupport.Supported, @"mod=>mod.TwitchPlays?'Supported':'NotSupported'"),
             KtaneFilter.Checkboxes(filterRuleSeed, "ruleseed", mod => mod.RuleSeedSupport, $@"mod=>mod.RuleSeedSupport||'{KtaneSupport.NotSupported}'"),
-            KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? KtaneModuleSouvenir.Unexamined : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:""Unexamined"""));
+            KtaneFilter.Checkboxes(filterSouvenir, "souvenir", mod => mod.Souvenir == null ? mod.Type == KtaneModuleType.Regular ? KtaneModuleSouvenir.Unexamined : KtaneModuleSouvenir.NotACandidate : mod.Souvenir.Status, @"mod=>mod.Souvenir?mod.Souvenir.Status:mod.Type==='Regular'?'Unexamined':'NotACandidate'"));
         public KtaneFilter[] Filters2 => _filtersCache2 ??= Ut.NewArray(
             KtaneFilter.Checkboxes(filterMysteryModule, "mysterymodule", mod => mod.MysteryModule, $@"mod=>mod.MysteryModule||'{KtaneMysteryModuleCompatibility.NoConflict}'"),
             KtaneFilter.Checkboxes(filterBossStatus, "bossstatus", mod => mod.BossStatus, $@"mod=>mod.BossStatus||'{KtaneBossStatus.NotABoss}'"),
