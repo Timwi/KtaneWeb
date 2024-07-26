@@ -21,9 +21,20 @@ namespace KtaneWeb
                 var runGitPull = req.Url["dont"] != "1";
                 if (runGitPull)
                 {
+                    output.Append("git fetch origin\n==============================\n");
                     var cmd = new CommandRunner
                     {
-                        Command = "git pull --rebase",
+                        Command = "git fetch origin",
+                        WorkingDirectory = _config.BaseDir
+                    };
+                    cmd.StdoutText += str => output.Append(str);
+                    cmd.StderrText += str => output.Append(str);
+                    cmd.StartAndWait();
+
+                    output.Append("\n\ngit reset --hard origin/master\n==============================\n");
+                    cmd = new CommandRunner
+                    {
+                        Command = "git reset --hard origin/master",
                         WorkingDirectory = _config.BaseDir
                     };
                     cmd.StdoutText += str => output.Append(str);
