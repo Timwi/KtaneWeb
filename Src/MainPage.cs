@@ -43,6 +43,7 @@ namespace KtaneWeb
         // ,    Switch between Find box and Missions drop-down
         // .    Filters
         // /    Options
+        // 1    Agree to the license (module edit UI)
 
         private static string UniquifiedUrl(IHttpUrl url)
         {
@@ -457,7 +458,7 @@ namespace KtaneWeb
                                 {
                                     yield return new DIV { id = "license-agreement" }._(
                                         new INPUT { type = itype.checkbox, name = "LicenseAgreement", id = "input-LicenseAgreement" },
-                                        new LABEL { for_ = "input-LicenseAgreement" }._("I have read and agree to the ", new A { href = "https://github.com/keeptalkinggame/ktanemodkit/blob/master/LICENSE" }._("modkit license"), ". "),
+                                        new LABEL { for_ = "input-LicenseAgreement", accesskey = "1" }._("I have read and agree to the ", new A { href = "https://github.com/keeptalkinggame/ktanemodkit/blob/master/LICENSE" }._("modkit license"), ". "),
                                         new BUTTON { id = "show-license" }._("See License Summary"));
                                 }
                             }
