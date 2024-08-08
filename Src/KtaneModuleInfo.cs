@@ -287,6 +287,8 @@ namespace KtaneWeb
         public string[] ManualGraphics;
         [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] TwitchPlays;
+        [ClassifyIgnoreIfDefault, ClassifyName("Rule-seed support"), EditableField("Rule-seed support", "People who added rule-seed support. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
+        public string[] RuleSeedSupport;
         [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
         public string[] Maintainer;
         [ClassifyIgnoreIfDefault, EditableField("Audio", "People who contributed audio for the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
