@@ -56,9 +56,15 @@ namespace KtaneWeb
                     {
                         list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}",
                             Path.GetFileName(inf.File.Name)));
+
+                        // If this is a non-interactive HTML file, offer a PDF file which will be auto-generated at runtime
                         if (ext == "html" && !inf.File.Name.Contains("interactive"))
                             list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon + 2}",
                                 null));
+
+                        // If this is a PDF file, remove the auto-generated one that was added when we were looking at HTML
+                        if (ext == "pdf")
+                            list.Remove(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon}", null));
                     }
             }
             return list.OrderBy(x => (x.sheetData.Substring(0, x.sheetData.IndexOf('|')), x.fileName)).ToList();

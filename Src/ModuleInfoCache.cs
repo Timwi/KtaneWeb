@@ -545,8 +545,7 @@ namespace KtaneWeb
                 scoreString = "10";
             string scorePerModuleString = entry["resolvedbosspointspermodule"] ?? "";
 
-            if (mod.TimeMode == null)
-                mod.TimeMode = new KtaneTimeModeInfo();
+            mod.TimeMode ??= new KtaneTimeModeInfo();
 
             var timeMode = mod.TimeMode;
 
