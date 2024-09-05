@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
@@ -47,47 +49,55 @@ namespace KtaneWeb
                 return HttpResponse.PlainText("No search keywords specified.");
             var keywordsJson = keywords.Select(k => $@"{k.JsEscape()}:").ToArray();
 
-            static bool containsModule(string[] logfileLines, string moduleIdJson)
+            static bool containsModules(IEnumerable<string> logfileLines, string[] moduleIdsJson)
             {
-                for (var i = 0; i < logfileLines.Length; i++)
+                var needs = moduleIdsJson.ToList();
+                using var e = logfileLines.GetEnumerator();
+                while (e.MoveNext())
                 {
+                    var line = e.Current;
                     const string str = @"[Tweaks] LFABombInfo ";
-                    if (logfileLines[i].StartsWith(str) &&
-                        int.TryParse(logfileLines[i].Substring(str.Length), out var num) &&
-                        logfileLines.Length >= i + 1 + num &&
-                        logfileLines.Subarray(i + 1, num).JoinString().Contains(moduleIdJson))
+                    if (!line.StartsWith(str) || !int.TryParse(line.Substring(str.Length), out var num))
+                        continue;
+                    var jsonCode = new StringBuilder();
+                    for (var i = 0; i < num; i++)
+                    {
+                        if (!e.MoveNext())
+                            break;
+                        jsonCode.Append(e.Current);
+                    }
+                    var jsonCodeStr = jsonCode.ToString();
+                    needs.RemoveAll(jsonCodeStr.Contains);
+                    if (needs.Count == 0)
                         return true;
                 }
                 return false;
             }
 
-            lock (this)
-            {
-                var list = new DirectoryInfo(_config.LogfilesDir)
-                    .EnumerateFiles("*.txt", SearchOption.TopDirectoryOnly)
-                    .OrderByDescending(fi => fi.LastWriteTimeUtc)
-                    .Take(1000)
-                    .Where(fi => keywordsJson.All(jsonStr => containsModule(File.ReadAllLines(fi.FullName), jsonStr)))
-                    .Take(5)
-                    .ToArray();
+            var list = new DirectoryInfo(_config.LogfilesDir)
+                .EnumerateFiles("*.txt", SearchOption.TopDirectoryOnly)
+                .OrderByDescending(fi => fi.LastWriteTimeUtc)
+                .Take(1000)
+                .Where(fi => containsModules(File.ReadLines(fi.FullName), keywordsJson))
+                .Take(5)
+                .ToArray();
 
-                string url(FileInfo f) => $"More/Logfile%20Analyzer.html#file={Path.GetFileNameWithoutExtension(f.Name)};module={keywords[0]}";
+            string url(FileInfo f) => $"More/Logfile%20Analyzer.html#file={Path.GetFileNameWithoutExtension(f.Name)};module={keywords[0]}";
 
-                return list.Length == 0
-                    ? HttpResponse.Html(new HTML(
+            return list.Length == 0
+                ? HttpResponse.Html(new HTML(
+                    new HEAD(new TITLE("Logfile search results"), new META { charset = "utf-8" }),
+                    new BODY(
+                        new H1($"No logfiles found containing module ID{(keywords.Length == 1 ? null : "s")} {keywords.Select(kw => $"“{kw}”").JoinString(" and ")}."))))
+                : list.Length == 1
+                    ? HttpResponse.Redirect(url(list[0]))
+                    : HttpResponse.Html(new HTML(
                         new HEAD(new TITLE("Logfile search results"), new META { charset = "utf-8" }),
                         new BODY(
-                            new H1($"No logfiles found containing module ID{(keywords.Length == 1 ? null : "s")} {keywords.Select(kw => $"“{kw}”").JoinString(" and ")}."))))
-                    : list.Length == 1
-                        ? HttpResponse.Redirect(url(list[0]))
-                        : HttpResponse.Html(new HTML(
-                            new HEAD(new TITLE("Logfile search results"), new META { charset = "utf-8" }),
-                            new BODY(
-                                new H1($"Recent logfiles containing module ID{(keywords.Length == 1 ? null : "s")} {keywords.Select(kw => $"“{kw}”").JoinString(" and ")}"),
-                                new TABLE(
-                                    new TR(new TH("Date/time"), new TH("Logfile")),
-                                    list.Select(entry => new TR(new TD(entry.LastWriteTimeUtc.ToIsoString(IsoDatePrecision.Days)), new TD(new A { href = url(entry) }._(Path.GetFileNameWithoutExtension(entry.Name)))))))));
-            }
+                            new H1($"Recent logfiles containing module ID{(keywords.Length == 1 ? null : "s")} {keywords.Select(kw => $"“{kw}”").JoinString(" and ")}"),
+                            new TABLE(
+                                new TR(new TH("Date/time"), new TH("Logfile")),
+                                list.Select(entry => new TR(new TD(entry.LastWriteTimeUtc.ToIsoString(IsoDatePrecision.Days)), new TD(new A { href = url(entry) }._(Path.GetFileNameWithoutExtension(entry.Name)))))))));
         }
 
         private FileSystemHandler _logfileFsHandler = null; // Assigned in Init()
