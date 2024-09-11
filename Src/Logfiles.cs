@@ -21,11 +21,16 @@ namespace KtaneWeb
             if (!req.FileUploads.TryGetValue("log", out var upload))
                 return HttpResponse.PlainText("That’s not a valid KTANE logfile.", HttpStatusCode._406_NotAcceptable);
 
-            string entireLog;
             using (var stream = upload.GetStream())
-                entireLog = stream.ReadAllBytes().FromUtf8();
-            if (!entireLog.Contains("[BombGenerator] Generating bomb with seed"))
+            using (var text = new StreamReader(stream))
+            {
+                string line;
+                while ((line = text.ReadLine()) != null)
+                    if (line.StartsWith("[BombGenerator] Generating bomb with seed"))
+                        goto good;
                 return HttpResponse.PlainText("That’s not a valid KTANE logfile.", HttpStatusCode._406_NotAcceptable);
+            }
+            good:;
 
             string sha1;
             using (var mem = upload.GetStream())
