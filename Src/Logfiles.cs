@@ -13,6 +13,8 @@ namespace KtaneWeb
 {
     public sealed partial class KtanePropellerModule
     {
+        public const int MaxLogfileSize = 256 * 1024;
+
         private HttpResponse uploadLogfile(HttpRequest req)
         {
             if (req.Method != HttpMethod.Post)
@@ -22,8 +24,10 @@ namespace KtaneWeb
                 return HttpResponse.PlainText("That’s not a valid KTANE logfile.", HttpStatusCode._406_NotAcceptable);
 
             using (var stream = upload.GetStream())
-            using (var text = new StreamReader(stream))
             {
+                if (stream.Length > MaxLogfileSize)
+                    return HttpResponse.PlainText($"That logfile is too large at {stream.Length} bytes. Maximum allowed size is {MaxLogfileSize} bytes.", HttpStatusCode._406_NotAcceptable);
+                using var text = new StreamReader(stream);
                 string line;
                 while ((line = text.ReadLine()) != null)
                     if (line.StartsWith("[BombGenerator] Generating bomb with seed"))
