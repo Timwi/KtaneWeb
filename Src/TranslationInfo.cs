@@ -109,13 +109,13 @@ namespace KtaneWeb
         public string quizAnchor = "QUIZZES";
         public string quizURL = "More/Quiz.html";
         public string controlHeader = "Controls for highlighting elements in HTML manuals";
-        public string[][] controls = {
-            new string[] { "Highlight a table column", "Ctrl+Click (Windows)", "Command+Click (Mac)" },
-            new string[] { "Highlight a table row", "Shift+Click" },
-            new string[] { "Highlight a table cell or an item in a list", "Alt+Click (Windows)", "Ctrl+Shift+Click (Windows)", "Command+Shift+Click (Mac)" },
-            new string[] { "Change highlighter color", "Alt+0 through Alt+9 (digits)" },
-            new string[] { "Additional options", "Alt+O (letter)" }
-        };
+        public string[][] controls = [
+            ["Highlight a table column", "Ctrl+Click (Windows)", "Command+Click (Mac)"],
+            ["Highlight a table row", "Shift+Click"],
+            ["Highlight a table cell or an item in a list", "Alt+Click (Windows)", "Ctrl+Shift+Click (Windows)", "Command+Shift+Click (Mac)"],
+            ["Change highlighter color", "Alt+0 through Alt+9 (digits)"],
+            ["Additional options", "Alt+O (letter)"]
+        ];
         public string fileLocationHeader = "Default file locations";
         public string fileLocationGame = "Game";
         public string fileLocationLogfile = "Logfile";
@@ -218,8 +218,8 @@ namespace KtaneWeb
         public string sortOrderReverse = "Reverse";
         public string filterProfile = "Profile";
         public string filterProfileOpen = "Filter by a profile";
-        public string[] filterProfileEnabled = { "Enabled by ", "" };
-        public string[] filterProfileVetoed = { "Vetoed by ", "" };
+        public string[] filterProfileEnabled = ["Enabled by ", ""];
+        public string[] filterProfileVetoed = ["Vetoed by ", ""];
         public string selectableManual = "Manual";
         public string selectableSteam = "Steam Workshop";
         public string selectableSource = "Source code";
@@ -284,9 +284,9 @@ namespace KtaneWeb
         public string bottomLineAll = "{0}.";
         public string bottomLineSome = "{0}; {1}. {2}";
         public string bottomLineShowAllLink = "Show all";
-        public string[] bottomLineItems = new[] { "1 item", "{0} items" };
-        public string[] bottomLineShowingFirst = new[] { "showing first only", "showing first {0}" };
-        public string[] bottomLineFilteredOut = new[] { "1 module matches your search but is hidden by your Filter settings.", "{0} modules match your search but are hidden by your Filter settings." };
+        public string[] bottomLineItems = ["1 item", "{0} items"];
+        public string[] bottomLineShowingFirst = ["showing first only", "showing first {0}"];
+        public string[] bottomLineFilteredOut = ["1 module matches your search but is hidden by your Filter settings.", "{0} modules match your search but are hidden by your Filter settings."];
 
         public string missionsLoading = "Loading...";
         public string missionsNoneSelected = "(no mission selected)";
@@ -298,11 +298,11 @@ namespace KtaneWeb
 
         public string tpScore = "This module can be played in “Twitch Plays: KTANE” for {0}.";
         public string tpScoreTbd = "a point score yet to be determined";
-        public string[] tpScoreBase = new[] { "1 base point", "{0} base points" };
-        public string[] tpScoreTime = new[] { "1 point per second", "{0} points per second" };
-        public string[] tpScoreNeedy = new[] { "1 point per deactivation", "{0} points per deactivation" };
-        public string[] tpScoreAction = new[] { "1 point per action", "{0} points per action" };
-        public string[] tpScoreSolve = new[] { "1 point per module", "{0} points per module" };
+        public string[] tpScoreBase = ["1 base point", "{0} base points"];
+        public string[] tpScoreTime = ["1 point per second", "{0} points per second"];
+        public string[] tpScoreNeedy = ["1 point per deactivation", "{0} points per deactivation"];
+        public string[] tpScoreAction = ["1 point per action", "{0} points per action"];
+        public string[] tpScoreSolve = ["1 point per module", "{0} points per module"];
 
         [ClassifyIgnore]
         private KtaneFilter[] _filtersCache1;

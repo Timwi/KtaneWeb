@@ -62,47 +62,39 @@ namespace KtaneWeb
             return new HeaderStream(fullHeader, innerStream);
         }
 
-        private sealed class HeaderStream : Stream
+        private sealed class HeaderStream(byte[] head, Stream tail) : Stream
         {
-            private readonly byte[] _head;
-            private readonly Stream _tail;
             private int _bytesRead = 0;
-
-            public HeaderStream(byte[] head, Stream tail)
-            {
-                _head = head;
-                _tail = tail;
-            }
 
             public override bool CanRead => true;
             public override bool CanSeek => false;
             public override bool CanWrite => false;
-            public override long Length => _head.Length + _tail.Length;
+            public override long Length => head.Length + tail.Length;
             public override long Position
             {
                 get => throw new NotSupportedException();
                 set => throw new NotSupportedException();
             }
 
-            public override void Flush() => _tail.Flush();
+            public override void Flush() => tail.Flush();
 
             public override int Read(byte[] buffer, int offset, int count)
             {
                 if (_bytesRead == -1)
-                    return _tail.Read(buffer, offset, count);
+                    return tail.Read(buffer, offset, count);
 
-                if (_bytesRead + count > _head.Length)
+                if (_bytesRead + count > head.Length)
                 {
-                    Array.Copy(_head, _bytesRead, buffer, offset, _head.Length - _bytesRead);
-                    var moved = _tail.Read(buffer, offset + _head.Length - _bytesRead, count - (_head.Length - _bytesRead));
-                    var ret = moved + _head.Length - _bytesRead;
+                    Array.Copy(head, _bytesRead, buffer, offset, head.Length - _bytesRead);
+                    var moved = tail.Read(buffer, offset + head.Length - _bytesRead, count - (head.Length - _bytesRead));
+                    var ret = moved + head.Length - _bytesRead;
                     _bytesRead = -1;
                     return ret;
                 }
 
-                Array.Copy(_head, _bytesRead, buffer, offset, count);
+                Array.Copy(head, _bytesRead, buffer, offset, count);
                 _bytesRead += count;
-                if (_bytesRead == _head.Length)
+                if (_bytesRead == head.Length)
                     _bytesRead = -1;
                 return count;
             }
@@ -110,7 +102,7 @@ namespace KtaneWeb
             public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
             public override void SetLength(long value) => throw new NotSupportedException();
             public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-            public override void Close() => _tail.Close();
+            public override void Close() => tail.Close();
         }
     }
 }

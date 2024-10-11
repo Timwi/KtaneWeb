@@ -1,26 +1,18 @@
-﻿using RT.CommandLine;
+﻿using KtaneWeb;
+using RT.CommandLine;
 
-namespace KtaneWeb
+if (args.Length == 0)
+    args = ["run"];
+
+CommandLineBase cmd;
+try
 {
-    class Program
-    {
-        static int Main(string[] args)
-        {
-            if (args.Length == 0)
-                args = new[] { "run" };
-
-            CommandLineBase cmd;
-            try
-            {
-                cmd = CommandLineParser.Parse<CommandLineBase>(args);
-            }
-            catch (CommandLineParseException pe)
-            {
-                pe.WriteUsageInfoToConsole();
-                return 1;
-            }
-
-            return cmd.Execute();
-        }
-    }
+    cmd = CommandLineParser.Parse<CommandLineBase>(args);
 }
+catch (CommandLineParseException pe)
+{
+    pe.WriteUsageInfoToConsole();
+    return 1;
+}
+
+return cmd.Execute();

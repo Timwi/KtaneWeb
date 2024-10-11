@@ -28,7 +28,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault]
         public string DisplayName;
         [ClassifyNotNull, EditableField("Descriptions", "A concise description of what sets this module or widget apart from others. For Tags, provide a set of keywords to find a module based on its appearance (e.g. blue-background, 12-buttons, etc.).")]
-        public DescriptionInfo[] Descriptions = new[] { new DescriptionInfo { Language = "English", Description = "" } };
+        public DescriptionInfo[] Descriptions = [new DescriptionInfo { Language = "English", Description = "" }];
         [EditableField("Module ID", "The ID that mission makers need for this module. This is the same as the ModuleType property on the KMBombModule component.")]
         public string ModuleID;
         [EditableField("Sort key", "The name of the module or widget in all-caps, without spaces, and without initial “The”.")]
@@ -50,7 +50,7 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, EditableField("Symbol", "A symbol for the Periodic Table of Modules. Only the first letter will be capitalized."), EditableIf(nameof(Type), KtaneModuleType.Regular, KtaneModuleType.Needy, KtaneModuleType.Holdable)]
         public string Symbol;
 
-        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Obsolete Steam IDs", "Numerical IDs of Steam Workshop items containing old versions of this mod that have since been reuploaded.", AllowedSeparators = new[] { ';', ',' })]
+        [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Obsolete Steam IDs", "Numerical IDs of Steam Workshop items containing old versions of this mod that have since been reuploaded.", AllowedSeparators = [';', ','])]
         public string[] ObsoleteSteamIDs;
 
         [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignored by DBML", "Specify if DBML should not be used to load this module.")]
@@ -179,9 +179,9 @@ namespace KtaneWeb
             {
                 var p = descr.IndexOf(" Tags: ");
                 if (p == -1)
-                    Descriptions = new[] { new DescriptionInfo { Language = "English", Description = descr } };
+                    Descriptions = [new DescriptionInfo { Language = "English", Description = descr }];
                 else
-                    Descriptions = new[] { new DescriptionInfo { Language = "English", Description = descr.Substring(0, p), Tags = descr.Substring(p + " Tags: ".Length) } };
+                    Descriptions = [new DescriptionInfo { Language = "English", Description = descr.Substring(0, p), Tags = descr.Substring(p + " Tags: ".Length) }];
             }
         }
 
@@ -279,23 +279,23 @@ namespace KtaneWeb
 
     sealed class ContributorInfo : IEquatable<ContributorInfo>
     {
-        [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed (programmed) the mod.", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, EditableField("Developer", "People who developed (programmed) the mod.", AllowedSeparators = [',', ';'])]
         public string[] Developer;
-        [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, EditableField("Manual", "People who contributed the manual. (Include only if different from Developer.)", AllowedSeparators = [',', ';'])]
         public string[] Manual;
-        [ClassifyIgnoreIfDefault, ClassifyName("Manual graphics"), EditableField("Manual graphics", "People who contributed graphics for the manual. (Include only if different from Manual contributors.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, ClassifyName("Manual graphics"), EditableField("Manual graphics", "People who contributed graphics for the manual. (Include only if different from Manual contributors.)", AllowedSeparators = [',', ';'])]
         public string[] ManualGraphics;
-        [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, ClassifyName("Twitch Plays"), EditableField("Twitch Plays", "People who added Twitch Plays support. (Include only if different from Developer.)", AllowedSeparators = [',', ';'])]
         public string[] TwitchPlays;
-        [ClassifyIgnoreIfDefault, ClassifyName("Rule seed"), EditableField("Rule seed", "People who added support for rule seeds. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, ClassifyName("Rule seed"), EditableField("Rule seed", "People who added support for rule seeds. (Include only if different from Developer.)", AllowedSeparators = [',', ';'])]
         public string[] RuleSeed;
-        [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, EditableField("Maintainer", "People who are maintaining the mod. (Include only if different from Developer.)", AllowedSeparators = [',', ';'])]
         public string[] Maintainer;
-        [ClassifyIgnoreIfDefault, EditableField("Audio", "People who contributed audio for the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, EditableField("Audio", "People who contributed audio for the mod. (Include only if different from Developer.)", AllowedSeparators = [',', ';'])]
         public string[] Audio;
-        [ClassifyIgnoreIfDefault, EditableField("Modeling", "People who contributed 3D models for the mod. (Include only if different from Developer.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, EditableField("Modeling", "People who contributed 3D models for the mod. (Include only if different from Developer.)", AllowedSeparators = [',', ';'])]
         public string[] Modeling;
-        [ClassifyIgnoreIfDefault, EditableField("Idea", "People who contributed the original idea for the mod. (Include only if different from both Developer and Manual.)", AllowedSeparators = new[] { ',', ';' })]
+        [ClassifyIgnoreIfDefault, EditableField("Idea", "People who contributed the original idea for the mod. (Include only if different from both Developer and Manual.)", AllowedSeparators = [',', ';'])]
         public string[] Idea;
 
         public string ToAllAuthorString() => new[] { Developer, Manual, ManualGraphics, TwitchPlays, Maintainer, Audio, Modeling, Idea }.Where(authors => authors != null).SelectMany(authors => authors).Distinct().JoinString(", ");

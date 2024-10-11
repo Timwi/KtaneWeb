@@ -6,18 +6,11 @@ using RT.Util;
 
 namespace KtaneWeb
 {
-    abstract class KtaneFilter
+    abstract class KtaneFilter(string readableName, string propName, string fncPropValue)
     {
-        public string ReadableName { get; private set; }
-        public string PropName { get; private set; }
-        public string FncPropValue { get; private set; }
-
-        public KtaneFilter(string readableName, string propName, string fncPropValue)
-        {
-            PropName = propName;
-            ReadableName = readableName;
-            FncPropValue = fncPropValue;
-        }
+        public string ReadableName { get; private set; } = readableName;
+        public string PropName { get; private set; } = propName;
+        public string FncPropValue { get; private set; } = fncPropValue;
 
         public abstract JsonDict ToJson();
         public abstract object ToHtml(TranslationInfo translation);
@@ -57,16 +50,14 @@ namespace KtaneWeb
         }
     }
 
-    sealed class KtaneFilterOptionsCheckboxes : KtaneFilterOptions
+    sealed class KtaneFilterOptionsCheckboxes(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
     {
-        public KtaneFilterOptionsCheckboxes(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue)
-            : base(readableName, propName, fncPropValue, enumType, getValue) { }
-
-        public override JsonDict ToJson() => new JsonDict {
-            { "id", PropName },
-            { "fnc", new JsonRaw(FncPropValue) },
-            { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
-            { "type", "checkboxes" }
+        public override JsonDict ToJson() => new()
+        {
+            ["id"] = PropName,
+            ["fnc"] = new JsonRaw(FncPropValue),
+            ["values"] = Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList(),
+            ["type"] = "checkboxes"
         };
         public override object ToHtml(TranslationInfo translation) => Ut.NewArray<object>(
             new DIV { class_ = "option-group" }._(
@@ -82,16 +73,14 @@ namespace KtaneWeb
         }
     }
 
-    sealed class KtaneFilterOptionsSlider : KtaneFilterOptions
+    sealed class KtaneFilterOptionsSlider(string propName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string fncPropValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
     {
-        public KtaneFilterOptionsSlider(string propName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string fncPropValue)
-            : base(readableName, propName, fncPropValue, enumType, getValue) { }
-
-        public override JsonDict ToJson() => new JsonDict {
-            { "id", PropName },
-            { "fnc", new JsonRaw(FncPropValue) },
-            { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
-            { "type", "slider" }
+        public override JsonDict ToJson() => new()
+        {
+            ["id"] = PropName,
+            ["fnc"] = new JsonRaw(FncPropValue),
+            ["values"] = Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList(),
+            ["type"] = "slider"
         };
         public override object ToHtml(TranslationInfo translation) => Ut.NewArray<object>(
             new DIV { class_ = "option-group" }._(
@@ -128,16 +117,14 @@ namespace KtaneWeb
     }
 
     // Filter where a mod may have any number of the available flags
-    sealed class KtaneFilterFlags : KtaneFilterOptions
+    sealed class KtaneFilterFlags(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
     {
-        public KtaneFilterFlags(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue)
-            : base(readableName, propName, fncPropValue, enumType, getValue) { }
-
-        public override JsonDict ToJson() => new JsonDict {
-            { "id", PropName },
-            { "fnc", new JsonRaw(FncPropValue) },
-            { "values", Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList() },
-            { "type", "flags" }
+        public override JsonDict ToJson() => new()
+        {
+            ["id"] = PropName,
+            ["fnc"] = new JsonRaw(FncPropValue),
+            ["values"] = Enum.GetValues(EnumType).Cast<Enum>().Select(inf => inf.ToString()).ToJsonList(),
+            ["type"] = "flags"
         };
 
         public override object ToHtml(TranslationInfo translation) => new DIV { class_ = "option-group" }._(

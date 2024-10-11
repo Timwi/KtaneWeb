@@ -201,18 +201,11 @@ namespace KtaneWeb
                 File.WriteAllText(Settings.ConfigFile, serializeConfig());
         }
 
-        private static bool customComparison(object a, object b)
-        {
-            return a is string || a is ValueType || a is KtaneSouvenirInfo
-                ? false
-                : a is Array aa && b is Array bb
-                    ? aa.Length == bb.Length && Enumerable.Range(0, aa.Length).All(i => customComparison(aa.GetValue(i), bb.GetValue(i)))
-                    : Equals(a, b);
-        }
+        private static bool customComparison(object a, object b) => a is not string && a is not ValueType && a is not KtaneSouvenirInfo &&
+            (a is Array aa && b is Array bb
+                ? aa.Length == bb.Length && Enumerable.Range(0, aa.Length).All(i => customComparison(aa.GetValue(i), bb.GetValue(i)))
+                : Equals(a, b));
 
-        private string serializeConfig()
-        {
-            return ClassifyJson.Serialize(_config, new ClassifyOptions { SerializationEqualityComparer = new CustomEqualityComparer<object>(customComparison) }).ToStringIndented();
-        }
+        private string serializeConfig() => ClassifyJson.Serialize(_config, new ClassifyOptions { SerializationEqualityComparer = new CustomEqualityComparer<object>(customComparison) }).ToStringIndented();
     }
 }

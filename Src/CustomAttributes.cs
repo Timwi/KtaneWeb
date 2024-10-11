@@ -24,15 +24,10 @@ namespace KtaneWeb
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    internal sealed class KtaneSouvenirInfoAttribute : Attribute
+    internal sealed class KtaneSouvenirInfoAttribute(char ch, string tooltip) : Attribute
     {
-        public char Char { get; private set; }
-        public string Tooltip { get; private set; }
-        public KtaneSouvenirInfoAttribute(char ch, string tooltip)
-        {
-            Char = ch;
-            Tooltip = tooltip;
-        }
+        public char Char { get; private set; } = ch;
+        public string Tooltip { get; private set; } = tooltip;
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
@@ -48,22 +43,17 @@ namespace KtaneWeb
         {
             ReadableName = readable;
             Explanation = explanation;
-            AllowedSeparators ??= new[] { ';' };
-            AllowedDictSeparators ??= new[] { ':' };
+            AllowedSeparators ??= [';'];
+            AllowedDictSeparators ??= [':'];
             DefaultKey ??= "default";
         }
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    internal sealed class EditableIfAttribute : Attribute
+    internal sealed class EditableIfAttribute(string otherField, params object[] values) : Attribute
     {
-        public string OtherField { get; private set; }
-        public object[] Values { get; private set; }
-        public EditableIfAttribute(string otherField, params object[] values)
-        {
-            OtherField = otherField;
-            Values = values;
-        }
+        public string OtherField { get; private set; } = otherField;
+        public object[] Values { get; private set; } = values;
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
@@ -74,15 +64,9 @@ namespace KtaneWeb
         }
     }
 
-    internal sealed class EditableHelpAttribute : Attribute
+    internal sealed class EditableHelpAttribute(string translationString) : Attribute
     {
-        public string TranslationString { get; private set; }
-
-        public EditableHelpAttribute(string translationString)
-        {
-            TranslationString = translationString;
-        }
-
+        public string TranslationString { get; private set; } = translationString;
         public string Translate(TranslationInfo translation) => translation.GetFieldValue<string>(TranslationString);
     }
 }

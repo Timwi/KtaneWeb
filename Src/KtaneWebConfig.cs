@@ -19,10 +19,10 @@ namespace KtaneWeb
         public string RedirectHtmlFile;
 
         public string BaseDir = @"C:\Sites\KTANE\Public";
-        public string[] DocumentDirs = new[] { "HTML", "PDF" };
+        public string[] DocumentDirs = ["HTML", "PDF"];
         public string PdfDir = "PDF";
-        public string[] OriginalDocumentIcons = new[] { "HTML/img/html_manual.png", "HTML/img/pdf_manual.png" };
-        public string[] ExtraDocumentIcons = new[] { "HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png" };
+        public string[] OriginalDocumentIcons = ["HTML/img/html_manual.png", "HTML/img/pdf_manual.png"];
+        public string[] ExtraDocumentIcons = ["HTML/img/html_manual_embellished.png", "HTML/img/pdf_manual_embellished.png"];
         public string PdfTempPath = null;
 
         public string ChromePath = @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe";
@@ -34,11 +34,11 @@ namespace KtaneWeb
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value
 
         [ClassifyNotNull]
-        public PuzzleInfo Puzzles = new PuzzleInfo();
+        public PuzzleInfo Puzzles = new();
 
         /// <summary>Maps from SessionID to Username.</summary>
         [ClassifyNotNull]
-        public Dictionary<string, string> Sessions = new();
+        public Dictionary<string, string> Sessions = [];
 
         public List<(string sheetData, string fileName)> EnumerateSheetUrls(string moduleFileName, string[] notModuleNames)
         {

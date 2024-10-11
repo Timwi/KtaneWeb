@@ -43,7 +43,7 @@ namespace KtaneWeb
             ));
         }
 
-        private AjaxHandler<Api> _puzzlesAjax = new AjaxHandler<Api>(
+        private readonly AjaxHandler<Api> _puzzlesAjax = new(
 #if DEBUG
             AjaxHandlerOptions.PropagateExceptions
 #else
