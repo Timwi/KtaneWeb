@@ -143,10 +143,10 @@ namespace KtaneWeb
                     return 1;
                 }
 
-                // If all these tests pass, we can delete logfiles older than 30 days
+                // If all these tests pass, we can delete logfiles older than 7 days
                 var deleted = 0;
                 foreach (var (name, lastChange) in existingLogs)
-                    if ((DateTime.UtcNow - lastChange).TotalDays >= 30)
+                    if ((DateTime.UtcNow - lastChange).TotalDays >= 7)
                     {
                         deleted++;
                         File.Delete(Path.Combine(config.LogfilesDir, name));
