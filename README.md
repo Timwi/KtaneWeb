@@ -1,8 +1,10 @@
 # Set up the solution for KtaneWeb
 
+Building KtaneWeb requires Visual Studio ≥ 2022 and .NET SDK ≥ 8.0.
+
 KtaneWeb depends on a number of Nuget packages. Visual Studio handles this automatically when you try to compile the project; otherwise you may need to run a “Nuget restore” first.
 
-Here are some links to the individual repos. You do not need to clone these unless your contributions requires a change to any of those.
+Here are some links to the individual repos. You do not need to clone these unless your contributions require a change to any of those.
 
 - KtaneWeb -- <https://github.com/Timwi/KtaneWeb> (that’s this project)
 - Propeller -- <https://github.com/Timwi/Propeller> (contains PropellerApi)
