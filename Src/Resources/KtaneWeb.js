@@ -1582,14 +1582,13 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         return final;
     }
 
-    function withoutArticle(name) {
+    function withoutArticle(name)
+    {
         return name.replace(/^the /i, '');
     }
-    function excludeArticleSort(a, b) {
+    function excludeArticleSort(a, b)
+    {
         return withoutArticle(a).localeCompare(withoutArticle(b));
-    }
-    function onlyUnique(item, pos, self) {
-        return self.indexOf(item) == pos;
     }
 
     let switcherData = { missionSheetsLoaded: false, missions: {} };
@@ -1649,7 +1648,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                                 if (curr.moduleList.includes('ALL_MODS_NEEDY')) extra.push(...allModsNeedy);
 
                                 acc[curr.name] = {
-                                    moduleList: curr.moduleList.concat(extra).filter(onlyUnique),
+                                    moduleList: [...new Set([...curr.moduleList, ...extra])],
                                     tpSolve: curr.tpSolve,
                                     completions: curr.completions
                                 };
