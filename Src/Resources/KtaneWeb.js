@@ -1582,6 +1582,16 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         return final;
     }
 
+    function withoutArticle(name) {
+        return name.replace(/^the /i, '');
+    }
+    function excludeArticleSort(a, b) {
+        return withoutArticle(a).localeCompare(withoutArticle(b));
+    }
+    function onlyUnique(item, pos, self) {
+        return self.indexOf(item) == pos;
+    }
+
     let switcherData = { missionSheetsLoaded: false, missions: {} };
     $('#search-switcher').click(function()
     {
@@ -1624,16 +1634,28 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                                 const solvedcss = obj.designedForTP ? 'tp' : (obj.completions > 0 || obj.tpSolve) ? 'solved' : 'unsolved';
                                 return { title: obj.name, label: stringTruncate(obj.name, 50), css: solvedcss };
                             }));
+                            let vanillas = modules.filter(mod => mod.Origin === 'Vanilla');
+                            let vanillaNeedy = vanillas.filter(mod => mod.Type === 'Needy').map(mod => mod.ModuleID);
+                            let vanillaReg = vanillas.filter(mod => mod.Type === 'Regular').map(mod => mod.ModuleID);
+                            let allNeedy = modules.filter(mod => mod.Type === 'Needy');
+                            let allModsNeedy = allNeedy.filter(mod => mod.Origin === 'Mods').map(mod => mod.ModuleID);
+                            allNeedy = allNeedy.map(mod => mod.ModuleID);
+
                             switcherData.missions = result.reduce((acc, curr) =>
                             {
+                                let extra = curr.moduleList.includes('ALL_VANILLA_SOLVABLE') ? vanillaReg : [];
+                                if (curr.moduleList.includes('ALL_VANILLA_NEEDY')) extra.push(...vanillaNeedy);
+                                if (curr.moduleList.includes('ALL_NEEDY')) extra.push(...allNeedy);
+                                if (curr.moduleList.includes('ALL_MODS_NEEDY')) extra.push(...allModsNeedy);
+
                                 acc[curr.name] = {
-                                    moduleList: curr.moduleList,
+                                    moduleList: curr.moduleList.concat(extra).filter(onlyUnique),
                                     tpSolve: curr.tpSolve,
                                     completions: curr.completions
                                 };
                                 return acc;
                             }, {});
-                            sheets.sort((a, b) => a.title.localeCompare(b.title));
+                            sheets.sort((a, b) => excludeArticleSort(a.title, b.title));
                             sel.innerHTML = '<option value=""></option>' + sheets.map(m => `<option class="${m.css}" value="${encodeURIComponent(m.title)}"></option>`).join('');
                             Array.from(sel.querySelectorAll('option')).forEach((opt, ix) => { opt.innerText = ix === 0 ? translation["missionsNoneSelected"] : sheets[ix - 1].label; });
                             sel.value = prevValue;
@@ -1660,7 +1682,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         let name = decodeURIComponent(title);
 
                         if (name !== '')
-                            document.getElementById('search-field-mission-link').setAttribute('href', `https://bombs.samfun.dev/mission/${title}`);
+                            document.getElementById('search-field-mission-link').setAttribute('href', `https://bombs.samfun.dev/mission/${title.replace(/'/g, "%27")}`);
                         else
                             document.getElementById('search-field-mission-link').removeAttribute('href');
 
