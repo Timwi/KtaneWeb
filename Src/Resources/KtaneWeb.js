@@ -444,6 +444,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         }
 
         const services = {
+            "Bluesky": "bsky.app/profile/{}",
             "DeviantArt": "deviantart.com/{}",
             "Facebook": "facebook.com/{}",
             "GitHub": "github.com/{}",
@@ -452,8 +453,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             "Reddit": "reddit.com/u/{}",
             "Steam": "steamcommunity.com/{}",
             "Twitch": "twitch.tv/{}",
-            "Twitter": "twitter.com/{}",
             "Website": "{}",
+            "X": "x.com/{}",
             "YouTube": "youtube.com/{}"
         };
 
