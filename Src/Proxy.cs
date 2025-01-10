@@ -2,9 +2,8 @@
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using RT.Serialization;
+using RT.Json;
 using RT.Servers;
-using RT.Util;
 using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb
@@ -51,42 +50,19 @@ namespace KtaneWeb
 
             if (!expired)
                 return url;
-        
+
             var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new("Bot", _config.DiscordBotToken);
-                var response = client
-                    .PostAsync(
-                        "https://discord.com/api/v10/attachments/refresh-urls",
-                        new StringContent(
-                            ClassifyJson.Serialize(
-                                new DiscordRequest()
-                                {
-                                    attachment_urls = [url]
-                                }
-                            ).ToString(),
-                            Encoding.UTF8,
-                            "application/json"
-                        )
-                    ).Result.Content.ReadAsStringAsync().Result;
-
-                var data = ClassifyJson.Deserialize<DiscordResponse>(response);
-
-                return data.refreshed_urls.FirstOrDefault().refreshed;
-        }
-
-        private class DiscordRequest
-        {
-            public string[] attachment_urls;
-        }
-
-        private class DiscordResponse
-        {
-            public DiscordRefreshedUrls[] refreshed_urls;
-        }
-
-        private class DiscordRefreshedUrls
-        {
-            public string refreshed;
+            client.DefaultRequestHeaders.Authorization = new("Bot", _config.DiscordBotToken);
+            var response = client
+                .PostAsync(
+                    "https://discord.com/api/v10/attachments/refresh-urls",
+                    new StringContent(
+                        new JsonDict { ["attachment_urls"] = new JsonList { url } }.ToString(),
+                        Encoding.UTF8,
+                        "application/json"
+                    )
+                ).Result.Content.ReadAsStringAsync().Result;
+            return JsonDict.Parse(response)["refreshed_urls"].GetList().First()["refreshed"].GetString();
         }
     }
 }
