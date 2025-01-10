@@ -31,6 +31,8 @@ namespace KtaneWeb
         public string LogfilesDir = @"C:\Sites\KTANE\Logfiles";
         public string MergedPdfsDir = @"C:\Sites\KTANE\MergedPdfs";
 
+        public string DiscordBotToken = null;
+
 #pragma warning restore 0649 // Field is never assigned to, and will always have its default value
 
         [ClassifyNotNull]
