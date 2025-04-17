@@ -162,11 +162,10 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://discord.gg/K6uQMyBcYZ" }._(new IMG { class_ = "icon-img", src = "HTML/img/discord.png" }, new SPAN { class_ = "icon-label" }._(translation.joinDiscordAnchor))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = translation.glossaryURL, accesskey = "g" }._(new IMG { class_ = "icon-img", src = "HTML/img/faq.png" }, new SPAN { class_ = "icon-label" }._(translation.glossaryAnchor.Accel('G')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = translation.tutorialURL }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.tutorialAnchor))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Making%20a%20Great%20Module.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.makingModsAnchor))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "https://www.youtube.com/playlist?list=PL-1P5EmkkFxrAXBhqvyUAXH-ErGjh7Zrx" }._(new IMG { class_ = "icon-img", src = "HTML/img/video-playlist.png" }, new SPAN { class_ = "icon-label" }._(translation.playlistAnchor)))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Making%20a%20Great%20Module.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.makingModsAnchor)))),
                             new UL { class_ = "below-icons" }._(
-                                new LI(new A { href = "More/Repository%20Symbols%20Guide.html" }._(translation.symbolGuideAnchor)),
                                 new LI(new A { href = "https://bombs.samfun.dev" }._(translation.challengeBombAnchor)),
+                                new LI(new A { href = "https://blananas2.github.io/wordlistchecker.html" }._(translation.wordlistCheckerAnchor)),
                                 new LI(new A { href = "https://ktane-ideas.mrmelon54.com" }._(translation.modIdeaAnchor)),
                                 new LI(new A { href = "https://docs.google.com/spreadsheets/d/10Z7Ivc784QaFrQCaGwIPUYrS6NNXiLJPi8nADiFR_0s" }._(translation.modIdeaPastAnchor)),
                                 new LI(new A { href = "https://www.reddit.com/r/ktanemod/" }._(translation.modIdeaSubredditAnchor)),

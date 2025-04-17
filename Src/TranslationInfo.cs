@@ -86,8 +86,7 @@ namespace KtaneWeb
         public string tutorialURL = "https://docs.google.com/document/d/1K2la3yW_l6WHXSIaK-b6WKJAsgL9TuGjx8ZhAZeHQko/edit";
         public string tutorialAnchor = "Intro to Playing with Mods";
         public string makingModsAnchor = "Intro to Making Mods";
-        public string playlistAnchor = "Tutorial videos playlist";
-        public string symbolGuideAnchor = "Repository Symbols Guide";
+        public string wordlistCheckerAnchor = "Wordlist checker";
         public string challengeBombAnchor = "Challenge Bombs Site";
         public string modIdeaAnchor = "Mod ideas website";
         public string modIdeaPastAnchor = "Mod ideas: spreadsheet of past ideas";
