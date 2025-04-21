@@ -981,7 +981,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                 filteredIn = filteredIn && (profileVetoList.includes(mod.ModuleID) ? (filterVetoedByProfile || !filterEnabledByProfile) : (filterEnabledByProfile || !filterVetoedByProfile));
 
             let searchWhat = searchBySteamID ? (mod.SteamID || '') : '';
-            if (searchByModuleID)
+            if (searchByModuleID && mod.ModuleID !== null)
                 searchWhat += ' ' + mod.ModuleID.toLowerCase();
             if (searchOptions.indexOf('names') !== -1)
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();

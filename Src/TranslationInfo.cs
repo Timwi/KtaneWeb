@@ -135,6 +135,7 @@ namespace KtaneWeb
         public string moduleTypeNeedy = "Needy module";
         public string moduleTypeWidget = "Widget";
         public string moduleTypeHoldable = "Holdable";
+        public string moduleTypeAppendix = "Appendix";
         public string moduleDiffTrivial = "trivial";
         public string moduleDiffVeryEasy = "very easy";
         public string moduleDiffEasy = "easy";

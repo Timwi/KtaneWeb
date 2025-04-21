@@ -11,7 +11,9 @@ namespace KtaneWeb
         [KtaneFilterOption(nameof(TranslationInfo.moduleTypeHoldable))]
         Holdable,
         [KtaneFilterOption(nameof(TranslationInfo.moduleTypeWidget))]
-        Widget
+        Widget,
+        [KtaneFilterOption(nameof(TranslationInfo.moduleTypeAppendix))]
+        Appendix
     }
 
     public enum KtaneModuleOrigin
