@@ -281,7 +281,7 @@ namespace KtaneWeb
                     if (mod.Symbol is null)
                     {
 #if DEBUG
-                        if (mod.TranslationOf is null) Console.WriteLine("Module: {0} has no Symbol", mod.Name);
+                        if (mod.TranslationOf is null && mod.Type != KtaneModuleType.Appendix) Console.WriteLine("Module: {0} has no Symbol", mod.Name);
 #endif
                     }
                     else if (uniqueSymbols.ContainsKey(mod.Symbol))
