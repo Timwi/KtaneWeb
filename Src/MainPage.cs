@@ -169,6 +169,7 @@ namespace KtaneWeb
                                 new LI(new A { href = "https://ktane-ideas.mrmelon54.com" }._(translation.modIdeaAnchor)),
                                 new LI(new A { href = "https://docs.google.com/spreadsheets/d/10Z7Ivc784QaFrQCaGwIPUYrS6NNXiLJPi8nADiFR_0s" }._(translation.modIdeaPastAnchor)),
                                 new LI(new A { href = "https://www.reddit.com/r/ktanemod/" }._(translation.modIdeaSubredditAnchor)),
+                                new LI(new A { href = "https://github.com/Qkrisi/ktanemodkit/" }._(translation.modkitGithubAnchor), new DIV { class_ = "link-extra" }._(translation.modkitGithubDesc)),
                                 new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._(translation.contentGithubAnchor), new DIV { class_ = "link-extra" }._(translation.contentGithubDesc)),
                                 new LI(new A { href = "https://github.com/Timwi/KtaneWeb" }._(translation.webGithubAnchor), new DIV { class_ = "link-extra" }._(translation.webGithubDesc)))),
 
