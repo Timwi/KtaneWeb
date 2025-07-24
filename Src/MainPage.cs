@@ -121,7 +121,7 @@ namespace KtaneWeb
                             new A { id = "search-switcher", href = "#", accesskey = "," },
                             new DIV { class_ = "search-container visible" }._(
                                 new LABEL { for_ = "search-field" }._((translation.searchFind + " ").Accel('F')),
-                                new INPUT { type = itype.text, id = "search-field", class_ = "sw-focus", accesskey = "f" }, " ",
+                                new INPUT { type = itype.text, id = "search-field", class_ = "sw-focus", accesskey = "f", autocomplete = autocomplete.off }, " ",
                                 new SCRIPTLiteral("document.getElementById('search-field').focus();"),
                                 new A { href = "#", class_ = "search-field-clear search-field-button" },
                                 new DIV { class_ = "search-options" }._(
