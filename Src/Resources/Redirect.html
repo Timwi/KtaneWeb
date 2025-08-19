@@ -21,7 +21,12 @@
 			let redirectTo = inf && hash in inf
 				? `${hash} ${inf[hash].replace(/ \((HTML|PDF)\)$/, (_, e) => `.${e.toLowerCase()}`)}`
 				: `${hash}.html`;
-			window.location.replace(`../HTML/${encodeURIComponent(redirectTo)}`);
+
+			let urlParams = new URLSearchParams(window.location.search);
+			let seed = parseInt(urlParams.get('seed'), 10);
+			seed = Number.isNaN(seed) ? "" : `#${seed}`;
+
+			window.location.replace(`../HTML/${encodeURIComponent(redirectTo)}${seed}`);
 		}
 	</script>
 </body>
