@@ -343,7 +343,7 @@ namespace KtaneWeb
             }
 
             // Now that we know how many icons are in the icon sprite, create a bitmap of the correct size
-            using var iconSpriteBmp2 = new Bitmap(w * cols, h * (curX == 0 ? curY : curY + 1));
+            using var iconSpriteBmp2 = new Bitmap(w * cols, h * (curY + 1));
             using var iconSpriteGr2 = Graphics.FromImage(iconSpriteBmp2);
             iconSpriteGr2.DrawImage(iconSpriteBmp, 0, 0);
             using var mem = new MemoryStream();
