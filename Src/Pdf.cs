@@ -167,7 +167,7 @@ namespace KtaneWeb
                 var searchOptions = json["searchOptions"].GetList().Select(j => j.GetString()).ToArray();
                 var filterEnabledByProfile = json["filterEnabledByProfile"].GetBool();
                 var filterVetoedByProfile = json["filterVetoedByProfile"].GetBool();
-                var profileVetoList = (filterEnabledByProfile == filterVetoedByProfile) ? null : json["profileVetoList"]?.GetList().Select(j => j.GetString()).ToArray();
+                var profileVetoList = (filterEnabledByProfile == filterVetoedByProfile) ? null : json["profileVetoList"]?.GetList().Where(j => j != null).Select(j => j.GetString()).ToArray();
                 var searchBySymbol = json["searchBySymbol"].GetBoolSafe() ?? false;
                 var searchBySteamID = json["searchBySteamID"].GetBoolSafe() ?? false;
                 var searchByModuleID = json["searchByModuleID"].GetBoolSafe() ?? false;
