@@ -185,7 +185,26 @@ namespace KtaneWeb.Puzzles
         [AjaxMethod]
         public string ChangeGroupFolder(string groupname, string query) => editGroup(groupname, gr => { gr.Folder = query; });
         [AjaxMethod]
-        public string ChangeGroupOrdering(string groupname, string query) => editGroup(groupname, gr => { if (int.TryParse(query, out int v)) gr.Ordering = v; });
+        public string ChangeGroupOrdering(string groupname, string query)
+        {
+            var allGroups = _puzzles.PuzzleGroups.ToArray();
+            if (!double.TryParse(query, out var newValue))
+                return RenderBodyStr("That is not a valid number.");
+            if (allGroups.FirstOrDefault(gr => gr.Title.EqualsIgnoreCase(groupname)) is { } group)
+            {
+                if (!canEdit(group))
+                    return RenderBodyStr("You do not have access to edit this puzzle group.");
+                try
+                {
+                    var orderedGroups = allGroups.OrderBy(gr => gr == group ? newValue : gr.Ordering).ToArray();
+                    for (var i = 0; i < orderedGroups.Length; i++)
+                        orderedGroups[i].Ordering = i + 1;
+                }
+                catch (Exception e) { return RenderBodyStr(e.Message); }
+                _save();
+            }
+            return RenderBodyStr();
+        }
 
         [AjaxMethod]
         public string AddPuzzle(string groupname) => editGroup(groupname, gr =>
