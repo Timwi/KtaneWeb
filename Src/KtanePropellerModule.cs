@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using RT.Json;
 using RT.PropellerApi;
 using RT.Serialization;
@@ -207,5 +207,8 @@ namespace KtaneWeb
                 : Equals(a, b));
 
         private string serializeConfig() => ClassifyJson.Serialize(_config, new ClassifyOptions { SerializationEqualityComparer = new CustomEqualityComparer<object>(customComparison) }).ToStringIndented();
+
+        // Make sure that this code matches the JavaScript equivalent exactly. Search for KtanePropellerModule.GetDefaultSortKey in KtaneWeb.js to find it
+        public static string GetDefaultSortKey(string moduleName) => Regex.Replace(moduleName, @"^The |[^a-zA-Z0-9]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
     }
 }

@@ -1402,8 +1402,9 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         else
             mod.AllContr = mod.Author;
 
+        // Make sure that this code matches KtanePropellerModule.GetDefaultSortKey exactly
         if (mod.SortKey === undefined)
-            mod.SortKey = mod.Name.toUpperCase().replace(/^THE /, '').replace(/[^A-Z0-9]/g, '');
+            mod.SortKey = mod.Name.replace(/^The |[^a-zA-Z0-9]/gi, '').toUpperCase();
 
         // split Description into Tags and Description by delimiter "Tags:"
         if (mod.Description)

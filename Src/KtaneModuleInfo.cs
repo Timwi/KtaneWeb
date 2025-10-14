@@ -141,8 +141,8 @@ namespace KtaneWeb
 
         void IClassifyObjectProcessor<JsonValue>.AfterDeserialize(JsonValue element)
         {
-            if (SortKey == null || SortKey == "")
-                SortKey = Regex.Replace(Name, @"^The |[^a-zA-Z0-9]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
+            if (SortKey is null or "")
+                SortKey = KtanePropellerModule.GetDefaultSortKey(Name);
 
             if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy || Type == KtaneModuleType.Holdable)
             {

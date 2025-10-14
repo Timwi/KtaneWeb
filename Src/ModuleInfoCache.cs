@@ -139,8 +139,8 @@ namespace KtaneWeb
                         if (string.IsNullOrEmpty(mod.Author) && mod.Contributors != null)
                             modJson["Author"] = mod.Contributors.ToAuthorString();
 
-                        // Save JSON size by only including the SortKey when it’s not obvious
-                        if (modJson["SortKey"].GetStringSafe() == Regex.Replace(mod.Name.ToUpperInvariant(), "^THE ", "").Where(ch => (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')).JoinString())
+                        // Save JSON size by only including the SortKey when it’s not the default
+                        if (modJson["SortKey"].GetStringSafe() == GetDefaultSortKey(mod.Name))
                             modJson.Remove("SortKey");
 
                         // Get flavour text from HTML of original manual
