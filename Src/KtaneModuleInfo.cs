@@ -31,7 +31,7 @@ namespace KtaneWeb
         public DescriptionInfo[] Descriptions = [new DescriptionInfo { Language = "English", Description = "" }];
         [EditableField("Module ID", "The ID that mission makers need for this module. This is the same as the ModuleType property on the KMBombModule component.")]
         public string ModuleID;
-        [EditableField("Sort key", "The name of the module or widget in all-caps, without spaces, and without initial “The”.")]
+        [EditableField("Sort key", "The name of the module or widget in all-caps. Retain spaces and hyphens, but remove initial “The” and change accented letters to base letters.")]
         public string SortKey;
         [EditableField("Steam ID", "The numerical ID of the Steam Workshop item.")]
         public string SteamID;

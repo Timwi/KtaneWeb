@@ -209,6 +209,6 @@ namespace KtaneWeb
         private string serializeConfig() => ClassifyJson.Serialize(_config, new ClassifyOptions { SerializationEqualityComparer = new CustomEqualityComparer<object>(customComparison) }).ToStringIndented();
 
         // Make sure that this code matches the JavaScript equivalent exactly. Search for KtanePropellerModule.GetDefaultSortKey in KtaneWeb.js to find it
-        public static string GetDefaultSortKey(string moduleName) => Regex.Replace(moduleName, @"^The |[^a-zA-Z0-9]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
+        public static string GetDefaultSortKey(string moduleName) => Regex.Replace(moduleName, @"^The |[^-a-zA-Z0-9 ]", "", RegexOptions.IgnoreCase).ToUpperInvariant();
     }
 }
