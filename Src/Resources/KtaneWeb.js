@@ -666,16 +666,15 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                             }
                             if (mod.TimeMode)
                             {
-                                if (mod.TimeMode.ScorePerModule)
-                                    mod.TimeModeInfo = `This module can be played in Time Mode for a score of ${mod.TimeMode.Score ? `${mod.TimeMode.Score}, plus ` : ''}${mod.TimeMode.ScorePerModule} for each module on the bomb${mod.TimeMode.Origin ? ` (${TimeModeNames[mod.TimeMode.Origin || 'Unassigned']} score)` : ''}.`;
-                                else
-                                    mod.TimeModeInfo = `This module can be played in Time Mode for a score of ${mod.TimeMode.Score}${mod.TimeMode.Origin ? ` (${TimeModeNames[mod.TimeMode.Origin || 'Unassigned']} score)` : ''}.`;
+                                let origin = mod.TimeMode.Origin ? translation[`timeModeOrigin${mod.TimeMode.Origin || 'Unassigned'}`] : '';
+                                mod.TimeModeInfo = translation[mod.TimeMode.ScorePerModule ? mod.TimeMode.Score ? 'timeModeScoreBoth' : 'timeModeScorePerModule' : 'timeModeScoreNormal']
+                                    .replace(/\{(\d+)\}/g, (_, m) => [origin, mod.TimeMode.Score, mod.TimeMode.ScorePerModule][+m]);
                                 infos.append(el("div", `inf-time-mode inf-time-mode-${mod.TimeMode.Origin || 'Unassigned'} inf inf2`, { title: mod.TimeModeInfo },
                                     mod.TimeMode.ScorePerModule ? 'S' : mod.TimeMode.Score));
                             }
                             if (mod.RuleSeedSupport === 'Supported')
                             {
-                                mod.RuleSeedInfo = 'This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.';
+                                mod.RuleSeedInfo = translation['ruleSeedSupported'];
                                 infos.append(el("div", "inf-rule-seed inf inf2", { title: mod.RuleSeedInfo }));
                             }
                             if (mod.Type === 'Regular')

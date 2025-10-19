@@ -306,6 +306,16 @@ namespace KtaneWeb
         public string[] tpScoreAction = ["1 point per action", "{0} points per action"];
         public string[] tpScoreSolve = ["1 point per module", "{0} points per module"];
 
+        public string timeModeScoreNormal = "This module can be played in Time Mode for a score of {1}{0}.";
+        public string timeModeScorePerModule = "This module can be played in Time Mode for a score of {2} for each module on the bomb{0}.";
+        public string timeModeScoreBoth = "This module can be played in Time Mode for a score of {1}, plus {2} for each module on the bomb{0}.";
+        public string timeModeOriginUnassigned = " (unassigned score)";
+        public string timeModeOriginAssigned = " (assigned score)";
+        public string timeModeOriginTwitchPlays = " (Twitch Plays score)";
+        public string timeModeOriginCommunity = " (community score)";
+
+        public string ruleSeedSupported = "This module’s rules/manual can be dynamically varied using the Rule Seed Modifier.";
+
         [ClassifyIgnore]
         private KtaneFilter[] _filtersCache1;
         [ClassifyIgnore]
