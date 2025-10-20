@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KtaneWeb", "Src\KtaneWeb.csproj", "{5BE560A8-9B71-441A-BCAC-FC55E8DA2864}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KtaneWeb", "KtaneWeb.csproj", "{5BE560A8-9B71-441A-BCAC-FC55E8DA2864}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

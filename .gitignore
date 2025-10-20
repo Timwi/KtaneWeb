@@ -1,12 +1,9 @@
 .vs
 .vscode
-Builds
+bin
 obj
 packages
 *.suo
 *.csproj.user
 *.sln.cache
 *.orig
-
-/node_modules/
-/Src/Resources/Generated/
