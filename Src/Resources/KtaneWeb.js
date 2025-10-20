@@ -131,13 +131,6 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     for (let exception of moduleLoadExceptions)
         console.error(exception);
 
-    const TimeModeNames = {
-        "Unassigned": "default",
-        "Assigned": "assigned",
-        "TwitchPlays": "Twitch Plays",
-        "Community": "community"
-    };
-
     let pageLang, langCode;
     if ((pageLang = window.location.search.match(/lang=([^?&]+)/)) && Ktane.Languages[pageLang[1]] !== undefined)
         langCode = pageLang[1];
