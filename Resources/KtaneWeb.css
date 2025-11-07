@@ -375,8 +375,8 @@ td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div {
     display: none;
 }
 
-/** COMPATIBILITY ICONS **/
-tr.mod:not(.compatibility-Compatible) .mod-name::before {
+/** ISSUES ICONS **/
+tr.mod:not(.issues-None) .mod-name::before {
     content: '';
     display: inline-block;
     width: 1em;
@@ -385,7 +385,7 @@ tr.mod:not(.compatibility-Compatible) .mod-name::before {
     vertical-align: middle;
 }
 
-#actual-periodic-table a.module:not(.compatibility-Compatible) div.mod-icon::after {
+#actual-periodic-table a.module:not(.issues-None) div.mod-icon::after {
     content: '';
     position: absolute;
     left: 18px;
@@ -394,17 +394,12 @@ tr.mod:not(.compatibility-Compatible) .mod-name::before {
     height: 17px;
 }
 
-tr.mod.compatibility-Untested .mod-name::before, #actual-periodic-table a.compatibility-Untested div.mod-icon::after {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><text x=".5" y="1" font-size="0.99pt" font-family="Arial" fill="%23482" text-anchor="middle">?</text></svg>') left top no-repeat;
-    background-size: 100% 100%;
-}
-
-tr.mod.compatibility-Unplayable .mod-name::before, #actual-periodic-table a.compatibility-Unplayable div.mod-icon::after {
+tr.mod.issues-Gameplay .mod-name::before, #actual-periodic-table a.issues-Gameplay div.mod-icon::after {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M 0 1 .5 0 1 1 z" fill="%23f24" stroke="none" /></svg>') left top no-repeat;
     background-size: 100% 100%;
 }
 
-tr.mod.compatibility-Problematic .mod-name::before, #actual-periodic-table a.compatibility-Problematic div.mod-icon::after {
+tr.mod.issues-Superficial .mod-name::before, #actual-periodic-table a.issues-Superficial div.mod-icon::after {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle cx=".5" cy=".5" r=".5" fill="%23fc4" stroke="none" /></svg>') left top no-repeat;
     background-size: 100% 100%;
 }
@@ -1162,7 +1157,7 @@ body.rule-seed-active #main-table-container #tabs > #rule-seed-link {
         width: 33em;
     }
 
-    tr.mod[data-compatibility="Untested"] .mod-name, tr.mod[data-compatibility="Unplayable"] .mod-name, tr.mod[data-compatibility="Problematic"] .mod-name {
+    tr.mod[data-issues="Superficial"] .mod-name, tr.mod[data-issues="Gameplay"] .mod-name {
         padding-left: 3.5em;
         background-position: 2.25em 50%;
     }

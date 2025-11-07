@@ -45,7 +45,7 @@ namespace KtaneWeb
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Quirks.HasFlag(KtaneQuirk.TimeDependent))), @"Veto heavily time-dependent modules.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.RuleSeedSupport != KtaneSupport.Supported)), @"Only rule-seeded.json", CompressionMethod.Deflated, true);
                         zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Souvenir == null || k.Souvenir.Status != KtaneModuleSouvenir.Supported)), @"Only Souvenir supported.json", CompressionMethod.Deflated, true);
-                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Compatibility != KtaneModuleCompatibility.Compatible)), @"Veto incompatible.json", CompressionMethod.Deflated, true);
+                        zipFile.Add(new InMemoryDataSource(generateProfile(1, k => k.Issues != KtaneModuleIssues.None)), @"Veto modules with issues.json", CompressionMethod.Deflated, true);
                         zipFile.CommitUpdate();
                         zipFile.Close();
                         return HttpResponse.Create(mem.ToArray(), "application/octet-stream",

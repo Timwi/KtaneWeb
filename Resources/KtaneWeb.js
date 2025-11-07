@@ -409,19 +409,18 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
     let viewsReady = new Map();
 
-    function getCompatibilityText(mod)
+    function getIssuesText(mod)
     {
-        const compatiblities = {
-            Unplayable: 'This module has a problem that prevents it from being played reliably.',
-            Untested: 'The compatibility of this module has not yet been determined.',
-            Problematic: 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.',
+        const issueKinds = {
+            Gameplay: 'This module has a problem that prevents it from being played reliably.',
+            Superficial: 'This module exhibits a cosmetic or other minor problem that doesn’t affect its playability.',
         };
 
-        if (compatiblities[mod.Compatibility] === undefined)
+        if (issueKinds[mod.Issues] === undefined)
             return;
-        if (mod.CompatibilityExplanation !== undefined)
-            return `${compatiblities[mod.Compatibility]} ${mod.CompatibilityExplanation}`;
-        return compatiblities[mod.Compatibility];
+        if (mod.IssuesExplanation !== undefined)
+            return `${issueKinds[mod.Issues]} ${mod.IssuesExplanation}`;
+        return issueKinds[mod.Issues];
     }
 
     function createView(newView)
@@ -429,9 +428,9 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         if (viewsReady.has(newView))
             return true;
 
-        function setCompatibilityTooltip(element, mod)
+        function setIssuesTooltip(element, mod)
         {
-            let title = getCompatibilityText(mod);
+            let title = getIssuesText(mod);
             if (title && title.length)
                 element.setAttribute('title', title);
         }
@@ -566,7 +565,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                     {
                         if (sh && !mod.ViewData.List.Created)
                         {
-                            let tr = el("tr", `mod compatibility-${mod.Compatibility}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
+                            let tr = el("tr", `mod issues-${mod.Issues}${mod.TwitchPlays === null ? '' : ' tp'}${mod.RuleSeedSupport === 'Supported' ? ' rs' : ''}`);
                             mod.ViewData.List.TableRow = tr;
                             mod.FncsSetHighlight.push(hgh =>
                             {
@@ -608,7 +607,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
                             let icon = el("img", "mod-icon", { src: `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png` });
                             let modlink = el("a", "modlink", { href: mod.SelectableLinkUrl }, icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
-                            setCompatibilityTooltip(modlink, mod);
+                            setIssuesTooltip(modlink, mod);
                             mod.ViewData.List.SelectableLink = modlink;
                             let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink, mod.localName === mod.Name ? null : el("div", "inf-origname", mod.Name.replace(/'/g, "’"))));
                             tr.appendChild(td1);
@@ -769,14 +768,14 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                 {
                     let mod = modules[i];
                     let manualSelector = el('a', 'manual-selector', { href: '#' });
-                    let img, a = el('a', `module ${mod.ExpertDifficulty} compatibility-${mod.Compatibility}`,
+                    let img, a = el('a', `module ${mod.ExpertDifficulty} issues-${mod.Issues}`,
                         el('div', `symbol ${mod.DefuserDifficulty}`, el('span', 'inner', mod.Symbol || '??')),
                         el('div', 'mod-icon', img = el("img", "mod-icon", { src: `Icons/blank.png` })),
                         el('div', 'name', el('div', 'inner', mod.localName)),
                         el('div', 'tpscore', mod.TwitchPlays?.ScoreString ?? '', { title: mod.TwitchPlays ? parseTpScore(mod.TwitchPlays.ScoreString) : null }),
                         el('div', 'souvenir', souvenirStatuses[(mod.Souvenir && mod.Souvenir.Status) || 'Unexamined']),
                         manualSelector);
-                    setCompatibilityTooltip(a, mod);
+                    setIssuesTooltip(a, mod);
 
                     manualSelector.onclick = makeClickHander(manualSelector, false, mod);
 
@@ -1182,7 +1181,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                     menuDiv.appendChild(el('div', 'module-further-info', mod.TimeModeInfo));
                 if ($('#display-rule-seed').prop('checked') && 'RuleSeedInfo' in mod)
                     menuDiv.appendChild(el('div', 'module-further-info', mod.RuleSeedInfo));
-                let title = getCompatibilityText(mod);
+                let title = getIssuesText(mod);
                 if (title !== undefined)
                     menuDiv.appendChild(el('div', 'module-further-info', title));
             }
@@ -1433,8 +1432,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         // Default values
         if (!mod.RuleSeedSupport)
             mod.RuleSeedSupport = 'NotSupported';
-        if (!mod.Compatibility)
-            mod.Compatibility = 'Untested';
+        if (!mod.Issues)
+            mod.Issues = 'None';
         if (mod.TwitchPlays && !mod.TwitchPlays.Score)
             mod.TwitchPlays.Score = 0;
         if (mod.TwitchPlays && !mod.TwitchPlays.ScorePerModule)
@@ -1865,7 +1864,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     function setEditUi(mod)
     {
         let ui = document.getElementById('module-ui');
-        for (let key of 'Name,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Compatibility,CompatibilityExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
+        for (let key of 'Name,ModuleID,SortKey,SteamID,Author,SourceUrl,Symbol,Type,Origin,Issues,IssuesExplanation,Published,DefuserDifficulty,ExpertDifficulty,TranslationOf,RuleSeedSupport,BossStatus,MysteryModule'.split(','))
             ui.querySelector(`[name="${key}"]`).value = (mod[key] || '');
 
         ui.querySelector('[name="DBMLIgnored"]').checked = (mod.DBMLIgnored || false);

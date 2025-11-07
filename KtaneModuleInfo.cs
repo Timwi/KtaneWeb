@@ -56,10 +56,10 @@ namespace KtaneWeb
         [ClassifyIgnoreIfDefault, ClassifyIgnoreIfEmpty, EditableField("Ignored by DBML", "Specify if DBML should not be used to load this module.")]
         public bool DBMLIgnored;
 
-        [EditableField("Compatibility", "Specify if the module or widget has any known issues.\nUse “Problematic” if the issues are cosmetic.\nUse “Unplayable” if a bug causes undeserved strikes or softlocked games, even if rare.")]
-        public KtaneModuleCompatibility Compatibility = KtaneModuleCompatibility.Compatible;
-        [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Compatibility setting above."), EditableIf(nameof(Compatibility), KtaneModuleCompatibility.Problematic, KtaneModuleCompatibility.Unplayable)]
-        public string CompatibilityExplanation = null;
+        [ClassifyIgnoreIfDefault, EditableField("Issues", "Specify if the module or widget has any known issues.\nUse “Superficial” if the issues do not affect regular gameplay.\nUse “Gameplay” if the module causes undeserved strikes or softlocked games, even if rare.")]
+        public KtaneModuleIssues Issues = KtaneModuleIssues.None;
+        [ClassifyIgnoreIfDefault, EditableField("Explain", "Explain the Issues setting above."), EditableIf(nameof(Issues), KtaneModuleIssues.Superficial, KtaneModuleIssues.Gameplay)]
+        public string IssuesExplanation = null;
         [EditableField("Published", "The date of publication.")]
         public DateTime Published = DateTime.UtcNow.Date;
 
@@ -114,7 +114,8 @@ namespace KtaneWeb
         {
             return other != null &&
                 other.Author == Author &&
-                other.Compatibility == Compatibility &&
+                other.Issues == Issues &&
+                other.IssuesExplanation == IssuesExplanation &&
                 other.DefuserDifficulty == DefuserDifficulty &&
                 other.ExpertDifficulty == ExpertDifficulty &&
                 other.ModuleID == ModuleID &&
@@ -133,7 +134,7 @@ namespace KtaneWeb
                 other.Type == Type;
         }
 
-        public override int GetHashCode() => Ut.ArrayHash(Author, Compatibility, DefuserDifficulty, Descriptions, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideos, Type);
+        public override int GetHashCode() => Ut.ArrayHash(Author, Issues, IssuesExplanation, DefuserDifficulty, Descriptions, ExpertDifficulty, Name, Origin, Published, RuleSeedSupport, SortKey, SourceUrl, Souvenir, SteamID, Symbol, TutorialVideos, Type);
         public override bool Equals(object obj) => Equals(obj as KtaneModuleInfo);
         public override string ToString() => Name;
 

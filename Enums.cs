@@ -50,14 +50,14 @@ namespace KtaneWeb
         Supported
     }
 
-    public enum KtaneModuleCompatibility
+    public enum KtaneModuleIssues
     {
-        [KtaneFilterOption(nameof(TranslationInfo.compatibilityCompatible))]
-        Compatible,
-        [KtaneFilterOption(nameof(TranslationInfo.compatibilityProblematic))]
-        Problematic,
-        [KtaneFilterOption(nameof(TranslationInfo.compatibilityUnplayable))]
-        Unplayable
+        [KtaneFilterOption(nameof(TranslationInfo.issuesNone))]
+        None,
+        [KtaneFilterOption(nameof(TranslationInfo.issuesSuperficial))]
+        Superficial,
+        [KtaneFilterOption(nameof(TranslationInfo.issuesGameplay))]
+        Gameplay
     }
 
     public enum KtaneModuleSouvenir
