@@ -168,11 +168,11 @@ namespace KtaneWeb
         public string filterUnexamined = "Unexamined";
         public string filterNotCandidate = "Not a candidate";
         public string filterConsidered = "Considered";
-        public string filterMMNoConfilct = "No conflict";
+        public string filterMMNoConflict = "No conflict";
         public string filterMMNotHide = "MM must not hide this";
         public string filterMMNotRequire = "MM must not require this";
         public string filterMMNotUse = "MM must not use this at all";
-        public string filterMMAutoSovle = "MM must auto-solve";
+        public string filterMMAutoSolve = "MM must auto-solve";
         public string licenseOpenSource = "The module has its source code released and will follow the module’s license.";
         public string licenseOpenSourceClone = "The module's source code is a clone/fork of its original repository, and will follow the license of the original.";
         public string licenseRepublishable = "The module may be republished on someone else’s Steam account. Any work may not be reused.";

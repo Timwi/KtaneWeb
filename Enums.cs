@@ -74,7 +74,7 @@ namespace KtaneWeb
 
     public enum KtaneMysteryModuleCompatibility
     {
-        [KtaneFilterOption(nameof(TranslationInfo.filterMMNoConfilct))]
+        [KtaneFilterOption(nameof(TranslationInfo.filterMMNoConflict))]
         NoConflict,
         [KtaneFilterOption(nameof(TranslationInfo.filterMMNotHide))]
         MustNotBeHidden,
@@ -82,7 +82,7 @@ namespace KtaneWeb
         MustNotBeKey,
         [KtaneFilterOption(nameof(TranslationInfo.filterMMNotUse))]
         MustNotBeHiddenOrKey,
-        [KtaneFilterOption(nameof(TranslationInfo.filterMMAutoSovle))]
+        [KtaneFilterOption(nameof(TranslationInfo.filterMMAutoSolve))]
         RequiresAutoSolve,
     }
 
