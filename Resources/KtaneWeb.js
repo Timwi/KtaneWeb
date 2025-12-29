@@ -1086,16 +1086,18 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             str = str.slice(0, str.length - 6);
         return str;
     }
+
     function setCbsRestricted()
     {
-        for (let mod of modules) {
-            if (mod.Manuals.length > 1) {
-                if (mod.Name == "Terminology")
-                    console.log(mod);
+        for (let mod of modules)
+        {
+            if (mod.Manuals.length > 1)
+            {
                 let manual = getDefaultManual(mod);
 
                 // if preferred is not the default
-                if (mod.Name in preferredManuals && preferredManuals[mod.Name] !== manual.Name.substr(mod.Name.length + 1)) {
+                if (mod.Name in preferredManuals && preferredManuals[mod.Name] !== manual.Name.substr(mod.Name.length + 1))
+                {
                     let prefManual = mod.Manuals.filter(m => m.Name.substr(mod.Name.length + 1) === preferredManuals[mod.Name])[0];
                     // record if preferred is restricted and restricted manuals are currently hidden
                     if (prefManual && displayRestrictedManuals && restrictedManualNames.some(m => removeHtmlPdfSuffix(prefManual.Name) === m))
@@ -1280,7 +1282,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         el('div', 'mobile-cell',
                             el('div', 'language', trow[0]),
                             el('div', 'title', trow[1]),
-                            el('div', `alt-indicator${restricted ? ' cbs-restricted' : ''}`, {title: restricted ? 'CBS Restricted' : '' }),
+                            el('div', `alt-indicator${restricted ? ' cbs-restricted' : ''}`, { title: restricted ? 'CBS Restricted' : '' }),
                             el('div', 'extra', ...trow[2])),
                         el('div', 'link link-HTML'),
                         el('div', 'link link-PDF'));
