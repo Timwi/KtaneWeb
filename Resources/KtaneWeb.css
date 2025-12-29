@@ -376,6 +376,7 @@ td.infos-2 div.infos > .inf-description, td.infos-1 div.infos > div {
 }
 
 /** ISSUES ICONS **/
+body.display-restricted-manuals tr.mod.cbs-restricted .mod-name::before,
 tr.mod:not(.issues-None) .mod-name::before {
     content: '';
     display: inline-block;
@@ -385,6 +386,7 @@ tr.mod:not(.issues-None) .mod-name::before {
     vertical-align: middle;
 }
 
+body.display-restricted-manuals #actual-periodic-table a.module.cbs-restricted div.mod-icon::after,
 #actual-periodic-table a.module:not(.issues-None) div.mod-icon::after {
     content: '';
     position: absolute;
@@ -401,6 +403,13 @@ tr.mod.issues-Gameplay .mod-name::before, #actual-periodic-table a.issues-Gamepl
 
 tr.mod.issues-Superficial .mod-name::before, #actual-periodic-table a.issues-Superficial div.mod-icon::after {
     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle cx=".5" cy=".5" r=".5" fill="%23fc4" stroke="none" /></svg>') left top no-repeat;
+    background-size: 100% 100%;
+}
+
+.mobile-cell .alt-indicator.cbs-restricted,
+body.display-restricted-manuals tr.mod.cbs-restricted .mod-name::before,
+body.display-restricted-manuals #actual-periodic-table a.cbs-restricted div.mod-icon::after {
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="%23e53935" d="M32 2a30 30 0 1 0 0 60 30 30 0 0 0 0-60zm22 30c0 4.6-1.4 9-3.9 12.5L19.5 13.9A22 22 0 0 1 54 32zm-44 0c0-4.6 1.4-9 3.9-12.5l30.6 30.6A22 22 0 0 1 10 32z"/></svg>') left top no-repeat;
     background-size: 100% 100%;
 }
 
@@ -697,6 +706,11 @@ div.popup {
 
         div.popup div.manual-select div.extra {
             font-size: 9pt;
+        }
+        div.popup div.manual-select div.alt-indicator.cbs-restricted {
+            padding: 0;
+            width: 10px;
+            height: 10px;
         }
 
             div.popup div.manual-select div.extra .descriptor {

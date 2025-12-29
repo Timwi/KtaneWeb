@@ -423,6 +423,16 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         return issueKinds[mod.Issues];
     }
 
+    function setElemCbsRestricted(elem, restricted)
+    {
+        elem.classList.toggle('cbs-restricted', restricted);
+        let query = elem.querySelector('td') ? '.mod-name' : '.mod-icon';
+        if (restricted)
+            elem.querySelector(query).setAttribute('title', 'CBS Restricted');
+        else
+            elem.querySelector(query).removeAttribute('title');
+    }
+
     function createView(newView)
     {
         if (viewsReady.has(newView))
@@ -698,12 +708,14 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                             addAuthorClick(td2.querySelector(".inf-author.all-contributors"), mod);
 
                             let lnk1 = el("a", "manual-selector", { href: "#" });
-                            lnk1.onclick = makeClickHander(lnk1, false, mod);
+                            lnk1.onclick = makeClickHander(lnk1, false, mod, tr);
                             td1.appendChild(lnk1);
 
                             let lnk2 = el("a", "mobile-opt", { href: "#" });
-                            lnk2.onclick = makeClickHander(lnk2, true, mod);
+                            lnk2.onclick = makeClickHander(lnk2, true, mod, tr);
                             tr.appendChild(el("td", "mobile-ui", lnk2));
+
+                            setElemCbsRestricted(tr, mod.CbsRestrictedIsPreferred === true);
 
                             mod.ViewData.List.Created = true;
 
@@ -777,7 +789,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         manualSelector);
                     setIssuesTooltip(a, mod);
 
-                    manualSelector.onclick = makeClickHander(manualSelector, false, mod);
+                    manualSelector.onclick = makeClickHander(manualSelector, false, mod, a);
 
                     document.getElementById("actual-periodic-table").appendChild(a);
 
@@ -803,6 +815,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         else
                             a.classList.remove('highlight');
                     });
+                    setElemCbsRestricted(a, mod.CbsRestrictedIsPreferred === true);
                 }
 
                 viewsReady.set('PeriodicTable', {
@@ -828,6 +841,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     {
         if (createView(newView))
         {
+            setCbsRestricted();
             for (let [k, v] of viewsReady)
             {
                 if (k === newView)
@@ -1072,6 +1086,24 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             str = str.slice(0, str.length - 6);
         return str;
     }
+    function setCbsRestricted()
+    {
+        for (let mod of modules) {
+            if (mod.Manuals.length > 1) {
+                if (mod.Name == "Terminology")
+                    console.log(mod);
+                let manual = getDefaultManual(mod);
+
+                // if preferred is not the default
+                if (mod.Name in preferredManuals && preferredManuals[mod.Name] !== manual.Name.substr(mod.Name.length + 1)) {
+                    let prefManual = mod.Manuals.filter(m => m.Name.substr(mod.Name.length + 1) === preferredManuals[mod.Name])[0];
+                    // record if preferred is restricted and restricted manuals are currently hidden
+                    if (prefManual && displayRestrictedManuals && restrictedManualNames.some(m => removeHtmlPdfSuffix(prefManual.Name) === m))
+                        mod.CbsRestrictedIsPreferred = true;
+                }
+            }
+        }
+    }
 
     // Sets the module links to the current selectable and the manual icon link to the preferred manuals
     function setLinksAndPreferredManuals()
@@ -1096,9 +1128,12 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         let prefManual = mod.Manuals.filter(m => m.Name.substr(mod.Name.length + 1) === preferredManuals[mod.Name])[0];
                         if (!prefManual)
                             delete preferredManuals[mod.Name];
-                        // set to default if preferred is restricted and restricted manuals are currently hidden
+                        // set preferred if preferred is not restricted and restricted manuals are currently displayed
                         else if (displayRestrictedManuals || !restrictedManualNames.some(m => removeHtmlPdfSuffix(prefManual.Name) === m))
                             manual = prefManual;
+                        // record if preferred is restricted and restricted manuals are currently hidden
+                        else
+                            mod.CbsRestrictedIsPreferred = true;
                     }
                 }
 
@@ -1143,7 +1178,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     let manualsLastUpdated = {};
 
     // Click handler for selecting manuals/cheat sheets (both mobile and non)
-    function makeClickHander(lnk, isMobileOpt, mod)
+    function makeClickHander(lnk, isMobileOpt, mod, modGroup)
     {
         return function(event)
         {
@@ -1196,6 +1231,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             for (let i = 0; i < mod.Manuals.length; i++)
             {
                 let rx1 = /^\s*(.*) \((HTML|PDF)\)$/.exec(mod.Manuals[i].Name.substr(mod.Name.length));
+                let restricted = restrictedManualNames.some(m => removeHtmlPdfSuffix(mod.Manuals[i].Name) === m);
                 let clickHandler = function(sh)
                 {
                     return function(e)
@@ -1203,6 +1239,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         menuDiv.remove();
                         preferredManuals[mod.Name] = sh;
                         setLinksAndPreferredManuals();
+                        setElemCbsRestricted(modGroup, restricted);
                         e.stopPropagation();
                         return false;
                     };
@@ -1232,7 +1269,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                     if (invertSearch)
                         languageAllowed = !languageAllowed;
 
-                    if (languageAllowed || !displayRestrictedManuals && restrictedManualNames.some(m => removeHtmlPdfSuffix(mod.Manuals[i].Name) === m))
+                    if (languageAllowed || !displayRestrictedManuals && restricted)
                         continue;
 
                     let code = Object.keys(Ktane.Languages).filter(langCode => Ktane.Languages[langCode] === trow[0])[0];
@@ -1243,6 +1280,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                         el('div', 'mobile-cell',
                             el('div', 'language', trow[0]),
                             el('div', 'title', trow[1]),
+                            el('div', `alt-indicator${restricted ? ' cbs-restricted' : ''}`, {title: restricted ? 'CBS Restricted' : '' }),
                             el('div', 'extra', ...trow[2])),
                         el('div', 'link link-HTML'),
                         el('div', 'link link-PDF'));
@@ -1293,6 +1331,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                     inf.Row.onclick = clickHandler;
                 let elem = rx1[2] === 'HTML' ? inf.Html : inf.Pdf;
                 elem.appendChild(link);
+
+                //if this manual is the preferred manual or this manual is the default and there is no preferred manual
                 if ((mod.Name in preferredManuals && `${mod.Name} ${preferredManuals[mod.Name]}` === mod.Manuals[i].Name) ||
                     (!(mod.Name in preferredManuals) && mod.Manuals[i].Name === getDefaultManual(mod).Name))
                     elem.classList.add('checked');
