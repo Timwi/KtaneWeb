@@ -696,10 +696,12 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                             let descrip = el("div", "inf-description inf");
                             descrip.appendChild(el("span", "inf-description-only inf", modDescr.Description ?? ""));
                             if (modDescr.Description && modDescr.Tags)
+                            {
                                 descrip.appendChild(document.createTextNode(" "));
-                            descrip.appendChild(el("span", "inf-tags inf", modDescr.Tags ?? ""));
-                            td2.appendChild(infos.cloneNode(true));
+                                descrip.appendChild(el("span", "inf-tags inf", modDescr.Tags ?? ""));
+                            }
                             infos.append(descrip);
+                            td2.appendChild(infos.cloneNode(true));
                             td1.appendChild(infos);
 
                             addAuthorClick(td1.querySelector(".inf-author"), mod);
