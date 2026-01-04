@@ -691,7 +691,11 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                             if (mod.ModuleID)
                                 infos.append(el("div", "inf-id inf", mod.ModuleID));
 
-                            let modDescr = mod.Descriptions.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions.filter(d => d.Language == "English")[0];
+                            let modDescr;
+                            if (mod.Descriptions)
+                                modDescr = mod.Descriptions.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions.filter(d => d.Language == "English")[0];
+                            else
+                                modDescr = { Description: "This module has no description." };
 
                             let descrip = el("div", "inf-description inf");
                             descrip.appendChild(el("span", "inf-description-only inf", modDescr.Description ?? ""));
@@ -997,7 +1001,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                     searchWhat += ' ' + mod.AllContr.toLowerCase();
                 else
                     searchWhat += ' ' + mod.Author.toLowerCase();
-            if (searchOptions.indexOf('descriptions') !== -1)
+            if (searchOptions.indexOf('descriptions') !== -1 && mod.Descriptions)
             {
                 let modDescr = mod.Descriptions.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions.filter(d => d.Language == "English")[0];
                 if (displayDescription)
