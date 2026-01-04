@@ -468,13 +468,20 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
         function makeAllAuthorElement(mod)
         {
-            const title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).sort(contributorSort).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
-            const author = mod.Contributors === undefined ? mod.Author : mod.AllContr;
+            let title = mod.Contributors === undefined ? '' : Object.entries(mod.Contributors).filter(([_, names]) => names != null).sort(contributorSort).map(([role, names]) => `${role}: ${names.join(', ')}`).join('\n');
+            let author = mod.Contributors === undefined ? mod.Author : mod.AllContr;
+            if (!author)
+            {
+                title = "No contributors were provided for this module.";
+                author = "???";
+            }
             return el('div', 'inf-author all-contributors inf', el('span', 'contributors', author), { title: title });
         }
 
         function addAuthorClick(element, mod)
         {
+            if (!mod.AllContr)
+                return;
             element.addEventListener('click', event =>
             {
                 const contactPopup = document.getElementById('contact-info');
@@ -998,9 +1005,9 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
                 if (displayAllContributors)
-                    searchWhat += ' ' + mod.AllContr.toLowerCase();
+                    searchWhat += ' ' + mod.AllContr?.toLowerCase();
                 else
-                    searchWhat += ' ' + mod.Author.toLowerCase();
+                    searchWhat += ' ' + mod.Author?.toLowerCase();
             if (searchOptions.indexOf('descriptions') !== -1 && mod.Descriptions)
             {
                 let modDescr = mod.Descriptions.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions.filter(d => d.Language == "English")[0];
