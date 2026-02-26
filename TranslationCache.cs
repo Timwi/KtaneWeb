@@ -37,9 +37,9 @@ namespace KtaneWeb
                         translation.Json = newJson.ToString();
 
 #if DEBUG
-                        var newJsonIndented = newJson.ToStringIndented();
-                        if (translationJson != newJsonIndented)
-                            File.WriteAllText(file.FullName, newJsonIndented);
+                        // var newJsonIndented = newJson.ToStringIndented();
+                        // if (translationJson != newJsonIndented)
+                        //     File.WriteAllText(file.FullName, newJsonIndented);
 #endif
 
                         return translation;

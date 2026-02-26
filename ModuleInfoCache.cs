@@ -124,11 +124,11 @@ namespace KtaneWeb
                         var mod = ClassifyJson.Deserialize<KtaneModuleInfo>(modJson);
 
 #if DEBUG
-                        var newJson = (JsonDict) ClassifyJson.Serialize(mod);
-                        var newJsonStr = newJson.ToStringIndented();
-                        if (newJsonStr != origFile)
-                            File.WriteAllText(file.FullName, newJsonStr);
-                        modJson = newJson;
+                        // var newJson = (JsonDict) ClassifyJson.Serialize(mod);
+                        // var newJsonStr = newJson.ToStringIndented();
+                        // if (newJsonStr != origFile)
+                        //     File.WriteAllText(file.FullName, newJsonStr);
+                        // modJson = newJson;
 #endif
 
                         // Some module names contain characters that can’t be used in filenames (e.g. “?”)
