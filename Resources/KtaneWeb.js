@@ -1002,7 +1002,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             if (searchByModuleID && 'ModuleID' in mod && mod.ModuleID !== null)
                 searchWhat += ' ' + mod.ModuleID.toLowerCase();
             if (searchOptions.indexOf('names') !== -1)
-                searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.SortKey.toLocaleLowerCase();
+                searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.Name.replace(/[- ]/g, '').toLowerCase() + ' ' + mod.SortKey.replace(/[- ]/g, '').toLowerCase();
             if (searchOptions.indexOf('authors') !== -1)
                 if (displayAllContributors)
                     searchWhat += ' ' + mod.AllContr?.toLowerCase();
