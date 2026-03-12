@@ -4,10 +4,10 @@ using RT.CommandLine;
 if (args.Length == 0)
     args = ["run"];
 
-CommandLineBase cmd;
+CommandLine cmd;
 try
 {
-    cmd = CommandLineParser.Parse<CommandLineBase>(args);
+    cmd = CommandLineParser.Parse<CommandLine>(args);
 }
 catch (CommandLineParseException pe)
 {

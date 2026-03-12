@@ -14,19 +14,27 @@ using RT.Util.ExtensionMethods;
 
 namespace KtaneWeb
 {
-    [CommandLine]
-    abstract class CommandLineBase
+    sealed class CommandLine
+    {
+        [IsMandatory, IsPositional]
+        public CommandBase Command = null;
+
+        public int Execute() => Command.Execute();
+    }
+
+    [CommandGroup]
+    abstract class CommandBase
     {
         public abstract int Execute();
 
         public static void PostBuildCheck(IPostBuildReporter rep)
         {
-            CommandLineParser.PostBuildStep<CommandLineBase>(rep);
+            CommandLineParser.PostBuildStep<CommandBase>(rep);
         }
     }
 
     [CommandName("run"), Documentation("Runs a standalone KtaneWeb server.")]
-    sealed class Run : CommandLineBase
+    sealed class Run : CommandBase
     {
         [IsPositional]
         public string ConfigFile = null;
@@ -45,7 +53,7 @@ namespace KtaneWeb
     }
 
     [CommandName("postbuild"), Undocumented]
-    sealed class PostBuild : CommandLineBase
+    sealed class PostBuild : CommandBase
     {
         [IsPositional, IsMandatory, Undocumented]
         public string SourcePath = null;
@@ -53,7 +61,7 @@ namespace KtaneWeb
         public override int Execute() => PostBuildChecker.RunPostBuildChecks(SourcePath, Assembly.GetExecutingAssembly());
     }
 
-    abstract class CommandWithConfig : CommandLineBase
+    abstract class CommandWithConfig : CommandBase
     {
         [IsPositional, IsMandatory, Documentation("KtaneWeb configuration file (JSON).")]
         public string ConfigFile = null;
@@ -83,7 +91,7 @@ namespace KtaneWeb
         [Option("-a", "--augmented"), Documentation("Use augmented output when invoking 7z.")]
         public bool Augmented = false;
 
-        public ConsoleColoredString Validate() => Prefix == null || Regex.IsMatch(Prefix.ToLowerInvariant(), "^[0-9a-f]{2}$") ? null : "Invalid prefix.".Color(ConsoleColor.Magenta);
+        public ConsoleColoredString Validate() => Prefix == null || Prefix.ToLowerInvariant().RegexMatch("^[0-9a-f]{2}$", out _) ? null : "Invalid prefix.".Color(ConsoleColor.Magenta);
 
         protected override int execute(KtaneWebConfig config)
         {
@@ -104,7 +112,7 @@ namespace KtaneWeb
                     return 0;
                 }
                 var hour = DateTime.UtcNow.Hour;
-                if (hour >= 16 || hour < 0)
+                if (hour is >= 16 or < 0)
                 {
                     Console.WriteLine($"Nothing to do on hour {hour}.");
                     return 0;

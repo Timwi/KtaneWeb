@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using RT.Json;
 using RT.Serialization;
 using RT.TagSoup;
@@ -193,7 +191,7 @@ namespace KtaneWeb
             if (Type != KtaneModuleType.Regular && element is JsonDict && element.ContainsKey("Souvenir"))
                 element.Remove("Souvenir");
 
-            if (Descriptions.Select(d => d.Language).SequenceEqual("English"))
+            if (Descriptions.Select(d => d.Language).SequenceEqual(["English"]))
             {
                 element["Description"] = string.IsNullOrWhiteSpace(Descriptions[0].Tags) ? Descriptions[0].Description : $"{Descriptions[0].Description} Tags: {Descriptions[0].Tags}";
                 element.Remove("Descriptions");
