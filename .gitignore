@@ -2,8 +2,8 @@
 .vscode
 bin
 obj
-packages
+publish
 *.suo
-*.csproj.user
+*.user
 *.sln.cache
 *.orig
