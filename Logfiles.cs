@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
@@ -66,7 +66,7 @@ namespace KtaneWeb
                 {
                     var line = e.Current;
                     const string str = @"[Tweaks] LFABombInfo ";
-                    if (!line.StartsWith(str) || !int.TryParse(line.Substring(str.Length), out var num))
+                    if (!line.StartsWith(str) || !int.TryParse(line.AsSpan(str.Length), out var num))
                         continue;
                     var jsonCode = new StringBuilder();
                     for (var i = 0; i < num; i++)
@@ -116,8 +116,7 @@ namespace KtaneWeb
             if (string.IsNullOrWhiteSpace(_config.Archive7zPath))
                 return _logfileFsHandler.Handle(req);
 
-            var m = Regex.Match(req.Url.Path, @"^/([0-9a-f]{40}\.txt)$");
-            if (!m.Success)
+            if (!req.Url.Path.RegexMatch(@"^/([0-9a-f]{40}\.txt)$", out var m))
                 return _logfileFsHandler.Handle(req);
 
             var filename = m.Groups[1].Value;
@@ -125,7 +124,7 @@ namespace KtaneWeb
                 return _logfileFsHandler.Handle(req);
 
             // Check if the requested logfile is in the relevant archive
-            var archivePath = Path.Combine(_config.LogfilesDir, $"Ktane Logfiles {filename.Substring(0, 2)}.7z");
+            var archivePath = Path.Combine(_config.LogfilesDir, $"Ktane Logfiles {filename[..2]}.7z");
             if (!File.Exists(archivePath))
                 return _logfileFsHandler.Handle(req);
 

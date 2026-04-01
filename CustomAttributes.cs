@@ -64,6 +64,7 @@ namespace KtaneWeb
         }
     }
 
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     internal sealed class EditableHelpAttribute(string translationString) : Attribute
     {
         public string TranslationString { get; private set; } = translationString;

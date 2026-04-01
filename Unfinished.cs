@@ -8,11 +8,11 @@ namespace KtaneWeb
         private HttpResponse unfinished(HttpRequest req)
         {
             var path = req.Url.Path;
-            if (!path.StartsWith("/") || path == "/")
+            if (!path.StartsWith('/') || path == "/")
                 return null;
-            var pieces = path.Substring(1).Split('/');
+            var pieces = path[1..].Split('/');
             return Directory.Exists(Path.Combine(_config.BaseDir, "HTML", pieces[0]))
-                ? HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly("/HTML/" + pieces[0] + path.Substring(1 + pieces[0].Length)))
+                ? HttpResponse.Redirect(req.Url.WithPathParent().WithPathOnly($"/HTML/{pieces[0]}{path[(pieces[0].Length + 1)..]}"))
                 : null; // make use of skippable handler
         }
     }

@@ -9,18 +9,10 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="PdfSharp" Version="6.2.4" />
-    <PackageReference Include="PropellerApi" Version="2.1.0" />
+    <PackageReference Include="PropellerApi" Version="2.4.6" />
     <PackageReference Include="RT.CommandLine" Version="2.2.204" />
-    <PackageReference Include="RT.Json" Version="2.0.1821" />
-    <PackageReference Include="RT.PostBuild" Version="2.0.1821" />
-    <PackageReference Include="RT.Serialization" Version="2.0.1821" />
-    <PackageReference Include="RT.Serialization.Binary" Version="2.0.1821" />
-    <PackageReference Include="RT.Serialization.Json" Version="2.0.1821" />
-    <PackageReference Include="RT.Serialization.Xml" Version="2.0.1821" />
-    <PackageReference Include="RT.Servers" Version="1.1.520" />
     <PackageReference Include="RT.TagSoup" Version="1.1.52" />
-    <PackageReference Include="RT.Util" Version="2.0.1821" />
-    <PackageReference Include="RT.Util.Core" Version="2.0.1821" />
+    <PackageReference Include="RT.Util" Version="2.0.1826" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.5" />
   </ItemGroup>
   <ItemGroup>

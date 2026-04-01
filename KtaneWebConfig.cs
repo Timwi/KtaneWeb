@@ -44,8 +44,7 @@ namespace KtaneWeb
 
         public List<(string sheetData, string fileName)> EnumerateSheetUrls(string moduleFileName, string[] notModuleNames)
         {
-            if (moduleFileName == null)
-                throw new ArgumentNullException(nameof(moduleFileName));
+            ArgumentNullException.ThrowIfNull(moduleFileName);
 
             var list = new HashSet<(string sheetData, string fileName)>();
             for (var i = 0; i < DocumentDirs.Length; i++)
@@ -56,20 +55,19 @@ namespace KtaneWeb
                     // Insist that the capitalization of the module name is exact
                     if (inf.File.Name.StartsWith(moduleFileName) && !notModuleNames.Any(inf.File.Name.StartsWith))
                     {
-                        list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|{inf.File.Extension.Substring(1)}|{inf.Icon}",
+                        list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name)[moduleFileName.Length..]}|{inf.File.Extension[1..]}|{inf.Icon}",
                             Path.GetFileName(inf.File.Name)));
 
                         // If this is a non-interactive HTML file, offer a PDF file which will be auto-generated at runtime
                         if (ext == "html" && !inf.File.Name.Contains("interactive"))
-                            list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon + 2}",
-                                null));
+                            list.Add(($"{Path.GetFileNameWithoutExtension(inf.File.Name)[moduleFileName.Length..]}|pdf|{inf.Icon + 2}", null));
 
                         // If this is a PDF file, remove the auto-generated one that was added when we were looking at HTML
                         if (ext == "pdf")
-                            list.Remove(($"{Path.GetFileNameWithoutExtension(inf.File.Name).Substring(moduleFileName.Length)}|pdf|{inf.Icon}", null));
+                            list.Remove(($"{Path.GetFileNameWithoutExtension(inf.File.Name)[moduleFileName.Length..]}|pdf|{inf.Icon}", null));
                     }
             }
-            return list.OrderBy(x => (x.sheetData.Substring(0, x.sheetData.IndexOf('|')), x.fileName)).ToList();
+            return list.OrderBy(x => (x.sheetData[..x.sheetData.IndexOf('|')], x.fileName)).ToList();
         }
     }
 }

@@ -42,7 +42,7 @@ namespace KtaneWeb
             return new HttpResponseContent(HttpStatusCode._200_OK, resp.Headers, () => createOpenGraphStream(resp, openGraphData));
         }
 
-        private Stream createOpenGraphStream(HttpResponse resp, Dictionary<string, string> data)
+        private static Stream createOpenGraphStream(HttpResponse resp, Dictionary<string, string> data)
         {
             var innerStream = resp.GetContentStream();
 

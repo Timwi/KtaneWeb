@@ -6,7 +6,7 @@ using RT.Util;
 
 namespace KtaneWeb
 {
-    abstract class KtaneFilter(string readableName, string propName, string fncPropValue)
+    internal abstract class KtaneFilter(string readableName, string propName, string fncPropValue)
     {
         public string ReadableName { get; private set; } = readableName;
         public string PropName { get; private set; } = propName;
@@ -23,7 +23,7 @@ namespace KtaneWeb
         public static KtaneFilter Flags<TEnum>(string readableName, string propName, Func<KtaneModuleInfo, TEnum> getValue, string fncPropValue) where TEnum : struct => new KtaneFilterFlags(readableName, propName, fncPropValue, typeof(TEnum), mod => getValue(mod));
     }
 
-    abstract class KtaneFilterOptions : KtaneFilter
+    internal abstract class KtaneFilterOptions : KtaneFilter
     {
         public Type EnumType { get; private set; }
         public Func<KtaneModuleInfo, object> GetValue { get; private set; }
@@ -36,7 +36,7 @@ namespace KtaneWeb
             GetValue = getValue ?? throw new ArgumentNullException(nameof(getValue));
 
             Options = Enum.GetValues(enumType).Cast<Enum>()
-                .Select(val => new { Value = val, Attr = ((Enum) val).GetCustomAttribute<KtaneFilterOptionAttribute>() })
+                .Select(val => new { Value = val, Attr = val.GetCustomAttribute<KtaneFilterOptionAttribute>() })
                 .Where(val => val.Attr != null)
                 .Select(inf => new KtaneFilterOption
                 {
@@ -50,7 +50,7 @@ namespace KtaneWeb
         }
     }
 
-    sealed class KtaneFilterOptionsCheckboxes(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
+    internal sealed class KtaneFilterOptionsCheckboxes(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
     {
         public override JsonDict ToJson() => new()
         {
@@ -73,7 +73,7 @@ namespace KtaneWeb
         }
     }
 
-    sealed class KtaneFilterOptionsSlider(string propName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string fncPropValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
+    internal sealed class KtaneFilterOptionsSlider(string propName, string readableName, Type enumType, Func<KtaneModuleInfo, object> getValue, string fncPropValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
     {
         public override JsonDict ToJson() => new()
         {
@@ -104,7 +104,7 @@ namespace KtaneWeb
         }
     }
 
-    sealed class KtaneFilterOption
+    internal sealed class KtaneFilterOption
     {
         public string Name;
         public string TranslationString;
@@ -117,7 +117,7 @@ namespace KtaneWeb
     }
 
     // Filter where a mod may have any number of the available flags
-    sealed class KtaneFilterFlags(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
+    internal sealed class KtaneFilterFlags(string readableName, string propName, string fncPropValue, Type enumType, Func<KtaneModuleInfo, object> getValue) : KtaneFilterOptions(readableName, propName, fncPropValue, enumType, getValue)
     {
         public override JsonDict ToJson() => new()
         {
@@ -146,7 +146,7 @@ namespace KtaneWeb
             var flags = (int) GetValue(module);
             foreach (var opt in Options)
             {
-                bool hasFlag = (flags & opt.Value) != 0;
+                var hasFlag = (flags & opt.Value) != 0;
                 if (json.ContainsKey(opt.Name) && ((json[opt.Name].GetString() == "y" && !hasFlag) || (json[opt.Name].GetString() == "n" && hasFlag)))
                     return false;
             }

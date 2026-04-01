@@ -32,7 +32,7 @@ namespace KtaneWeb
                     {
                         var translationJson = File.ReadAllText(file.FullName);
                         var translation = ClassifyJson.Deserialize<TranslationInfo>(JsonDict.Parse(translationJson));
-                        translation.langCode = file.Name.Remove(file.Name.Length - 5);
+                        translation.langCode = file.Name[..^5];
                         var newJson = ClassifyJson.Serialize(translation);
                         translation.Json = newJson.ToString();
 

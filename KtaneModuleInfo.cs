@@ -143,7 +143,7 @@ namespace KtaneWeb
             if (SortKey is null or "")
                 SortKey = KtanePropellerModule.GetDefaultSortKey(Name);
 
-            if (Type == KtaneModuleType.Regular || Type == KtaneModuleType.Needy || Type == KtaneModuleType.Holdable)
+            if (Type is KtaneModuleType.Regular or KtaneModuleType.Needy or KtaneModuleType.Holdable)
             {
                 DefuserDifficulty ??= KtaneModuleDifficulty.Easy;
                 ExpertDifficulty ??= KtaneModuleDifficulty.Easy;
@@ -169,25 +169,21 @@ namespace KtaneWeb
                 Ignore = null;
 
             if (Symbol != null && Symbol.Length > 0)
-                Symbol = Symbol.Substring(0, 1).ToUpperInvariant() + Symbol.Substring(1).ToLowerInvariant();
+                Symbol = Symbol[..1].ToUpperInvariant() + Symbol[1..].ToLowerInvariant();
 
             if (SourceUrl != null && License != KtaneModuleLicense.OpenSourceClone)
                 License = KtaneModuleLicense.OpenSource;
 
             if (element.ContainsKey("Description") && element["Description"].GetStringSafe() is string descr && !string.IsNullOrWhiteSpace(descr))
-            {
-                var p = descr.IndexOf(" Tags: ");
-                if (p == -1)
-                    Descriptions = [new DescriptionInfo { Language = "English", Description = descr }];
-                else
-                    Descriptions = [new DescriptionInfo { Language = "English", Description = descr.Substring(0, p), Tags = descr.Substring(p + " Tags: ".Length) }];
-            }
+                Descriptions = descr.IndexOf(" Tags: ") is { } p and not -1
+                    ? [new DescriptionInfo { Language = "English", Description = descr[..p], Tags = descr[(p + " Tags: ".Length)..] }]
+                    : [new DescriptionInfo { Language = "English", Description = descr }];
         }
 
         void IClassifyObjectProcessor<JsonValue>.AfterSerialize(JsonValue element)
         {
-            if (element is JsonDict && element.ContainsKey("Published") && element["Published"].GetStringSafe()?.EndsWith("Z") == true)
-                element["Published"] = element["Published"].GetString().Apply(s => s.Remove(s.Length - 1));
+            if (element is JsonDict && element.ContainsKey("Published") && element["Published"].GetStringSafe()?.EndsWith('Z') == true)
+                element["Published"] = element["Published"].GetString().Apply(s => s[..^1]);
             if (Type != KtaneModuleType.Regular && element is JsonDict && element.ContainsKey("Souvenir"))
                 element.Remove("Souvenir");
 

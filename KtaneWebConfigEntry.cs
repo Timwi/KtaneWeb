@@ -11,10 +11,10 @@ namespace KtaneWeb
     sealed class KtaneWebConfigEntry : IEquatable<KtaneWebConfigEntry>
     {
         [ClassifyNotNull]
-        public ListSorted<KtaneModuleInfo> KtaneModules = new ListSorted<KtaneModuleInfo>(CustomComparer<KtaneModuleInfo>.By(mod => mod.SortKey));
+        public ListSorted<KtaneModuleInfo> KtaneModules = new(CustomComparer<KtaneModuleInfo>.By(mod => mod.SortKey));
 
         [ClassifyNotNull]
-        public HashSet<string> AllowedEditors = new HashSet<string>();
+        public HashSet<string> AllowedEditors = [];
 
         public bool Equals(KtaneWebConfigEntry other)
         {

@@ -36,13 +36,13 @@ namespace KtaneWeb
         }
         private ModuleInfoCache _moduleInfoCache;
 
-        private (string[] flavourTexts, string startingLine) getManualTexts(string htmlFilename)
+        private static (string[] flavourTexts, string startingLine) getManualTexts(string htmlFilename)
         {
             string htmlContent;
             try { htmlContent = File.ReadAllText(htmlFilename); }
             catch (FileNotFoundException) { return (new string[] { "" }, ""); }
 
-            HtmlDocument htmlDoc = new HtmlDocument();
+            var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(htmlContent);
 
             var flavourTexts = new HashSet<string>();
@@ -50,16 +50,16 @@ namespace KtaneWeb
 
             foreach (var tag in htmlDoc.DocumentNode.Descendants())
             {
-                if (tag.OriginalName != "p" && tag.OriginalName != "li")
+                if (tag.OriginalName is not "p" and not "li")
                     continue;
 
                 if (tag.GetAttributeValue("class", "").Contains("flavour-text"))
-                    flavourTexts.Add(Regex.Replace(tag.InnerHtml, @"\s+", " ").Trim());
+                    flavourTexts.Add(tag.InnerHtml.RegexReplace(@"\s+", " ").Trim());
                 else if (startingLine == null)
                 {
                     var text = tag.InnerText;
                     if (!text.ContainsIgnoreCase(" Appendix ") && !text.Contains(" SECTION ") && !text.ContainsIgnoreCase(" appendices ") && !text.ContainsIgnoreCase("you are looking at a different") && !text.ContainsIgnoreCase("you are looking at the wrong"))
-                        startingLine = Regex.Replace(text, @"\s+", " ").Trim();
+                        startingLine = text.RegexReplace(@"\s+", " ").Trim();
                 }
             }
 
@@ -249,22 +249,22 @@ namespace KtaneWeb
 #endif
 
                     // Process ignore lists that contain special operators
-                    if (mod.Ignore != null && mod.Ignore.Any(str => str.StartsWith("+")))
+                    if (mod.Ignore != null && mod.Ignore.Any(str => str.StartsWith('+')))
                     {
                         var processedIgnoreList = new List<string>();
                         foreach (var str in mod.Ignore)
                         {
-                            if (str.StartsWith("+") && EnumStrong.TryParse<KtaneQuirk>(str.Substring(1), out var quirk))
+                            if (str.StartsWith('+') && EnumStrong.TryParse<KtaneQuirk>(str[1..], out var quirk))
                                 processedIgnoreList.AddRange(modules.Where(tup => tup.mod.Quirks.HasFlag(quirk)).Select(tup => tup.mod.DisplayName ?? tup.mod.Name));
-                            else if (str.StartsWith("-"))
-                                processedIgnoreList.Remove(str.Substring(1));
-                            else if (!str.StartsWith("+"))
+                            else if (str.StartsWith('-'))
+                                processedIgnoreList.Remove(str[1..]);
+                            else if (!str.StartsWith('+'))
                                 processedIgnoreList.Add(str);
                         }
                         modJson["IgnoreProcessed"] = processedIgnoreList.ToJsonList();
                     }
 
-                    if (uniqueSortKeys.ContainsKey(mod.SortKey))
+                    if (!uniqueSortKeys.TryAdd(mod.SortKey, mod))
                     {
                         if (mod.TranslationOf != uniqueSortKeys[mod.SortKey].ModuleID && uniqueSortKeys[mod.SortKey].TranslationOf != mod.ModuleID)
                         {
@@ -275,8 +275,6 @@ namespace KtaneWeb
 #endif
                         }
                     }
-                    else
-                        uniqueSortKeys.Add(mod.SortKey, mod);
 
                     if (mod.Symbol is null)
                     {
@@ -284,7 +282,7 @@ namespace KtaneWeb
                         if (mod.TranslationOf is null && mod.Type != KtaneModuleType.Appendix) Console.WriteLine("Module: {0} has no Symbol", mod.Name);
 #endif
                     }
-                    else if (uniqueSymbols.ContainsKey(mod.Symbol))
+                    else if (!uniqueSymbols.TryAdd(mod.Symbol, mod))
                     {
                         if (mod.TranslationOf != uniqueSymbols[mod.Symbol].ModuleID && uniqueSymbols[mod.Symbol].TranslationOf != mod.ModuleID)
                         {
@@ -295,8 +293,6 @@ namespace KtaneWeb
 #endif
                         }
                     }
-                    else
-                        uniqueSymbols.Add(mod.Symbol, mod);
 
                     // Sheets
                     var fileName = getFileName(modJson, mod);
@@ -402,25 +398,23 @@ namespace KtaneWeb
         }
 #pragma warning restore CS0649
 
-        private IEnumerable<Dictionary<string, string>> getJsonFromSheets(string sheetId)
+        private static IEnumerable<Dictionary<string, string>> getJsonFromSheets(string sheetId)
         {
             var response = new HttpClient().GetAsync($"https://docs.google.com/spreadsheets/d/{sheetId}/gviz/tq?tqx=out:json").Result.Content.ReadAsStringAsync().Result;
-            var match = Regex.Match(response, @"google.visualization.Query.setResponse\((.+)\)").Groups[1].Value;
+            var match = response.RegexMatch(@"google.visualization.Query.setResponse\((.+)\)", out var m) ? m.Groups[1].Value : null;
 
             var sheetResponse = ClassifyJson.Deserialize<SheetResponse>(match);
             if (sheetResponse == null)
                 yield break;
 
             var table = sheetResponse.table;
-            var columns = table.cols.Select(column => Regex.Replace(column.label.ToLowerInvariant(), "[^a-z]", "")).ToArray();
+            var columns = table.cols.Select(column => column.label.ToLowerInvariant().RegexReplace("[^a-z]", "")).ToArray();
 
             foreach (var row in table.rows)
             {
                 var dictionary = new Dictionary<string, string>();
-                for (int i = 0; i < columns.Length; i++)
-                {
+                for (var i = 0; i < columns.Length; i++)
                     dictionary[columns[i]] = row.c[i]?.v ?? "";
-                }
 
                 yield return dictionary;
             }
@@ -481,7 +475,7 @@ namespace KtaneWeb
         private static void mergeTPData(KtaneModuleInfo mod, JsonDict modJson, string scoreString)
         {
             // UN and T is for unchanged and temporary score which are read normally.
-            scoreString = Regex.Replace(scoreString, @"UN|(?<=\d)T", "");
+            scoreString = scoreString.RegexReplace(@"UN|(?<=\d)T", "");
 
             decimal score = 0;
 
@@ -494,9 +488,9 @@ namespace KtaneWeb
                 if (!split.Length.IsBetween(1, 2))
                     continue;
 
-                var numberString = split[split.Length - 1];
-                if (numberString.EndsWith("x")) // To parse "5x" we need to remove the x.
-                    numberString = numberString.Substring(0, numberString.Length - 1);
+                var numberString = split[^1];
+                if (numberString.EndsWith('x')) // To parse "5x" we need to remove the x.
+                    numberString = numberString[..^1];
 
                 if (!decimal.TryParse(numberString, out var number))
                     continue;
@@ -540,30 +534,26 @@ namespace KtaneWeb
         private static void mergeTimeModeData(KtaneModuleInfo mod, JsonValue modJson, Dictionary<string, string> entry)
         {
             // Get score strings
-            string scoreString = entry["resolvedscore"].Trim();
+            var scoreString = entry["resolvedscore"].Trim();
             if (string.IsNullOrEmpty(scoreString))
                 scoreString = "10";
-            string scorePerModuleString = entry["resolvedbosspointspermodule"] ?? "";
+            var scorePerModuleString = entry["resolvedbosspointspermodule"] ?? "";
 
             mod.TimeMode ??= new KtaneTimeModeInfo();
 
             var timeMode = mod.TimeMode;
 
             // Determine the score orign
-            if (!string.IsNullOrEmpty(entry["assignedscore"]))
-                timeMode.Origin = KtaneTimeModeOrigin.Assigned;
-            else if (!string.IsNullOrEmpty(entry["communityscore"]))
-                timeMode.Origin = KtaneTimeModeOrigin.Community;
-            else if (!string.IsNullOrEmpty(entry["tpscore"].Trim()))
-                timeMode.Origin = KtaneTimeModeOrigin.TwitchPlays;
-            else
-                timeMode.Origin = KtaneTimeModeOrigin.Unassigned;
+            timeMode.Origin =
+                !string.IsNullOrEmpty(entry["assignedscore"]) ? KtaneTimeModeOrigin.Assigned :
+                !string.IsNullOrEmpty(entry["communityscore"]) ? KtaneTimeModeOrigin.Community :
+                !string.IsNullOrEmpty(entry["tpscore"].Trim()) ? KtaneTimeModeOrigin.TwitchPlays : KtaneTimeModeOrigin.Unassigned;
 
             // Parse scores
-            if (decimal.TryParse(scoreString, out decimal score))
+            if (decimal.TryParse(scoreString, out var score))
                 timeMode.Score ??= score;
 
-            if (decimal.TryParse(scorePerModuleString, out decimal scorePerModule))
+            if (decimal.TryParse(scorePerModuleString, out var scorePerModule))
                 timeMode.ScorePerModule ??= scorePerModule;
 
             modJson["TimeMode"] = ClassifyJson.Serialize(mod.TimeMode);

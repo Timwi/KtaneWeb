@@ -16,7 +16,7 @@ namespace KtaneWeb
         {
             if (req.Url.Path.Length == 0)
                 throw new HttpException(HttpStatusCode._404_NotFound);
-            var url = req.Url.Path.Substring(1);
+            var url = req.Url.Path[1..];
             if (!_proxyAllowedUrlPrefixes.Any(url.StartsWith))
                 throw new HttpException(HttpStatusCode._403_Forbidden);
             url = refreshDiscordAttachment(req.Url) ?? url;
@@ -41,12 +41,12 @@ namespace KtaneWeb
 
         private string refreshDiscordAttachment(IHttpUrl fullUrl)
         {
-            string url = fullUrl.Path.Substring(1) + fullUrl.QueryString;
+            var url = $"{fullUrl.Path[1..]}{fullUrl.QueryString}";
             if (!url.StartsWith("https://cdn.discordapp.com/attachments/") || _config.DiscordBotToken == null)
                 return null;
 
-            var parsed = new HttpUrl("cdn.discordapp.com", url.Substring("https://cdn.discordapp.com".Length));
-            var expired = !int.TryParse(parsed.QueryValues("ex").FirstOrDefault("0"), System.Globalization.NumberStyles.HexNumber, null, out int expirationSeconds) || expirationSeconds < DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var parsed = new HttpUrl("cdn.discordapp.com", url["https://cdn.discordapp.com".Length..]);
+            var expired = !int.TryParse(parsed.QueryValues("ex").FirstOrDefault("0"), System.Globalization.NumberStyles.HexNumber, null, out var expirationSeconds) || expirationSeconds < DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             if (!expired)
                 return url;

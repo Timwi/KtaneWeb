@@ -4,3 +4,9 @@ indent_style = space
 
 [*.cs]
 csharp_indent_labels = false
+
+# IDE0305: Let me use .ToArray()/.ToList()
+dotnet_diagnostic.IDE0305.severity = none
+
+# CA1859: I know how to use return types
+dotnet_diagnostic.CA1859.severity = none

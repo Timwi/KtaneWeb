@@ -22,7 +22,7 @@ namespace KtaneWeb
             if (!req.Url.Path.StartsWith("/PDF/", StringComparison.InvariantCultureIgnoreCase))
                 return null;
 
-            var filename = req.Url.Path.Substring(5);
+            var filename = req.Url.Path[5..];
             if (filename.Length < 1 || filename.Contains('/'))
                 return null;
             filename = filename.UrlUnescape();
@@ -33,15 +33,15 @@ namespace KtaneWeb
                 return null;
 
             // See if an equivalent HTML file exists, even with a wildcard match or incorrect filename capitilization
-            string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
+            var htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
             if (htmlFile == null)
                 return null;
 
             // Check if the PDF filename is exactly correct and redirect if it isn’t
-            string pdfUrl = $"/PDF/{Path.GetFileNameWithoutExtension(htmlFile)}.pdf";
+            var pdfUrl = $"/PDF/{Path.GetFileNameWithoutExtension(htmlFile)}.pdf";
             if (!Regex.IsMatch(pdfUrl, $"^{Regex.Escape("/PDF/" + filename).Replace("\\*", ".*")}$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 return null;
-            if (pdfUrl != req.Url.Path.Substring(0, 5) + filename)
+            if (pdfUrl != req.Url.Path[..5] + filename)
                 return HttpResponse.Redirect(req.Url.WithPath(pdfUrl));
 
             // Turns out an HTML file corresponding to the requested PDF file exists, so we will try to generate the PDF automatically by invoking Google Chrome
@@ -73,8 +73,7 @@ namespace KtaneWeb
                     return (pdfFile, false);
                 }
 
-                using var md5 = MD5.Create();
-                var tempFilename = $"{md5.ComputeHash(File.ReadAllBytes(htmlFile)).ToHex()}.pdf";
+                var tempFilename = $"{MD5.HashData(File.ReadAllBytes(htmlFile)).ToHex()}.pdf";
                 var tempFilepath = Path.Combine(_config.PdfTempPath ?? Path.GetTempPath(), tempFilename);
                 var didGenerate = false;
                 if (!File.Exists(tempFilepath))
@@ -121,27 +120,26 @@ namespace KtaneWeb
                           return sheetslist.Select((sheet, ix) =>
                           {
                               var moduleFilename = module.ContainsKey("FileName") ? module["FileName"].GetString() : module["Name"].GetString();
-                              var pdfFilename = Path.Combine(_config.BaseDir, "PDF", moduleFilename + sheet.Substring(0, sheet.IndexOf('|')) + ".pdf");
+                              var pdfFilename = Path.Combine(_config.BaseDir, "PDF", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.pdf");
                               var cssClass = File.Exists(pdfFilename) ? "exists" : "pdf-missing";
                               var md5hash = "(pdf file)";
 
-                              var htmlFile = Path.Combine(_config.BaseDir, "HTML", moduleFilename + sheet.Substring(0, sheet.IndexOf('|')) + ".html");
+                              var htmlFile = Path.Combine(_config.BaseDir, "HTML", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.html");
                               if (File.Exists(htmlFile))
                               {
-                                  using var md5 = MD5.Create();
-                                  md5hash = md5.ComputeHash(File.ReadAllBytes(htmlFile)).ToHex();
+                                  md5hash = MD5.HashData(File.ReadAllBytes(htmlFile)).ToHex();
                                   var tempFilepath = Path.Combine(_config.PdfTempPath ?? Path.GetTempPath(), $"{md5hash}.pdf");
                                   cssClass = File.Exists(tempFilepath) ? "exists" : "pdf-missing";
                               }
                               if (cssClass == "exists")
                               {
                                   availableAll++;
-                                  if (sheet.IndexOf('|') == 0)
+                                  if (sheet.StartsWith('|'))
                                       availableOriginals++;
                               }
                               return new TR(
                                   ix == 0 ? new TH { rowspan = sheetslist.Length }._(module["Name"].GetString()) : null,
-                                  new TD { class_ = cssClass }._(sheet.Substring(0, sheet.IndexOf('|'))),
+                                  new TD { class_ = cssClass }._(sheet[..sheet.IndexOf('|')]),
                                   new TD { class_ = cssClass }._(md5hash ?? "-"));
                           });
                       })),
@@ -163,7 +161,7 @@ namespace KtaneWeb
                 var messages = new StringBuilder();
                 var json = JsonValue.Parse(req.Post["json"].Value);
                 json.AppendIndented(messages);
-                var keywords = json["search"].GetString().Length == 0 ? null : json["search"].GetString().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var keywords = json["search"].GetString().Length == 0 ? null : json["search"].GetString().Split([' '], StringSplitOptions.RemoveEmptyEntries);
                 var searchOptions = json["searchOptions"].GetList().Select(j => j.GetString()).ToArray();
                 var filterEnabledByProfile = json["filterEnabledByProfile"].GetBool();
                 var filterVetoedByProfile = json["filterVetoedByProfile"].GetBool();
@@ -176,7 +174,7 @@ namespace KtaneWeb
                 var displayTags = json["displayTags"].GetBoolSafe() ?? false;
                 var restrictedManuals = json["restrictedManuals"].GetList().Select(j => j.GetString()).ToArray();
 
-                static string unifyString(string str) => Regex.Replace(str.Normalize(NormalizationForm.FormD), @"[\u0300-\u036f]", "").Replace("grey", "gray").Replace("colour", "color");
+                static string unifyString(string str) => str.Normalize(NormalizationForm.FormD).RegexReplace(@"[\u0300-\u036f]", "").Replace("grey", "gray").Replace("colour", "color");
 
                 // Filter
                 var matchingModules = _moduleInfoCache.Modules.Where(m =>
@@ -249,22 +247,25 @@ namespace KtaneWeb
                     if (json["preferredManuals"].ContainsKey(module.Name))
                     {
                         var pref = json["preferredManuals"][module.Name].GetString();
-                        var match = Regex.Match(pref, @"^(.*) \((PDF|HTML)\)$");
-                        string fullname = module.Name + " " + match.Groups[1].Value;
-                        bool unRestricted = !restrictedManuals.Contains(fullname);
-                        string path;
+                        var hasMatch = pref.RegexMatch(@"^(.*) \((PDF|HTML)\)$", out var match);
+                        var fullname = $"{module.Name} {match.Groups[1].Value}";
+                        var unrestricted = !restrictedManuals.Contains(fullname);
 
                         // PDF file exists
-                        if (match.Success && unRestricted && match.Groups[2].Value == "PDF" && File.Exists(path = Path.Combine(_config.BaseDir, "PDF", $"{fullname.Replace(module.Name, module.FileName)}.pdf")))
+                        if (hasMatch && unrestricted && match.Groups[2].Value == "PDF"
+                                && Path.Combine(_config.BaseDir, "PDF", $"{fullname.Replace(module.Name, module.FileName)}.pdf") is { } path
+                                && File.Exists(path))
                         {
                             messages.AppendLine($"{pref} (pref) ⇒ {path}");
                             fullPath = path;
                         }
                         // HTML file exists, regardless if HTML or PDF is selected
-                        else if (match.Success && unRestricted && File.Exists(path = Path.Combine(_config.BaseDir, "HTML", $"{fullname.Replace(module.Name, module.FileName)}.html")))
+                        else if (hasMatch && unrestricted
+                                && Path.Combine(_config.BaseDir, "HTML", $"{fullname.Replace(module.Name, module.FileName)}.html") is { } htmlPath
+                                && File.Exists(htmlPath))
                         {
-                            messages.AppendLine($"{pref} (pref) ⇒ {path}");
-                            fullPath = path;
+                            messages.AppendLine($"{pref} (pref) ⇒ {htmlPath}");
+                            fullPath = htmlPath;
                         }
                     }
 
@@ -324,8 +325,8 @@ namespace KtaneWeb
                             {
                                 lastExaminedPdfFile = pdfFile;
                                 var pdf = PdfReader.Open(Path.Combine(_config.BaseDir, _config.PdfDir, pdfFile), PdfDocumentOpenMode.Import);
-                                int count = pdf.PageCount;
-                                for (int idx = 0; idx < count; idx++)
+                                var count = pdf.PageCount;
+                                for (var idx = 0; idx < count; idx++)
                                     mergedPdf.AddPage(pdf.Pages[idx]);
                             }
                             using var f = File.OpenWrite(pdfPath);

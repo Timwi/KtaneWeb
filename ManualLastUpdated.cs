@@ -12,7 +12,7 @@ namespace KtaneWeb
         private HttpResponse ManualLastUpdated(HttpRequest req)
         {
             var filename = req.Url.Path.UrlUnescape();
-            if (Path.GetInvalidPathChars().Any(ch => filename.Contains(ch)))
+            if (Path.GetInvalidPathChars().Any(filename.Contains))
                 return HttpResponse.PlainText($"“{filename}” contains a character not allowed in file names.", HttpStatusCode._400_BadRequest);
 
             var moduleInfoCache = _moduleInfoCache;
@@ -21,11 +21,11 @@ namespace KtaneWeb
             {
                 if (!moduleInfoCache.ManualsLastModified.TryGetValue(filename, out var result))
                 {
-                    string htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
+                    var htmlFile = new DirectoryInfo(Path.Combine(_config.BaseDir, "HTML")).GetFiles(Path.GetFileNameWithoutExtension(filename) + ".html").Select(fs => fs.FullName).FirstOrDefault();
                     if (htmlFile == null)
                         return HttpResponse.PlainText("Manual doesn’t exist.", HttpStatusCode._404_NotFound);
 
-                    string relativeFilename = Path.GetFileName(htmlFile);
+                    var relativeFilename = Path.GetFileName(htmlFile);
                     if (filename != "/" + relativeFilename)
                         return HttpResponse.Redirect(req.Url.WithPath("/" + relativeFilename));
 

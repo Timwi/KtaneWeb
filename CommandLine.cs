@@ -177,15 +177,10 @@ namespace KtaneWeb
             var numBlocks = 0;
             foreach (var row in lines)
             {
-                var m = Regex.Match(row, @"^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ..... +\d+(?: +\d+)? +([0-9a-f]{40}\.txt)\s*$");
-                if (m.Success)
-                    files.Add(m.Groups[1].Value);
-                else
-                {
-                    m = Regex.Match(row, @"^Blocks = (\d+)\s*$");
-                    if (m.Success && int.TryParse(m.Groups[1].Value, out var nb))
-                        numBlocks = nb;
-                }
+                if (row.RegexMatch(@"^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ..... +\d+(?: +\d+)? +([0-9a-f]{40}\.txt)\s*$", out var fileLine))
+                    files.Add(fileLine.Groups[1].Value);
+                else if (row.RegexMatch(@"^Blocks = (\d+)\s*$", out var blockLine) && int.TryParse(blockLine.Groups[1].Value, out var nb))
+                    numBlocks = nb;
             }
             return (files, numBlocks);
         }

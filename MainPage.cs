@@ -255,9 +255,9 @@ namespace KtaneWeb
                                 translation.ruleSeedLabel, " ",
                                 new INPUT { type = itype.number, step = "1", id = "rule-seed-input", value = "1", class_ = "focus-on-show" }),
                             new P { class_ = "explain" }._(translation.ruleSeedExplanation),
-                            new P { class_ = "explain" }._(Regex.Match(translation.ruleSeedLink, @"^(.*)\{(.*)\}(.*)$").Apply(m => m.Success
+                            new P { class_ = "explain" }._(translation.ruleSeedLink.RegexMatch(@"^(.*)\{(.*)\}(.*)$", out var m)
                                 ? new object[] { m.Groups[1].Value, new A { href = "https://steamcommunity.com/sharedfiles/filedetails/?id=2037350348" }._(m.Groups[2].Value), m.Groups[3].Value }
-                                : (object) translation.ruleSeedLink)),
+                                : (object) translation.ruleSeedLink),
                             new P { class_ = "explain" }._(translation.ruleSeedDefault)),
 
                         // FILTERS (tab popup)
@@ -361,23 +361,23 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new DIV { class_ = "option-group" }._(() =>
                             {
-                                Dictionary<string, List<string>> license = new Dictionary<string, List<string>>()
+                                var license = new Dictionary<string, List<string>>()
                                 {
-                                    { "You may:", new List<string>() {
+                                    ["You may:"] = [
                                         "use the work commercially.",
                                         "make changes to the work.",
                                         "distribute the compiled code and / or source.",
                                         "incorporate the work into something that has a more restrictive license.",
                                         "use the work for private use.",
-                                    } },
-                                    { "You may not:", new List<string>() {
+                                    ],
+                                    ["You may not:"] = [
                                         "hold the author liable.",
-                                    } },
-                                    { "You must:", new List<string>() {
+                                    ],
+                                    ["You must:"] = [
                                         "include the copyright notice in all copies or substantial uses of the work.",
                                         "include the license notice in all copies or substantial uses of the work.",
                                         "use the work to create mods for KTANE.",
-                                    } }
+                                    ]
                                 };
 
                                 return Ut.NewArray<object>(
@@ -515,7 +515,7 @@ namespace KtaneWeb
         {
             var sb = new StringBuilder();
             foreach (var ch in text)
-                if (ch == '\\' || ch == '\'')
+                if (ch is '\\' or '\'')
                     sb.Append($"\\{(int) ch:X4} ");
                 else
                     sb.Append(ch);

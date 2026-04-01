@@ -4,7 +4,7 @@ using RT.Servers;
 
 namespace KtaneWeb
 {
-    sealed class KtaneWebSession : Session, ISessionEquatable<KtaneWebSession>
+    sealed class KtaneWebSession(KtaneWebConfig config) : Session, ISessionEquatable<KtaneWebSession>
     {
         public string Username;
 
@@ -26,11 +26,12 @@ namespace KtaneWeb
                 _config.Sessions[SessionID] = Username;
         }
 
-        KtaneWebSession ISessionEquatable<KtaneWebSession>.DeepClone() => new KtaneWebSession(_config) { Username = Username };
+        KtaneWebSession ISessionEquatable<KtaneWebSession>.DeepClone() => new(_config) { Username = Username };
         bool IEquatable<KtaneWebSession>.Equals(KtaneWebSession other) => other != null && string.Equals(Username, other.Username);
+        public override bool Equals(object obj) => obj is KtaneWebSession other && string.Equals(Username, other.Username);
+        public override int GetHashCode() => Username.GetHashCode();
 
         [ClassifyIgnore]
-        private KtaneWebConfig _config;
-        public KtaneWebSession(KtaneWebConfig config) { _config = config; }
+        private readonly KtaneWebConfig _config = config;
     }
 }
