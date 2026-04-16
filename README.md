@@ -1,6 +1,6 @@
 # Set up the solution for KtaneWeb
 
-Building KtaneWeb requires Visual Studio ≥ 2022 and .NET SDK ≥ 10.0.
+Building KtaneWeb requires Visual Studio ≥ 2026 and .NET SDK ≥ 10.0.
 
 KtaneWeb depends on a number of Nuget packages. Visual Studio handles this automatically when you try to compile the project; otherwise you may need to run a “Nuget restore” first.
 
