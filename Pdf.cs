@@ -25,7 +25,8 @@ namespace KtaneWeb
             var filename = req.Url.Path[5..];
             if (filename.Length < 1 || filename.Contains('/'))
                 return null;
-            filename = filename.UrlUnescape();
+            try { filename = filename.UrlUnescape(); }
+            catch (Exception) { return HttpResponse.Empty(HttpStatusCode._400_BadRequest); }
 
             // If the PDF file already exists in the PDF folder, use that
             var existingPdfPath = Path.Combine(_config.BaseDir, "PDF", filename);
