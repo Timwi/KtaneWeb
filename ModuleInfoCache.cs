@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading;
 using HtmlAgilityPack;
 using RT.Json;
@@ -13,6 +10,9 @@ using RT.Serialization;
 using RT.Servers;
 using RT.Util;
 using RT.Util.ExtensionMethods;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace KtaneWeb
 {
@@ -232,12 +232,11 @@ namespace KtaneWeb
             // For generating the icon sprite, start with a bitmap that is at least as big as we need (possibly bigger)
             var curX = 0;
             var curY = 0;
-            using var iconSpriteBmp = new Bitmap(w * cols, h * ((modules.Length + cols - 1) / cols));
-            using var iconSpriteGr = Graphics.FromImage(iconSpriteBmp);
+            using var iconSpriteBmp = new Image<Rgba32>(w * cols, h * ((modules.Length + cols - 1) / cols));
             {
                 // blank icon
-                using (var icon = new Bitmap(Path.Combine(_config.BaseDir, "Icons", "blank.png")))
-                    iconSpriteGr.DrawImage(icon, 0, 0);
+                using (var icon = Image.Load(Path.Combine(_config.BaseDir, "Icons", "blank.png")))
+                    iconSpriteBmp.Mutate(bmp => bmp.DrawImage(icon, new Point(0, 0), 1f));
 
                 var uniqueSortKeys = new Dictionary<string, KtaneModuleInfo>();
                 var uniqueSymbols = new Dictionary<string, KtaneModuleInfo>();
@@ -326,8 +325,8 @@ namespace KtaneWeb
                                 curY++;
                                 curX = 0;
                             }
-                            using (var icon = new Bitmap(iconFilePath))
-                                iconSpriteGr.DrawImage(icon, w * curX, h * curY);
+                            using (var icon = Image.Load(iconFilePath))
+                                iconSpriteBmp.Mutate(bmp => bmp.DrawImage(icon, new Point(w * curX, h * curY), 1f));
                             coords.Add(fileName, (curX, curY));
                         }
                     }
@@ -339,11 +338,10 @@ namespace KtaneWeb
             }
 
             // Now that we know how many icons are in the icon sprite, create a bitmap of the correct size
-            using var iconSpriteBmp2 = new Bitmap(w * cols, h * (curY + 1));
-            using var iconSpriteGr2 = Graphics.FromImage(iconSpriteBmp2);
-            iconSpriteGr2.DrawImage(iconSpriteBmp, 0, 0);
+            using var iconSpriteBmp2 = new Image<Rgba32>(w * cols, h * (curY + 1));
+            iconSpriteBmp2.Mutate(bmp => bmp.DrawImage(iconSpriteBmp, new Point(0, 0), 1f));
             using var mem = new MemoryStream();
-            iconSpriteBmp2.Save(mem, ImageFormat.Png);
+            iconSpriteBmp2.SaveAsPng(mem);
             moduleInfoCache.IconSpritePng = mem.ToArray();
             moduleInfoCache.IconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(moduleInfoCache.IconSpritePng)})}}";
 
