@@ -238,6 +238,13 @@ namespace KtaneWeb
                                 new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
                                 new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
                                 new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.steam/steam/userdata/<some number>/760/remote/341800/screenshots" }))),
+                            new H4("Linux (flatpak)"),
+                            new TABLE { class_ = "file-locations" }._(
+                                new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value =  @"~/.var/app/com.valvesoftware.Steam/.steam/steam/steamapps/common/Keep Talking and Nobody Explodes/" })),
+                                new TR(new TH(translation.fileLocationLogfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.var/app/com.valvesoftware.Steam/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Player.log" })),
+                                new TR(new TH(translation.fileLocationProfile + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.var/app/com.valvesoftware.Steam/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/ModProfiles" })),
+                                new TR(new TH(translation.fileLocationSetting + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.var/app/com.valvesoftware.Steam/.config/unity3d/Steel Crate Games/Keep Talking and Nobody Explodes/Modsettings" })),
+                                new TR(new TH(translation.fileLocationScreenshot + " (Steam):"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.var/app/com.valvesoftware.Steam/.steam/steam/userdata/<some number>/760/remote/341800/screenshots" }))),
                             new H4("Steam Deck (Proton)"),
                             new TABLE { class_ = "file-locations" }._(
                                 new TR(new TH(translation.fileLocationGame + ":"), new TD(new INPUT { type = itype.text, class_ = "select-on-focus", value = @"~/.local/share/Steam/steamapps/common/Keep Talking and Nobody Explodes" })),
