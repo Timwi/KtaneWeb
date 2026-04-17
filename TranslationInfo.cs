@@ -93,6 +93,7 @@ namespace KtaneWeb
         public string modIdeaSubredditAnchor = "Mod ideas: subreddit";
         public string modkitGithubAnchor = "KtaneModkit GitHub repository";
         public string modkitGithubDesc = "(contains the Unity project you need to make a KTANE mod)";
+        public string whoCanSolveAnchor = "KTaNE Who Can Solve? (WCS)";
         public string contentGithubAnchor = "KtaneContent GitHub repository";
         public string contentGithubDesc = "(contains the manuals, Profile Editor, Logfile Analyzer and other static files)";
         public string webGithubAnchor = "KtaneWeb GitHub repository";
