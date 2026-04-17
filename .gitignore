@@ -7,3 +7,4 @@ publish
 *.user
 *.sln.cache
 *.orig
+.DS_Store
