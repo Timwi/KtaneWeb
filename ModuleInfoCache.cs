@@ -427,10 +427,10 @@ namespace KtaneWeb
             var timeModeEntries = new Dictionary<string, Dictionary<string, string>>();
             try
             {
-                Log.Info($"Loading Time Mode spreadsheet (attempt {5 - attempts}/5)");
+                Log.Info(5, $"Loading Time Mode spreadsheet (attempt {5 - attempts}/5)");
                 foreach (var entry in getJsonFromSheets("16lz2mCqRWxq__qnamgvlD0XwTuva4jIDW1VPWX49hzM"))
                     timeModeEntries[tpNormalize(entry["modulename"])] = entry;
-                Log.Info($"Loading Time Mode spreadsheet: SUCCESS");
+                Log.Info(5, $"Loading Time Mode spreadsheet: SUCCESS");
             }
             catch
             {
@@ -452,10 +452,10 @@ namespace KtaneWeb
             var tpEntries = new Dictionary<string, Dictionary<string, string>>();
             try
             {
-                Log.Info($"Loading TP spreadsheet (attempt {5 - attempts}/5)");
+                Log.Info(5, $"Loading TP spreadsheet (attempt {5 - attempts}/5)");
                 foreach (var entry in getJsonFromSheets("1G6hZW0RibjW7n72AkXZgDTHZ-LKj0usRkbAwxSPhcqA"))
                     tpEntries[tpNormalize(entry["modulename"])] = entry;
-                Log.Info($"Loading TP spreadsheet: SUCCESS");
+                Log.Info(5, $"Loading TP spreadsheet: SUCCESS");
             }
             catch
             {
