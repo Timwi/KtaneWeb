@@ -127,7 +127,8 @@ namespace KtaneWeb
                                 new DIV { class_ = "search-options" }._(
                                     new SPAN { class_ = "search-option", id = "search-opt-names" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-names" }, new LABEL { for_ = "search-names" }._(translation.searchNames)),
                                     new SPAN { class_ = "search-option", id = "search-opt-authors" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-authors" }, new LABEL { for_ = "search-authors" }._(translation.searchAuthors)),
-                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._(translation.searchDescriptions)))),
+                                    new SPAN { class_ = "search-option", id = "search-opt-descriptions" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-descriptions" }, new LABEL { for_ = "search-descriptions" }._(translation.searchDescriptions)),
+                                    new SPAN { class_ = "search-option", id = "search-opt-tags" }._(new INPUT { type = itype.checkbox, class_ = "search-option-input", id = "search-tags" }, new LABEL { for_ = "search-tags" }._(translation.searchTags)))),
                             new DIV { class_ = "search-container" }._(
                                 new LABEL { for_ = "search-field-mission" }._(translation.searchMission + " "),
                                 new SELECT { id = "search-field-mission", class_ = "sw-focus" }, " ",

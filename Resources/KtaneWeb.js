@@ -212,7 +212,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     let resultsMode = lStorage.getItem('resultsMode') || 'hide';
     let resultsLimit = lStorage.getItem('resultsLimit') || 20;
 
-    let validSearchOptions = ['names', 'authors', 'descriptions'];
+    let validSearchOptions = ['names', 'authors', 'descriptions', 'tags'];
     let defaultSearchOptions = ['names'];
     let searchOptions = defaultSearchOptions;
     try { searchOptions = JSON.parse(lStorage.getItem('searchOptions')) || defaultSearchOptions; } catch (exc) { }
@@ -947,7 +947,8 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         }
 
         let searchRaw = $("input#search-field").val().toString().toLowerCase().trim();
-        let searchKeywords = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\'')).map(x => new RegExp(escapeRegExp(x).replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y').replace(/impost[oe]r/g, 'impost[oe]r')));
+        let searchKeywordsRaw = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\'')).map(x => x.replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y').replace(/impost[oe]r/g, 'impost[oe]r'));
+        let searchKeywords = searchKeywordsRaw.map(x => new RegExp(escapeRegExp(x)));
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
@@ -1008,21 +1009,18 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                     searchWhat += ' ' + mod.AllContr?.toLowerCase();
                 else
                     searchWhat += ' ' + mod.Author?.toLowerCase();
-            if (searchOptions.indexOf('descriptions') !== -1 && mod.Descriptions)
-            {
-                let modDescr = mod.Descriptions.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions.filter(d => d.Language == "English")[0];
-                if (displayDescription)
-                    searchWhat += ' ' + modDescr.Description.toLowerCase();
-                if (displayTags && modDescr.Tags)
-                    searchWhat += ' ' + modDescr.Tags.toLowerCase();
-            }
+            const modDescr = mod.Descriptions?.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions?.filter(d => d.Language == "English")[0] ?? null;
+            if (searchOptions.indexOf('descriptions') !== -1 && displayDescription && modDescr?.Description)
+                searchWhat += ' ' + modDescr.Description.toLowerCase();
             if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
             if (pageLang)
                 searchWhat += ' ' + mod.localName.toLocaleLowerCase();
 
+            const tags = (searchOptions.indexOf('tags') !== -1 && displayTags && modDescr?.Tags) ? modDescr.Tags.split(",").map(t => t.toLowerCase().trim()) : [];
+
             mod.MatchesFilter = filteredIn;
-            mod.MatchesSearch = searchKeywords.every(x => x.test(searchWhat));
+            mod.MatchesSearch = searchKeywords.every(x => x.test(searchWhat)) || searchKeywordsRaw.every(x => tags.some(tag => tag.startsWith(x)));
             mod.includeInResults = mod.MatchesFilter && mod.MatchesSearch;
 
             if (invertSearch)

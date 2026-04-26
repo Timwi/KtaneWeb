@@ -67,6 +67,7 @@ namespace KtaneWeb
         public string searchNames = "Names";
         public string searchAuthors = "Authors";
         public string searchDescriptions = "Descriptions";
+        public string searchTags = "Tags";
         public string popupLinks = "Links";
         public string popupTools = "Tools";
         public string popupView = "View";
