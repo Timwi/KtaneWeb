@@ -1009,7 +1009,11 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             if (searchByModuleID && 'ModuleID' in mod && mod.ModuleID !== null)
                 searchWhat += ' ' + mod.ModuleID.toLowerCase();
             if (searchOptions.indexOf('names') !== -1)
+            {
                 searchWhat += ' ' + mod.Name.toLowerCase() + ' ' + mod.Name.replace(/[- ]/g, '').toLowerCase() + ' ' + mod.SortKey.replace(/[- ]/g, '').toLowerCase();
+                if (pageLang)
+                    searchWhat += ' ' + mod.localName.toLocaleLowerCase();
+            }
             if (searchOptions.indexOf('authors') !== -1)
                 if (displayAllContributors)
                     searchWhat += ' ' + mod.AllContr?.toLowerCase();
@@ -1020,8 +1024,6 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                 searchWhat += ' ' + modDescr.Description.toLowerCase();
             if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
-            if (pageLang)
-                searchWhat += ' ' + mod.localName.toLocaleLowerCase();
 
             const tags = (searchOptions.indexOf('tags') !== -1 && displayTags && modDescr?.Tags) ? modDescr.Tags.split(",").map(t => t.toLowerCase().trim()) : [];
 
