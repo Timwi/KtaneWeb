@@ -952,7 +952,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             .map(x => escapeRegExp(x.replace(/’/g, '\'')).replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y').replace(/impost[oe]r/g, 'impost[oe]r'))
             .map(x => ({
                 anyRegex: new RegExp(x),
-                startRegex: new RegExp(`^${x}`)
+                startRegex: new RegExp(`\\b${x}`)
             }));
 
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
