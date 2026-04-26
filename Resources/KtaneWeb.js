@@ -947,8 +947,14 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         }
 
         let searchRaw = $("input#search-field").val().toString().toLowerCase().trim();
-        let searchKeywordsRaw = searchRaw.split(' ').filter(x => x.length > 0).map(x => x.replace(/’/g, '\'')).map(x => x.replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y').replace(/impost[oe]r/g, 'impost[oe]r'));
-        let searchKeywords = searchKeywordsRaw.map(x => new RegExp(escapeRegExp(x)));
+        let searchKeywords = searchRaw.split(' ')
+            .filter(x => x.length > 0)
+            .map(x => escapeRegExp(x.replace(/’/g, '\'')).replace(/colou?/g, 'colou?').replace(/gr[ae]y/g, 'gr[ae]y').replace(/impost[oe]r/g, 'impost[oe]r'))
+            .map(x => ({
+                anyRegex: new RegExp(x),
+                startRegex: new RegExp(`^${x}`)
+            }));
+
         const filterEnabledByProfile = $('input#filter-profile-enabled').prop('checked');
         const filterVetoedByProfile = $('input#filter-profile-disabled').prop('checked');
 
@@ -1020,7 +1026,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             const tags = (searchOptions.indexOf('tags') !== -1 && displayTags && modDescr?.Tags) ? modDescr.Tags.split(",").map(t => t.toLowerCase().trim()) : [];
 
             mod.MatchesFilter = filteredIn;
-            mod.MatchesSearch = searchKeywords.every(x => x.test(searchWhat)) || searchKeywordsRaw.every(x => tags.some(tag => tag.startsWith(x)));
+            mod.MatchesSearch = searchKeywords.every(x => x.anyRegex.test(searchWhat) || tags.some(tag => x.startRegex.test(tag)));
             mod.includeInResults = mod.MatchesFilter && mod.MatchesSearch;
 
             if (invertSearch)
