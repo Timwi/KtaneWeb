@@ -8,3 +8,4 @@ publish
 *.sln.cache
 *.orig
 .DS_Store
+FolderProfile.pubxml
