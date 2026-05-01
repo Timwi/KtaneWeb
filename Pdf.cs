@@ -114,36 +114,38 @@ namespace KtaneWeb
                     "td.exists { background: #efe; }")),
                 new BODY(
                     new TABLE(cache.ModulesJson["KtaneModules"].GetList().OrderBy(m => m["Name"].GetString(), StringComparer.OrdinalIgnoreCase).Select(module =>
-                      {
-                          var sheetslist = module["Sheets"].GetList().Select(jv => jv.GetString()).Where(sh => sh.Contains("|pdf|")).ToArray();
-                          countAll += sheetslist.Length;
-                          countOriginals++;
-                          return sheetslist.Select((sheet, ix) =>
-                          {
-                              var moduleFilename = module.ContainsKey("FileName") ? module["FileName"].GetString() : module["Name"].GetString();
-                              var pdfFilename = Path.Combine(_config.BaseDir, "PDF", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.pdf");
-                              var cssClass = File.Exists(pdfFilename) ? "exists" : "pdf-missing";
-                              var md5hash = "(pdf file)";
+                    {
+                        if (!module.ContainsKey("Sheets"))
+                            return null;
+                        var sheetslist = module["Sheets"].GetList().Select(jv => jv.GetString()).Where(sh => sh.Contains("|pdf|")).ToArray();
+                        countAll += sheetslist.Length;
+                        countOriginals++;
+                        return sheetslist.Select((sheet, ix) =>
+                        {
+                            var moduleFilename = module.ContainsKey("FileName") ? module["FileName"].GetString() : module["Name"].GetString();
+                            var pdfFilename = Path.Combine(_config.BaseDir, "PDF", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.pdf");
+                            var cssClass = File.Exists(pdfFilename) ? "exists" : "pdf-missing";
+                            var md5hash = "(pdf file)";
 
-                              var htmlFile = Path.Combine(_config.BaseDir, "HTML", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.html");
-                              if (File.Exists(htmlFile))
-                              {
-                                  md5hash = MD5.HashData(File.ReadAllBytes(htmlFile)).ToHex();
-                                  var tempFilepath = Path.Combine(_config.PdfTempPath ?? Path.GetTempPath(), $"{md5hash}.pdf");
-                                  cssClass = File.Exists(tempFilepath) ? "exists" : "pdf-missing";
-                              }
-                              if (cssClass == "exists")
-                              {
-                                  availableAll++;
-                                  if (sheet.StartsWith('|'))
-                                      availableOriginals++;
-                              }
-                              return new TR(
-                                  ix == 0 ? new TH { rowspan = sheetslist.Length }._(module["Name"].GetString()) : null,
-                                  new TD { class_ = cssClass }._(sheet[..sheet.IndexOf('|')]),
-                                  new TD { class_ = cssClass }._(md5hash ?? "-"));
-                          });
-                      })),
+                            var htmlFile = Path.Combine(_config.BaseDir, "HTML", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.html");
+                            if (File.Exists(htmlFile))
+                            {
+                                md5hash = MD5.HashData(File.ReadAllBytes(htmlFile)).ToHex();
+                                var tempFilepath = Path.Combine(_config.PdfTempPath ?? Path.GetTempPath(), $"{md5hash}.pdf");
+                                cssClass = File.Exists(tempFilepath) ? "exists" : "pdf-missing";
+                            }
+                            if (cssClass == "exists")
+                            {
+                                availableAll++;
+                                if (sheet.StartsWith('|'))
+                                    availableOriginals++;
+                            }
+                            return new TR(
+                                ix == 0 ? new TH { rowspan = sheetslist.Length }._(module["Name"].GetString()) : null,
+                                new TD { class_ = cssClass }._(sheet[..sheet.IndexOf('|')]),
+                                new TD { class_ = cssClass }._(md5hash ?? "-"));
+                        });
+                    })),
                     new DIV(new Func<object>(() => $"Available: {availableOriginals}/{countOriginals} ({availableOriginals * 100 / (double) countOriginals:0.0}%) originals; {availableAll}/{countAll} ({availableAll * 100 / (double) countAll:0.0}%) total")))));
         }
 
