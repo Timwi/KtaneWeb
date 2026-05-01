@@ -94,61 +94,6 @@ namespace KtaneWeb
             }
         }
 
-        private HttpResponse pdfDiag(HttpRequest req)
-        {
-            var cache = _moduleInfoCache;
-            var availableOriginals = 0;
-            var availableAll = 0;
-            var countOriginals = 0;
-            var countAll = 0;
-            return HttpResponse.Html(new HTML(
-                new HEAD(
-                    new TITLE("PDF diagnostics"),
-                    new STYLELiteral("" +
-                    "body { font-size: 12pt; }" +
-                    "table { border: 2px solid black; border-collapse: collapse; }" +
-                    "td, th { border: 1px solid black; text-align: left; vertical-align: top; padding: .1cm .5cm; }" +
-                    "th { font-size: 18pt; }" +
-                    "td.html-missing { background: #fee; }" +
-                    "td.pdf-missing { background: #ffe; }" +
-                    "td.exists { background: #efe; }")),
-                new BODY(
-                    new TABLE(cache.ModulesJson["KtaneModules"].GetList().OrderBy(m => m["Name"].GetString(), StringComparer.OrdinalIgnoreCase).Select(module =>
-                    {
-                        if (!module.ContainsKey("Sheets"))
-                            return null;
-                        var sheetslist = module["Sheets"].GetList().Select(jv => jv.GetString()).Where(sh => sh.Contains("|pdf|")).ToArray();
-                        countAll += sheetslist.Length;
-                        countOriginals++;
-                        return sheetslist.Select((sheet, ix) =>
-                        {
-                            var moduleFilename = module.ContainsKey("FileName") ? module["FileName"].GetString() : module["Name"].GetString();
-                            var pdfFilename = Path.Combine(_config.BaseDir, "PDF", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.pdf");
-                            var cssClass = File.Exists(pdfFilename) ? "exists" : "pdf-missing";
-                            var md5hash = "(pdf file)";
-
-                            var htmlFile = Path.Combine(_config.BaseDir, "HTML", $"{moduleFilename}{sheet[..sheet.IndexOf('|')]}.html");
-                            if (File.Exists(htmlFile))
-                            {
-                                md5hash = MD5.HashData(File.ReadAllBytes(htmlFile)).ToHex();
-                                var tempFilepath = Path.Combine(_config.PdfTempPath ?? Path.GetTempPath(), $"{md5hash}.pdf");
-                                cssClass = File.Exists(tempFilepath) ? "exists" : "pdf-missing";
-                            }
-                            if (cssClass == "exists")
-                            {
-                                availableAll++;
-                                if (sheet.StartsWith('|'))
-                                    availableOriginals++;
-                            }
-                            return new TR(
-                                ix == 0 ? new TH { rowspan = sheetslist.Length }._(module["Name"].GetString()) : null,
-                                new TD { class_ = cssClass }._(sheet[..sheet.IndexOf('|')]),
-                                new TD { class_ = cssClass }._(md5hash ?? "-"));
-                        });
-                    })),
-                    new DIV(new Func<object>(() => $"Available: {availableOriginals}/{countOriginals} ({availableOriginals * 100 / (double) countOriginals:0.0}%) originals; {availableAll}/{countAll} ({availableAll * 100 / (double) countAll:0.0}%) total")))));
-        }
-
         private HttpResponse mergePdfs(HttpRequest req)
         {
             var lastExaminedPdfFile = "<none>";
