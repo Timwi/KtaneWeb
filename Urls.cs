@@ -83,7 +83,11 @@ namespace KtaneWeb
                             saveConfig();
                         }
                     }));
-                }));
+                }),
+
+                new UrlMapping(path: "/api", handler: API)
+
+                );
         }
     }
 }
