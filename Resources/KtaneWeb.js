@@ -1020,12 +1020,12 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                 else
                     searchWhat += ' ' + mod.Author?.toLowerCase();
             const modDescr = mod.Descriptions?.filter(d => d.Language == (pageLang ?? "English"))[0] ?? mod.Descriptions?.filter(d => d.Language == "English")[0] ?? null;
-            if (searchOptions.indexOf('descriptions') !== -1 && displayDescription && modDescr?.Description)
+            if (searchOptions.indexOf('descriptions') !== -1 && modDescr?.Description)
                 searchWhat += ' ' + modDescr.Description.toLowerCase();
             if (searchBySymbol && mod.Symbol)
                 searchWhat += ' ' + mod.Symbol.toLowerCase();
 
-            const tags = (searchOptions.indexOf('tags') !== -1 && displayTags && modDescr?.Tags) ? modDescr.Tags.split(",").map(t => t.toLowerCase().trim()) : [];
+            const tags = (searchOptions.indexOf('tags') !== -1 && modDescr?.Tags) ? modDescr.Tags.split(",").map(t => t.toLowerCase().trim()) : [];
 
             mod.MatchesFilter = filteredIn;
             mod.MatchesSearch = searchKeywords.every(x => x.anyRegex.test(searchWhat) || tags.some(tag => x.startRegex.test(tag)));
