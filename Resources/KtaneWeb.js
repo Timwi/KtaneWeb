@@ -1926,15 +1926,15 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
         }
 
         let chosenModule = filteredModules[Math.floor(Math.random() * filteredModules.length)];
-        let chosenFileName = chosenModule.FileName ?? chosenModule.Name;
+        let chosenUrlName = encodeURIComponent(chosenModule.FileName ?? chosenModule.Name);
         let chosenDescription =
             // Prefer user’s selected language
             chosenModule.Descriptions.find(d => d.Language == Ktane.Languages[document.getElementById("lang-selector").value]) ??
             chosenModule.Descriptions.find(d => d.Language == "English");
-        let chosenIcon = `Icons/${(chosenModule.X == 0 && chosenModule.Y == 0) ? "blank" : chosenFileName}.png`;
+        let chosenIcon = `Icons/${(chosenModule.X == 0 && chosenModule.Y == 0) ? "blank" : chosenUrlName}.png`;
 
         document.getElementById('random-chosen-name').innerHTML = chosenModule.Name;
-        document.getElementById('random-chosen-name').href = `HTML/${chosenFileName}.html`;
+        document.getElementById('random-chosen-name').href = `HTML/${chosenUrlName}.html`;
         document.getElementById('random-chosen-description').innerText = chosenDescription.Description;
         document.getElementById('random-chosen-icon').src = chosenIcon;
     });
