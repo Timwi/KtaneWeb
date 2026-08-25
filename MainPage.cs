@@ -147,7 +147,7 @@ namespace KtaneWeb
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = translation.Selectables.Length }._(translation.columnLinks),
-                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header"}._(translation.columnName)),
+                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._(translation.columnName)),
                                     new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._(translation.columnInformation)))),
 
                             // PERIODIC TABLE
