@@ -147,7 +147,7 @@ namespace KtaneWeb
                             new TABLE { id = "main-table" }._(
                                 new TR { class_ = "header-row" }._(
                                     new TH { colspan = translation.Selectables.Length }._(translation.columnLinks),
-                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header" }._(translation.columnName)),
+                                    new TH { class_ = "modlink" }._(new A { href = "#", class_ = "sort-header"}._(translation.columnName)),
                                     new TH { class_ = "infos" }._(new A { href = "#", class_ = "sort-header" }._(translation.columnInformation)))),
 
                             // PERIODIC TABLE
@@ -372,7 +372,10 @@ namespace KtaneWeb
                                 new H4(translation.linkOption),
                                 translation.Selectables.Select(sel => new DIV(
                                     new INPUT { type = itype.radio, class_ = "set-selectable", name = "selectable", id = $"selectable-{sel.PropName}" }.Data("selectable", sel.PropName), " ",
-                                    new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel))))),
+                                    new LABEL { class_ = "set-selectable", id = $"selectable-label-{sel.PropName}", for_ = $"selectable-{sel.PropName}", accesskey = sel.Accel?.ToString().ToLowerInvariant() }._(sel.HumanReadable.Accel(sel.Accel)))),
+                                    new INPUT { type = itype.checkbox, class_= "set-new-tab", id = "set-new-tab"},
+                                    new LABEL {for_ = "set-new-tab"}._(translation.newTab)
+                                ),
                             new DIV { class_ = "option-group" }._(new H4(translation.languagesOption), new DIV { id = "languages-option" }),
                             new BUTTON { class_ = "toggle-all-languages" }._(translation.languagesToggle)),
 

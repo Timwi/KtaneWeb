@@ -126,6 +126,10 @@ function contributorSort(a, b)
     return p1 === p2 ? e1.localeCompare(e2) : p1 - p2;
 }
 
+function readNewTabCheckbox(){
+    return $('input.set-new-tab')[0].checked?"_blank":"_self";
+}
+
 function initializePage(modules, initIcons, initDocDirs, initFilters, initSelectables, souvenirAttributes, moduleLoadExceptions, restrictedManuals, contactInfo)
 {
     for (let exception of moduleLoadExceptions)
@@ -154,6 +158,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
     let selectable = lStorage.getItem('selectable') || 'manual';
+    let currentTarget = lStorage.getItem('currentTarget') || '_self';
     if (initSelectables.map(sel => sel.PropName).indexOf(selectable) === -1)
         selectable = 'manual';
     let preferredManuals = {};
@@ -623,7 +628,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
                             }
 
                             let icon = el("img", "mod-icon", { src: `Icons/${mod.X === 0 && mod.Y === 0 ? 'blank' : encodeURIComponent(mod.FileName ?? mod.Name)}.png` });
-                            let modlink = el("a", "modlink", { href: mod.SelectableLinkUrl }, icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
+                            let modlink = el("a", "modlink", { href: mod.SelectableLinkUrl}, icon, el("span", "mod-name", mod.localName.replace(/'/g, "’")));
                             setIssuesTooltip(modlink, mod);
                             mod.ViewData.List.SelectableLink = modlink;
                             let td1 = el("td", "infos-1", el("div", "modlink-wrap", modlink, mod.localName === mod.Name ? null : el("div", "inf-origname", mod.Name.replace(/'/g, "’"))));
@@ -1605,8 +1610,21 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
     // This also calls updateFilter()
     setSelectable(selectable);
-
+    
+    
+    
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
+    $('input.set-new-tab').change(function(event){
+        currentTarget = event.target.checked?"_blank":"_self";
+        lStorage.setItem('currentTarget', currentTarget);
+        for (let el of document.getElementsByClassName("modlink")){
+            el.setAttribute('target', currentTarget);
+        }
+    });
+    $('input.set-new-tab')[0].checked = (lStorage.getItem('currentTarget') === "_blank");
+    for (let el of document.getElementsByClassName("modlink")){
+        el.setAttribute('target', currentTarget);
+    }
     $('input.filter').click(function() { updateFilter(); });
     $("input.results-mode").click(function() { setResultsMode(this.value, resultsLimit); });
     $("input#results-limit").change(function() { setResultsMode(resultsMode, this.value | 0); });
