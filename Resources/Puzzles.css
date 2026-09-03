@@ -1,29 +1,19 @@
 ﻿@font-face {
-    font-family: 'Trebuchet MS';
+    font-family: 'Open Sans';
     font-style: normal;
-    font-weight: normal;
-    src: local('Trebuchet MS'), local('Trebuchet'), url(../HTML/font/trebuc.ttf);
+    font-weight: 300 800;
+    font-stretch: 100%;
+    font-display: swap;
+    src: url(../HTML/font/OpenSans-VariableFont_wdth,wght.ttf) format('woff2');
 }
 
 @font-face {
-    font-family: 'Trebuchet MS';
-    font-style: normal;
-    font-weight: bold;
-    src: local('Trebuchet MS Bold'), local('Trebuchet Bold'), local('Trebuchet MS'), local('Trebuchet'), url(../HTML/font/trebucbd.ttf);
-}
-
-@font-face {
-    font-family: 'Trebuchet MS';
+    font-family: 'Open Sans';
     font-style: italic;
-    font-weight: normal;
-    src: local('Trebuchet MS Italic'), local('Trebuchet Italic'), local('Trebuchet MS'), local('Trebuchet'), url(../HTML/font/trebucit.ttf);
-}
-
-@font-face {
-    font-family: 'Trebuchet MS';
-    font-style: italic;
-    font-weight: bold;
-    src: local('Trebuchet MS Bold Italic'), local('Trebuchet Bold Italic'), local('Trebuchet MS'), local('Trebuchet'), url(../HTML/font/trebucbi.ttf);
+    font-weight: 300 800;
+    font-stretch: 100%;
+    font-display: swap;
+    src: url(../HTML/font/OpenSans-Italic-VariableFont_wdth,wght.ttf) format('woff2');
 }
 
 @font-face {
@@ -36,7 +26,7 @@ body {
 }
 
 body, button, a.button, input, textarea {
-    font-family: 'Trebuchet MS', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 13pt;
     margin: 0;
 }
