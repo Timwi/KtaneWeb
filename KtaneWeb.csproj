@@ -7,8 +7,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.13.0" />
-    <PackageReference Include="PdfSharp" Version="6.2.4" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.13.1" />
+    <PackageReference Include="PdfSharp" Version="6.1.1" />
     <PackageReference Include="PropellerApi" Version="2.7.0" />
     <PackageReference Include="RT.CommandLine" Version="2.2.204" />
     <PackageReference Include="SixLabors.ImageSharp" Version="4.1.2" />
