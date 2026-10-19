@@ -10,9 +10,7 @@ using RT.Serialization;
 using RT.Servers;
 using RT.Util;
 using RT.Util.ExtensionMethods;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 
 namespace KtaneWeb
 {
@@ -232,11 +230,13 @@ namespace KtaneWeb
             // For generating the icon sprite, start with a bitmap that is at least as big as we need (possibly bigger)
             var curX = 0;
             var curY = 0;
-            using var iconSpriteBmp = new Image<Rgba32>(w * cols, h * ((modules.Length + cols - 1) / cols));
+            using var iconSpriteBmp = new SKBitmap(new SKImageInfo(w * cols, h * ((modules.Length + cols - 1) / cols), SKColorType.Rgba8888, SKAlphaType.Premul));
+            using var iconSpriteCanvas = new SKCanvas(iconSpriteBmp);
+
             {
                 // blank icon
-                using (var icon = Image.Load(Path.Combine(_config.BaseDir, "Icons", "blank.png")))
-                    iconSpriteBmp.Mutate(bmp => bmp.DrawImage(icon, new Point(0, 0), 1f));
+                using (var icon = SKBitmap.Decode(Path.Combine(_config.BaseDir, "Icons", "blank.png")))
+                    iconSpriteCanvas.DrawBitmap(icon, p: new SKPoint(0, 0), sampling: default);
 
                 var uniqueSortKeys = new Dictionary<string, KtaneModuleInfo>();
                 var uniqueSymbols = new Dictionary<string, KtaneModuleInfo>();
@@ -325,8 +325,8 @@ namespace KtaneWeb
                                 curY++;
                                 curX = 0;
                             }
-                            using (var icon = Image.Load(iconFilePath))
-                                iconSpriteBmp.Mutate(bmp => bmp.DrawImage(icon, new Point(w * curX, h * curY), 1f));
+                            using (var icon = SKBitmap.Decode(iconFilePath))
+                                iconSpriteCanvas.DrawBitmap(icon, p: new SKPoint(w * curX, h * curY), sampling: default);
                             coords.Add(fileName, (curX, curY));
                         }
                     }
@@ -338,10 +338,12 @@ namespace KtaneWeb
             }
 
             // Now that we know how many icons are in the icon sprite, create a bitmap of the correct size
-            using var iconSpriteBmp2 = new Image<Rgba32>(w * cols, h * (curY + 1));
-            iconSpriteBmp2.Mutate(bmp => bmp.DrawImage(iconSpriteBmp, new Point(0, 0), 1f));
+            using var iconSpriteImage = SKImage.FromBitmap(iconSpriteBmp);
+            using var iconSpriteCropped = iconSpriteImage.Subset(new SKRectI(0, 0, w * cols, h * (curY + 1)));
+            using var iconSpriteData = iconSpriteCropped.Encode(SKEncodedImageFormat.Png, 100);
             using var mem = new MemoryStream();
-            iconSpriteBmp2.SaveAsPng(mem);
+            iconSpriteData.SaveTo(mem);
+
             moduleInfoCache.IconSpritePng = mem.ToArray();
             moduleInfoCache.IconSpriteCss = $".mod-icon{{background-image:url(data:image/png;base64,{Convert.ToBase64String(moduleInfoCache.IconSpritePng)})}}";
 

@@ -11,7 +11,7 @@
     <PackageReference Include="PdfSharp" Version="6.1.1" />
     <PackageReference Include="PropellerApi" Version="2.7.0" />
     <PackageReference Include="RT.CommandLine" Version="2.2.204" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.2" />
+    <PackageReference Include="SkiaSharp" Version="4.153.1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Puzzles.css" />
