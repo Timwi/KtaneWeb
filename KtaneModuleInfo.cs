@@ -162,7 +162,7 @@ namespace KtaneWeb
                 Souvenir = new KtaneSouvenirInfo { Status = KtaneModuleSouvenir.NotACandidate };
             else if (Souvenir != null && Souvenir.Status == KtaneModuleSouvenir.Unexamined)
                 Souvenir = null;
-            else if (Souvenir != null && Souvenir.Status != KtaneModuleSouvenir.Considered)
+            else if (Souvenir != null && Souvenir.Status != KtaneModuleSouvenir.Considered && Souvenir.Status != KtaneModuleSouvenir.NotACandidate)
                 Souvenir.Explanation = null;
 
             if (Ignore != null && Ignore.Length == 0)
@@ -211,7 +211,7 @@ namespace KtaneWeb
     {
         [EditableField("Status", "Status of Souvenir implementation.")]
         public KtaneModuleSouvenir Status;
-        [ClassifyIgnoreIfDefault, EditableIf(nameof(Status), KtaneModuleSouvenir.Considered), EditableField("Explain", "Explain what question(s) Souvenir could ask about this module.", Multiline = true)]
+        [ClassifyIgnoreIfDefault, EditableIf(nameof(Status), KtaneModuleSouvenir.NotACandidate, KtaneModuleSouvenir.Considered), EditableField("Explain", "Explain what question(s) Souvenir could ask about this module, or why it is not a candidate.", Multiline = true)]
         public string Explanation;
 
         public static object GetTag(KtaneSouvenirInfo inf)
