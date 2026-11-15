@@ -154,6 +154,7 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
     try { filter = JSON.parse(lStorage.getItem('filters') || '{}') || {}; }
     catch (exc) { }
     let selectable = lStorage.getItem('selectable') || 'manual';
+    let currentTarget = lStorage.getItem('currentTarget') || '_self';
     if (initSelectables.map(sel => sel.PropName).indexOf(selectable) === -1)
         selectable = 'manual';
     let preferredManuals = {};
@@ -1605,8 +1606,19 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
     // This also calls updateFilter()
     setSelectable(selectable);
-
+    
     $('input.set-selectable').click(function() { setSelectable($(this).data('selectable')); });
+    $('input.set-new-tab').change(function(event){
+        currentTarget = event.target.checked?"_blank":"_self";
+        lStorage.setItem('currentTarget', currentTarget);
+        for (let el of document.getElementsByClassName("modlink")){
+            el.setAttribute('target', currentTarget);
+        }
+    });
+    $('input.set-new-tab')[0].checked = (lStorage.getItem('currentTarget') === "_blank");
+    for (let el of document.getElementsByClassName("modlink")){
+        el.setAttribute('target', currentTarget);
+    }
     $('input.filter').click(function() { updateFilter(); });
     $("input.results-mode").click(function() { setResultsMode(this.value, resultsLimit); });
     $("input#results-limit").change(function() { setResultsMode(resultsMode, this.value | 0); });

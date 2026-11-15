@@ -232,6 +232,7 @@ namespace KtaneWeb
         public string selectableSource = "Source code";
         public string selectableSourceClone = "Source code (clone)";
         public string selectableTutorial = "Tutorial videos";
+        public string newTab = "Always open in new tab";
         public string displayOption = "Display";
         public string displayOriginalName = "Original name";
         public string displayOriginalNameTooltip = "Displays the original (English-language) name in addition to the translated name.";
