@@ -92,7 +92,6 @@ namespace KtaneWeb
         public string challengeBombAnchor = "Challenge Bombs Site";
         public string modIdeaAnchor = "Mod ideas website";
         public string modIdeaPastAnchor = "Mod ideas: spreadsheet of past ideas";
-        public string modIdeaSubredditAnchor = "Mod ideas: subreddit";
         public string modkitGithubAnchor = "KtaneModkit GitHub repository";
         public string modkitGithubDesc = "(contains the Unity project you need to make a KTANE mod)";
         public string whoCanSolveAnchor = "KTaNE Who Can Solve? (WCS)";
@@ -103,10 +102,14 @@ namespace KtaneWeb
         public string webGithubDesc = "(contains this website’s server code)";
         public string lfaAnchor = "Logfile Analyzer";
         public string profileEditorAnchor = "Profile Editor";
-        public string downloadProfileAnchor = "Download pre-made profiles";
+        public string downloadProfileAnchor = "Download generated profiles";
+        public string downloadProfileDescription = "A zip file containing defuser and expert profiles for each difficulty level, boss/non-boss modules, etc.";
         public string modeEditorAnchor = "Mode Setting Editor";
-        public string newModuleAnchor = "Create new module";
+        public string newModuleAnchor = "Create new entry";
         public string downloadPDF = "Download merged PDF for current filter";
+        public string downloadPDFDescription = "A single PDF containing your preferred manuals for every module currently shown in the list.";
+        public string downloadProfileFromFilter = "Download profile from current filter";
+        public string downloadProfileFromFilterDescription = "An expert profile containing exactly the modules currently shown in the list.";
         public string ignoredTableAnchor = "Table of ignored modules";
         public string ignoreTableURL = "More/Ignore%20Table.html";
         public string tfcAnchor = "Text Field Calculator";
@@ -373,7 +376,6 @@ namespace KtaneWeb
             },
             new Selectable
             {
-                Accel = 'T',
                 PropName = "video",
                 HumanReadable = selectableTutorial,
                 IconFunction = @"mod=>'HTML/img/video.png'",

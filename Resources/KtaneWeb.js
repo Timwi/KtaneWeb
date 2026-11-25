@@ -1893,9 +1893,9 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
 
     $('.select-on-focus').focus(function() { this.setSelectionRange(0, this.value.length); });
 
-    $('#generate-pdf').click(function()
+    $('#generate-pdf,#generate-profile-from-filter').click(function()
     {
-        $('#generate-pdf-json').val(JSON.stringify({
+        let filterJson = JSON.stringify({
             preferredManuals: preferredManuals,
             sort: sort,
             filter: filter,
@@ -1912,7 +1912,9 @@ function initializePage(modules, initIcons, initDocDirs, initFilters, initSelect
             displayDesc: document.getElementById('display-description').checked,
             displayTags: document.getElementById('display-tags').checked,
             restrictedManuals: displayRestrictedManuals ? [''] : restrictedManualNames
-        }));
+        });
+        document.getElementById('generate-pdf-json').value = filterJson;
+        document.getElementById('profile-from-filter-json').value = filterJson;
         return true;
     });
 

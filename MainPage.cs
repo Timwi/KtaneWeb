@@ -32,7 +32,7 @@ namespace KtaneWeb
         // Q
         // R    include/exclude regular modules
         // S    Rule seed
-        // T    link to Tutorial video
+        // T    Tools
         // U    link to Manual
         // V    include/exclude vanilla
         // W    link to Steam Workshop item
@@ -105,7 +105,7 @@ namespace KtaneWeb
                                 ),
                                 new DIV { class_ = "icon-page shown" }._(
                                     new DIV { class_ = "icon", id = "links-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "links")._(new IMG { class_ = "icon-img", src = "HTML/img/links-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.popupLinks))),
-                                    new DIV { class_ = "icon", id = "tools-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "tools")._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._(translation.popupTools))),
+                                    new DIV { class_ = "icon", id = "tools-rel" }._(new A { class_ = "icon-link popup-link", href = "#", accesskey = "t" }.Data("popup", "tools")._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._(translation.popupTools.Accel('T')))),
                                     new DIV { class_ = "icon", id = "view-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "view")._(new IMG { class_ = "icon-img", src = "HTML/img/view-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.popupView))),
                                     new DIV { class_ = "icon", id = "random-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "random")._(new IMG { class_ = "icon-img", src = "HTML/img/random-icon.svg" }, new SPAN { class_ = "icon-label" }._(translation.popupRandom))),
                                     new DIV { class_ = "icon", id = "more-rel" }._(new A { class_ = "icon-link popup-link", href = "#" }.Data("popup", "more")._(new IMG { class_ = "icon-img", src = "HTML/img/more.png" }, new SPAN { class_ = "icon-label" }._(translation.popupMore))),
@@ -166,10 +166,11 @@ namespace KtaneWeb
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/On%20the%20Subject%20of%20Making%20a%20Great%20Module.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/google-docs.png" }, new SPAN { class_ = "icon-label" }._(translation.makingModsAnchor)))),
                             new UL { class_ = "below-icons" }._(
                                 new LI(new A { href = "https://bombs.samfun.dev" }._(translation.challengeBombAnchor)),
+                                new LI(new A { href = translation.ignoreTableURL }._(translation.ignoredTableAnchor)),
+                                new LI(new A { href = "https://files.timwi.de/Tools/Calculator.html" }._(translation.tfcAnchor)),
                                 new LI(new A { href = "https://blananas2.github.io/wordlistchecker.html" }._(translation.wordlistCheckerAnchor)),
                                 new LI(new A { href = "https://ktane-ideas.mrmelon54.com" }._(translation.modIdeaAnchor)),
                                 new LI(new A { href = "https://docs.google.com/spreadsheets/d/10Z7Ivc784QaFrQCaGwIPUYrS6NNXiLJPi8nADiFR_0s" }._(translation.modIdeaPastAnchor)),
-                                new LI(new A { href = "https://www.reddit.com/r/ktanemod/" }._(translation.modIdeaSubredditAnchor)),
                                 new LI(new A { href = "https://ktanewhocansolve.com/", title = translation.whoCanSolveMaintainer }._(translation.whoCanSolveAnchor)),
                                 new LI(new A { href = "https://github.com/Qkrisi/ktanemodkit/" }._(translation.modkitGithubAnchor), new DIV { class_ = "link-extra" }._(translation.modkitGithubDesc)),
                                 new LI(new A { href = "https://github.com/Timwi/KtaneContent" }._(translation.contentGithubAnchor), new DIV { class_ = "link-extra" }._(translation.contentGithubDesc)),
@@ -180,17 +181,29 @@ namespace KtaneWeb
                             new DIV { class_ = "close" },
                             new DIV { class_ = "icons" }._(
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Logfile%20Analyzer.html", accesskey = "a" }._(new IMG { class_ = "icon-img", src = "HTML/img/logfile-analyzer.png" }, new SPAN { class_ = "icon-label" }._(translation.lfaAnchor.Accel('A')))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._(translation.profileEditorAnchor))),
-                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "profile/zip" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._(translation.downloadProfileAnchor.Accel('p')))),
+                                new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Profile%20Editor.html", accesskey = "p" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._(translation.profileEditorAnchor.Accel('P')))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "More/Mode%20Settings%20Editor.html" }._(new IMG { class_ = "icon-img", src = "HTML/img/profile-editor.png" }, new SPAN { class_ = "icon-label" }._(translation.modeEditorAnchor))),
                                 new DIV { class_ = "icon" }._(new A { class_ = "icon-link", href = "#", id = "module-json-new" }._(new IMG { class_ = "icon-img", src = "HTML/img/edit-icon.png" }, new SPAN { class_ = "icon-label" }._(translation.newModuleAnchor)))),
-                            new DIV { class_ = "pdf-merge" }._(
-                                new FORM { action = "merge-pdf", method = method.post }._(
-                                new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
-                                new BUTTON { id = "generate-pdf", type = btype.submit }._(translation.downloadPDF))),
-                            new UL { class_ = "below-icons" }._(
-                                new LI(new A { href = translation.ignoreTableURL }._(translation.ignoredTableAnchor)),
-                                new LI(new A { href = "https://files.timwi.de/Tools/Calculator.html" }._(translation.tfcAnchor)))),
+                            new DIV { class_ = "tools" }._(
+                                new FORM { class_ = "tool", action = "profile-from-filter", method = method.post }._(
+                                    new IMG { class_ = "tool-img", src = "HTML/img/profile-editor.png" },
+                                    new DIV { class_ = "tool-info" }._(
+                                        new INPUT { type = itype.hidden, name = "json", id = "profile-from-filter-json" },
+                                        new INPUT { type = itype.hidden, name = "test", value = "pong" },
+                                        new BUTTON { class_ = "tool-link", id = "generate-profile-from-filter" }._(translation.downloadProfileFromFilter),
+                                        new DIV { class_ = "tool-description" }._(translation.downloadProfileFromFilterDescription))),
+                                new DIV { class_ = "tool" }._(
+                                    new IMG { class_ = "tool-img", src = "HTML/img/profile-editor.png" },
+                                    new DIV { class_ = "tool-info" }._(
+                                        new A { class_ = "tool-link", href = "profile/zip" }._(translation.downloadProfileAnchor),
+                                        new DIV { class_ = "tool-description" }._(translation.downloadProfileDescription))),
+                                new FORM { class_ = "tool", action = "merge-pdf", method = method.post }._(
+                                    new IMG { class_ = "tool-img", src = "HTML/img/pdf_manual.png" },
+                                    new DIV { class_ = "tool-info" }._(
+                                        new INPUT { type = itype.hidden, name = "json", id = "generate-pdf-json" },
+                                        new INPUT { type = itype.hidden, name = "test", value = "ping" },
+                                        new BUTTON { class_ = "tool-link", id = "generate-pdf" }._(translation.downloadPDF),
+                                        new DIV { class_ = "tool-description" }._(translation.downloadPDFDescription))))),
 
                         // VIEW (icon popup)
                         new DIV { id = "view", class_ = "popup disappear stay" }._(

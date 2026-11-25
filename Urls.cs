@@ -36,6 +36,7 @@ namespace KtaneWeb
                 new UrlMapping(path: "/ManualLastUpdated", handler: ManualLastUpdated),
                 new UrlMapping(path: "/proxy", handler: proxy),
                 new UrlMapping(path: "/merge-pdf", handler: mergePdfs),
+                new UrlMapping(path: "/profile-from-filter", handler: generateProfileFromFilter),
                 new UrlMapping(path: "/upload-log", handler: uploadLogfile),
                 new UrlMapping(path: "/find-log", handler: findLogfile),
                 new UrlMapping(path: "/generate-json", handler: generateJson),
@@ -45,7 +46,6 @@ namespace KtaneWeb
 
                 new UrlMapping(path: "/puzzles", handler: req => new KtaneWebSession(_config).EnableAutomatic(req, session => puzzles(req, _config.Puzzles, session))),
 
-                new UrlMapping(path: "/Unfinished", handler: unfinished, skippable: true),
                 new UrlMapping(path: "/MergedPdfs", handler: new FileSystemHandler(_config.MergedPdfsDir).Handle),
                 new UrlMapping(path: "/Logfiles", handler: logFileHandler),
 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using RT.Json;
 using RT.Servers;
 using RT.Util;
@@ -52,6 +53,24 @@ namespace KtaneWeb
                     Filename = @"""Difficulty-based profiles.zip"""
                 }
             });
+        }
+
+        private HttpResponse generateProfileFromFilter(HttpRequest req)
+        {
+            if (req.Method != HttpMethod.Post)
+                return HttpResponse.Redirect(req.Url.WithPathParent().WithPath(""));
+
+            var language = req.Headers.Cookie.Get("lang", null)?.Value ?? "en";
+            var langName = TranslationInfo.LanguageCodeToName.Get(language, "English");
+            var messages = new StringBuilder();
+            var json = JsonValue.Parse(req.Post["json"].Value);
+            json.AppendIndented(messages);
+
+            var matchingModules = GetFilteredModules(langName, json);
+            var jsonList = matchingModules.Where(k => k.ModuleID != null && (k.Type == KtaneModuleType.Regular || k.Type == KtaneModuleType.Needy)).Select(k => k.ModuleID).ToJsonList();
+            return HttpResponse.Create(
+                content: new JsonDict { { "EnabledList", jsonList }, { "Operation", 0 } }.ToString(),
+                contentType: "application/json");
         }
     }
 }
