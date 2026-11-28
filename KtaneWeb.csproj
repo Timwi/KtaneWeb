@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.13.1" />
     <PackageReference Include="PdfSharp" Version="6.1.1" />
-    <PackageReference Include="PropellerApi" Version="2.7.0" />
+    <PackageReference Include="PropellerApi" Version="2.8.0" />
     <PackageReference Include="RT.CommandLine" Version="2.2.204" />
     <PackageReference Include="SkiaSharp" Version="4.153.1" />
   </ItemGroup>
